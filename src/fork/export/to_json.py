@@ -7,8 +7,9 @@ Currently exported:
   Wisdom–Holman compositions, 1781-03-13 → 1846-12-31, against an RK4 dt = 1 d reference
   (4th order; its own error is ~1e-10″). Feeds a future "integrator accuracy" panel.
 - ``m5a_fits.json``: residuals after the M5a point fits on synthetic data (seed 0): no
-  perturber, Le Verrier mode (a = 38.4 AU) and free a; best-fit elements, local minima and the
-  1846-09-23 geocentric longitude vs true Neptune. Takes ~30 s (multistart LM).
+  perturber, Le Verrier mode (a = 38.4 AU) and free a, perturber e ≤ 0.3 (the M5 prior);
+  best-fit elements, local minima and the 1846-09-23 geocentric longitude vs true Neptune.
+  Takes ~30 s (multistart LM).
 - ``m5a_profile.json``: profile likelihood of the perturber's 1846-09-23 geocentric longitude
   (300°–350°, 1° steps, plus the true value), free a and Le Verrier mode, for noise seeds 0–3
   and noise-free data. Slow (65 min on 12 workers, measured while sharing the CPU with another
@@ -25,6 +26,7 @@ from pathlib import Path
 
 import numpy as np
 
+from fork.inference.fit import E_PRIOR_MAX
 from fork.integrators import DEFAULT_DT_DAYS, rk4, wisdom_holman
 from fork.integrators.wisdom_holman import SCHEME_DEFAULT, SCHEMES
 from fork.model import bodies
@@ -193,6 +195,7 @@ def m5a_fits_data(n_workers: int = 1) -> dict:
         "description": "M5a point fits on synthetic data: Horizons Uranus (incl. real Neptune) + "
         "Gaussian noise; residual = noise-free truth − best fit, yearly Jan 1.0 TDB.",
         "seed": M5A_SEED, "dt_days": DEFAULT_DT_DAYS, "epoch_jd_tdb": A1_EPOCH_JD_TDB,
+        "perturber_e_max": E_PRIOR_MAX,
         "galle_jd_tdb": galle_jd_tdb(),
         "years": years.tolist(),
         "curves": curves,
@@ -337,6 +340,7 @@ def m5a_profile_data(
         "is re-optimised by multistart LM; dchi2 = chi2 − min over all fits for that dataset.",
         "epoch_jd_tdb": A1_EPOCH_JD_TDB, "galle_jd_tdb": geo.jd_tdb, "dt_days": DEFAULT_DT_DAYS,
         "grid_deg": list(grid_deg), "n_starts_per_point": M5A_PROFILE_N_STARTS,
+        "perturber_e_max": E_PRIOR_MAX,
         "le_verrier_a_au": BODE_A_AU,
         "true_neptune_lon_ecl_of_date_deg": round(nep_deg, 4),
         "datasets": datasets,
