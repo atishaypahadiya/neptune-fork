@@ -66,8 +66,12 @@ over 1000 random cases (hypothesis); e from 0 to 0.95.
   historical epochs; add Gaussian noise σ = 3″ (1781 onward) and σ = 12″ (pre-discovery sightings,
   1690–1771). Seeded.
 **A2 (acceptance):** fit Uranus alone (no perturber) to synthetic data with `least_squares`.
-Residual curve shows **peak-to-peak ≈ 130″ (±25″)** and a **sign change of the slope within
-1815–1830** (the 1822 Uranus–Neptune conjunction).
+Residual curve shows **peak-to-peak ≈ 130″ (±25″)** and, in its **post-1781** part, a **sign
+change of the slope within 1815–1830** (the 1822 Uranus–Neptune conjunction). *Amended:* the
+slope check was restricted to post-1781; over 1690–1845 the curve turns several times in the
+sparse pre-discovery era.
+**A2b (acceptance):** with the true Neptune planted (fixed, not fitted) and Uranus refitted, the
+post-1781 residual RMS is **≤ 1.5 σ_noise** (4.5″); without Neptune the same check must fail.
 
 ## M5: Inverse problem on synthetic data
 - `inference/fit.py`: multistart Levenberg–Marquardt over a 24-point grid in perturber λ₀ (0–360°),
