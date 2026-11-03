@@ -140,15 +140,17 @@ def test_m5a_multistart_on_synthetic_data(ctx, seed0, a_fixed):
     checks the multistart reached the global region); Le Verrier mode cannot represent a = 30 AU,
     yet must be statistically indistinguishable (Δχ² < 4; measured +0.34).
 
-    Measured: Le Verrier m 20.3 M⊕, e 0.265, χ²/dof 0.956, RMS 2.86″, 6 minima, 1846-09-23
-    longitude −6.87° from Neptune; free a m 15.5 M⊕, a 27.3 AU, e 0.165, χ²/dof 0.922, RMS 2.78″,
-    4 minima, +11.77°. See docs/notes/M5.md for why the longitudes miss (noise / fixed a).
+    Measured (e ≤ 0.3 bound): Le Verrier m 20.3 M⊕, e 0.265, χ²/dof 0.956, RMS 2.86″, 3 minima,
+    1846-09-23 longitude −6.87° from Neptune; free a m 15.5 M⊕, a 27.3 AU, e 0.165, χ²/dof 0.922,
+    RMS 2.78″, 7 minima, +11.77°. (Unbounded, before the fix: 6 and 4 minima, same best fits.)
+    See docs/notes/M5.md for why the longitudes miss (a flat likelihood / fixed a).
     """
     obs, _, inc_raan, th_nep = seed0
     r = fit_perturber_multistart(obs, ctx, inc_raan, a_fixed_au=a_fixed, n_workers=N_WORKERS)
     assert len(r.fits) == N_LAM0_STARTS and r.status_counts()["failed"] == 0
     best = r.best
     assert best.status == "converged" and best.in_m5_prior
+    assert all(f.theta[8] <= 0.3 + 1e-12 for f in r.fits)  # the e prior bound holds everywhere
     post = obs.source == "synthetic_post_discovery"
     assert np.sqrt(np.mean(best.residual_rad[post] ** 2)) * ARC <= 1.5 * SIGMA_POST_DISCOVERY_ARCSEC
     planted = fit_uranus_elements(obs, ctx, inc_raan, fixed_perturber_theta=th_nep)

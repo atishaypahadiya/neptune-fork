@@ -3,7 +3,9 @@
     uv run python docs/notes/scripts/m5a_diagnostics.py
 
 Datasets: noise-free Horizons truth, and synthetic noise seeds 0–4 (same schedule).
-  1. Noise-free recovery: free-a and Le Verrier-mode 24-start multistart.
+  1. Noise-free recovery: free-a and Le Verrier-mode 24-start multistart. All fits bound the
+     perturber's e at the M5 prior's 0.3 (two-phase, see ``PerturberSpace``); the
+     ``*_unbounded`` entries repeat the fit without the bound, as a record of the e > 0.3 bug.
   3. Eccentricity sensitivity: free-a multistart with the perturber's e capped at 0.05 and 0.1
      (smooth cap, ``PerturberSpace.e_max``).
   4. Le Verrier's published 31 Aug 1846 solution (``LE_VERRIER_1846``: m, a, e, ϖ held; only
@@ -107,7 +109,9 @@ def main() -> None:
         key = "noise_free" if seed is None else f"seed_{seed}"
         res = {}
         runs = {
-            "free_a": dict(),
+            "free_a": dict(),  # e ≤ 0.3 (default bound, the M5 prior)
+            "free_a_unbounded": dict(e_max=None),  # before the bound fix, for the record
+            "le_verrier_unbounded": dict(a_fixed_au=BODE_A_AU, e_max=None),
             "le_verrier": dict(a_fixed_au=BODE_A_AU),
             "free_a_e_max_0.1": dict(e_max=0.1),
             "free_a_e_max_0.05": dict(e_max=0.05),

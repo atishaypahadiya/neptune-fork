@@ -56,7 +56,7 @@ def model_obs(ctx):
 
 
 def test_perturber_space_free_held_and_e_cap():
-    sp = le_verrier_space(38.4)
+    sp = le_verrier_space(38.4, e_max=None)
     assert sp.n_free == 4 and sp.held[1] == 38.4
     th = sp.theta_from_z(np.array([1.3, 0.3, -0.4, 2.0]))
     assert th[1] == 38.4 and th[2] == pytest.approx(0.25) and th[4] == pytest.approx(2.0)
@@ -64,11 +64,21 @@ def test_perturber_space_free_held_and_e_cap():
     y = np.array([1.3, 30.0, 0.2, 0.1, 1.0])
     assert np.array_equal(PerturberSpace().y_from_z(PerturberSpace().z_from_y(y)), y)
 
-    capped = le_verrier_space(None, e_max=0.05)
-    small = capped.theta_from_z(np.array([1.0, 30.0, 0.05, 0.0, 1.0]))[2]
-    assert small == pytest.approx(0.0025, rel=0.03)  # ≈ k² + h² well inside the cap
-    for r in (0.3, 1.0, 10.0):
-        assert capped.theta_from_z(np.array([1.0, 30.0, r, 0.0, 1.0]))[2] <= 0.05
+    bounded = le_verrier_space(None, e_max=0.05)  # free a: y = (log10 m, a, k, h, λ₀)
+    assert bounded.bounds_e and bounded.n_free == 5
+    # interior layout: e = k² + h², unbounded (the drivers enforce the bound in two phases)
+    assert bounded.theta_from_z(np.array([1.0, 30.0, 0.3, 0.0, 1.0]))[2] == pytest.approx(0.09)
+    bnd = bounded.boundary()  # (k, h) → ϖ, e = e_max
+    assert bnd.n_free == 4
+    th = bnd.theta_from_z(np.array([1.2, 31.0, 2.5, 4.0]))
+    assert th == pytest.approx([1.2, 31.0, 0.05, 2.5, 4.0])
+    y = np.array([1.2, 31.0, math.sqrt(0.05) * math.cos(2.5), math.sqrt(0.05) * math.sin(2.5), 4.0])
+    assert bnd.y_from_z(bnd.z_from_y(y)) == pytest.approx(y)
+    lv_bnd = le_verrier_space(38.4, e_max=0.3).boundary()  # a held: z = (log10 m, ϖ, λ₀)
+    assert lv_bnd.theta_from_z(np.array([1.1, 1.0, 2.0])) == pytest.approx([1.1, 38.4, 0.3, 1.0,
+                                                                            2.0])  # fmt: skip
+    with pytest.raises(ValueError):
+        held_orbit_space(1.5, 36.15, 0.1, 1.0).boundary()
 
     held = held_orbit_space(1.5, 36.15, 0.10761, math.radians(286.9))
     assert held.n_free == 1
@@ -89,14 +99,12 @@ def test_held_orbit_mode_recovers_lam0_and_uranus(ctx, model_obs):
     assert abs(wrap_rad(f.theta[10] - th[10])) < 1e-5 and abs(f.theta[0] - th[0]) < 1e-5
 
 
-@pytest.mark.slow
 def test_e_cap_recovers_model_perturber_inside_cap(ctx, model_obs):
-    """~30 s: the start is 10° off and the capped (k, h) surface takes ~700 LM steps."""
     th = THETA_MODEL  # e = 0.05, inside a 0.1 cap
     start = np.array([th[10] - math.radians(10.0)])
     r = fit_perturber_multistart(model_obs, ctx, (th[2], th[3]), e_max=0.1, lam0_starts_rad=start)
     f = r.fits[0]
-    # measured χ² 6e-14 (a tanh cap, tried first, stalled on its plateau at e = 0.09999)
+    # interior solution (e = 0.05 < 0.1): the bound never engages
     assert f.status == "converged" and f.chi2 < 1e-4
     assert abs(f.theta[8] - th[8]) < 1e-3 and abs(f.theta[7] - th[7]) < 0.05
 
@@ -119,6 +127,27 @@ def test_le_verrier_published_solution_constants():
         2.137, abs=0.01
     )
     assert 10**lv.log10_m_earth == pytest.approx(36.6, abs=0.1)
+
+
+def test_point_fits_enforce_e_prior_bound(ctx):
+    """Data from a model perturber with e = 0.5 (outside the M5 prior): the default fit stays at
+    e ≤ 0.3 (it ends on the bound, converged); the unbounded diagnostic recovers e = 0.5.
+    Measured: bounded χ² 17.85 in 44 evaluations (a sin² squashing cap ran 130 s and failed)."""
+    from fork.inference.fit import E_PRIOR_MAX
+
+    th = THETA_MODEL.copy()
+    th[8] = 0.5
+    jd, sigma, source = synthetic_epochs()
+    obs = LongitudeObservations(jd, predict_uranus_lon(th, jd, ctx), sigma / ARC, source)
+    start = np.array([th[10]])
+    bounded = fit_perturber_multistart(obs, ctx, (th[2], th[3]), a_fixed_au=th[7],
+                                       lam0_starts_rad=start).fits[0]  # fmt: skip
+    assert E_PRIOR_MAX == 0.3 and bounded.theta[8] <= 0.3 + 1e-12 and bounded.in_m5_prior
+    assert bounded.status == "converged" and bounded.nfev < 500
+    assert bounded.theta[8] == pytest.approx(0.3) and bounded.chi2 > 1.0  # on the bound, misfit
+    free = fit_perturber_multistart(obs, ctx, (th[2], th[3]), a_fixed_au=th[7], e_max=None,
+                                    lam0_starts_rad=start).fits[0]  # fmt: skip
+    assert free.chi2 < 1e-4 and abs(free.theta[8] - 0.5) < 1e-3
 
 
 # ------------------------------------------------------------------- profile likelihood

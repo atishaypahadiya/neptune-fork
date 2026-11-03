@@ -88,6 +88,7 @@ post-1781 residual RMS is **≤ 1.5 σ_noise** (4.5″); without Neptune the sam
   (k, h) disk is exactly uniform in e and ϖ (dk dh = ½ de dϖ), and ϖ stays well defined as e → 0
   (see `docs/notes/M1.md`). Reject (log-prior = −∞) any proposal with e = k² + h² > 0.3.
   Report autocorrelation time; run ≥ 50τ. Save chains to `data/cache/chains/`.
+  *Amended (M5a review):* point fits also enforce the prior bound e ≤ 0.3.
 - Derived quantity per sample: perturber geocentric ecliptic longitude on 1846-09-23
   (light-time corrected, Earth position from Horizons).
 **A3 (acceptance, slow):**

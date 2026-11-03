@@ -177,6 +177,10 @@ def fit_uranus_elements(
 START_LOG10_M_EARTH = 1.0
 START_SQRT_E_K_H = (0.1, 0.0)  # e = 0.01, ϖ = 0
 N_LAM0_STARTS = 24
+# The M5 prior's eccentricity bound, enforced in every point fit (smooth sin² map, see
+# PerturberSpace). Unbounded fits wandered to e = 0.51 (free a, seed 2) and 0.36 (Le Verrier
+# mode, seed 3), outside the prior the posterior uses. ``e_max=None`` is a diagnostic only.
+E_PRIOR_MAX = 0.3
 # Outside these the forward model is unphysical (unbound / degenerate); residuals are set huge so
 # LM rejects the step. Distinct from the M5 prior, which is reported, not enforced, here.
 _MAX_E = 0.95
@@ -283,40 +287,78 @@ class PerturberSpace:
 
     Fit variables y = (log10 m [M⊕], a [AU], k, h, λ₀) with (k, h) = √e·(cos ϖ, sin ϖ). Entries
     of ``held`` that are not None are fixed at that y value; the rest are free, in order.
-    ``e_max`` caps the eccentricity smoothly: e = e_max·sin²(√(k² + h²)/√e_max). That is ≈ k² + h²
-    for small e, so the cap changes little well inside it, and LM never meets a hard wall. The
-    map is periodic, so there is no flat plateau to stall on (a tanh cap was tried first: LM ran
-    into its saturated region and stopped at the cap even when the true e was inside it).
+
+    ``e_max`` bounds the eccentricity (the M5 prior's 0.3 by default in the fits). The bound is
+    enforced in two phases by the drivers (``_fit_bounded``), not by a squashing map:
+      1. the interior space (``on_e_bound=False``) maps e = k² + h², with no bound;
+      2. if that optimum has e > e_max, the constrained optimum lies on the boundary, so the fit
+         is redone in the boundary space (``on_e_bound=True``). There e = e_max is fixed and the
+         (k, h) pair is replaced by the single variable ϖ.
+    Two squashing maps were tried first and both made LM crawl at the bound. A tanh cap
+    saturates, so LM stopped on its plateau. A sin² cap is stationary at e_max, so fits that
+    belong on the bound ran to the evaluation cap: 130 s, reported as failed.
     """
 
     held: tuple[float | None, ...] = (None, None, None, None, None)
     e_max: float | None = None
+    on_e_bound: bool = False
+
+    @property
+    def bounds_e(self) -> bool:
+        return self.e_max is not None and self.held[2] is None and self.held[3] is None
 
     @property
     def free(self) -> np.ndarray:
+        """Free entries of y (in the interior layout)."""
         return np.array([v is None for v in self.held])
 
     @property
     def n_free(self) -> int:
-        return int(self.free.sum())
+        return int(self.free.sum()) - (1 if self.on_e_bound else 0)
+
+    def interior(self) -> PerturberSpace:
+        return replace(self, on_e_bound=False)
+
+    def boundary(self) -> PerturberSpace:
+        if not self.bounds_e:
+            raise ValueError("no e bound to sit on")
+        return replace(self, on_e_bound=True)
 
     def y_from_z(self, z_p: np.ndarray) -> np.ndarray:
         y = np.array([0.0 if v is None else v for v in self.held])
-        y[self.free] = z_p
+        z_p = np.asarray(z_p, dtype=np.float64)
+        if not self.on_e_bound:
+            y[self.free] = z_p
+            return y
+        free = self.free.copy()
+        free[2:4] = False
+        n_before = int(free[:2].sum())
+        varpi = z_p[n_before]
+        rest = np.concatenate([z_p[:n_before], z_p[n_before + 1 :]])
+        y[free] = rest
+        s = math.sqrt(self.e_max)
+        y[2], y[3] = s * math.cos(varpi), s * math.sin(varpi)
         return y
 
     def theta_from_z(self, z_p: np.ndarray) -> np.ndarray:
         log10_m, a, k, h, lam0 = self.y_from_z(z_p)
-        r2 = k * k + h * h
-        e = r2 if self.e_max is None else self.e_max * math.sin(math.sqrt(r2 / self.e_max)) ** 2
-        return np.array([log10_m, a, e, math.atan2(h, k) % TWO_PI, lam0 % TWO_PI])
+        return np.array([log10_m, a, k * k + h * h, math.atan2(h, k) % TWO_PI, lam0 % TWO_PI])
 
     def z_from_y(self, y: np.ndarray) -> np.ndarray:
-        return np.asarray(y, dtype=np.float64)[self.free]
+        y = np.asarray(y, dtype=np.float64)
+        if not self.on_e_bound:
+            return y[self.free]
+        free = self.free.copy()
+        free[2:4] = False
+        n_before = int(free[:2].sum())
+        z = list(y[free])
+        z.insert(n_before, math.atan2(y[3], y[2]))
+        return np.array(z)
 
 
-def le_verrier_space(a_fixed_au: float | None, e_max: float | None = None) -> PerturberSpace:
-    """Le Verrier mode (a held) or free-a mode (``a_fixed_au=None``)."""
+def le_verrier_space(a_fixed_au: float | None, e_max: float | None = E_PRIOR_MAX
+                     ) -> PerturberSpace:  # fmt: skip
+    """Le Verrier mode (a held) or free-a mode (``a_fixed_au=None``); e ≤ ``e_max``."""
     return PerturberSpace((None, a_fixed_au, None, None, None), e_max)
 
 
@@ -347,12 +389,34 @@ def _perturber_residuals(z, pq, space, obs: LongitudeObservations, context) -> n
     return wrap_rad(obs.lon_ecl_j2000_rad - pred) / obs.sigma_rad
 
 
+def _lm(fun, z0, args):
+    return least_squares(fun, z0, args=args, method="lm", x_scale="jac", xtol=1e-10, ftol=1e-10,
+                         gtol=1e-10, max_nfev=3000)  # fmt: skip
+
+
+def _fit_bounded(fun, z0, args_of, space: PerturberSpace, split):
+    """Two-phase bounded LM (see ``PerturberSpace``). ``args_of(space)`` gives fun's args;
+    ``split(z)`` → (Uranus/other prefix, perturber z) so the perturber part can be re-laid out.
+    Returns (scipy solution, space the solution's z is in)."""
+    inner = space.interior()
+    sol = _lm(fun, z0, args_of(inner))
+    if not space.bounds_e:
+        return sol, inner
+    head, zp = split(sol.x)
+    y = inner.y_from_z(zp)
+    if y[2] ** 2 + y[3] ** 2 <= space.e_max:
+        return sol, inner
+    bnd = space.boundary()
+    sol_b = _lm(fun, np.concatenate([head, bnd.z_from_y(y)]), args_of(bnd))
+    sol_b.nfev += sol.nfev
+    return sol_b, bnd
+
+
 def _run_perturber_start(z0, pq, space, obs, context, lam0: float) -> PerturberFit:
-    """One LM run (module level so a process pool can pickle it)."""
-    args = (pq, space, obs, context)
-    sol = least_squares(_perturber_residuals, z0, args=args, method="lm", x_scale="jac",
-                        xtol=1e-10, ftol=1e-10, gtol=1e-10, max_nfev=3000)  # fmt: skip
-    theta = _unpack_perturber_z(sol.x, pq, space)
+    """One (two-phase bounded) LM run; module level so a process pool can pickle it."""
+    sol, used = _fit_bounded(_perturber_residuals, z0, lambda sp: (pq, sp, obs, context), space,
+                             lambda z: (z[:4], z[4:]))  # fmt: skip
+    theta = _unpack_perturber_z(sol.x, pq, used)
     chi2 = float(np.sum(sol.fun**2))
     n_obs = obs.jd_tdb.size
     ok = bool(sol.success) and chi2 < 0.5 * n_obs * _PENALTY**2
@@ -376,7 +440,7 @@ def fit_perturber_multistart(
     inc_raan_ecl_j2000_rad: tuple[float, float],
     *,
     a_fixed_au: float | None = None,
-    e_max: float | None = None,
+    e_max: float | None = E_PRIOR_MAX,
     space: PerturberSpace | None = None,
     mode: str | None = None,
     n_lam0_starts: int = N_LAM0_STARTS,
@@ -386,8 +450,9 @@ def fit_perturber_multistart(
     """Multistart Levenberg–Marquardt: Uranus (a, e, ϖ, λ₀) + perturber, from λ₀ grid starts.
 
     Free variables: Uranus (a, e·cos ϖ, e·sin ϖ, λ₀) and perturber (log10 m, [a], √e·cos ϖ,
-    √e·sin ϖ, λ₀); a is held at ``a_fixed_au`` in Le Verrier mode, and ``e_max`` optionally caps
-    the perturber's e (``PerturberSpace``). ``space`` overrides both, e.g. ``held_orbit_space``
+    √e·sin ϖ, λ₀); a is held at ``a_fixed_au`` in Le Verrier mode, and the perturber's e is
+    bounded by ``e_max`` (default: the M5 prior's 0.3; ``None`` = unbounded, diagnostics only).
+    ``space`` overrides both, e.g. ``held_orbit_space``
     for a published solution with only λ₀ free. Uranus's i, Ω are held at
     ``inc_raan_ecl_j2000_rad`` (CLAUDE.md rule 2). Every start shares the data-only Uranus
     solution from ``fit_uranus_elements`` and the neutral perturber start above (for any variable
@@ -401,7 +466,7 @@ def fit_perturber_multistart(
         space = le_verrier_space(a_fixed_au, e_max)
         if mode is None:
             mode = "free_a" if a_fixed_au is None else "le_verrier"
-    elif a_fixed_au is not None or e_max is not None:
+    elif a_fixed_au is not None or e_max != E_PRIOR_MAX:
         raise ValueError("pass either space or a_fixed_au / e_max")
     mode = mode or "custom"
     uranus_only = fit_uranus_elements(obs, context, inc_raan_ecl_j2000_rad)
