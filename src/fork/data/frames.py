@@ -141,6 +141,35 @@ def ecl_of_date_to_ecl_j2000(
 # --------------------------------------------------------------------------------------------
 
 
+# Speed of light [AU/day] (IAU 2012 au = 149 597 870 700 m exactly).
+C_AU_PER_DAY: float = 299_792_458.0 * 86_400.0 / 149_597_870_700.0
+
+
+def geocentric_lon_lat_ecl_j2000_light_time(
+    target_pos_ecl_j2000_au: ArrayLike,
+    target_vel_ecl_j2000_au_d: ArrayLike,
+    earth_pos_ecl_j2000_au: ArrayLike,
+    n_iter: int = 3,
+) -> tuple[float, float, float]:
+    """Astrometric (light-time corrected) geocentric (lon, lat) in ecl_j2000 [rad], and τ [day].
+
+    Target and Earth positions share one origin at the observation time t. The target is moved
+    back to t − τ along its velocity: r(t − τ) ≈ r(t) − v·τ, good to ~½·a·τ² ≈ 1e-8 AU for an
+    outer planet (τ ≈ 0.17 d). No aberration, deflection or parallax — astrometric, geocentric.
+    """
+    r_t = np.asarray(target_pos_ecl_j2000_au, dtype=np.float64)
+    v_t = np.asarray(target_vel_ecl_j2000_au_d, dtype=np.float64)
+    r_e = np.asarray(earth_pos_ecl_j2000_au, dtype=np.float64)
+    tau = 0.0
+    for _ in range(n_iter):
+        rho = r_t - v_t * tau - r_e
+        tau = float(np.linalg.norm(rho)) / C_AU_PER_DAY
+    rho = r_t - v_t * tau - r_e
+    lon = math.atan2(rho[1], rho[0]) % (2.0 * math.pi)
+    lat = math.atan2(rho[2], math.hypot(rho[0], rho[1]))
+    return lon, lat, tau
+
+
 @njit(cache=True)
 def solve_kepler_elliptic(mean_anom_rad: float, e: float) -> float:
     """Eccentric anomaly E solving ``M = E - e sin E`` for 0 ≤ e < 1.
