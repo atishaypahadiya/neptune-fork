@@ -9,7 +9,11 @@ states (Jupiter barycenter "5", etc.).
 
 Inner planets are not integrated; their mass is folded into the central body
 (`M_CENTRAL_MSUN`). Over 1690–1846 the inner planets act on Uranus essentially as extra solar
-mass, so this is the standard approximation.
+mass, so this is the standard approximation — **provided the central body sits at the
+barycenter of Sun + inner planets**, not at the Sun's center. Horizons' Sun-centred states carry
+the Sun's ~7 cm/s reflex around that barycenter, which, used as initial conditions, shifts
+Uranus by ~35″ over 1690–1846 (docs/notes/M4.md). Use
+``fork.data.horizons.states_about_inner_barycenter_ecl_j2000`` for dynamical initial conditions.
 """
 
 from __future__ import annotations
@@ -65,7 +69,16 @@ NEPTUNE = Body("neptune", "8", 1.0 / MASS_RATIO_NEPTUNE)
 # perturber, so its mass is irrelevant to dynamics and is already folded into M_CENTRAL_MSUN.
 EARTH = Body("earth", "399", 0.0)
 
-BODIES: dict[str, Body] = {b.name: b for b in (JUPITER, SATURN, URANUS, NEPTUNE, EARTH)}
+# Inner planets: never integrated; used only to locate the Sun + inner-planet barycenter.
+MERCURY = Body("mercury", "199", 1.0 / MASS_RATIO_MERCURY)
+VENUS = Body("venus", "299", 1.0 / MASS_RATIO_VENUS)
+EARTH_MOON = Body("earth_moon", "3", 1.0 / MASS_RATIO_EARTH_MOON)  # Earth–Moon barycenter
+MARS = Body("mars", "4", 1.0 / MASS_RATIO_MARS)  # Mars system barycenter
+INNER_BODIES: tuple[Body, ...] = (MERCURY, VENUS, EARTH_MOON, MARS)
+
+BODIES: dict[str, Body] = {
+    b.name: b for b in (JUPITER, SATURN, URANUS, NEPTUNE, EARTH, *INNER_BODIES)
+}
 
 
 def masses_msun(names: list[str] | tuple[str, ...]) -> np.ndarray:
