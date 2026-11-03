@@ -24,7 +24,7 @@ from pathlib import Path
 import numpy as np
 from numpy.typing import ArrayLike
 
-from fork.model.bodies import BODIES
+from fork.model.bodies import BODIES, INNER_BODIES, M_CENTRAL_MSUN
 
 # repo_root/src/fork/data/horizons.py → repo_root/data/cache
 DEFAULT_CACHE_DIR = Path(__file__).resolve().parents[3] / "data" / "cache"
@@ -143,6 +143,34 @@ def state_vectors_ecl_j2000(
 
     idx = np.searchsorted(jd_cached, jd_req)
     return st_cached[idx]
+
+
+def inner_barycenter_state_ecl_j2000(
+    jd_tdb: ArrayLike, *, directory: Path | None = None, fetcher: Fetcher | None = None
+) -> np.ndarray:
+    """State (N, 6) of the Sun + inner-planet barycenter relative to the Sun's center.
+
+    This is the point the folded central mass (``M_CENTRAL_MSUN``) must sit at. It is ~3e-6 AU
+    and ~7 cm/s from the Sun's center: tiny in position, but the velocity offset matters.
+    """
+    acc = None
+    for body in INNER_BODIES:
+        st = state_vectors_ecl_j2000(body.name, jd_tdb, directory=directory, fetcher=fetcher)
+        acc = body.mass_msun * st if acc is None else acc + body.mass_msun * st
+    return acc / M_CENTRAL_MSUN
+
+
+def states_about_inner_barycenter_ecl_j2000(
+    body: str, jd_tdb: ArrayLike, *, directory: Path | None = None, fetcher: Fetcher | None = None
+) -> np.ndarray:
+    """State (N, 6) of ``body`` relative to the Sun + inner-planet barycenter, ecl_j2000.
+
+    Use these, not Sun-centred states, as initial conditions for any integration whose central
+    mass is ``M_CENTRAL_MSUN``. Positions differ from heliocentric by ≤ 3e-6 AU (≤ 0.03″ in
+    Uranus's longitude), so model outputs may be compared with heliocentric observations.
+    """
+    helio = state_vectors_ecl_j2000(body, jd_tdb, directory=directory, fetcher=fetcher)
+    return helio - inner_barycenter_state_ecl_j2000(jd_tdb, directory=directory, fetcher=fetcher)
 
 
 # --------------------------------------------------------------------------------------------

@@ -62,7 +62,9 @@ def test_unknown_body(tmp_path):
 
 def test_default_fetch_plan():
     plan = horizons.default_fetch_plan()
-    assert set(plan) == {"jupiter", "saturn", "uranus", "neptune", "earth"}
+    # outer planets + Earth, plus the inner planets needed for the inner-barycenter correction
+    assert set(plan) == {"jupiter", "saturn", "uranus", "neptune", "earth",
+                         "mercury", "venus", "earth_moon", "mars"}  # fmt: skip
     a1 = jd_tdb_from_iso(horizons.A1_EPOCH_ISO_TDB)
     assert all(a1 in v for v in plan.values())
     assert plan["uranus"].size == 1846 - 1690 + 1 + 1
@@ -153,3 +155,17 @@ def test_live_a1_fixture_matches_horizons(tmp_path):
     for name, row in data["state_ecl_j2000"].items():
         live = horizons.state_vectors_ecl_j2000(name, [data["jd_tdb"]], directory=tmp_path)[0]
         np.testing.assert_allclose(live, row, rtol=1e-15, atol=0)
+
+
+def test_inner_barycenter_is_mass_weighted_inner_planets(tmp_path):
+    from fork.model.bodies import INNER_BODIES, M_CENTRAL_MSUN
+
+    fake = FakeFetcher()  # state rows = (id, jd, -jd, 0, 0, 0)
+    c = horizons.inner_barycenter_state_ecl_j2000([5.0], directory=tmp_path, fetcher=fake)
+    want_x = sum(b.mass_msun * float(b.horizons_id) for b in INNER_BODIES) / M_CENTRAL_MSUN
+    assert c.shape == (1, 6)
+    assert c[0, 0] == pytest.approx(want_x, rel=1e-14)
+    rel = horizons.states_about_inner_barycenter_ecl_j2000(
+        "uranus", [5.0], directory=tmp_path, fetcher=fake
+    )
+    assert rel[0, 0] == pytest.approx(7.0 - want_x, rel=1e-14)
