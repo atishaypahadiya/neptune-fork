@@ -59,10 +59,12 @@ def main() -> None:
     axes[0].set_ylabel("profile Δχ²  (other parameters re-optimised)")
     for ax, loc in zip(axes, ("upper left", "upper right"), strict=True):
         ax.legend(loc=loc, frameon=False, fontsize=8, labelcolor=INK)
+    fig.text(0.01, 0.045, "Fixing a = 38.4 AU narrows the valley and excludes the truth: a wrong "
+             "assumption buys false confidence.", fontsize=9, color=INK)  # fmt: skip
     fig.text(0.01, 0.01, "Synthetic data (σ = 12″ pre-1781, 3″ after), dt = 12 d; circles: overall "
              "minimum; Δχ² clipped at 12. Data: site/data/m5a_profile.json", fontsize=7.5,
              color=INK_MUTED)  # fmt: skip
-    fig.tight_layout(rect=(0, 0.03, 0.97, 1))
+    fig.tight_layout(rect=(0, 0.08, 0.97, 1))
     fig.savefig(OUT, facecolor=SURFACE)
     print(f"wrote {OUT}")
 
