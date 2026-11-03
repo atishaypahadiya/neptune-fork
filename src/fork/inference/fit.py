@@ -1,7 +1,7 @@
 """Least-squares fits of forward models to longitude observations.
 
-M4: ``fit_uranus_only`` — Uranus's 6 elements, no perturber (test A2).
-M5 will add the multistart perturber fits here.
+M4: ``fit_uranus_elements`` — Uranus's elements with no perturber (A2, via ``fit_uranus_only``)
+or with a fixed, planted perturber (A2b). M5 will add the multistart perturber fits here.
 
 Uranus is fitted in non-singular variables
 
@@ -28,6 +28,7 @@ from scipy.optimize import least_squares
 
 from fork.data.synthetic import LongitudeObservations
 from fork.model.bodies import M_CENTRAL_MSUN, URANUS, G
+from fork.model.forward import ForwardContext, predict_uranus_lon
 
 TWO_PI = 2.0 * math.pi
 _MU_URANUS = G * (M_CENTRAL_MSUN + URANUS.mass_msun)
@@ -96,14 +97,38 @@ def fit_uranus_only(
     free_inc_raan: bool = False,
     omega_starts_deg: tuple[float, ...] = DEFAULT_OMEGA_STARTS_DEG,
 ) -> FitResult:
-    """Levenberg–Marquardt fit of Uranus's elements (no perturber).
+    """Fit Uranus alone (no perturber) in ``model``'s context; see ``fit_uranus_elements``."""
+    return fit_uranus_elements(
+        obs, model.context, inc_raan_ecl_j2000_rad,
+        free_inc_raan=free_inc_raan, omega_starts_deg=omega_starts_deg,
+    )  # fmt: skip
+
+
+def fit_uranus_elements(
+    obs: LongitudeObservations,
+    context: ForwardContext,
+    inc_raan_ecl_j2000_rad: tuple[float, float],
+    *,
+    fixed_perturber_theta: np.ndarray | None = None,
+    free_inc_raan: bool = False,
+    omega_starts_deg: tuple[float, ...] = DEFAULT_OMEGA_STARTS_DEG,
+) -> FitResult:
+    """Levenberg–Marquardt fit of Uranus's elements, optionally with a fixed planted perturber.
 
     a, e, ϖ, λ₀ are free; (i, Ω) are held at ``inc_raan_ecl_j2000_rad`` (the epoch values, see
-    ``fork.model.forward.uranus_inc_raan_at_epoch``). ``free_inc_raan=True`` fits all six from a
-    data-only multistart — diagnostic only (CLAUDE.md rule 2).
+    ``fork.model.forward.uranus_inc_raan_at_epoch``). ``fixed_perturber_theta`` (5 entries) is
+    integrated alongside but not fitted. ``free_inc_raan=True`` fits all six Uranus elements from
+    a data-only multistart — diagnostic only (CLAUDE.md rule 2).
+    ``FitResult.theta`` holds the 6 Uranus elements only.
     """
-    epoch = model.context.epoch_jd_tdb
-    theta0 = initial_uranus_theta(obs, epoch)
+    pert = np.empty(0) if fixed_perturber_theta is None else np.asarray(fixed_perturber_theta)
+    if pert.shape not in ((0,), (5,)):
+        raise ValueError("fixed_perturber_theta must have 5 entries")
+
+    def predict(theta_u: np.ndarray, t_jd: np.ndarray) -> np.ndarray:
+        return predict_uranus_lon(np.concatenate([theta_u, pert]), t_jd, context)
+
+    theta0 = initial_uranus_theta(obs, context.epoch_jd_tdb)
     free = np.ones(6, dtype=bool)
     if not free_inc_raan:
         free[4:] = False
@@ -112,7 +137,7 @@ def fit_uranus_only(
     def residuals(x_free: np.ndarray, x_full: np.ndarray) -> np.ndarray:
         x = x_full.copy()
         x[free] = x_free
-        pred = model.predict(uranus_x_to_theta(x), obs.jd_tdb)
+        pred = predict(uranus_x_to_theta(x), obs.jd_tdb)
         return wrap_rad(obs.lon_ecl_j2000_rad - pred) / sigma
 
     starts = []
@@ -137,6 +162,6 @@ def fit_uranus_only(
             best = (chi2, k, x, sol)
     chi2, k, x, sol = best
     theta = uranus_x_to_theta(x)
-    resid = wrap_rad(obs.lon_ecl_j2000_rad - model.predict(theta, obs.jd_tdb))
+    resid = wrap_rad(obs.lon_ecl_j2000_rad - predict(theta, obs.jd_tdb))
     return FitResult(theta, resid, chi2, obs.jd_tdb.size - int(free.sum()), bool(sol.success),
                      str(sol.message), int(sol.nfev), k)  # fmt: skip

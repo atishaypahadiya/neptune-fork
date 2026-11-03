@@ -1,11 +1,17 @@
-"""M4 / A2: fit Uranus alone (no perturber) to synthetic data; inspect the residual curve."""
+"""M4 / A2, A2b: fit Uranus to synthetic data without and with the true Neptune planted.
+
+Every fit frees a, e, ϖ, λ₀ from a data-only start and holds i, Ω at epoch values (rule 2).
+"""
 
 import math
 
 import numpy as np
 import pytest
 
+from fork.data.horizons import states_about_inner_barycenter_ecl_j2000
 from fork.data.synthetic import (
+    DISCOVERY_YEAR,
+    SIGMA_POST_DISCOVERY_ARCSEC,
     LongitudeObservations,
     jd_tdb_jan1,
     make_synthetic_observations,
@@ -13,13 +19,20 @@ from fork.data.synthetic import (
     true_uranus_lon_ecl_j2000_rad,
 )
 from fork.inference.fit import (
+    fit_uranus_elements,
     fit_uranus_only,
     initial_uranus_theta,
     uranus_theta_to_x,
     uranus_x_to_theta,
     wrap_rad,
 )
-from fork.model.forward import ForwardContext, UranusModel, uranus_inc_raan_at_epoch
+from fork.model import bodies
+from fork.model.forward import (
+    ForwardContext,
+    UranusModel,
+    perturber_theta_from_state,
+    uranus_inc_raan_at_epoch,
+)
 
 ARC = math.degrees(1.0) * 3600.0
 EPOCH = 2371628.5
@@ -39,40 +52,87 @@ def residual_curve(model, theta):
     return wrap_rad(true_uranus_lon_ecl_j2000_rad(grid) - model.predict(theta, grid)) * ARC
 
 
-def slope_sign_change_years(curve):
+def slope_sign_change_years(curve, years=YEARS):
     s = np.sign(np.diff(curve))
     idx = np.nonzero(s[1:] != s[:-1])[0]
-    return YEARS[1:-1][idx] + 0.5
+    return years[1:-1][idx] + 0.5
 
 
 def run_a2(model, seed):
     obs, _truth = make_synthetic_observations(np.random.default_rng(seed))
-    # a, e, ϖ, λ₀ free from a data-only start; i, Ω held at epoch values (CLAUDE.md rule 2)
     fit = fit_uranus_only(obs, model, uranus_inc_raan_at_epoch(EPOCH))
     curve = residual_curve(model, fit.theta)
-    return fit, curve, slope_sign_change_years(curve)
+    post = YEARS >= DISCOVERY_YEAR
+    return fit, curve, slope_sign_change_years(curve[post], YEARS[post])
+
+
+def assert_a2(fit, curve, post_flips):
+    assert fit.success
+    assert 105.0 <= np.ptp(curve) <= 155.0  # peak-to-peak over the whole 1690–1845 curve
+    assert np.any((post_flips >= 1815) & (post_flips <= 1830))  # post-1781 part only
 
 
 def test_a2_residual_curve(model):
-    """A2: peak-to-peak ≈ 130″ (±25″) and a slope sign change within 1815–1830.
+    """A2: peak-to-peak ≈ 130″ (±25″); the post-1781 residual slope changes sign in 1815–1830.
 
-    Measured (seed 0, dt = 12 d, i and Ω held): p2p 142.7″; slope sign changes at 1698.5,
-    1734.5, 1783.5, 1806.5, 1828.5. See docs/notes/M4.md.
+    Measured (seed 0, dt = 12 d): p2p 142.7″; post-1781 slope sign changes at 1783.5, 1806.5,
+    **1828.5**. See docs/notes/M4.md.
     """
-    fit, curve, flips = run_a2(model, seed=0)
-    assert fit.success
-    assert 105.0 <= np.ptp(curve) <= 155.0
-    assert np.any((flips >= 1815) & (flips <= 1830))
+    assert_a2(*run_a2(model, seed=0))
 
 
 @pytest.mark.slow
 @pytest.mark.parametrize("seed", [1, 2, 3, 4])
 def test_a2_robust_across_noise_seeds(model, seed):
-    """Measured (dt = 12 d) p2p 142.7–145.4″, in-window flip at 1828.5 for seeds 1–4."""
-    fit, curve, flips = run_a2(model, seed)
+    """Measured p2p 142.7–145.4″; post-1781 in-window flip at 1828.5 for seeds 1–4."""
+    assert_a2(*run_a2(model, seed))
+
+
+@pytest.fixture(scope="module")
+def neptune_theta(offline_horizons):
+    """True Neptune at the epoch as a planar perturber θ (test only: A2b plants the truth)."""
+    state = states_about_inner_barycenter_ecl_j2000("neptune", [EPOCH])[0]
+    return perturber_theta_from_state(state, bodies.NEPTUNE.mass_msun)
+
+
+def post_1781_rms_arcsec(obs, fit):
+    post = obs.source == "synthetic_post_discovery"
+    return float(np.sqrt(np.mean(fit.residual_rad[post] ** 2)) * ARC)
+
+
+def run_a2b(model, neptune_theta, seed):
+    obs, _ = make_synthetic_observations(np.random.default_rng(seed))
+    inc_raan = uranus_inc_raan_at_epoch(EPOCH)
+    planted = fit_uranus_elements(obs, model.context, inc_raan, fixed_perturber_theta=neptune_theta)
+    alone = fit_uranus_only(obs, model, inc_raan)
+    return post_1781_rms_arcsec(obs, planted), post_1781_rms_arcsec(obs, alone), planted
+
+
+def test_a2b_planted_neptune_fits_to_noise(model, neptune_theta):
+    """A2b: with the true Neptune planted (not fitted) and Uranus refitted, the post-1781
+    residual RMS is within 1.5 σ_noise (4.5″); without Neptune the same check fails.
+
+    Measured (seed 0): 2.85″ = 0.95σ planted; 13.65″ = 4.55σ without Neptune.
+    """
+    rms_planted, rms_alone, fit = run_a2b(model, neptune_theta, seed=0)
     assert fit.success
-    assert 105.0 <= np.ptp(curve) <= 155.0
-    assert np.any((flips >= 1815) & (flips <= 1830))
+    assert rms_planted <= 1.5 * SIGMA_POST_DISCOVERY_ARCSEC
+    assert rms_alone > 1.5 * SIGMA_POST_DISCOVERY_ARCSEC
+
+
+@pytest.mark.slow
+@pytest.mark.parametrize("seed", [1, 2, 3, 4])
+def test_a2b_robust_across_noise_seeds(model, neptune_theta, seed):
+    """Measured planted post-1781 RMS 0.93–1.02σ for seeds 1–4."""
+    rms_planted, rms_alone, _ = run_a2b(model, neptune_theta, seed)
+    assert rms_planted <= 1.5 * SIGMA_POST_DISCOVERY_ARCSEC
+    assert rms_alone > 1.5 * SIGMA_POST_DISCOVERY_ARCSEC
+
+
+def test_fixed_perturber_validation(model):
+    obs, _ = make_synthetic_observations(np.random.default_rng(0))
+    with pytest.raises(ValueError):
+        fit_uranus_elements(obs, model.context, (0.0, 0.0), fixed_perturber_theta=np.zeros(4))
 
 
 THETA_MODEL_TRUTH = np.array([19.21, 0.046, math.radians(0.77), math.radians(74.0),
