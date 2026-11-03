@@ -60,8 +60,12 @@ Residual curve shows **peak-to-peak ≈ 130″ (±25″)** and a **sign change o
 ## M5: Inverse problem on synthetic data
 - `inference/fit.py`: multistart Levenberg–Marquardt over a 24-point grid in perturber λ₀ (0–360°),
   two modes: (a) **Le Verrier mode**, a fixed at 38.4 AU (Bode's law); (b) **free a**.
-- `inference/mcmc.py`: emcee, 32+ walkers, sample in (log10 m, log a, e, ϖ, λ₀, Uranus elements).
-  Priors: log10 m ∈ [0, 2] (1–100 M⊕), a ∈ [20, 60] AU, e ∈ [0, 0.3], angles uniform.
+- `inference/mcmc.py`: emcee, 32+ walkers, sample in
+  (log10 m, log a, √e·cos ϖ, √e·sin ϖ, λ₀, Uranus elements).
+  Priors: log10 m ∈ [0, 2] (1–100 M⊕), a ∈ [20, 60] AU, angles uniform. The perturber's
+  eccentricity is sampled as (k, h) = (√e·cos ϖ, √e·sin ϖ), not as (e, ϖ): a flat prior on the
+  (k, h) disk is exactly uniform in e and ϖ (dk dh = ½ de dϖ), and ϖ stays well defined as e → 0
+  (see `docs/notes/M1.md`). Reject (log-prior = −∞) any proposal with e = k² + h² > 0.3.
   Report autocorrelation time; run ≥ 50τ. Save chains to `data/cache/chains/`.
 - Derived quantity per sample: perturber geocentric ecliptic longitude on 1846-09-23
   (light-time corrected, Earth position from Horizons).
@@ -75,6 +79,20 @@ Residual curve shows **peak-to-peak ≈ 130″ (±25″)** and a **sign change o
 - `data/observations.py`: load historical Uranus heliocentric longitudes (Whitmore's set if license
   permits, else transcribe from Le Verrier's memoirs / Bouvard's tables). Convert to J2000 via
   `frames.py`. Store with per-point σ and source column.
+- Every observation records its **equinox reference** — `of_date` or `fixed` with the epoch
+  (e.g. mean equinox of 1800.0) — and the **precession constant the source used** (e.g. Bessel's
+  or Struve's value, in ″/yr, plus any rate term), with a citation. If a source pre-reduced its
+  longitudes to a fixed epoch, first undo that reduction with *the source's own* constant to
+  recover longitude of mean equinox of date, then convert of-date → J2000 with IAU 2006
+  (`frames.py`). Never apply IAU 2006 directly to a longitude another precession model produced.
+  Observations missing either field fail to load.
+**Test (fast, synthetic):** take known J2000 longitudes at 1690–1846 epochs, convert to of-date
+with IAU 2006, then pre-reduce to a fixed epoch (1800.0) with a non-IAU constant, as a source would.
+Use 50.10″/yr: real 19th-century constants are within ~0.03″/yr of IAU 2006, too close to tell the
+paths apart reliably. The loader must recover the J2000 longitudes to < 0.01″. Two wrong paths
+must each be off by > 1″ at some epoch, so the test can't pass by accident: (a) treating the
+pre-reduced values as of-date, and (b) undoing the reduction with IAU 2006 instead of the source's
+constant. Also: a record missing equinox or constant metadata raises.
 - Re-run M4 and M5 on historical data.
 **A4 (acceptance, slow):** residual RMS with fitted perturber **≲ 3″**; posterior median
 1846-09-23 longitude within **~2°** of true Neptune. Document outliers dropped and why.
