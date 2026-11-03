@@ -1,0 +1,104 @@
+# Phase 1 spec: rebuild Neptune
+
+**Goal:** from Uranus's heliocentric longitudes (1690–1845), with Neptune absent from the model,
+infer a posterior over an unseen perturber and render where it sits in the sky on
+**1846-09-23** (Galle's discovery night, Berlin), versus the true Neptune.
+
+**Done when:** acceptance tests A1–A5 pass and the site is live.
+
+---
+
+## M0: Scaffold
+- `uv init`, package `fork` under `src/`, ruff + pytest config, `.gitignore` (`data/cache/`).
+- GitHub Actions: `test.yml` (fast tests on push), `pages.yml` (build + deploy `site/` on main).
+- README: one-paragraph pitch, prior-art credits (see CLAUDE.md), build status badge.
+**Exit:** `uv run pytest` runs (zero tests OK), CI green.
+
+## M1: Frames and data access
+- `data/horizons.py`: fetch heliocentric state vectors (ecliptic J2000, AU, AU/day) via
+  `astroquery.jplhorizons` for Sun-relative Jupiter, Saturn, Uranus, Neptune, Earth at any JD list.
+  Cache to `data/cache/*.npz`; never refetch if cached.
+- `data/frames.py`: precession between mean ecliptic/equinox of date and J2000 (use astropy
+  `GeocentricMeanEcliptic` / `HeliocentricMeanEcliptic` with `equinox=`), plus state-vector ↔
+  orbital-elements conversion.
+- Constants in `model/bodies.py`: mass ratios (Sun/planet) Jupiter 1047.348644, Saturn 3497.9018,
+  Uranus 22902.98, Neptune 19412.26. Inner planets folded into the Sun's mass.
+**Tests:** elements→state→elements round-trip to 1e-12; precession of a fixed direction over 100 yr
+≈ 5029″ (±1″).
+
+## M2: Kepler solver
+- `integrators/kepler.py`: universal-variable two-body propagator (f and g functions, Stumpff
+  functions), Newton iteration with bisection fallback. Must handle e≈0 and long Δt.
+**Tests:** propagate one full period returns to start (< 1e-12 AU); agrees with an analytic ellipse
+over 1000 random cases (hypothesis); e from 0 to 0.95.
+
+## M3: Integrators
+- `rk4.py` (baseline, not symplectic), `leapfrog.py` (KDK), `wisdom_holman.py`
+  (democratic heliocentric coordinates: half-kick interaction → Sun-momentum drift → Kepler drift
+  → Sun-momentum drift → half-kick). All `numba.njit`, signature
+  `integrate(x0, v0, masses, t_out, dt) -> positions[t_out, body, 3]`.
+- Default dt = 20 days.
+**A1 (acceptance):**
+  - Sun+Jupiter+Saturn+Uranus from Horizons @ JD of 1781-03-13: Uranus heliocentric longitude agrees
+    with REBOUND WHFast (same ICs, same dt) to **< 0.01″** over 1781–1846.
+  - Relative energy error over 1000 yr stays bounded **< 1e-8** for WH; RK4 shows secular drift
+    (save the comparison plot; it becomes a site panel).
+  - WH run of 65 yr completes in **< 10 ms** after JIT warmup.
+
+## M4: Forward model and synthetic data
+- `model/forward.py`: `predict_uranus_lon(theta, t_jd)` where
+  θ = Uranus elements (a, e, ϖ, λ₀, plus i, Ω held at Horizons values in Phase 1 planar runs)
+  + optional perturber (log10 m [M⊕], a, e, ϖ, λ₀), planar.
+  Jupiter and Saturn start from Horizons at the epoch and are not fitted.
+- `data/synthetic.py`: true Uranus longitudes from Horizons (which include real Neptune) at the
+  historical epochs; add Gaussian noise σ = 3″ (1781 onward) and σ = 12″ (pre-discovery sightings,
+  1690–1771). Seeded.
+**A2 (acceptance):** fit Uranus alone (no perturber) to synthetic data with `least_squares`.
+Residual curve shows **peak-to-peak ≈ 130″ (±25″)** and a **sign change of the slope within
+1815–1830** (the 1822 Uranus–Neptune conjunction).
+
+## M5: Inverse problem on synthetic data
+- `inference/fit.py`: multistart Levenberg–Marquardt over a 24-point grid in perturber λ₀ (0–360°),
+  two modes: (a) **Le Verrier mode**, a fixed at 38.4 AU (Bode's law); (b) **free a**.
+- `inference/mcmc.py`: emcee, 32+ walkers, sample in (log10 m, log a, e, ϖ, λ₀, Uranus elements).
+  Priors: log10 m ∈ [0, 2] (1–100 M⊕), a ∈ [20, 60] AU, e ∈ [0, 0.3], angles uniform.
+  Report autocorrelation time; run ≥ 50τ. Save chains to `data/cache/chains/`.
+- Derived quantity per sample: perturber geocentric ecliptic longitude on 1846-09-23
+  (light-time corrected, Earth position from Horizons).
+**A3 (acceptance, slow):**
+  - Free-a posterior: true Neptune (m, a) inside the 68% region; 1846-09-23 longitude within **1°**.
+  - Le Verrier mode: 1846-09-23 longitude still within **~2°** despite wrong a. This is the
+    "right direction, wrong distance" result; write it up in `docs/notes/M5.md`.
+  - Mass–distance posterior shows the expected ridge (plot saved).
+
+## M6: Historical data
+- `data/observations.py`: load historical Uranus heliocentric longitudes (Whitmore's set if license
+  permits, else transcribe from Le Verrier's memoirs / Bouvard's tables). Convert to J2000 via
+  `frames.py`. Store with per-point σ and source column.
+- Re-run M4 and M5 on historical data.
+**A4 (acceptance, slow):** residual RMS with fitted perturber **≲ 3″**; posterior median
+1846-09-23 longitude within **~2°** of true Neptune. Document outliers dropped and why.
+
+## M7: Export and site
+- `export/to_json.py` writes `site/data/`:
+  - `sightlines.json`: [{jd, earth:[x,y], uranus:[x,y]}] 1690–1846
+  - `residuals.json`: {jd[], obs_minus_no_perturber[], obs_minus_fitted[], sigma[]}
+  - `skymap_1846.json`: 2D histogram (lon, lat) of posterior + markers {le_verrier, adams, galle_found, true}
+  - `degeneracy.json`: thinned (log m, a) samples
+  - `energy.json`: {t_yr[], rk4_dE[], wh_dE[]}
+- `site/`: five panels, in order: sightline animation → residual curve (toggle with/without
+  perturber) → integrator energy panel → degeneracy scatter → 1846 sky map. Each panel has one
+  plain-language caption sentence.
+**A5 (acceptance):** Pages deploy succeeds from CI; all five panels render with no console errors;
+total `site/data` under 5 MB.
+
+---
+
+## Out of scope for Phase 1
+Inclination of the perturber, fitting Jupiter/Saturn masses, raw geocentric RA/Dec forward model,
+Mercury, model comparison, any LLM usage. These belong to Phase 2/3.
+
+## Numbers to record in `docs/notes/` as you go
+Integrator agreement vs REBOUND (″), WH runtime per 65-yr run, no-perturber peak-to-peak (″),
+fitted RMS (″), MCMC τ and wall time, posterior median and 68% interval for m, a, and the
+1846-09-23 longitude, versus Le Verrier's and Adams's published predictions.
