@@ -167,6 +167,26 @@ def test_delta_chi2_intervals_and_profile_minimum():
     assert edge[0][1] == 350.0 and _profile_minimum(x, (x - 350.0) ** 2)["at_grid_edge"]
 
 
+def test_continuation_sweeps_carry_a_lower_branch_both_ways():
+    """Fake fitter: re-fitting point i from neighbour j's solution costs that solution's χ² +
+    0.2 (one branch, slowly rising). Only point 2 starts on the low branch; one left→right
+    sweep carries it right, the right→left sweep carries it left, and a further pair changes
+    nothing. A failed attempt (None) is ignored."""
+    from types import SimpleNamespace
+
+    from fork.inference.profile import continuation_sweeps
+
+    best = [SimpleNamespace(chi2=c) for c in (5.0, 5.0, 1.0, 5.0, 5.0)]
+
+    def attempt(i, j):
+        return None if (i, j) == (0, 1) and best[1].chi2 > 4 else \
+            SimpleNamespace(chi2=best[j].chi2 + 0.2)  # fmt: skip
+
+    pairs, improved = continuation_sweeps(best, attempt)
+    assert [round(b.chi2, 6) for b in best] == [1.4, 1.2, 1.0, 1.2, 1.4]
+    assert improved == {0, 1, 3, 4} and pairs == 2
+
+
 def test_constrained_fit_meets_constraint_and_recovers_truth(ctx, model_obs):
     """Fixed-a profile point at the model perturber's own 1846 longitude recovers it (χ² ≈ 0);
     one 4° away is met to ≪ 1″ (checked independently) at a higher χ². Only Δχ² = 1.84 even

@@ -16,8 +16,9 @@ fit and m from 10 M⊕. Then:
   - free-a mode: a ∈ {25, 30, 38.4, 50} AU × ϖ ∈ {0°, 180°}, e = 0.04;
   - fixed-a mode: ϖ on an 8-point grid, e = 0.1.
 After the independent starts, continuation passes re-start each grid point from its neighbours'
-best solutions until no point improves by more than 0.01 in χ², so one basin is followed
-smoothly across the grid.
+best solutions until no point improves by more than 0.01 in χ². Then sequential sweeps,
+left→right and right→left, carry any lower branch across the whole grid; see
+``continuation_sweeps``.
 """
 
 from __future__ import annotations
@@ -208,13 +209,48 @@ def _start_vectors(space: PerturberSpace, xu: np.ndarray, context, geo, target_r
 class ProfileResult:
     mode: str
     targets_lon_ecl_of_date_rad: np.ndarray
-    fits: tuple[ConstrainedFit, ...]  # best per target
-    n_runs: int  # LM runs in total (independent starts + continuation)
+    fits: tuple[ConstrainedFit, ...]  # best per target (after sweeps)
+    n_runs: int  # LM runs in total (independent starts + continuation + sweeps)
     n_continuation_passes: int
+    fits_before_sweeps: tuple[ConstrainedFit, ...] = ()
+    n_sweep_pairs: int = 0
+    sweep_improved: tuple[int, ...] = ()  # target indices whose χ² the sweeps lowered
 
     @property
     def chi2(self) -> np.ndarray:
         return np.array([f.chi2 for f in self.fits])
+
+    @property
+    def chi2_before_sweeps(self) -> np.ndarray:
+        return np.array([f.chi2 for f in self.fits_before_sweeps])
+
+
+MAX_SWEEP_PAIRS = 3
+
+
+def continuation_sweeps(best: list, attempt, tol: float = CONTINUATION_TOL_CHI2,
+                        max_pairs: int = MAX_SWEEP_PAIRS) -> tuple[int, set[int]]:  # fmt: skip
+    """Sequential continuation over a sorted grid, in place: left→right, each point re-fitted
+    from its left neighbour's current best (``attempt(i, j)`` → fit or None), then right→left.
+    Unlike the parallel neighbour passes, a lower branch found at one point can carry across
+    the whole grid within a single sweep. A fit replaces the point's best only if it lowers χ²
+    by more than ``tol``. Pairs repeat until a pair changes nothing (≤ ``max_pairs``).
+    Returns (pairs run, indices improved)."""
+    n = len(best)
+    improved: set[int] = set()
+    pairs, changed = 0, True
+    while changed and pairs < max_pairs:
+        pairs += 1
+        changed = False
+        for order in (range(1, n), range(n - 2, -1, -1)):
+            for i in order:
+                j = i - 1 if order.step == 1 else i + 1
+                f = attempt(i, j)
+                if f is not None and f.chi2 < best[i].chi2 - tol:
+                    best[i] = f
+                    improved.add(i)
+                    changed = True
+    return pairs, improved
 
 
 def profile_galle_longitude(
@@ -228,10 +264,15 @@ def profile_galle_longitude(
     n_starts: int = 8,
     n_workers: int = 1,
     geo: GalleGeometry | None = None,
+    sweeps: bool = True,
 ) -> ProfileResult:
     """Min χ² over all free parameters with the 1846-09-23 longitude held at each target.
 
     ``targets_lon_ecl_of_date_rad`` must be sorted ascending; continuation uses grid neighbours.
+    Stages: independent starts (pooled), parallel neighbour passes (pooled), then sequential
+    ``continuation_sweeps`` (in-process; ``sweeps=False`` skips them). The sweeps were added
+    after kinks in the first profiles showed missed lower branches (seed 2 free a dropped
+    Δχ² 7 → 2.5 between 305° and 306°).
     """
     if space.held[4] is not None:
         raise ValueError("λ₀ must be free: it is the parameter the constraint mostly determines")
@@ -273,7 +314,22 @@ def profile_galle_longitude(
                 changed.add(i)
     if any(b is None for b in best):
         raise RuntimeError("a profile point has no successful constrained fit")
-    return ProfileResult(mode, targets, tuple(best), n_runs, passes)  # type: ignore[arg-type]
+    before = tuple(best)
+    n_pairs, improved = 0, set()
+    if sweeps:
+        n_sweep_runs = [0]
+
+        def attempt(i: int, j: int) -> ConstrainedFit | None:
+            n_sweep_runs[0] += 1
+            t = float(targets[i])
+            lam0 = float(best[j].theta[10] + t - targets[j])
+            f = _run_constrained(best[j].z_rest, lam0, pq, space, obs, context, geo, t)
+            return f if f.success else None
+
+        n_pairs, improved = continuation_sweeps(best, attempt)
+        n_runs += n_sweep_runs[0]
+    return ProfileResult(mode, targets, tuple(best), n_runs, passes, before, n_pairs,
+                         tuple(sorted(improved)))  # type: ignore[arg-type]  # fmt: skip
 
 
 def delta_chi2_intervals(lon_deg: np.ndarray, dchi2: np.ndarray, level: float = 1.0
