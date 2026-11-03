@@ -9,6 +9,10 @@ Currently exported:
 - ``m5a_fits.json``: residuals after the M5a point fits on synthetic data (seed 0): no
   perturber, Le Verrier mode (a = 38.4 AU) and free a; best-fit elements, local minima and the
   1846-09-23 geocentric longitude vs true Neptune. Takes ~30 s (multistart LM).
+- ``m5a_profile.json``: profile likelihood of the perturber's 1846-09-23 geocentric longitude
+  (300°–350°, 1° steps, plus the true value), free a and Le Verrier mode, for noise seeds 0–3
+  and noise-free data. Slow (65 min on 12 workers, measured while sharing the CPU with another
+  job); regenerate alone with ``--only m5a_profile.json``.
 
 M7 adds sightlines, residuals, sky map, degeneracy and energy exports here.
 """
@@ -207,6 +211,138 @@ def m5a_fits_data(n_workers: int = 1) -> dict:
     }  # fmt: skip
 
 
+def _profile_minimum(lon_deg: np.ndarray, chi2: np.ndarray) -> dict:
+    """Lowest point of a sorted profile; if interior, refined by the parabola through it and its
+    two neighbours. ``at_grid_edge`` flags a minimum that may lie outside the grid."""
+    k = int(np.argmin(chi2))
+    out = {"lon_ecl_of_date_deg": round(float(lon_deg[k]), 4), "chi2": round(float(chi2[k]), 4),
+           "at_grid_edge": k in (0, lon_deg.size - 1)}  # fmt: skip
+    if not out["at_grid_edge"]:
+        c = np.polyfit(lon_deg[k - 1 : k + 2] - lon_deg[k], chi2[k - 1 : k + 2], 2)
+        if c[0] > 0:
+            x = -c[1] / (2 * c[0])
+            if abs(x) <= max(lon_deg[k + 1] - lon_deg[k], lon_deg[k] - lon_deg[k - 1]):
+                out["lon_ecl_of_date_deg"] = round(float(lon_deg[k] + x), 4)
+                out["chi2"] = round(float(np.polyval(c, x)), 4)
+    return out
+
+
+M5A_PROFILE_SEEDS: tuple[int | None, ...] = (0, 1, 2, 3, None)  # None: noise-free truth
+M5A_PROFILE_GRID_DEG = (300.0, 350.0, 1.0)
+M5A_PROFILE_N_STARTS = 8
+
+
+def m5a_profile_data(
+    n_workers: int = 1,
+    seeds: tuple[int | None, ...] = M5A_PROFILE_SEEDS,
+    grid_deg: tuple[float, float, float] = M5A_PROFILE_GRID_DEG,
+) -> dict:
+    """Profile χ² vs the perturber's 1846-09-23 geocentric longitude (ecliptic of date).
+
+    For each dataset and mode: the unconstrained 24-start best fit (global minimum), the profile
+    on the grid, and one profile point at true Neptune's longitude. Δχ² is relative to the
+    smallest χ² found anywhere (the unconstrained best, unless the profile beats it).
+    """
+    from fork.data.synthetic import LongitudeObservations, make_synthetic_observations
+    from fork.inference.fit import fit_perturber_multistart, le_verrier_space
+    from fork.inference.profile import (
+        GalleGeometry,
+        delta_chi2_intervals,
+        galle_lon_of_date_rad,
+        profile_galle_longitude,
+    )
+    from fork.model.forward import ForwardContext, uranus_inc_raan_at_epoch
+    from fork.model.hidden_mass import BODE_A_AU, true_neptune_geocentric_longitude
+
+    ctx = ForwardContext.from_horizons(A1_EPOCH_JD_TDB)
+    inc_raan = uranus_inc_raan_at_epoch(A1_EPOCH_JD_TDB)
+    geo = GalleGeometry.from_horizons()
+    nep_rad = true_neptune_geocentric_longitude().lon_ecl_of_date_rad
+    nep_deg = math.degrees(nep_rad)
+    lo, hi, step = grid_deg
+    grid = np.arange(lo, hi + 0.5 * step, step)
+    targets = np.sort(np.radians(np.concatenate([grid, [nep_deg]])))
+    i_true = int(np.argmin(np.abs(targets - nep_rad)))
+    modes = {"le_verrier": BODE_A_AU, "free_a": None}
+    datasets = []
+    for seed in seeds:
+        obs, truth = make_synthetic_observations(np.random.default_rng(0 if seed is None else seed))
+        if seed is None:
+            obs = LongitudeObservations(obs.jd_tdb, truth, obs.sigma_rad, obs.source)
+        entry = {"seed": seed, "noise": seed is not None, "modes": {}}
+        for mode, a_fixed in modes.items():
+            run = fit_perturber_multistart(obs, ctx, inc_raan, a_fixed_au=a_fixed,
+                                           n_workers=n_workers)  # fmt: skip
+            best = run.best
+            best_lon = math.degrees(galle_lon_of_date_rad(best.theta, ctx, geo))
+            prof = profile_galle_longitude(obs, ctx, inc_raan, le_verrier_space(a_fixed), targets,
+                                           mode=mode, n_starts=M5A_PROFILE_N_STARTS,
+                                           n_workers=n_workers, geo=geo)  # fmt: skip
+            chi2 = prof.chi2
+            chi2_min = min(best.chi2, float(chi2.min()))
+            lon_deg = np.degrees(targets)
+            # curve for the interval: grid + truth point + the unconstrained best, sorted
+            curve_lon = np.concatenate([lon_deg, [best_lon]])
+            curve_chi2 = np.concatenate([chi2, [best.chi2]])
+            order = np.argsort(curve_lon)
+            intervals = delta_chi2_intervals(curve_lon[order], curve_chi2[order] - chi2_min)
+            overall = _profile_minimum(curve_lon[order], curve_chi2[order])
+            th = np.array([f.theta for f in prof.fits])
+            on_grid = np.ones(targets.size, dtype=bool)
+            on_grid[i_true] = False
+            entry["modes"][mode] = {
+                "global_min": {
+                    "lon_ecl_of_date_deg": round(best_lon, 4), "chi2": round(best.chi2, 4),
+                    "dof": best.dof, "dlon_vs_neptune_deg": round(_dlon_deg(
+                        math.radians(best_lon), nep_rad), 4),
+                    "mass_earth": round(best.mass_earth, 3), "a_au": round(float(best.theta[7]), 3),
+                    "e": round(float(best.theta[8]), 4),
+                },
+                "overall_min": {**overall, "found_by": "multistart" if best.chi2 <= chi2_min
+                                else "profile",
+                                "dlon_vs_neptune_deg": round(overall["lon_ecl_of_date_deg"]
+                                                             - nep_deg, 4)},
+                "profile_min_chi2_on_grid": round(float(chi2[on_grid].min()), 4),
+                "profile_argmin_lon_on_grid_deg": round(float(lon_deg[on_grid][
+                    np.argmin(chi2[on_grid])]), 4),
+                "dchi2_le_1_intervals_deg": [[round(a, 3), round(b, 3)] for a, b in intervals],
+                "dchi2_at_true_neptune": round(float(chi2[i_true] - chi2_min), 4),
+                "profile": {
+                    "lon_ecl_of_date_deg": _r(lon_deg[on_grid], 4),
+                    "chi2": _r(chi2[on_grid], 4),
+                    "dchi2": _r(chi2[on_grid] - chi2_min, 4),
+                    "mass_earth": _r(10.0 ** th[on_grid, 6], 3),
+                    "a_au": _r(th[on_grid, 7], 3),
+                    "e": _r(th[on_grid, 8], 4),
+                },
+                "at_true_neptune": {"chi2": round(float(chi2[i_true]), 4),
+                                    "mass_earth": round(float(10.0 ** th[i_true, 6]), 3),
+                                    "a_au": round(float(th[i_true, 7]), 3),
+                                    "e": round(float(th[i_true, 8]), 4)},
+                "max_constraint_miss_arcsec": _sig(max(f.constraint_miss_arcsec
+                                                       for f in prof.fits), 2),
+                "n_lm_runs": prof.n_runs, "n_continuation_passes": prof.n_continuation_passes,
+            }  # fmt: skip
+            print(
+                f"seed {seed} {mode}: min {overall['lon_ecl_of_date_deg']:.2f}° "
+                f"({entry['modes'][mode]['overall_min']['found_by']}), Δχ²(true) "
+                f"{chi2[i_true] - chi2_min:.2f}, intervals {intervals}",
+                flush=True,
+            )
+        datasets.append(entry)
+    return {
+        "description": "Profile likelihood of the perturber's light-time-corrected geocentric "
+        "ecliptic-of-date longitude on 1846-09-23 (Galle). At each longitude every other free "
+        "parameter (Uranus a, e, ϖ, λ₀; perturber m, [a], e, ϖ; λ₀ solved from the constraint) "
+        "is re-optimised by multistart LM; dchi2 = chi2 − min over all fits for that dataset.",
+        "epoch_jd_tdb": A1_EPOCH_JD_TDB, "galle_jd_tdb": geo.jd_tdb, "dt_days": DEFAULT_DT_DAYS,
+        "grid_deg": list(grid_deg), "n_starts_per_point": M5A_PROFILE_N_STARTS,
+        "le_verrier_a_au": BODE_A_AU,
+        "true_neptune_lon_ecl_of_date_deg": round(nep_deg, 4),
+        "datasets": datasets,
+    }  # fmt: skip
+
+
 def write_json(name: str, payload: dict, directory: Path = SITE_DATA) -> Path:
     directory.mkdir(parents=True, exist_ok=True)
     path = directory / name
@@ -214,14 +350,24 @@ def write_json(name: str, payload: dict, directory: Path = SITE_DATA) -> Path:
     return path
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> None:
+    import argparse
     import os
+    import time
 
-    x0, v0, masses = a1_initial_conditions()
-    path = write_json("wh_convergence.json", wh_convergence_data(x0, v0, masses))
-    print(f"wrote {path} ({path.stat().st_size} bytes)")
-    path = write_json("m5a_fits.json", m5a_fits_data(n_workers=min(12, os.cpu_count() or 1)))
-    print(f"wrote {path} ({path.stat().st_size} bytes)")
+    ap = argparse.ArgumentParser(description="Regenerate site/data/*.json")
+    ap.add_argument("--only", action="append", help="write only this file (repeatable)")
+    args = ap.parse_args(argv)
+    n_workers = min(12, os.cpu_count() or 1)
+    jobs = {
+        "wh_convergence.json": lambda: wh_convergence_data(*a1_initial_conditions()),
+        "m5a_fits.json": lambda: m5a_fits_data(n_workers=n_workers),
+        "m5a_profile.json": lambda: m5a_profile_data(n_workers=n_workers),
+    }
+    for name in args.only or list(jobs):
+        t0 = time.time()
+        path = write_json(name, jobs[name]())
+        print(f"wrote {path} ({path.stat().st_size} bytes, {time.time() - t0:.0f} s)")
 
 
 if __name__ == "__main__":
