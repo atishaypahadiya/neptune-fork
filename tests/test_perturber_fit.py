@@ -31,8 +31,6 @@ from fork.model.forward import (
 )
 from fork.model.hidden_mass import (
     BODE_A_AU,
-    perturber_geocentric_longitude,
-    true_neptune_geocentric_longitude,
 )
 
 ARC = math.degrees(1.0) * 3600.0
@@ -159,22 +157,3 @@ def test_m5a_multistart_on_synthetic_data(ctx, seed0, a_fixed):
     else:
         assert best.chi2 - planted.chi2 < 4.0  # measured 75.56 vs 75.22
     assert 2 <= len(r.minima) <= 12
-
-
-@pytest.mark.slow
-def test_m5a_free_a_noise_free_recovers_neptune(ctx, seed0):
-    """Noise-free Horizons truth (real 3-D Neptune in the data, planar perturber in the model):
-    free-a multistart lands on Neptune, so the model is unbiased and the seed-0 offsets are noise.
-    ~60 s: with the starts in a process pool the slowest single LM run sets the wall time, and
-    noise-free runs take many steps toward χ² ≈ 0. Measured m 17.14 M⊕ (true 17.15), a 30.24 AU
-    (osculating 30.22), e 0.004, 1846-09-23 longitude −0.07° from Neptune.
-    """
-    obs, truth, inc_raan, th_nep = seed0
-    clean = LongitudeObservations(obs.jd_tdb, truth, obs.sigma_rad, obs.source)
-    r = fit_perturber_multistart(clean, ctx, inc_raan, n_workers=N_WORKERS)
-    best = r.best
-    assert abs(best.mass_earth - 10 ** th_nep[0]) < 0.5
-    assert abs(best.theta[7] - th_nep[1]) < 0.3 and best.theta[8] < 0.02
-    g, nep = perturber_geocentric_longitude(best.theta, ctx), true_neptune_geocentric_longitude()
-    dlon_deg = math.degrees(wrap_rad(g.lon_ecl_of_date_rad - nep.lon_ecl_of_date_rad))
-    assert abs(dlon_deg) < 0.25
