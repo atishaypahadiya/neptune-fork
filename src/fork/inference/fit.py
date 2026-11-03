@@ -277,36 +277,97 @@ def group_minima(fits: list[PerturberFit], free_a: bool) -> tuple[LocalMinimum, 
                  for g in groups)  # fmt: skip
 
 
-def _unpack_perturber_z(z: np.ndarray, pq: np.ndarray, a_fixed_au: float | None) -> np.ndarray:
-    """LM vector z → 11-entry θ. z = Uranus (a, k, h, λ₀) + perturber (log10 m, [a], k, h, λ₀)."""
-    from fork.model.hidden_mass import perturber_fit_to_theta
+@dataclass(frozen=True)
+class PerturberSpace:
+    """Map between the LM perturber vector and the forward-model perturber θ (5 entries).
 
+    Fit variables y = (log10 m [M⊕], a [AU], k, h, λ₀) with (k, h) = √e·(cos ϖ, sin ϖ). Entries
+    of ``held`` that are not None are fixed at that y value; the rest are free, in order.
+    ``e_max`` caps the eccentricity smoothly: e = e_max·sin²(√(k² + h²)/√e_max). That is ≈ k² + h²
+    for small e, so the cap changes little well inside it, and LM never meets a hard wall. The
+    map is periodic, so there is no flat plateau to stall on (a tanh cap was tried first: LM ran
+    into its saturated region and stopped at the cap even when the true e was inside it).
+    """
+
+    held: tuple[float | None, ...] = (None, None, None, None, None)
+    e_max: float | None = None
+
+    @property
+    def free(self) -> np.ndarray:
+        return np.array([v is None for v in self.held])
+
+    @property
+    def n_free(self) -> int:
+        return int(self.free.sum())
+
+    def y_from_z(self, z_p: np.ndarray) -> np.ndarray:
+        y = np.array([0.0 if v is None else v for v in self.held])
+        y[self.free] = z_p
+        return y
+
+    def theta_from_z(self, z_p: np.ndarray) -> np.ndarray:
+        log10_m, a, k, h, lam0 = self.y_from_z(z_p)
+        r2 = k * k + h * h
+        e = r2 if self.e_max is None else self.e_max * math.sin(math.sqrt(r2 / self.e_max)) ** 2
+        return np.array([log10_m, a, e, math.atan2(h, k) % TWO_PI, lam0 % TWO_PI])
+
+    def z_from_y(self, y: np.ndarray) -> np.ndarray:
+        return np.asarray(y, dtype=np.float64)[self.free]
+
+
+def le_verrier_space(a_fixed_au: float | None, e_max: float | None = None) -> PerturberSpace:
+    """Le Verrier mode (a held) or free-a mode (``a_fixed_au=None``)."""
+    return PerturberSpace((None, a_fixed_au, None, None, None), e_max)
+
+
+def held_orbit_space(log10_m_earth: float, a_au: float, e: float, varpi_rad: float
+                     ) -> PerturberSpace:  # fmt: skip
+    """Mass and orbit shape held (e.g. Le Verrier's published solution); only λ₀ free."""
+    s = math.sqrt(e)
+    return PerturberSpace((log10_m_earth, a_au, s * math.cos(varpi_rad), s * math.sin(varpi_rad),
+                           None))  # fmt: skip
+
+
+def _unpack_perturber_z(z: np.ndarray, pq: np.ndarray, space: PerturberSpace) -> np.ndarray:
+    """LM vector z → 11-entry θ. z = Uranus (a, k, h, λ₀) + the free perturber variables."""
     theta_u = uranus_x_to_theta(np.concatenate([z[:4], pq]))
-    y = np.array([z[4], z[5], z[6], z[7], z[8]]) if a_fixed_au is None else \
-        np.array([z[4], a_fixed_au, z[5], z[6], z[7]])  # fmt: skip
-    return np.concatenate([theta_u, perturber_fit_to_theta(y)])
+    return np.concatenate([theta_u, space.theta_from_z(z[4:])])
 
 
-def _perturber_residuals(z, pq, a_fixed_au, obs: LongitudeObservations, context) -> np.ndarray:
-    theta = _unpack_perturber_z(z, pq, a_fixed_au)
-    if (theta[1] >= _MAX_E or theta[8] >= _MAX_E or theta[7] <= _MIN_A_AU
-            or theta[6] >= _MAX_LOG10_M):  # fmt: skip
+def _outside_guards(theta: np.ndarray) -> bool:
+    return bool(theta[1] >= _MAX_E or theta[8] >= _MAX_E or theta[7] <= _MIN_A_AU
+                or theta[6] >= _MAX_LOG10_M)  # fmt: skip
+
+
+def _perturber_residuals(z, pq, space, obs: LongitudeObservations, context) -> np.ndarray:
+    theta = _unpack_perturber_z(z, pq, space)
+    if _outside_guards(theta):
         return np.full(obs.jd_tdb.size, _PENALTY)
     pred = predict_uranus_lon(theta, obs.jd_tdb, context)
     return wrap_rad(obs.lon_ecl_j2000_rad - pred) / obs.sigma_rad
 
 
-def _run_perturber_start(z0, pq, a_fixed_au, obs, context, lam0: float) -> PerturberFit:
+def _run_perturber_start(z0, pq, space, obs, context, lam0: float) -> PerturberFit:
     """One LM run (module level so a process pool can pickle it)."""
-    args = (pq, a_fixed_au, obs, context)
+    args = (pq, space, obs, context)
     sol = least_squares(_perturber_residuals, z0, args=args, method="lm", x_scale="jac",
                         xtol=1e-10, ftol=1e-10, gtol=1e-10, max_nfev=3000)  # fmt: skip
-    theta = _unpack_perturber_z(sol.x, pq, a_fixed_au)
+    theta = _unpack_perturber_z(sol.x, pq, space)
     chi2 = float(np.sum(sol.fun**2))
     n_obs = obs.jd_tdb.size
     ok = bool(sol.success) and chi2 < 0.5 * n_obs * _PENALTY**2
     resid = wrap_rad(obs.lon_ecl_j2000_rad - predict_uranus_lon(theta, obs.jd_tdb, context))
     return PerturberFit(theta, resid, chi2, n_obs - z0.size, ok, int(sol.nfev), float(lam0))
+
+
+def run_pool(fn, jobs: list[tuple], n_workers: int) -> list:
+    """``[fn(*job) for job in jobs]``, in a process pool when ``n_workers > 1`` (same results)."""
+    if n_workers > 1 and len(jobs) > 1:
+        from concurrent.futures import ProcessPoolExecutor
+
+        with ProcessPoolExecutor(max_workers=n_workers) as pool:
+            return list(pool.map(fn, *zip(*jobs, strict=True)))
+    return [fn(*job) for job in jobs]
 
 
 def fit_perturber_multistart(
@@ -315,6 +376,9 @@ def fit_perturber_multistart(
     inc_raan_ecl_j2000_rad: tuple[float, float],
     *,
     a_fixed_au: float | None = None,
+    e_max: float | None = None,
+    space: PerturberSpace | None = None,
+    mode: str | None = None,
     n_lam0_starts: int = N_LAM0_STARTS,
     lam0_starts_rad: np.ndarray | None = None,
     n_workers: int = 1,
@@ -322,17 +386,24 @@ def fit_perturber_multistart(
     """Multistart Levenberg–Marquardt: Uranus (a, e, ϖ, λ₀) + perturber, from λ₀ grid starts.
 
     Free variables: Uranus (a, e·cos ϖ, e·sin ϖ, λ₀) and perturber (log10 m, [a], √e·cos ϖ,
-    √e·sin ϖ, λ₀); a is held at ``a_fixed_au`` in Le Verrier mode. Uranus's i, Ω are held at
+    √e·sin ϖ, λ₀); a is held at ``a_fixed_au`` in Le Verrier mode, and ``e_max`` optionally caps
+    the perturber's e (``PerturberSpace``). ``space`` overrides both, e.g. ``held_orbit_space``
+    for a published solution with only λ₀ free. Uranus's i, Ω are held at
     ``inc_raan_ecl_j2000_rad`` (CLAUDE.md rule 2). Every start shares the data-only Uranus
-    solution from ``fit_uranus_elements`` and the neutral perturber start above, differing only in
-    perturber λ₀ (``n_lam0_starts`` equally spaced over 0–360°, or ``lam0_starts_rad``).
-    ``n_workers > 1`` runs starts in a process pool; results are identical to serial.
+    solution from ``fit_uranus_elements`` and the neutral perturber start above (for any variable
+    not held), differing only in perturber λ₀ (``n_lam0_starts`` equally spaced over 0–360°, or
+    ``lam0_starts_rad``). ``n_workers > 1`` runs starts in a process pool; results are identical
+    to serial.
     """
     from fork.model.hidden_mass import BODE_A_AU
 
-    free_a = a_fixed_au is None
-    a_p0 = BODE_A_AU if free_a else float(a_fixed_au)
-    a_fixed = None if free_a else a_p0
+    if space is None:
+        space = le_verrier_space(a_fixed_au, e_max)
+        if mode is None:
+            mode = "free_a" if a_fixed_au is None else "le_verrier"
+    elif a_fixed_au is not None or e_max is not None:
+        raise ValueError("pass either space or a_fixed_au / e_max")
+    mode = mode or "custom"
     uranus_only = fit_uranus_elements(obs, context, inc_raan_ecl_j2000_rad)
     xu0 = uranus_theta_to_x(uranus_only.theta)  # (a, k, h, λ₀, p, q); p, q held
     pq = xu0[4:].copy()
@@ -341,16 +412,10 @@ def fit_perturber_multistart(
     k0, h0 = START_SQRT_E_K_H
     jobs = []
     for lam0 in np.asarray(lam0_starts_rad, dtype=np.float64):
-        pert0 = [START_LOG10_M_EARTH, a_p0, k0, h0, lam0] if free_a else \
-            [START_LOG10_M_EARTH, k0, h0, lam0]  # fmt: skip
-        jobs.append((np.concatenate([xu0[:4], pert0]), pq, a_fixed, obs, context, float(lam0)))
-    if n_workers > 1:
-        from concurrent.futures import ProcessPoolExecutor
-
-        with ProcessPoolExecutor(max_workers=n_workers) as pool:
-            fits = list(pool.map(_run_perturber_start, *zip(*jobs, strict=True)))
-    else:
-        fits = [_run_perturber_start(*job) for job in jobs]
+        y0 = np.array([START_LOG10_M_EARTH, BODE_A_AU, k0, h0, lam0])
+        jobs.append((np.concatenate([xu0[:4], space.z_from_y(y0)]), pq, space, obs, context,
+                     float(lam0)))  # fmt: skip
+    fits = run_pool(_run_perturber_start, jobs, n_workers)
     fits = [replace(f, status=classify(f, uranus_only.chi2)) for f in fits]
-    return MultistartResult("free_a" if free_a else "le_verrier", tuple(fits),
-                            group_minima(fits, free_a), uranus_only)  # fmt: skip
+    free_a = bool(space.free[1])
+    return MultistartResult(mode, tuple(fits), group_minima(fits, free_a), uranus_only)

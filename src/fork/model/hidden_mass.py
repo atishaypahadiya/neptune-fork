@@ -120,3 +120,60 @@ def true_neptune_geocentric_longitude(jd_tdb: float | None = None) -> Geocentric
     jd = galle_jd_tdb() if jd_tdb is None else float(jd_tdb)
     nep = states_about_inner_barycenter_ecl_j2000("neptune", [jd])[0]
     return _geocentric(nep[:3], nep[3:], earth_pos_about_inner_barycenter(jd), jd)
+
+
+# ------------------------------------------------------------------ Le Verrier's 1846 solution
+JD_1847_JAN1_TDB = 2395662.5  # epoch of Le Verrier's elements (1847 Jan 1.0; TDB ≈ UT here)
+
+
+@dataclass(frozen=True)
+class PublishedSolution:
+    """A historical perturber solution as published: a Keplerian orbit, angles in the ecliptic
+    and mean equinox of ``epoch_jd`` (assumed; the sources do not state the equinox)."""
+
+    label: str
+    a_au: float
+    e: float
+    mass_msun: float
+    varpi_ecl_of_date_deg: float
+    mean_lon_ecl_of_date_deg: float  # at epoch_jd
+    true_lon_ecl_of_date_deg: float  # heliocentric, at epoch_jd
+    epoch_jd: float
+    sources: tuple[str, ...]
+
+    @property
+    def log10_m_earth(self) -> float:
+        from fork.model.bodies import M_EARTH_MSUN
+
+        return math.log10(self.mass_msun / M_EARTH_MSUN)
+
+    def varpi_ecl_j2000_rad(self) -> float:
+        """ϖ referred to ecl_j2000: the direction (ϖ, β = 0) of date, rotated back."""
+        w = math.radians(self.varpi_ecl_of_date_deg)
+        r = precession_matrix_ecl_j2000_to_ecl_of_date(self.epoch_jd)
+        v = r.T @ np.array([math.cos(w), math.sin(w), 0.0])
+        return math.atan2(v[1], v[0]) % TWO_PI
+
+
+# Le Verrier, Comptes rendus 23, 428 (31 Aug 1846), the solution Galle searched with.
+# a, e, mass: Krajnović (2016), "The contrivance of Neptune", A&G 57, 5.28, arXiv:1610.06424,
+# Table 2 (from Grosser 1962): a = 36.15 AU, e = 0.10761, mass 0.00011 M☉, P = 217.4 yr.
+# ϖ, mean and true longitude at 1847 Jan 1: Encyclopædia Britannica (1911), "Neptune (planet)"
+# (a = 36.154, e = 0.1076, ϖ = 284°45′, mean longitude 318°47′, true longitude 326°32′).
+# Krajnović gives the mass to 2 figures only; the commonly quoted 1/9300 M☉ rounds to it and
+# is used as a sensitivity case (LE_VERRIER_1846_MASS_ALT_MSUN).
+LE_VERRIER_1846 = PublishedSolution(
+    label="Le Verrier 1846 (31 Aug)",
+    a_au=36.15,
+    e=0.10761,
+    mass_msun=0.00011,
+    varpi_ecl_of_date_deg=284.0 + 45.0 / 60.0,
+    mean_lon_ecl_of_date_deg=318.0 + 47.0 / 60.0,
+    true_lon_ecl_of_date_deg=326.0 + 32.0 / 60.0,
+    epoch_jd=JD_1847_JAN1_TDB,
+    sources=(
+        "Krajnović 2016, A&G 57, 5.28 (arXiv:1610.06424), Table 2, after Grosser 1962",
+        "Encyclopædia Britannica 1911, 'Neptune (planet)', table of elements",
+    ),
+)
+LE_VERRIER_1846_MASS_ALT_MSUN = 1.0 / 9300.0
