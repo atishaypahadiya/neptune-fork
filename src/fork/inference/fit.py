@@ -7,13 +7,15 @@ Uranus is fitted in non-singular variables
 
     x = (a, k, h, λ₀, p, q),  k + i·h = e·exp(iϖ),  p + i·q = tan(i/2)·exp(iΩ)
 
-so circular and planar orbits are interior points. The starting point is derived from the data
-alone (mean motion from the post-1781 longitudes, e = 0); Horizons Uranus never enters
-(CLAUDE.md rule 2).
+so circular and planar orbits are interior points. Per CLAUDE.md rule 2 the in-plane four
+(a, k, h, λ₀) are always free and start from the data alone (mean motion from the post-1781
+longitudes, e = 0); (p, q), i.e. i and Ω, are held at their epoch values.
 
-From longitudes alone, i and Ω enter only through the reduction to the ecliptic,
-≈ −tan²(i/2)·sin 2(u), which is quadratic in (p, q) and invariant under Ω → Ω + π. The gradient
-therefore vanishes at p = q = 0, so the fit starts from i = 1° at several Ω and keeps the best.
+Why hold i, Ω: from longitudes alone they enter only through the reduction to the ecliptic,
+≈ −tan²(i/2)·sin 2u (~10″ for Uranus), which is quadratic in (p, q) and invariant under
+Ω → Ω + π. Freed, they act as a spare second harmonic that absorbs part of a perturber's signal.
+``free_inc_raan=True`` frees them anyway, as a diagnostic only; since the gradient in (p, q)
+vanishes at i = 0, that mode starts from i = 1° at several Ω and keeps the best.
 """
 
 from __future__ import annotations
@@ -89,19 +91,21 @@ def initial_uranus_theta(obs: LongitudeObservations, epoch_jd_tdb: float) -> np.
 def fit_uranus_only(
     obs: LongitudeObservations,
     model,
+    inc_raan_ecl_j2000_rad: tuple[float, float],
     *,
+    free_inc_raan: bool = False,
     omega_starts_deg: tuple[float, ...] = DEFAULT_OMEGA_STARTS_DEG,
-    fixed_inc_raan: tuple[float, float] | None = None,
 ) -> FitResult:
-    """Levenberg–Marquardt fit of the 6 Uranus elements (no perturber).
+    """Levenberg–Marquardt fit of Uranus's elements (no perturber).
 
-    ``fixed_inc_raan`` holds (i, Ω) fixed — **diagnostic only**: A2 and every real fit free all
-    six (CLAUDE.md rule 2).
+    a, e, ϖ, λ₀ are free; (i, Ω) are held at ``inc_raan_ecl_j2000_rad`` (the epoch values, see
+    ``fork.model.forward.uranus_inc_raan_at_epoch``). ``free_inc_raan=True`` fits all six from a
+    data-only multistart — diagnostic only (CLAUDE.md rule 2).
     """
     epoch = model.context.epoch_jd_tdb
     theta0 = initial_uranus_theta(obs, epoch)
     free = np.ones(6, dtype=bool)
-    if fixed_inc_raan is not None:
+    if not free_inc_raan:
         free[4:] = False
     sigma = obs.sigma_rad
 
@@ -112,15 +116,15 @@ def fit_uranus_only(
         return wrap_rad(obs.lon_ecl_j2000_rad - pred) / sigma
 
     starts = []
-    if fixed_inc_raan is not None:
-        th = theta0.copy()
-        th[2], th[3] = fixed_inc_raan
-        starts.append(uranus_theta_to_x(th))
-    else:
+    if free_inc_raan:
         for om in omega_starts_deg:
             th = theta0.copy()
             th[2], th[3] = math.radians(START_INC_DEG), math.radians(om)
             starts.append(uranus_theta_to_x(th))
+    else:
+        th = theta0.copy()
+        th[2], th[3] = inc_raan_ecl_j2000_rad
+        starts.append(uranus_theta_to_x(th))
 
     best = None
     for k, x0 in enumerate(starts):

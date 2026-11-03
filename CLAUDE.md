@@ -18,8 +18,12 @@ degeneracy, and a code structure built for Phase 2 model comparison.
 ## Non-negotiable rules
 1. **Own integrator in `src/fork/integrators/`.** REBOUND is a *test dependency only*, used to validate.
    Never import rebound from `src/`.
-2. **Uranus's 6 orbital elements are always free parameters** in any fit. Never hold Uranus's modern
-   Horizons state fixed when Neptune is removed — that leaks the answer.
+2. **Uranus's in-plane elements (a, e, ϖ, λ₀) are always free parameters** in any fit. Its i and Ω
+   are held at their epoch (1781) values: longitude-only data can't constrain them (a second-order,
+   ~10″ effect) and, freed, they absorb the perturber signal. The leak this introduces is pinned
+   by a test (Neptune's effect on i, Ω over 1781–1846 is 0.017″ in longitude). Never hold Uranus's
+   modern Horizons state (or any in-plane element) fixed when Neptune is removed — that leaks the
+   answer.
 3. **Synthetic before historical.** No code touches historical observations until test A3
    (recover a planted planet) passes.
 4. **Frames are explicit.** Every angle carries its frame in the variable name or type

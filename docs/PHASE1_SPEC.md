@@ -55,12 +55,12 @@ over 1000 random cases (hypothesis); e from 0 to 0.95.
 
 ## M4: Forward model and synthetic data
 - `model/forward.py`: `predict_uranus_lon(theta, t_jd)` where
-  θ = all six Uranus elements (a, e, i, Ω, ϖ, λ₀), every one free in every fit (CLAUDE.md rule 2).
-  *Amended:* an earlier draft held i, Ω at Horizons values, which conflicted with rule 2.
-  Holding them fixed is available only as a diagnostic; see `docs/notes/M4.md`.
+  θ = Uranus elements (a, e, ϖ, λ₀, plus i, Ω held at Horizons values in Phase 1 planar runs)
   + optional perturber (log10 m [M⊕], a, e, ϖ, λ₀), planar.
   Initial conditions are relative to the Sun + inner-planet barycenter, since the inner planets
   are folded into the central mass (`docs/notes/M4.md`).
+  Holding i, Ω at their epoch values is checked by a leak test: Neptune's effect on Uranus's i, Ω
+  over 1781–1846 (with vs without Neptune, same ICs) must be < 1″ in longitude.
   Jupiter and Saturn start from Horizons at the epoch and are not fitted.
 - `data/synthetic.py`: true Uranus longitudes from Horizons (which include real Neptune) at the
   historical epochs; add Gaussian noise σ = 3″ (1781 onward) and σ = 12″ (pre-discovery sightings,

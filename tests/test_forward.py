@@ -5,6 +5,7 @@ import math
 import numpy as np
 import pytest
 
+from fork.data.frames import state_to_elements
 from fork.data.horizons import state_vectors_ecl_j2000, states_about_inner_barycenter_ecl_j2000
 from fork.data.synthetic import jd_tdb_jan1
 from fork.inference.fit import wrap_rad
@@ -17,6 +18,7 @@ from fork.model.forward import (
     UranusModel,
     perturber_theta_from_state,
     predict_uranus_lon,
+    uranus_inc_raan_at_epoch,
     uranus_theta_from_state,
 )
 
@@ -122,3 +124,43 @@ def test_shapes_and_validation(setup):
         model.predict(np.zeros(5), grid)
     with pytest.raises(ValueError):
         predict_uranus_lon(np.zeros(7), grid, ctx)
+
+
+def _lon_ecl(orbit_lon, inc, raan):
+    """Ecliptic longitude of a point at orbital longitude Ω + u on an orbit with (i, Ω)."""
+    u = orbit_lon - raan
+    return raan + np.arctan2(np.cos(inc) * np.sin(u), np.cos(u))
+
+
+def test_inc_raan_leak(offline_horizons):
+    """CLAUDE.md rule 2: holding Uranus's i, Ω at their 1781 values leaks < 1″ of Neptune.
+
+    Integrate J+S+U with and without Neptune from the same 1781 ICs; Neptune's effect on Uranus's
+    osculating (i, Ω) over 1781–1846 is converted to longitude as the worst case, over every
+    orbital longitude, of the change in ecliptic longitude it would cause. Measured: |Δi| ≤ 2.4″,
+    |ΔΩ| ≤ 64″, longitude-equivalent ≤ 0.017″ (at 1846)."""
+    t_rel = np.append(np.arange(0.0, 2395296.5 - EPOCH, 30.0), 2395296.5 - EPOCH)
+    mu = bodies.G * (bodies.M_CENTRAL_MSUN + bodies.URANUS.mass_msun)
+    inc_raan = {}
+    for label, names in (("without", ("jupiter", "saturn", "uranus")),
+                         ("with", ("jupiter", "saturn", "uranus", "neptune"))):  # fmt: skip
+        s = np.array([states_about_inner_barycenter_ecl_j2000(n, [EPOCH])[0] for n in names])
+        masses = np.array([bodies.M_CENTRAL_MSUN] + [bodies.BODIES[n].mass_msun for n in names])
+        pos, vel = wisdom_holman.integrate_states(
+            s[:, :3].copy(), s[:, 3:].copy(), masses, t_rel, DEFAULT_DT_DAYS
+        )
+        el = np.array([state_to_elements(pos[k, 2], vel[k, 2], mu) for k in range(t_rel.size)])
+        inc_raan[label] = el[:, 2], el[:, 3]
+    (i1, o1), (i0, o0) = inc_raan["with"], inc_raan["without"]
+    orbit_lon = np.linspace(0.0, 2 * math.pi, 3601)[:, None]
+    dlon = wrap_rad(_lon_ecl(orbit_lon, i1, o1) - _lon_ecl(orbit_lon, i0, o0))
+    leak_arcsec = np.max(np.abs(dlon)) * ARC
+    assert np.max(np.abs(i1 - i0)) * ARC < 10.0 and np.max(np.abs(wrap_rad(o1 - o0))) * ARC < 300.0
+    assert leak_arcsec < 1.0
+    assert leak_arcsec < 0.05  # measured 0.017″; a jump here means the leak test itself changed
+
+
+def test_inc_raan_at_epoch_matches_horizons_state(offline_horizons):
+    inc, raan = uranus_inc_raan_at_epoch(EPOCH)
+    assert math.degrees(inc) == pytest.approx(0.777, abs=1e-3)
+    assert math.degrees(raan) == pytest.approx(73.8, abs=0.1)
