@@ -24,15 +24,15 @@ def _a1_ics():
 
 
 def test_wh_convergence_data_schema_and_order():
-    d = to_json.wh_convergence_data(*_a1_ics(), dt_days=(28.0, 14.0))
-    assert d["dt_days"] == [28.0, 14.0] and d["default_dt_days"] == 14.0
+    d = to_json.wh_convergence_data(*_a1_ics(), dt_days=(24.0, 12.0))
+    assert d["dt_days"] == [24.0, 12.0] and d["default_dt_days"] == 12.0
     names = [s["scheme"] for s in d["series"]]
     assert names == ["wh_drift_outer", "wh_kick_outer"]
     assert [s["is_default"] for s in d["series"]] == [True, False]
     for s in d["series"]:
         err = s["max_abs_dlon_uranus_arcsec"]
         assert 3.5 < err[0] / err[1] < 4.5
-    assert d["series"][0]["max_abs_dlon_uranus_arcsec"][1] < 0.01  # default @ 14 d
+    assert d["series"][0]["max_abs_dlon_uranus_arcsec"][1] < 0.01  # default @ 12 d
 
 
 def test_committed_wh_convergence_json_is_current():

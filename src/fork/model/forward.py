@@ -17,7 +17,7 @@ Perturber θ (5, optional, planar: i = 0 in ecl_j2000):
     log10_m_earth, a_au, e, varpi_rad, lam0_rad
 
 Elements are converted with μ = G (M_central + m_body), the body's own heliocentric two-body μ.
-The integrator is ``wisdom_holman`` with its project defaults (dt = 14 d, REBOUND composition).
+The integrator is ``wisdom_holman`` with its project defaults (dt = 12 d, REBOUND composition).
 """
 
 from __future__ import annotations

@@ -22,7 +22,7 @@ from fork.integrators.wisdom_holman import (
 from fork.model import bodies
 
 RAD_TO_ARCSEC = math.degrees(1.0) * 3600.0
-DT = DEFAULT_DT_DAYS  # 14 d
+DT = DEFAULT_DT_DAYS  # 12 d
 FIXTURE = Path(__file__).parent / "data" / "horizons_a1_1781-03-13.json"
 A1_BODIES = ("jupiter", "saturn", "uranus")
 I_URANUS = 2
@@ -48,7 +48,7 @@ def a1_output_times(jd0: float, step: float = DT) -> np.ndarray:
 
 
 def test_defaults():
-    assert DEFAULT_DT_DAYS == 14.0
+    assert DEFAULT_DT_DAYS == 12.0
     assert SCHEME_DEFAULT == SCHEME_DRIFT_OUTER == SCHEMES["wh_drift_outer"]
     assert SCHEMES["wh_kick_outer"] == SCHEME_KICK_OUTER
 
@@ -96,7 +96,7 @@ def test_a1_default_wh_matches_rebound_whfast(rebound_whfast_uranus):
 
 def test_kick_outer_differs_from_rebound_by_truncation_error_only(rebound_whfast_uranus):
     """wh_kick_outer is a different 2nd-order map: it differs from REBOUND by the sum of the two
-    truncation errors (~0.024″ at dt = 14 d), not by anything larger."""
+    truncation errors (~0.018″ at dt = 12 d), not by anything larger."""
     t_out, uranus_rb = rebound_whfast_uranus
     x0, v0, masses, _ = a1_initial_conditions()
     ours = wisdom_holman.integrate(x0, v0, masses, t_out, DT, SCHEME_KICK_OUTER)[:, I_URANUS]
@@ -110,13 +110,14 @@ def test_wh_convergence_order_is_two(scheme):
 
     Uranus heliocentric position error over 1781–1846 vs an independent dt = 1 d reference
     (RK4: 4th order, its own error ~1e-10″) must drop ≈ 4× per halving of dt:
-    ratio ∈ [3.5, 4.5] for dt = 28 → 14 → 7 → 3.5 d. Measured: 4.00, 4.00, 4.00 for both.
+    ratio ∈ [3.5, 4.5] for dt = 24 → 12 → 6 → 3 d (centred on the default).
+    Measured: 4.00, 4.00, 4.00 for both.
     """
     x0, v0, masses, jd0 = a1_initial_conditions()
-    t_out = a1_output_times(jd0, step=28.0)  # on every grid below
+    t_out = a1_output_times(jd0, step=24.0)  # on every grid below
     ref = rk4.integrate(x0, v0, masses, t_out, 1.0)[:, I_URANUS]
     errs = []
-    for dt in (28.0, 14.0, 7.0, 3.5):
+    for dt in (24.0, 12.0, 6.0, 3.0):
         pos = wisdom_holman.integrate(x0, v0, masses, t_out, dt, scheme)[:, I_URANUS]
         errs.append(np.max(np.linalg.norm(pos - ref, axis=1)))
     for coarse, fine in itertools.pairwise(errs):
@@ -148,10 +149,10 @@ def energy_1000yr():
 
 
 def test_a1_wh_energy_below_1e8(energy_1000yr):
-    """A1: default WH relative energy error stays < 1e-8 over 1000 yr at dt = 14 d.
+    """A1: default WH relative energy error stays < 1e-8 over 1000 yr at dt = 12 d.
 
-    Measured max 9.93e-9 (every step, 26,090 samples) — a thin 0.7% margin: the WH error scales
-    as dt², so this test pins dt ≤ 14 d. REBOUND WHFast-DH behaves identically."""
+    Measured max 7.3e-9 (every step, 30,438 samples). The WH error scales as dt²; 14 d gave
+    9.93e-9, a 0.7% margin, hence the 12 d default. REBOUND WHFast-DH behaves identically."""
     _, d_e = energy_1000yr
     assert np.max(np.abs(d_e["wh_drift_outer"])) < 1e-8
 
@@ -171,7 +172,7 @@ def test_symplectic_energy_error_is_bounded(energy_1000yr, key):
 
 def test_kick_outer_energy_error_magnitude(energy_1000yr):
     _, d_e = energy_1000yr
-    assert np.max(np.abs(d_e["wh_kick_outer"])) < 2.5e-8  # measured 2.0e-8 at dt = 14 d
+    assert np.max(np.abs(d_e["wh_kick_outer"])) < 2.5e-8  # measured 1.47e-8 at dt = 12 d
 
 
 def test_rk4_energy_drifts_secularly(energy_1000yr):
@@ -180,7 +181,8 @@ def test_rk4_energy_drifts_secularly(energy_1000yr):
     de = d_e["rk4"]
     n = t.size // 10
     assert np.max(np.abs(de[-n:])) > 5 * np.max(np.abs(de[:n]))
-    assert np.max(np.abs(de)) > 3 * np.max(np.abs(d_e["wh_drift_outer"]))
+    # RK4 error ∝ dt⁴, WH ∝ dt²: the ratio shrinks with dt. Measured 2.95× at 12 d (4.7× at 14 d).
+    assert np.max(np.abs(de)) > 2 * np.max(np.abs(d_e["wh_drift_outer"]))
 
 
 # ------------------------------------------------------------------ A1: runtime

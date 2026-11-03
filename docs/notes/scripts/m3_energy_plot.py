@@ -2,7 +2,7 @@
 
     uv run python docs/notes/scripts/m3_energy_plot.py
 
-Sun + Jupiter + Saturn + Uranus from Horizons at 1781-03-13, default dt (14 d), 1000 yr. Plots the
+Sun + Jupiter + Saturn + Uranus from Horizons at 1781-03-13, default dt (12 d), 1000 yr. Plots the
 envelope (max over 25-yr windows) of |ΔE/E| on one log axis. This becomes a site panel in M7.
 """
 

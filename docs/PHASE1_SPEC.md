@@ -40,9 +40,9 @@ over 1000 random cases (hypothesis); e from 0 to 0.95.
   Sun-momentum drift → Kepler drift → Sun-momentum drift → half-kick) stays available as
   `wh_kick_outer`. All `numba.njit`, signature
   `integrate(x0, v0, masses, t_out, dt) -> positions[t_out, body, 3]`.
-- Default dt = 14 days (`fork.integrators.DEFAULT_DT_DAYS`). *Amended:* the original 20 d, with
-  the kick-outermost default, gave 0.049″ against REBOUND and 4e-8 energy error; see
-  `docs/notes/M3.md`.
+- Default dt = 12 days (`fork.integrators.DEFAULT_DT_DAYS`). *Amended:* the original 20 d, with
+  the kick-outermost default, gave 0.049″ against REBOUND and 4e-8 energy error; 14 d then met
+  the 1e-8 energy bound by only 0.7%, so the default was lowered to 12 d. See `docs/notes/M3.md`.
 **A1 (acceptance):**
   - Sun+Jupiter+Saturn+Uranus from Horizons @ JD of 1781-03-13: Uranus heliocentric longitude agrees
     with REBOUND WHFast (same ICs, same dt) to **< 0.01″** over 1781–1846.
@@ -50,7 +50,7 @@ over 1000 random cases (hypothesis); e from 0 to 0.95.
     (save the comparison plot; it becomes a site panel).
   - WH run of 65 yr completes in **< 10 ms** after JIT warmup.
   - Convergence order (permanent test): Uranus position error vs a dt = 1 d reference drops by
-    a ratio in **[3.5, 4.5]** per halving of dt (28 → 14 → 7 → 3.5 d), for both compositions.
+    a ratio in **[3.5, 4.5]** per halving of dt (24 → 12 → 6 → 3 d), for both compositions.
     The data is exported to `site/data/wh_convergence.json` for a future panel.
 
 ## M4: Forward model and synthetic data

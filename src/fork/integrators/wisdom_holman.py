@@ -17,8 +17,8 @@ Two second-order compositions are provided:
     half-kick → Sun-momentum drift (h/2) → Kepler drift (h) → Sun-momentum drift (h/2) → half-kick
 
 Both are symplectic, time-symmetric and second order, but they are distinct maps whose errors
-differ at O(ε·h²) (ε ~ planet/Sun mass). For Uranus over 1781–1846 at dt = 14 d the drift-outer
-error is ~0.008″ and the kick-outer error ~0.016″, with opposite signs. The drift-outer default
+differ at O(ε·h²) (ε ~ planet/Sun mass). For Uranus over 1781–1846 at dt = 12 d the drift-outer
+error is ~0.006″ and the kick-outer error ~0.012″, with opposite signs. The drift-outer default
 matches REBOUND to roundoff (A1). See docs/notes/M3.md.
 
 Conventions for x0, v0, masses, t_out: see ``fork.integrators._nbody``.
@@ -165,5 +165,5 @@ def integrate(
     dt: float,
     scheme: int = SCHEME_DEFAULT,
 ) -> np.ndarray:
-    """Heliocentric positions [t_out, body, 3]. Project default dt: ``DEFAULT_DT_DAYS`` (14 d)."""
+    """Heliocentric positions [t_out, body, 3]. Project default dt: ``DEFAULT_DT_DAYS`` (12 d)."""
     return integrate_states(x0, v0, masses, t_out, dt, scheme)[0]
