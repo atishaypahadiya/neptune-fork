@@ -141,3 +141,15 @@ def test_live_horizons_ecliptic_is_astropy_iau76_frame():
     print(f"Horizons ecl vs IAU76: {sep_iau76:.2e}″; vs HME(J2000): {sep_hme:.2e}″")
     assert sep_iau76 < 1e-3
     assert sep_hme > 5e-3
+
+
+@pytest.mark.network
+def test_live_a1_fixture_matches_horizons(tmp_path):
+    """tests/data/horizons_a1_1781-03-13.json is exactly what Horizons serves."""
+    import json
+    from pathlib import Path
+
+    data = json.loads((Path(__file__).parent / "data" / "horizons_a1_1781-03-13.json").read_text())
+    for name, row in data["state_ecl_j2000"].items():
+        live = horizons.state_vectors_ecl_j2000(name, [data["jd_tdb"]], directory=tmp_path)[0]
+        np.testing.assert_allclose(live, row, rtol=1e-15, atol=0)
