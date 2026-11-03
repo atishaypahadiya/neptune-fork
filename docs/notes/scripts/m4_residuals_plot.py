@@ -15,10 +15,9 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
-from fork.data.horizons import states_about_inner_barycenter_ecl_j2000 as about
 from fork.data.synthetic import jd_tdb_jan1, make_synthetic_observations, true_uranus_lon_ecl_j2000_rad
 from fork.inference.fit import fit_uranus_only, wrap_rad
-from fork.model.forward import ForwardContext, UranusModel, uranus_theta_from_state
+from fork.model.forward import ForwardContext, UranusModel, uranus_inc_raan_at_epoch
 
 ARC = 206264.80624709636
 EPOCH = 2371628.5
@@ -34,10 +33,10 @@ def jd_to_year(jd):
 def main() -> None:
     model = UranusModel(ForwardContext.from_horizons(EPOCH))
     obs, _truth = make_synthetic_observations(np.random.default_rng(0))
-    th_h = uranus_theta_from_state(about("uranus", [EPOCH])[0])
+    inc_raan = uranus_inc_raan_at_epoch(EPOCH)
     fits = {
-        "free": fit_uranus_only(obs, model),
-        "fixed": fit_uranus_only(obs, model, fixed_inc_raan=(th_h[2], th_h[3])),
+        "free": fit_uranus_only(obs, model, inc_raan, free_inc_raan=True),
+        "fixed": fit_uranus_only(obs, model, inc_raan),
     }
     years = np.arange(1690, 1846)
     grid = jd_tdb_jan1(years)

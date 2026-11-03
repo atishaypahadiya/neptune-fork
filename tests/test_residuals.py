@@ -19,7 +19,7 @@ from fork.inference.fit import (
     uranus_x_to_theta,
     wrap_rad,
 )
-from fork.model.forward import ForwardContext, UranusModel
+from fork.model.forward import ForwardContext, UranusModel, uranus_inc_raan_at_epoch
 
 ARC = math.degrees(1.0) * 3600.0
 EPOCH = 2371628.5
@@ -47,7 +47,8 @@ def slope_sign_change_years(curve):
 
 def run_a2(model, seed):
     obs, _truth = make_synthetic_observations(np.random.default_rng(seed))
-    fit = fit_uranus_only(obs, model)  # all 6 Uranus elements free, data-only start
+    # a, e, ϖ, λ₀ free from a data-only start; i, Ω held at epoch values (project rule 2)
+    fit = fit_uranus_only(obs, model, uranus_inc_raan_at_epoch(EPOCH))
     curve = residual_curve(model, fit.theta)
     return fit, curve, slope_sign_change_years(curve)
 
@@ -55,9 +56,8 @@ def run_a2(model, seed):
 def test_a2_residual_curve(model):
     """A2: peak-to-peak ≈ 130″ (±25″) and a slope sign change within 1815–1830.
 
-    Measured (seed 0): p2p 142.6″; slope sign changes at 1738.5, 1770.5, 1791.5, 1804.5,
-    1818.5, 1833.5 → 1818.5 is the one in the window. See docs/notes/M4.md for why there are
-    several.
+    Measured (seed 0, dt = 14 d, i and Ω held): p2p 142.7″; slope sign changes at 1698.5,
+    1734.5, 1783.5, 1806.5, 1828.5. See docs/notes/M4.md.
     """
     fit, curve, flips = run_a2(model, seed=0)
     assert fit.success
@@ -68,32 +68,43 @@ def test_a2_residual_curve(model):
 @pytest.mark.slow
 @pytest.mark.parametrize("seed", [1, 2, 3, 4])
 def test_a2_robust_across_noise_seeds(model, seed):
-    """Measured p2p 137.8–141.6″, flip at 1818.5 for seeds 1–4."""
+    """Measured (dt = 14 d) p2p 142.7–145.4″, in-window flip at 1828.5 for seeds 1–4."""
     fit, curve, flips = run_a2(model, seed)
     assert fit.success
     assert 105.0 <= np.ptp(curve) <= 155.0
     assert np.any((flips >= 1815) & (flips <= 1830))
 
 
-def test_fit_recovers_model_generated_truth_exactly(model):
-    """Self-consistency: data generated *by the model* (no Neptune) with no noise are fitted back
-    to the generating elements — including i and Ω (up to Ω ≡ Ω + π) — from the data-only start."""
-    theta_true = np.array([19.21, 0.046, math.radians(0.77), math.radians(74.0),
-                           math.radians(170.0), math.radians(96.0)])  # fmt: skip
+THETA_MODEL_TRUTH = np.array([19.21, 0.046, math.radians(0.77), math.radians(74.0),
+                              math.radians(170.0), math.radians(96.0)])  # fmt: skip
+
+
+def _model_generated_obs(model):
     jd, sigma, source = synthetic_epochs()
-    obs = LongitudeObservations(jd, model.predict(theta_true, jd), sigma / ARC, source)
-    fit = fit_uranus_only(obs, model)
+    return LongitudeObservations(jd, model.predict(THETA_MODEL_TRUTH, jd), sigma / ARC, source)
+
+
+def test_fit_recovers_model_generated_truth_exactly(model):
+    """Self-consistency: noise-free data generated *by the model* (no Neptune) are fitted back to
+    the generating in-plane elements from the data-only start, with i, Ω held at their truth."""
+    th = THETA_MODEL_TRUTH
+    fit = fit_uranus_only(_model_generated_obs(model), model, (th[2], th[3]))
     assert fit.rms_arcsec < 1e-4
     a, e, inc, raan, varpi, lam0 = fit.theta
-    assert abs(a - theta_true[0]) < 1e-6 and abs(e - theta_true[1]) < 1e-7
-    assert (
-        abs(wrap_rad(varpi - theta_true[4])) < 1e-6 and abs(wrap_rad(lam0 - theta_true[5])) < 1e-8
-    )
-    assert abs(inc - theta_true[2]) < 1e-4
-    assert (
-        min(abs(wrap_rad(raan - theta_true[3])), abs(wrap_rad(raan - theta_true[3] - math.pi)))
-        < 1e-2
-    )
+    assert (inc, raan) == (th[2], th[3])  # held exactly
+    assert abs(a - th[0]) < 1e-6 and abs(e - th[1]) < 1e-7
+    assert abs(wrap_rad(varpi - th[4])) < 1e-6 and abs(wrap_rad(lam0 - th[5])) < 1e-8
+
+
+def test_free_inc_raan_diagnostic_recovers_model_truth(model):
+    """The diagnostic all-six-free mode (data-only multistart) also recovers i and Ω, up to
+    Ω ≡ Ω + π, when there is no unmodelled perturber to absorb."""
+    th = THETA_MODEL_TRUTH
+    fit = fit_uranus_only(_model_generated_obs(model), model, (0.0, 0.0), free_inc_raan=True)
+    assert fit.rms_arcsec < 1e-4
+    inc, raan = fit.theta[2], fit.theta[3]
+    assert abs(inc - th[2]) < 1e-4
+    assert min(abs(wrap_rad(raan - th[3])), abs(wrap_rad(raan - th[3] - math.pi))) < 1e-2
 
 
 def test_initial_guess_is_data_only(model):
