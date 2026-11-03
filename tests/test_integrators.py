@@ -10,17 +10,23 @@ import numpy as np
 import pytest
 
 from fork.data.frames import elements_to_state
-from fork.integrators import leapfrog, rk4, wisdom_holman
+from fork.integrators import DEFAULT_DT_DAYS, leapfrog, rk4, wisdom_holman
 from fork.integrators._nbody import energy_helio
 from fork.integrators.kepler import kepler_step
-from fork.integrators.wisdom_holman import SCHEME_DRIFT_OUTER, SCHEME_KICK_OUTER
+from fork.integrators.wisdom_holman import (
+    SCHEME_DEFAULT,
+    SCHEME_DRIFT_OUTER,
+    SCHEME_KICK_OUTER,
+    SCHEMES,
+)
 from fork.model import bodies
 
 RAD_TO_ARCSEC = math.degrees(1.0) * 3600.0
-DT = 20.0  # project default step [day]
+DT = DEFAULT_DT_DAYS  # 14 d
 FIXTURE = Path(__file__).parent / "data" / "horizons_a1_1781-03-13.json"
 A1_BODIES = ("jupiter", "saturn", "uranus")
 I_URANUS = 2
+JD_1846_END = 2395296.5  # 1846-12-31.0 TDB
 
 
 def a1_initial_conditions():
@@ -36,14 +42,15 @@ def lon_ecl_j2000_rad(x_h: np.ndarray) -> np.ndarray:
     return np.unwrap(np.arctan2(x_h[..., 1], x_h[..., 0]))
 
 
-def wrap(d):
-    return (np.asarray(d) + math.pi) % (2 * math.pi) - math.pi
+def a1_output_times(jd0: float, step: float = DT) -> np.ndarray:
+    """1781-03-13 → end of 1846 on the step grid (multiples of `step`, so no partial steps)."""
+    return np.arange(0.0, JD_1846_END - jd0, step)
 
 
-def a1_output_times(jd0: float) -> np.ndarray:
-    """1781-03-13 → end of 1846 on the step grid (multiples of dt, so no partial steps)."""
-    span = 2395296.5 - jd0  # JD 1846-12-31.0 TDB
-    return np.arange(0.0, span, DT)
+def test_defaults():
+    assert DEFAULT_DT_DAYS == 14.0
+    assert SCHEME_DEFAULT == SCHEME_DRIFT_OUTER == SCHEMES["wh_drift_outer"]
+    assert SCHEMES["wh_kick_outer"] == SCHEME_KICK_OUTER
 
 
 @pytest.fixture(scope="module")
@@ -72,57 +79,48 @@ def rebound_whfast_uranus():
 # ------------------------------------------------------------------ A1: agreement with REBOUND
 
 
-def test_a1_drift_outer_matches_rebound_whfast(rebound_whfast_uranus):
-    """A1 (algorithm check): same composition as REBOUND WHFast-DH → agreement to roundoff.
+def test_a1_default_wh_matches_rebound_whfast(rebound_whfast_uranus):
+    """A1: Uranus heliocentric longitude, default WH vs REBOUND WHFast-DH, same ICs and dt,
+    1781–1846: < 0.01″.
 
-    Spec target < 0.01″ over 1781–1846; measured 4.8e-9″. Asserting 1e-6″ so that any real
-    divergence (a wrong sign, mass, μ or ordering) fails loudly.
+    The default composition is REBOUND's, so agreement is at roundoff (measured ~5e-9″). The
+    second, much tighter assertion makes any real divergence (sign, mass, μ, ordering) fail loudly.
     """
     t_out, uranus_rb = rebound_whfast_uranus
     x0, v0, masses, _ = a1_initial_conditions()
-    ours = wisdom_holman.integrate(x0, v0, masses, t_out, DT, SCHEME_DRIFT_OUTER)[:, I_URANUS]
+    ours = wisdom_holman.integrate(x0, v0, masses, t_out, DT)[:, I_URANUS]  # default scheme
     dlon = (lon_ecl_j2000_rad(ours) - lon_ecl_j2000_rad(uranus_rb)) * RAD_TO_ARCSEC
     assert np.max(np.abs(dlon)) < 0.01
     assert np.max(np.abs(dlon)) < 1e-6
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "Spec composition (kick outermost) is a different 2nd-order map from REBOUND's WHFast-DH "
-        "(Kepler outermost). Measured max |Δλ_Uranus| = 0.049″ > 0.01″: both are correct and "
-        "converge at O(dt²) to IAS15 (0.033″ vs 0.016″ at dt = 20 d), with errors of opposite "
-        "sign. See docs/notes/M3.md. strict: if this ever passes, revisit."
-    ),
-)
-def test_a1_spec_scheme_vs_rebound_whfast_spec_literal(rebound_whfast_uranus):
+def test_kick_outer_differs_from_rebound_by_truncation_error_only(rebound_whfast_uranus):
+    """wh_kick_outer is a different 2nd-order map: it differs from REBOUND by the sum of the two
+    truncation errors (~0.024″ at dt = 14 d), not by anything larger."""
     t_out, uranus_rb = rebound_whfast_uranus
     x0, v0, masses, _ = a1_initial_conditions()
     ours = wisdom_holman.integrate(x0, v0, masses, t_out, DT, SCHEME_KICK_OUTER)[:, I_URANUS]
     dlon = (lon_ecl_j2000_rad(ours) - lon_ecl_j2000_rad(uranus_rb)) * RAD_TO_ARCSEC
-    assert np.max(np.abs(dlon)) < 0.01
+    assert 0.005 < np.max(np.abs(dlon)) < 0.05
 
 
-def _uranus_lon_error_vs_reference(dt, scheme, t_out, ref_lon):
-    x0, v0, masses, _ = a1_initial_conditions()
-    pos = wisdom_holman.integrate(x0, v0, masses, t_out, dt, scheme)[:, I_URANUS]
-    return np.max(np.abs(lon_ecl_j2000_rad(pos) - ref_lon)) * RAD_TO_ARCSEC
+@pytest.mark.parametrize("scheme", [SCHEME_DRIFT_OUTER, SCHEME_KICK_OUTER], ids=list(SCHEMES))
+def test_wh_convergence_order_is_two(scheme):
+    """Permanent convergence-order test, both compositions.
 
-
-@pytest.mark.parametrize("scheme", [SCHEME_KICK_OUTER, SCHEME_DRIFT_OUTER])
-def test_wh_is_second_order_accurate_vs_rk4_reference(scheme):
-    """Both WH compositions converge to the same true orbit at O(dt²).
-
-    Reference: our RK4 at dt = 1 d (4th order; its error at 2.5 d is already 1e-8″ vs IAS15).
-    Halving dt must cut the error by ≈ 4; at dt = 20 d the Uranus error must stay ≪ 3″ noise.
+    Uranus heliocentric position error over 1781–1846 vs an independent dt = 1 d reference
+    (RK4: 4th order, its own error ~1e-10″) must drop ≈ 4× per halving of dt:
+    ratio ∈ [3.5, 4.5] for dt = 28 → 14 → 7 → 3.5 d. Measured: 4.00, 4.00, 4.00 for both.
     """
-    x0, v0, masses, _jd0 = a1_initial_conditions()
-    t_out = np.arange(0.0, 65 * 365.25, 200.0)
-    ref = lon_ecl_j2000_rad(rk4.integrate(x0, v0, masses, t_out, 1.0)[:, I_URANUS])
-    errs = [_uranus_lon_error_vs_reference(dt, scheme, t_out, ref) for dt in (20.0, 10.0, 5.0)]
-    assert errs[0] < 0.05  # arcsec; measured 0.033 (kick-outer), 0.016 (drift-outer)
+    x0, v0, masses, jd0 = a1_initial_conditions()
+    t_out = a1_output_times(jd0, step=28.0)  # on every grid below
+    ref = rk4.integrate(x0, v0, masses, t_out, 1.0)[:, I_URANUS]
+    errs = []
+    for dt in (28.0, 14.0, 7.0, 3.5):
+        pos = wisdom_holman.integrate(x0, v0, masses, t_out, dt, scheme)[:, I_URANUS]
+        errs.append(np.max(np.linalg.norm(pos - ref, axis=1)))
     for coarse, fine in itertools.pairwise(errs):
-        assert 3.5 < coarse / fine < 4.5
+        assert 3.5 <= coarse / fine <= 4.5
 
 
 # ------------------------------------------------------------------ A1: energy over 1000 yr
@@ -136,17 +134,29 @@ def _energy_errors(integrate_states, x0, v0, masses, t, *args):
 
 @pytest.fixture(scope="module")
 def energy_1000yr():
+    """Relative energy error at *every* step over 1000 yr (no sampling gaps)."""
     x0, v0, masses, _ = a1_initial_conditions()
-    t = np.arange(0.0, 1000 * 365.25, 10 * DT)
+    t = np.arange(0.0, 1000 * 365.25, DT)
     return t, {
-        "wh_kick_outer": _energy_errors(wisdom_holman.integrate_states, x0, v0, masses, t, 0),
-        "wh_drift_outer": _energy_errors(wisdom_holman.integrate_states, x0, v0, masses, t, 1),
+        "wh_drift_outer": _energy_errors(wisdom_holman.integrate_states, x0, v0, masses, t),
+        "wh_kick_outer": _energy_errors(
+            wisdom_holman.integrate_states, x0, v0, masses, t, SCHEME_KICK_OUTER
+        ),
         "rk4": _energy_errors(rk4.integrate_states, x0, v0, masses, t),
         "leapfrog": _energy_errors(leapfrog.integrate_states, x0, v0, masses, t),
     }
 
 
-@pytest.mark.parametrize("key", ["wh_kick_outer", "wh_drift_outer", "leapfrog"])
+def test_a1_wh_energy_below_1e8(energy_1000yr):
+    """A1: default WH relative energy error stays < 1e-8 over 1000 yr at dt = 14 d.
+
+    Measured max 9.93e-9 (every step, 26,090 samples) — a thin 0.7% margin: the WH error scales
+    as dt², so this test pins dt ≤ 14 d. REBOUND WHFast-DH behaves identically."""
+    _, d_e = energy_1000yr
+    assert np.max(np.abs(d_e["wh_drift_outer"])) < 1e-8
+
+
+@pytest.mark.parametrize("key", ["wh_drift_outer", "wh_kick_outer", "leapfrog"])
 def test_symplectic_energy_error_is_bounded(energy_1000yr, key):
     """No secular growth: the last century's max |ΔE/E| is no larger than the first's (±20%),
     and the fitted linear trend over 1000 yr is < 1% of the oscillation amplitude."""
@@ -159,25 +169,9 @@ def test_symplectic_energy_error_is_bounded(energy_1000yr, key):
     assert abs(slope_per_kyr) < 0.01 * np.max(np.abs(de))
 
 
-def test_wh_energy_error_magnitude(energy_1000yr):
-    """Measured bound actually achieved at dt = 20 d (REBOUND WHFast-DH gives 2.00e-8 too)."""
+def test_kick_outer_energy_error_magnitude(energy_1000yr):
     _, d_e = energy_1000yr
-    assert np.max(np.abs(d_e["wh_drift_outer"])) < 2.5e-8  # measured 2.00e-8
-    assert np.max(np.abs(d_e["wh_kick_outer"])) < 5.0e-8  # measured 4.01e-8
-
-
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "Spec: WH relative energy error < 1e-8 over 1000 yr at dt = 20 d. Measured 4.0e-8 "
-        "(spec composition), 2.0e-8 (REBOUND composition; REBOUND itself also gives 2.0e-8). "
-        "Bounded, no drift: this is the O(ε·(n_J dt)²) WH error, not a bug. Measured fixes: "
-        "dt = 8 d (spec order, 6.5e-9) or dt = 14 d (REBOUND order, 9.9e-9). See docs/notes/M3.md."
-    ),
-)
-def test_a1_wh_energy_below_1e8_spec_literal(energy_1000yr):
-    _, d_e = energy_1000yr
-    assert np.max(np.abs(d_e["wh_kick_outer"])) < 1e-8
+    assert np.max(np.abs(d_e["wh_kick_outer"])) < 2.5e-8  # measured 2.0e-8 at dt = 14 d
 
 
 def test_rk4_energy_drifts_secularly(energy_1000yr):
@@ -186,14 +180,14 @@ def test_rk4_energy_drifts_secularly(energy_1000yr):
     de = d_e["rk4"]
     n = t.size // 10
     assert np.max(np.abs(de[-n:])) > 5 * np.max(np.abs(de[:n]))
-    assert np.max(np.abs(de)) > 3 * np.max(np.abs(d_e["wh_kick_outer"]))
+    assert np.max(np.abs(de)) > 3 * np.max(np.abs(d_e["wh_drift_outer"]))
 
 
 # ------------------------------------------------------------------ A1: runtime
 
 
 def test_a1_wh_65yr_runtime_under_10ms():
-    """A1: a 65-yr WH run (Sun + 3 planets, dt = 20 d) completes in < 10 ms after JIT warmup."""
+    """A1: a 65-yr WH run (Sun + 3 planets, default dt and scheme) takes < 10 ms after JIT."""
     x0, v0, masses, _ = a1_initial_conditions()
     t_out = np.arange(0.0, 65 * 365.25, DT)
     wisdom_holman.integrate(x0, v0, masses, t_out, DT)  # warm-up / JIT
@@ -202,7 +196,7 @@ def test_a1_wh_65yr_runtime_under_10ms():
         t0 = time.perf_counter()
         wisdom_holman.integrate(x0, v0, masses, t_out, DT)
         best = min(best, time.perf_counter() - t0)
-    assert best < 0.010  # measured ~0.7 ms
+    assert best < 0.010  # measured ~1.6 ms
 
 
 # ------------------------------------------------------------------ general integrator behaviour

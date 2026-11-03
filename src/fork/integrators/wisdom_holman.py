@@ -9,16 +9,17 @@ velocities. The Hamiltonian splits into three exactly solvable parts:
 
 Two second-order compositions are provided:
 
-``SCHEME_KICK_OUTER`` (default, PHASE1_SPEC M3)
-    half-kick → Sun-momentum drift (h/2) → Kepler drift (h) → Sun-momentum drift (h/2) → half-kick
-
-``SCHEME_DRIFT_OUTER`` (matches REBOUND WHFast, ``coordinates="democraticheliocentric"``)
+``SCHEME_DRIFT_OUTER`` / ``"wh_drift_outer"`` (**default**; identical to REBOUND WHFast with
+``coordinates="democraticheliocentric"``)
     Kepler (h/2) → Sun-momentum (h/2) → kick (h) → Sun-momentum (h/2) → Kepler (h/2)
 
-Both are symplectic, time-symmetric and second order. They are distinct maps whose errors differ
-at O(ε·h²) (ε ~ planet/Sun mass), which at dt = 20 d is ~0.01″ in Uranus's longitude over a
-century. ``SCHEME_DRIFT_OUTER`` exists so this code can be checked against REBOUND
-algorithm-for-algorithm (A1); see docs/notes/M3.md.
+``SCHEME_KICK_OUTER`` / ``"wh_kick_outer"`` (the original PHASE1_SPEC ordering, kept for comparison)
+    half-kick → Sun-momentum drift (h/2) → Kepler drift (h) → Sun-momentum drift (h/2) → half-kick
+
+Both are symplectic, time-symmetric and second order, but they are distinct maps whose errors
+differ at O(ε·h²) (ε ~ planet/Sun mass). For Uranus over 1781–1846 at dt = 14 d the drift-outer
+error is ~0.008″ and the kick-outer error ~0.016″, with opposite signs. The drift-outer default
+matches REBOUND to roundoff (A1). See docs/notes/M3.md.
 
 Conventions for x0, v0, masses, t_out: see ``fork.integrators._nbody``.
 """
@@ -34,6 +35,8 @@ from fork.model.bodies import G
 
 SCHEME_KICK_OUTER = 0
 SCHEME_DRIFT_OUTER = 1
+SCHEME_DEFAULT = SCHEME_DRIFT_OUTER
+SCHEMES: dict[str, int] = {"wh_drift_outer": SCHEME_DRIFT_OUTER, "wh_kick_outer": SCHEME_KICK_OUTER}
 
 
 @njit(cache=True)
@@ -130,7 +133,7 @@ def integrate_states(
     masses: np.ndarray,
     t_out: np.ndarray,
     dt: float,
-    scheme: int = SCHEME_KICK_OUTER,
+    scheme: int = SCHEME_DEFAULT,
 ) -> tuple[np.ndarray, np.ndarray]:
     """Heliocentric (positions, velocities) at t_out, each (len(t_out), N, 3)."""
     check_inputs(x0, v0, masses)
@@ -160,7 +163,7 @@ def integrate(
     masses: np.ndarray,
     t_out: np.ndarray,
     dt: float,
-    scheme: int = SCHEME_KICK_OUTER,
+    scheme: int = SCHEME_DEFAULT,
 ) -> np.ndarray:
-    """Heliocentric positions [t_out, body, 3]. Default dt for this project: 20 days."""
+    """Heliocentric positions [t_out, body, 3]. Project default dt: ``DEFAULT_DT_DAYS`` (14 d)."""
     return integrate_states(x0, v0, masses, t_out, dt, scheme)[0]

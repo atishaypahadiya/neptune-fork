@@ -1,0 +1,85 @@
+{
+ "description": "Uranus heliocentric ecliptic-J2000 longitude error vs Wisdom–Holman step size, Sun+Jupiter+Saturn+Uranus from JPL Horizons at 1781-03-13, integrated to 1846-12-31. Error = max over outputs every 280 d of |WH − RK4(dt = 1 d)|.",
+ "span_jd_tdb": [
+  2371628.5,
+  2395296.5
+ ],
+ "reference": {
+  "integrator": "rk4",
+  "dt_days": 1.0
+ },
+ "default_dt_days": 14.0,
+ "observational_sigma_arcsec": 3.0,
+ "dt_days": [
+  56.0,
+  40.0,
+  28.0,
+  20.0,
+  14.0,
+  10.0,
+  7.0,
+  5.0,
+  3.5,
+  2.5
+ ],
+ "series": [
+  {
+   "scheme": "wh_drift_outer",
+   "label": "Wisdom–Holman, Kepler drift outermost (default; = REBOUND WHFast)",
+   "is_default": true,
+   "max_abs_dlon_uranus_arcsec": [
+    0.1279,
+    0.06525,
+    0.03197,
+    0.01631,
+    0.007993,
+    0.004078,
+    0.001998,
+    0.001019,
+    0.0004995,
+    0.0002548
+   ],
+   "max_abs_dr_uranus_au": [
+    1.283e-05,
+    6.545e-06,
+    3.207e-06,
+    1.636e-06,
+    8.017e-07,
+    4.091e-07,
+    2.004e-07,
+    1.023e-07,
+    5.011e-08,
+    2.556e-08
+   ]
+  },
+  {
+   "scheme": "wh_kick_outer",
+   "label": "Wisdom–Holman, kick outermost",
+   "is_default": false,
+   "max_abs_dlon_uranus_arcsec": [
+    0.2559,
+    0.1305,
+    0.06396,
+    0.03263,
+    0.01599,
+    0.008158,
+    0.003998,
+    0.00204,
+    0.0009994,
+    0.0005099
+   ],
+   "max_abs_dr_uranus_au": [
+    2.567e-05,
+    1.31e-05,
+    6.417e-06,
+    3.274e-06,
+    1.604e-06,
+    8.185e-07,
+    4.011e-07,
+    2.046e-07,
+    1.003e-07,
+    5.116e-08
+   ]
+  }
+ ]
+}

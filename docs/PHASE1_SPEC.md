@@ -34,16 +34,24 @@ over 1000 random cases (hypothesis); e from 0 to 0.95.
 
 ## M3: Integrators
 - `rk4.py` (baseline, not symplectic), `leapfrog.py` (KDK), `wisdom_holman.py`
-  (democratic heliocentric coordinates: half-kick interaction → Sun-momentum drift → Kepler drift
-  → Sun-momentum drift → half-kick). All `numba.njit`, signature
+  (democratic heliocentric coordinates). The default composition is REBOUND WHFast-DH's, with the
+  Kepler drift outermost: Kepler drift (h/2) → Sun-momentum drift (h/2) → interaction kick (h) →
+  Sun-momentum drift (h/2) → Kepler drift (h/2). The kick-outermost composition (half-kick →
+  Sun-momentum drift → Kepler drift → Sun-momentum drift → half-kick) stays available as
+  `wh_kick_outer`. All `numba.njit`, signature
   `integrate(x0, v0, masses, t_out, dt) -> positions[t_out, body, 3]`.
-- Default dt = 20 days.
+- Default dt = 14 days (`fork.integrators.DEFAULT_DT_DAYS`). *Amended:* the original 20 d, with
+  the kick-outermost default, gave 0.049″ against REBOUND and 4e-8 energy error; see
+  `docs/notes/M3.md`.
 **A1 (acceptance):**
   - Sun+Jupiter+Saturn+Uranus from Horizons @ JD of 1781-03-13: Uranus heliocentric longitude agrees
     with REBOUND WHFast (same ICs, same dt) to **< 0.01″** over 1781–1846.
   - Relative energy error over 1000 yr stays bounded **< 1e-8** for WH; RK4 shows secular drift
     (save the comparison plot; it becomes a site panel).
   - WH run of 65 yr completes in **< 10 ms** after JIT warmup.
+  - Convergence order (permanent test): Uranus position error vs a dt = 1 d reference drops by
+    a ratio in **[3.5, 4.5]** per halving of dt (28 → 14 → 7 → 3.5 d), for both compositions.
+    The data is exported to `site/data/wh_convergence.json` for a future panel.
 
 ## M4: Forward model and synthetic data
 - `model/forward.py`: `predict_uranus_lon(theta, t_jd)` where
