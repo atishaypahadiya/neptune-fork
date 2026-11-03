@@ -1,0 +1,41 @@
+{
+  "description": "A1 initial conditions: Sun-centered geometric states from JPL Horizons, ecliptic J2000 (Horizons refplane=ecliptic), AU and AU/day. Public-domain JPL data, cached here so A1 runs without network. Regenerate from data/cache via the snippet in docs/notes/M3.md; test_horizons.py checks it against live Horizons.",
+  "epoch_iso_tdb": "1781-03-13T00:00:00",
+  "jd_tdb": 2371628.5,
+  "center": "500@10",
+  "refplane": "ecliptic",
+  "state_ecl_j2000": {
+    "jupiter": [
+      -3.404481144108239,
+      -4.18765617371522,
+      0.09323241486436948,
+      0.005775980180381112,
+      -0.004409773142778507,
+      -0.0001123113520117233
+    ],
+    "saturn": [
+      -2.250892104489839,
+      -9.799441632896249,
+      0.2635562301901734,
+      0.005129028643409322,
+      -0.001275325622627965,
+      -0.0001799345283388902
+    ],
+    "uranus": [
+      -0.168065700449957,
+      18.97955197483094,
+      0.07397407382584137,
+      -0.003958201472200923,
+      -0.0002203161340544969,
+      5.075081381888732e-05
+    ],
+    "neptune": [
+      -30.00394198933168,
+      -3.941837660139877,
+      0.7719941318379938,
+      0.0003973439831000363,
+      -0.003098311570952269,
+      5.454690616426864e-05
+    ]
+  }
+}
