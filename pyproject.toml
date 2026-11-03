@@ -1,0 +1,56 @@
+[project]
+name = "fork"
+version = "0.1.0"
+description = "Rebuild Le Verrier's 1846 prediction of Neptune from Uranus's motion, then generalize it into an anomaly fork engine."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.26",
+    "scipy>=1.11",
+    "numba>=0.59",
+    "emcee>=3.1",
+    "astropy>=6.0",
+    "astroquery>=0.4.7",
+    "matplotlib>=3.8",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "hypothesis>=6",
+    "rebound>=4",
+    "ruff>=0.6",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/fork"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = [
+    "slow: tests over ~5 s (deselect with -m 'not slow')",
+    "network: tests that need JPL Horizons access (deselect with -m 'not network')",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "NPY", "RUF", "TID"]
+ignore = [
+    "RUF001", "RUF002", "RUF003",  # allow Greek letters / ″ in strings, docstrings, comments
+]
+
+# project rule 1: REBOUND is a test dependency only. Enforce it.
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"rebound".msg = "REBOUND is a test-only dependency; never import it from src/."
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["TID251"]
