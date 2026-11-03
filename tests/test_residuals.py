@@ -56,7 +56,7 @@ def run_a2(model, seed):
 def test_a2_residual_curve(model):
     """A2: peak-to-peak ≈ 130″ (±25″) and a slope sign change within 1815–1830.
 
-    Measured (seed 0, dt = 14 d, i and Ω held): p2p 142.7″; slope sign changes at 1698.5,
+    Measured (seed 0, dt = 12 d, i and Ω held): p2p 142.7″; slope sign changes at 1698.5,
     1734.5, 1783.5, 1806.5, 1828.5. See docs/notes/M4.md.
     """
     fit, curve, flips = run_a2(model, seed=0)
@@ -68,7 +68,7 @@ def test_a2_residual_curve(model):
 @pytest.mark.slow
 @pytest.mark.parametrize("seed", [1, 2, 3, 4])
 def test_a2_robust_across_noise_seeds(model, seed):
-    """Measured (dt = 14 d) p2p 142.7–145.4″, in-window flip at 1828.5 for seeds 1–4."""
+    """Measured (dt = 12 d) p2p 142.7–145.4″, in-window flip at 1828.5 for seeds 1–4."""
     fit, curve, flips = run_a2(model, seed)
     assert fit.success
     assert 105.0 <= np.ptp(curve) <= 155.0

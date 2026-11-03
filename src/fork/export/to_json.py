@@ -29,7 +29,7 @@ A1_EPOCH_JD_TDB = 2371628.5  # 1781-03-13.0 TDB (Herschel's discovery; A1 initia
 JD_1846_END_TDB = 2395296.5  # 1846-12-31.0 TDB
 A1_BODIES = ("jupiter", "saturn", "uranus")
 # Every dt divides 280 d, so the output grid below is on every integrator's step grid.
-CONVERGENCE_DT_DAYS = (56.0, 40.0, 28.0, 20.0, 14.0, 10.0, 7.0, 5.0, 3.5, 2.5)
+CONVERGENCE_DT_DAYS = (56.0, 40.0, 28.0, 20.0, 14.0, 12.0, 10.0, 7.0, 5.0, 3.5, 2.5)
 CONVERGENCE_OUTPUT_STEP_DAYS = 280.0
 REFERENCE_DT_DAYS = 1.0
 
