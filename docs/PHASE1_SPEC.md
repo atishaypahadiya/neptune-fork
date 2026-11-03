@@ -92,9 +92,15 @@ post-1781 residual RMS is **≤ 1.5 σ_noise** (4.5″); without Neptune the sam
 - Derived quantity per sample: perturber geocentric ecliptic longitude on 1846-09-23
   (light-time corrected, Earth position from Horizons).
 **A3 (acceptance, slow):**
-  - Free-a posterior: true Neptune (m, a) inside the 68% region; 1846-09-23 longitude within **1°**.
-  - Le Verrier mode: 1846-09-23 longitude still within **~2°** despite wrong a. This is the
-    "right direction, wrong distance" result; write it up in `docs/notes/M5.md`.
+  *Amended (M5a review):* the fixed targets ("free-a 1846 longitude within 1°", "Le Verrier mode
+  within ~2°") are removed. The M5a profile likelihood showed that these data constrain the free-a
+  1846 longitude only to about ±10° (Δχ² = 1). A fixed tolerance would therefore test the noise
+  draw, not the code. The replacements:
+  - **A3a (bias):** on noise-free data, the free-a fit recovers true Neptune's 1846-09-23
+    geocentric longitude to within **0.5°**.
+  - **A3b (calibration):** across **N ≥ 10 noise seeds**, the true 1846-09-23 longitude falls
+    inside the 68% posterior interval (free a, e ∈ [0, 0.3]) in **50–85%** of seeds. Report
+    the interval width.
   - Mass–distance posterior shows the expected ridge (plot saved).
 
 ## M6: Historical data
