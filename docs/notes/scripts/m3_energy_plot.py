@@ -3,7 +3,8 @@
     uv run python docs/notes/scripts/m3_energy_plot.py
 
 Sun + Jupiter + Saturn + Uranus from Horizons at 1781-03-13, default dt (12 d), 1000 yr. Plots the
-envelope (max over 25-yr windows) of |ΔE/E| on one log axis. This becomes a site panel in M7.
+envelope (max over 25-yr windows) of |ΔE/E| on one log axis, every line labelled inline (no legend).
+This becomes a site panel in M7.
 """
 
 import json
@@ -33,6 +34,9 @@ SERIES = [  # fixed categorical order: slot 1..4
     ("wh_kick_outer", "Wisdom–Holman (kick outermost)", "#1baf7a"),
     ("leapfrog", "Leapfrog (KDK)", "#eda100"),
 ]
+# vertical nudges [pt] for end labels; kick-outermost ends at ~1e-8, so it is lifted clear of
+# the bound's level (RK4 above it is lifted too, to keep the two apart)
+LABEL_DY_PT = {"wh_kick_outer": 5, "rk4": 9, "wh_drift_outer": -2}
 
 
 def main() -> None:
@@ -62,22 +66,24 @@ def main() -> None:
         de = np.abs([(energy_helio(xs[k], vs[k], masses) - e0) / abs(e0) for k in range(t.size)])
         env = de[: n_win * win].reshape(n_win, win).max(axis=1)
         ax.plot(t_yr, env, color=color, lw=2.0, label=label, solid_capstyle="round")
-        ax.annotate(label, (t_yr[-1], env[-1]), xytext=(6, 0), textcoords="offset points",
-                    va="center", fontsize=9, color=INK)  # fmt: skip
-    ax.axhline(1e-8, color=INK, lw=1.2, ls=(0, (4, 3)), zorder=5, label="A1 bound for WH (1e-8)")
+        # end labels sit just outside the axes (x = 1000), where the dashed bound line stops
+        ax.annotate(label, (1000.0, env[-1]), xytext=(6, LABEL_DY_PT.get(key, 0)),
+                    textcoords="offset points", va="center", fontsize=9, color=INK,
+                    annotation_clip=False)  # fmt: skip
+    ax.axhline(1e-8, color=INK, lw=1.2, ls=(0, (4, 3)), zorder=5)
+    ax.annotate("A1 bound for WH: 1e-8", (15.0, 1e-8), xytext=(0, 16), textcoords="offset points",
+                va="center", fontsize=8.5, color=INK_2)  # fmt: skip
     ax.set_yscale("log")
     ax.set_xlim(0, 1000)
     ax.set_xlabel("years after 1781-03-13")
     ax.set_ylabel("|ΔE / E|  (max per 25-yr window)")
-    ax.set_title("Symplectic integrators keep energy error bounded; RK4 drifts",
+    ax.set_title("RK4 wins short-term, drifts long-term; Wisdom–Holman stays bounded",
                  loc="left", color=INK, fontsize=11.5)  # fmt: skip
     ax.grid(axis="y", which="major", color="#e6e5e1", lw=0.8)
     ax.spines[["top", "right"]].set_visible(False)
-    ax.legend(loc="upper left", bbox_to_anchor=(0.0, -0.16), ncol=2, frameon=False,
-              fontsize=9, labelcolor=INK)  # fmt: skip
     fig.text(0.01, 0.005, f"Sun + Jupiter + Saturn + Uranus, Horizons ICs at 1781-03-13, dt = {DT:g} d",
              fontsize=8, color=INK_MUTED)  # fmt: skip
-    fig.subplots_adjust(left=0.1, right=0.66, top=0.9, bottom=0.3)
+    fig.subplots_adjust(left=0.1, right=0.66, top=0.9, bottom=0.17)
     fig.savefig(OUT, facecolor=SURFACE)
     print(f"wrote {OUT}")
 
