@@ -74,8 +74,13 @@ sparse pre-discovery era.
 post-1781 residual RMS is **≤ 1.5 σ_noise** (4.5″); without Neptune the same check must fail.
 
 ## M5: Inverse problem on synthetic data
+*Split:* **M5a** = the point fits below (no MCMC); **M5b** = MCMC, derived quantity and A3.
 - `inference/fit.py`: multistart Levenberg–Marquardt over a 24-point grid in perturber λ₀ (0–360°),
   two modes: (a) **Le Verrier mode**, a fixed at 38.4 AU (Bode's law); (b) **free a**.
+  Free: Uranus a, e, ϖ, λ₀ (i, Ω held, rule 2) and perturber (log10 m, a or fixed,
+  √e·cos ϖ, √e·sin ϖ, λ₀). M5a reports per mode: best m, a, e, χ²/dof, post-1781 residual RMS,
+  number of distinct local minima, and the 1846-09-23 geocentric longitude vs true Neptune;
+  exports residuals after fit to `site/data/m5a_fits.json`. Results: `docs/notes/M5.md`.
 - `inference/mcmc.py`: emcee, 32+ walkers, sample in
   (log10 m, log a, √e·cos ϖ, √e·sin ϖ, λ₀, Uranus elements).
   Priors: log10 m ∈ [0, 2] (1–100 M⊕), a ∈ [20, 60] AU, angles uniform. The perturber's

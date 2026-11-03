@@ -178,11 +178,15 @@ def states_about_inner_barycenter_ecl_j2000(
 # --------------------------------------------------------------------------------------------
 
 A1_EPOCH_ISO_TDB = "1781-03-13T00:00:00"  # Herschel's discovery of Uranus; A1 initial conditions
+# Galle's discovery night, Berlin: the search ran around local midnight (≈ 23 h UT). Given in TDB;
+# the ~6 s ΔT is irrelevant (Neptune moves ~1e-4″ in 6 s).
+GALLE_EPOCH_ISO_TDB = "1846-09-23T23:00:00"
 
 
 def default_fetch_plan() -> dict[str, np.ndarray]:
-    """Epochs fetched by ``--fetch``: the A1 epoch for every body, plus a yearly 1690–1846 grid
-    (Jan 1.0 TDB) for Uranus, Neptune and Earth. Later milestones extend this plan."""
+    """Epochs fetched by ``--fetch``: the A1 epoch for every body, a yearly 1690–1846 grid
+    (Jan 1.0 TDB) for Uranus, Neptune and Earth, and Galle's discovery epoch (M5) for Earth,
+    Neptune and the inner planets."""
     from fork.data.frames import jd_tdb_from_iso
 
     a1 = np.array([jd_tdb_from_iso(A1_EPOCH_ISO_TDB)])
@@ -190,6 +194,9 @@ def default_fetch_plan() -> dict[str, np.ndarray]:
     plan = {name: a1 for name in BODIES}
     for name in ("uranus", "neptune", "earth"):
         plan[name] = np.union1d(a1, yearly)
+    galle = jd_tdb_from_iso(GALLE_EPOCH_ISO_TDB)
+    for name in ("earth", "neptune", *(b.name for b in INNER_BODIES)):
+        plan[name] = np.union1d(plan[name], [galle])
     return plan
 
 

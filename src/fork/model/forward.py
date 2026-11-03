@@ -33,6 +33,7 @@ from fork.data.frames import elements_to_state, state_to_elements
 from fork.integrators import DEFAULT_DT_DAYS
 from fork.integrators.wisdom_holman import SCHEME_DEFAULT
 from fork.integrators.wisdom_holman import integrate as wh_integrate
+from fork.integrators.wisdom_holman import integrate_states as wh_integrate_states
 from fork.model.bodies import (
     JUPITER,
     M_CENTRAL_MSUN,
@@ -67,16 +68,10 @@ PERTURBER_PARAM_NAMES: tuple[str, ...] = (
 
 
 @njit(cache=True)
-def _uranus_lon_kernel(
-    uranus_el: np.ndarray,
-    perturber_el: np.ndarray,
-    x_js: np.ndarray,
-    v_js: np.ndarray,
-    t_rel_days: np.ndarray,
-    dt: float,
-    scheme: int,
-) -> np.ndarray:
-    """Heliocentric ecl_j2000 longitude of Uranus [rad, in [0, 2π)] at epoch + t_rel_days."""
+def _initial_conditions(
+    uranus_el: np.ndarray, perturber_el: np.ndarray, x_js: np.ndarray, v_js: np.ndarray
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """(x0, v0, masses) for [J, S, U, (P)] from θ; heliocentric about the inner barycenter."""
     n_body = 3 if perturber_el.size == 0 else 4
     x0 = np.empty((n_body, 3))
     v0 = np.empty((n_body, 3))
@@ -111,13 +106,41 @@ def _uranus_lon_kernel(
         )
         x0[3] = rp
         v0[3] = vp
+    return x0, v0, masses
 
+
+@njit(cache=True)
+def _uranus_lon_kernel(
+    uranus_el: np.ndarray,
+    perturber_el: np.ndarray,
+    x_js: np.ndarray,
+    v_js: np.ndarray,
+    t_rel_days: np.ndarray,
+    dt: float,
+    scheme: int,
+) -> np.ndarray:
+    """Heliocentric ecl_j2000 longitude of Uranus [rad, in [0, 2π)] at epoch + t_rel_days."""
+    x0, v0, masses = _initial_conditions(uranus_el, perturber_el, x_js, v_js)
     pos = wh_integrate(x0, v0, masses, t_rel_days, dt, scheme)
     out = np.empty(t_rel_days.size)
     for k in range(t_rel_days.size):
         lon = math.atan2(pos[k, 2, 1], pos[k, 2, 0])
         out[k] = lon + TWO_PI if lon < 0.0 else lon
     return out
+
+
+@njit(cache=True)
+def _states_kernel(
+    uranus_el: np.ndarray,
+    perturber_el: np.ndarray,
+    x_js: np.ndarray,
+    v_js: np.ndarray,
+    t_rel_days: np.ndarray,
+    dt: float,
+    scheme: int,
+) -> tuple[np.ndarray, np.ndarray]:
+    x0, v0, masses = _initial_conditions(uranus_el, perturber_el, x_js, v_js)
+    return wh_integrate_states(x0, v0, masses, t_rel_days, dt, scheme)
 
 
 @dataclass(frozen=True)
@@ -160,30 +183,38 @@ class UranusModel:
         return predict_uranus_lon(theta, t_jd, self.context)
 
 
+def _split_theta(theta: ArrayLike) -> tuple[np.ndarray, np.ndarray]:
+    theta = np.asarray(theta, dtype=np.float64)
+    if theta.shape == (6,):
+        return np.ascontiguousarray(theta), np.empty(0)
+    if theta.shape == (11,):
+        return np.ascontiguousarray(theta[:6]), np.ascontiguousarray(theta[6:])
+    raise ValueError(f"theta must have 6 or 11 entries, got shape {theta.shape}")
+
+
 def predict_uranus_lon(theta: ArrayLike, t_jd: ArrayLike, context: ForwardContext) -> np.ndarray:
     """Uranus heliocentric longitude ``lon_ecl_j2000_rad`` at TDB JDs ``t_jd``.
 
     ``theta`` has 6 entries (Uranus only) or 11 (Uranus + planar perturber); see module docstring.
     """
-    theta = np.asarray(theta, dtype=np.float64)
-    if theta.shape == (6,):
-        uranus, pert = theta, np.empty(0)
-    elif theta.shape == (11,):
-        uranus, pert = theta[:6], theta[6:]
-    else:
-        raise ValueError(f"theta must have 6 or 11 entries, got shape {theta.shape}")
+    uranus, pert = _split_theta(theta)
     t = np.asarray(t_jd, dtype=np.float64)
     t_rel = np.ascontiguousarray(np.atleast_1d(t).ravel() - context.epoch_jd_tdb)
-    lon = _uranus_lon_kernel(
-        np.ascontiguousarray(uranus),
-        np.ascontiguousarray(pert),
-        context.x_js_ecl_j2000,
-        context.v_js_ecl_j2000,
-        t_rel,
-        context.dt_days,
-        context.scheme,
-    )
+    lon = _uranus_lon_kernel(uranus, pert, context.x_js_ecl_j2000, context.v_js_ecl_j2000, t_rel,
+                             context.dt_days, context.scheme)  # fmt: skip
     return lon.reshape(t.shape)
+
+
+def predict_states_ecl_j2000(
+    theta: ArrayLike, t_jd: ArrayLike, context: ForwardContext
+) -> tuple[np.ndarray, np.ndarray]:
+    """(pos [AU], vel [AU/day]) of [Jupiter, Saturn, Uranus, (perturber)] at TDB JDs ``t_jd``,
+    shape (n_t, n_body, 3), heliocentric about the inner barycenter, ecl_j2000."""
+    uranus, pert = _split_theta(theta)
+    t_rel = np.ascontiguousarray(np.atleast_1d(np.asarray(t_jd, dtype=np.float64)).ravel()
+                                 - context.epoch_jd_tdb)  # fmt: skip
+    return _states_kernel(uranus, pert, context.x_js_ecl_j2000, context.v_js_ecl_j2000, t_rel,
+                          context.dt_days, context.scheme)  # fmt: skip
 
 
 def uranus_theta_from_state(state_ecl_j2000: ArrayLike) -> np.ndarray:

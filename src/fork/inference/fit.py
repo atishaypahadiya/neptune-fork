@@ -1,7 +1,9 @@
 """Least-squares fits of forward models to longitude observations.
 
 M4: ``fit_uranus_elements`` — Uranus's elements with no perturber (A2, via ``fit_uranus_only``)
-or with a fixed, planted perturber (A2b). M5 will add the multistart perturber fits here.
+or with a fixed, planted perturber (A2b).
+M5a: ``fit_perturber_multistart`` — Uranus's in-plane elements + a planar perturber, from a
+24-point grid of perturber λ₀ starts, in Le Verrier mode (a fixed) or with a free.
 
 Uranus is fitted in non-singular variables
 
@@ -21,7 +23,7 @@ vanishes at i = 0, that mode starts from i = 1° at several Ω and keeps the bes
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 import numpy as np
 from scipy.optimize import least_squares
@@ -165,3 +167,190 @@ def fit_uranus_elements(
     resid = wrap_rad(obs.lon_ecl_j2000_rad - predict(theta, obs.jd_tdb))
     return FitResult(theta, resid, chi2, obs.jd_tdb.size - int(free.sum()), bool(sol.success),
                      str(sol.message), int(sol.nfev), k)  # fmt: skip
+
+
+# ---------------------------------------------------------------------------------- M5a
+
+# Perturber starting point, identical for every λ₀ grid start and derived from nothing about
+# Neptune: mass at the middle of the M5 prior (log10 m ∈ [0, 2] → 10 M⊕), a at Bode's 38.4 AU,
+# and a small nonzero √e (the e-gradient vanishes at k = h = 0, as with i for Uranus).
+START_LOG10_M_EARTH = 1.0
+START_SQRT_E_K_H = (0.1, 0.0)  # e = 0.01, ϖ = 0
+N_LAM0_STARTS = 24
+# Outside these the forward model is unphysical (unbound / degenerate); residuals are set huge so
+# LM rejects the step. Distinct from the M5 prior, which is reported, not enforced, here.
+_MAX_E = 0.95
+_MIN_A_AU = 1.0
+_MAX_LOG10_M = 4.0
+_PENALTY = 1e6
+# Two converged starts are the same local minimum if all of these agree. Loose in a: in free-a
+# mode LM stops at slightly different points along the flat mass–distance valley.
+MINIMUM_TOL = {"chi2": 0.5, "lam0_deg": 5.0, "log10_m": 0.05, "a_au": 3.0}
+# A run whose perturber improves χ² over the no-perturber fit by less than this has effectively
+# switched the perturber off ("null"), not found a minimum.
+NULL_DCHI2 = 1.0
+
+
+@dataclass(frozen=True)
+class PerturberFit:
+    """One LM run. ``theta`` is the 11-entry forward-model θ (Uranus 6 + perturber 5)."""
+
+    theta: np.ndarray
+    residual_rad: np.ndarray
+    chi2: float
+    dof: int
+    success: bool
+    nfev: int
+    start_lam0_rad: float
+    status: str = "converged"  # converged | stalled_at_guard | null | failed
+
+    @property
+    def mass_earth(self) -> float:
+        return float(10.0 ** self.theta[6])
+
+    @property
+    def in_m5_prior(self) -> bool:
+        """log10 m ∈ [0, 2], a ∈ [20, 60] AU, e ≤ 0.3 (PHASE1_SPEC M5)."""
+        lm, a, e = self.theta[6], self.theta[7], self.theta[8]
+        return bool(0.0 <= lm <= 2.0 and 20.0 <= a <= 60.0 and e <= 0.3)
+
+
+@dataclass(frozen=True)
+class LocalMinimum:
+    best: PerturberFit
+    n_starts: int  # how many λ₀ starts converged here
+    start_lam0_deg: tuple[float, ...]
+
+
+@dataclass(frozen=True)
+class MultistartResult:
+    mode: str  # "le_verrier" or "free_a"
+    fits: tuple[PerturberFit, ...]  # one per start, in grid order
+    minima: tuple[LocalMinimum, ...]  # distinct converged minima, best first
+    uranus_only: FitResult  # the no-perturber fit that seeds Uranus's elements
+
+    @property
+    def best(self) -> PerturberFit:
+        return self.minima[0].best
+
+    def status_counts(self) -> dict[str, int]:
+        out = {k: 0 for k in ("converged", "stalled_at_guard", "null", "failed")}
+        for f in self.fits:
+            out[f.status] += 1
+        return out
+
+
+def _same_minimum(f: PerturberFit, g: PerturberFit, free_a: bool) -> bool:
+    tol = MINIMUM_TOL
+    dlam = abs(float(wrap_rad(f.theta[10] - g.theta[10])))
+    return (abs(f.chi2 - g.chi2) <= tol["chi2"] and math.degrees(dlam) <= tol["lam0_deg"]
+            and abs(f.theta[6] - g.theta[6]) <= tol["log10_m"]
+            and (not free_a or abs(f.theta[7] - g.theta[7]) <= tol["a_au"]))  # fmt: skip
+
+
+def classify(fit: PerturberFit, chi2_no_perturber: float) -> str:
+    """``failed`` (LM did not converge), ``stalled_at_guard`` (stopped against the e / a / m
+    guard that keeps the forward model physical), ``null`` (perturber explains nothing:
+    Δχ² < ``NULL_DCHI2`` vs no perturber) or ``converged`` (a genuine local minimum)."""
+    th = fit.theta
+    if not fit.success:
+        return "failed"
+    if (th[8] >= _MAX_E - 0.01 or th[1] >= _MAX_E - 0.01 or th[7] <= _MIN_A_AU + 0.01
+            or th[6] >= _MAX_LOG10_M - 0.01):  # fmt: skip
+        return "stalled_at_guard"
+    if fit.chi2 > chi2_no_perturber - NULL_DCHI2:
+        return "null"
+    return "converged"
+
+
+def group_minima(fits: list[PerturberFit], free_a: bool) -> tuple[LocalMinimum, ...]:
+    """Cluster ``converged`` fits into distinct local minima (``MINIMUM_TOL``), best χ² first."""
+    groups: list[list[PerturberFit]] = []
+    for f in sorted((f for f in fits if f.status == "converged"), key=lambda f: f.chi2):
+        for g in groups:
+            if _same_minimum(f, g[0], free_a):
+                g.append(f)
+                break
+        else:
+            groups.append([f])
+    return tuple(LocalMinimum(g[0], len(g), tuple(math.degrees(f.start_lam0_rad) for f in g))
+                 for g in groups)  # fmt: skip
+
+
+def _unpack_perturber_z(z: np.ndarray, pq: np.ndarray, a_fixed_au: float | None) -> np.ndarray:
+    """LM vector z → 11-entry θ. z = Uranus (a, k, h, λ₀) + perturber (log10 m, [a], k, h, λ₀)."""
+    from fork.model.hidden_mass import perturber_fit_to_theta
+
+    theta_u = uranus_x_to_theta(np.concatenate([z[:4], pq]))
+    y = np.array([z[4], z[5], z[6], z[7], z[8]]) if a_fixed_au is None else \
+        np.array([z[4], a_fixed_au, z[5], z[6], z[7]])  # fmt: skip
+    return np.concatenate([theta_u, perturber_fit_to_theta(y)])
+
+
+def _perturber_residuals(z, pq, a_fixed_au, obs: LongitudeObservations, context) -> np.ndarray:
+    theta = _unpack_perturber_z(z, pq, a_fixed_au)
+    if (theta[1] >= _MAX_E or theta[8] >= _MAX_E or theta[7] <= _MIN_A_AU
+            or theta[6] >= _MAX_LOG10_M):  # fmt: skip
+        return np.full(obs.jd_tdb.size, _PENALTY)
+    pred = predict_uranus_lon(theta, obs.jd_tdb, context)
+    return wrap_rad(obs.lon_ecl_j2000_rad - pred) / obs.sigma_rad
+
+
+def _run_perturber_start(z0, pq, a_fixed_au, obs, context, lam0: float) -> PerturberFit:
+    """One LM run (module level so a process pool can pickle it)."""
+    args = (pq, a_fixed_au, obs, context)
+    sol = least_squares(_perturber_residuals, z0, args=args, method="lm", x_scale="jac",
+                        xtol=1e-10, ftol=1e-10, gtol=1e-10, max_nfev=3000)  # fmt: skip
+    theta = _unpack_perturber_z(sol.x, pq, a_fixed_au)
+    chi2 = float(np.sum(sol.fun**2))
+    n_obs = obs.jd_tdb.size
+    ok = bool(sol.success) and chi2 < 0.5 * n_obs * _PENALTY**2
+    resid = wrap_rad(obs.lon_ecl_j2000_rad - predict_uranus_lon(theta, obs.jd_tdb, context))
+    return PerturberFit(theta, resid, chi2, n_obs - z0.size, ok, int(sol.nfev), float(lam0))
+
+
+def fit_perturber_multistart(
+    obs: LongitudeObservations,
+    context: ForwardContext,
+    inc_raan_ecl_j2000_rad: tuple[float, float],
+    *,
+    a_fixed_au: float | None = None,
+    n_lam0_starts: int = N_LAM0_STARTS,
+    lam0_starts_rad: np.ndarray | None = None,
+    n_workers: int = 1,
+) -> MultistartResult:
+    """Multistart Levenberg–Marquardt: Uranus (a, e, ϖ, λ₀) + perturber, from λ₀ grid starts.
+
+    Free variables: Uranus (a, e·cos ϖ, e·sin ϖ, λ₀) and perturber (log10 m, [a], √e·cos ϖ,
+    √e·sin ϖ, λ₀); a is held at ``a_fixed_au`` in Le Verrier mode. Uranus's i, Ω are held at
+    ``inc_raan_ecl_j2000_rad`` (CLAUDE.md rule 2). Every start shares the data-only Uranus
+    solution from ``fit_uranus_elements`` and the neutral perturber start above, differing only in
+    perturber λ₀ (``n_lam0_starts`` equally spaced over 0–360°, or ``lam0_starts_rad``).
+    ``n_workers > 1`` runs starts in a process pool; results are identical to serial.
+    """
+    from fork.model.hidden_mass import BODE_A_AU
+
+    free_a = a_fixed_au is None
+    a_p0 = BODE_A_AU if free_a else float(a_fixed_au)
+    a_fixed = None if free_a else a_p0
+    uranus_only = fit_uranus_elements(obs, context, inc_raan_ecl_j2000_rad)
+    xu0 = uranus_theta_to_x(uranus_only.theta)  # (a, k, h, λ₀, p, q); p, q held
+    pq = xu0[4:].copy()
+    if lam0_starts_rad is None:
+        lam0_starts_rad = np.arange(n_lam0_starts) * (TWO_PI / n_lam0_starts)
+    k0, h0 = START_SQRT_E_K_H
+    jobs = []
+    for lam0 in np.asarray(lam0_starts_rad, dtype=np.float64):
+        pert0 = [START_LOG10_M_EARTH, a_p0, k0, h0, lam0] if free_a else \
+            [START_LOG10_M_EARTH, k0, h0, lam0]  # fmt: skip
+        jobs.append((np.concatenate([xu0[:4], pert0]), pq, a_fixed, obs, context, float(lam0)))
+    if n_workers > 1:
+        from concurrent.futures import ProcessPoolExecutor
+
+        with ProcessPoolExecutor(max_workers=n_workers) as pool:
+            fits = list(pool.map(_run_perturber_start, *zip(*jobs, strict=True)))
+    else:
+        fits = [_run_perturber_start(*job) for job in jobs]
+    fits = [replace(f, status=classify(f, uranus_only.chi2)) for f in fits]
+    return MultistartResult("free_a" if free_a else "le_verrier", tuple(fits),
+                            group_minima(fits, free_a), uranus_only)  # fmt: skip
