@@ -9,7 +9,8 @@ mode is compared with the emcee chain that sat in it (chain A: started from the 
 fit; chain B: started on the 343° branch): medians and 16/84 % points, differences in units of
 the emcee σ (half the 68 % width). Also: mode masses and ln Z with dynesty's error and the
 spread over 100 jittered runs; run-to-run agreement. Output: docs/notes/M5b_dynesty_validation.json.
-Nested results are cached in data/cache/nested/ (gitignored); re-runs reuse them.
+Nested results are cached in data/cache/nested/ (gitignored); re-runs reuse them. Progress:
+data/cache/nested/progress.log; an interrupted run resumes from its .ckpt file.
 """
 
 import argparse
@@ -113,7 +114,9 @@ def main() -> None:
             res = NestedResult.load(path)
         else:
             res = run_nested(obs, ctx, space, np.random.default_rng(seed),
-                             n_workers=args.n_workers)  # fmt: skip
+                             n_workers=args.n_workers, progress_log=CACHE / "progress.log",
+                             checkpoint_file=CACHE / f"seed_0_free_a_e0.3_rng{seed}.ckpt",
+                             label=f"seed_0 free_a_e0.3 rng{seed}")  # fmt: skip
             res = NestedResult(res.space, res.results, res.nlive, res.dlogz, res.wall_s, seed)
             res.save(path)
         a = a_au_of(space, res.samples)
