@@ -233,6 +233,29 @@ def test_committed_profile_json_schema():
 
 
 @pytest.mark.slow
+def test_continuation_from_a_neighbour_on_the_e_bound_stays_on_its_branch(ctx):
+    """Seed 0, free a, e ≤ 0.3. The 314° profile fit sits on the bound (a 41.4 AU, χ² 78.44;
+    312°: 81.33, same branch). Continuing it to 313° must stay on that branch. Before the fix
+    the interior phase released the bound, slid to e 0.48, a 54 (χ² 78.1, infeasible), and
+    the boundary phase, started from there, ran to a 191 AU, χ² 1791, so 313° kept its
+    independent-start value χ² 94.10 (a 24.6). Boundary-first from the neighbour: 79.75."""
+    from fork.data.synthetic import make_synthetic_observations
+    from fork.inference.fit import fit_uranus_elements
+    from fork.model.forward import uranus_inc_raan_at_epoch
+
+    obs, _ = make_synthetic_observations(np.random.default_rng(0))
+    pq = uranus_theta_to_x(fit_uranus_elements(obs, ctx, uranus_inc_raan_at_epoch(EPOCH)).theta)[4:]
+    z_314 = np.array([19.137099950055436, -0.04704919565395124, 0.005576090577302515,
+                      1.6732138153723934, 1.3718759986942106, 41.44126472698675,
+                      -0.47853216084523426, -0.26647133248586197])  # fmt: skip
+    lam0 = 3.3836394030244747 - math.radians(1.0)
+    f = _run_constrained(z_314, lam0, pq, le_verrier_space(None), obs, ctx,
+                         GalleGeometry.from_horizons(), math.radians(313.0))  # fmt: skip
+    assert f.success and f.constraint_miss_arcsec < 1e-3
+    assert f.chi2 < 81.0 and 38.0 < f.theta[7] < 45.0 and f.theta[8] == pytest.approx(0.3)
+
+
+@pytest.mark.slow
 def test_committed_profile_point_reproduces(ctx):
     """Seed 0, Le Verrier mode, at true Neptune's longitude: a fresh 8-start constrained fit
     reproduces the committed profile value (all 8 starts agree on it; measured 82.475). ~10 s."""
