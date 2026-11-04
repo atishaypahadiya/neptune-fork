@@ -95,6 +95,40 @@ post-1781 residual RMS is **≤ 1.5 σ_noise** (4.5″); without Neptune the sam
   `docs/notes/M5_le_verrier.md`. MCMC runs locally (`python -m fork.export.m5b`). CI runs only
   a tiny smoke test. A summary JSON (`site/data/m5b_posteriors.json`) is committed; raw chains
   are not.
+  *Amended (M5b review, multimodality):* on seed 0 the free-a posterior has two modes. Mode A has
+  a ≈ 30 AU and e ≲ 0.05. Mode B has a ≈ 22 AU and e ≈ 0.28, against the e ≤ 0.3 bound, and
+  holds the best χ² (71.22 vs 71.91). An emcee chain started in either mode stays there for
+  20–40k steps while passing the 50τ test, so emcee reports the mode it started in. **M5b
+  posteriors therefore use dynesty** (`inference/nested.py`): static nested sampling,
+  `bound='multi'`, `sample='rslice'`, `nlive=1000`, stop at Δln Z < 0.1, with the perturber's
+  ϖ and λ₀ periodic. It reports ln Z ± error and the mode masses, found by splitting the
+  weighted samples at a = 25 AU. Phase 2's evidence needs it anyway. emcee stays, for checks
+  within one mode.
+  Validation gate, before the full run: on seed 0 (free a, e ≤ 0.3), both modes are recovered,
+  with within-mode medians and 68% points matching the two emcee chains to ≲ 0.5σ. A second rng
+  seed gives ln Z within the stated error and mode masses within a few %.
+- **Priors** (one definition, `inference/priors.py`, used by emcee and dynesty alike). The
+  sampled vector is q = (Uranus a, e·cos ϖ, e·sin ϖ, λ₀; perturber log10 m, ln a, √e·cos ϖ,
+  √e·sin ϖ, λ₀). The density is flat in q on the support below:
+  - perturber log10 m uniform on [0, 2] (1–100 M⊕);
+  - perturber a **log-uniform** on [20, 60] AU, i.e. ln a uniform. The emcee chains sample
+    ln a with a constant density, so they used exactly this prior;
+  - perturber e uniform on [0, e_max] and ϖ uniform on [0, 2π), equivalently (√e·cos ϖ,
+    √e·sin ϖ) uniform on the disk of radius √e_max. The nested-sampling transform is
+    e = e_max·u₁, ϖ = 2π·u₂;
+  - perturber λ₀ uniform on [0, 2π);
+  - Uranus (a, e·cos ϖ, e·sin ϖ, λ₀): uniform in a box centred on the Uranus-only fit, with
+    half-widths of 50σ. Here σ is that fit's formal σ (finite-difference Jacobian) scaled by
+    √(χ²/dof). The scaling is needed because the Uranus-only fit leaves the perturber's signal
+    in its residuals (χ²/dof = 21.6 on seed 0). Its raw σ is ~4.6× too small, and the
+    perturbed posteriors sit 40–63 raw σ from its centre, so an unscaled 50σ box would cut
+    them. Scaled, every emcee sample of both seed-0 modes lies within 27% of the box half-width.
+    Seed 0 half-widths: a 6.1e-3 AU, e·cos ϖ 4.3e-4, e·sin ϖ 4.1e-4, λ₀ 1.1e-3 rad (box ln
+    volume −24.66). Rationale: the box only has to contain every posterior of interest. It is
+    shared across all Phase 2 models fitted to the same data (hidden mass, modified law,
+    mundane), so its log-volume largely cancels in Bayes factors. A model whose Uranus
+    posterior came near the box edge would show up as samples piling at the edge, so that is
+    checked.
 - Derived quantity per sample: perturber geocentric ecliptic longitude on 1846-09-23
   (light-time corrected, Earth position from Horizons).
 **A3 (acceptance, slow):**
@@ -105,8 +139,9 @@ post-1781 residual RMS is **≤ 1.5 σ_noise** (4.5″); without Neptune the sam
   - **A3a (bias):** on noise-free data, the free-a fit recovers true Neptune's 1846-09-23
     geocentric longitude to within **0.5°**.
   - **A3b (calibration):** across **N ≥ 10 noise seeds**, the true 1846-09-23 longitude falls
-    inside the 68% posterior interval (free a, e ∈ [0, 0.3]) in **50–85%** of seeds. Report
-    the interval width.
+    inside the 68% posterior interval (free a, e ∈ [0, 0.3]; **dynesty** posteriors, all modes)
+    in **50–85%** of seeds. Report the interval width, and beside it the M5a profile's Δχ² ≤ 1
+    interval for each seed.
   - Mass–distance posterior shows the expected ridge (plot saved).
 
 ## M6: Historical data

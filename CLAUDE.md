@@ -36,7 +36,8 @@ degeneracy, and a code structure built for Phase 2 model comparison.
    API credits are reserved for Phase 3; do not add LLM calls in Phase 1.
 
 ## Stack
-- Python ≥3.11, managed with `uv`. numpy, scipy, numba, emcee, astropy, astroquery, matplotlib.
+- Python ≥3.11, managed with `uv`. numpy, scipy, numba, emcee, dynesty, astropy,
+  astroquery, matplotlib.
 - Tests: pytest (+ rebound, hypothesis). Lint/format: ruff. Types: annotate public functions.
 - Site: static, `site/` — D3 + Observable Plot, reads `site/data/*.json`. Deployed to GitHub Pages.
 
@@ -56,7 +57,8 @@ src/fork/
   integrators/   leapfrog.py, kepler.py, wisdom_holman.py, rk4.py (baseline for comparison)
   data/          horizons.py, observations.py, frames.py, synthetic.py
   model/         bodies.py, forward.py (θ → Uranus longitudes), hidden_mass.py, likelihood.py
-  inference/     fit.py (multistart least squares), mcmc.py (emcee)
+  inference/     fit.py (multistart least squares), priors.py (shared), mcmc.py (emcee),
+                 nested.py (dynesty: multimodal posteriors + evidence), profile.py
   export/        to_json.py
 tests/           test_kepler.py, test_integrators.py (A1), test_residuals.py (A2),
                  test_recovery.py (A3, slow), test_historical.py (A4, slow)
