@@ -177,9 +177,10 @@ def fit_uranus_elements(
 START_LOG10_M_EARTH = 1.0
 START_SQRT_E_K_H = (0.1, 0.0)  # e = 0.01, ϖ = 0
 N_LAM0_STARTS = 24
-# The M5 prior's eccentricity bound, enforced in every point fit (smooth sin² map, see
-# PerturberSpace). Unbounded fits wandered to e = 0.51 (free a, seed 2) and 0.36 (Le Verrier
-# mode, seed 3), outside the prior the posterior uses. ``e_max=None`` is a diagnostic only.
+# The M5 prior's eccentricity bound, enforced in every point fit (two-phase bounded fit, see
+# PerturberSpace and ``_fit_bounded``). Unbounded fits wandered to e = 0.51 (free a, seed 2)
+# and 0.36 (Le Verrier mode, seed 3), outside the prior the posterior uses. ``e_max=None``
+# is a diagnostic only.
 E_PRIOR_MAX = 0.3
 # Outside these the forward model is unphysical (unbound / degenerate); residuals are set huge so
 # LM rejects the step. Distinct from the M5 prior, which is reported, not enforced, here.

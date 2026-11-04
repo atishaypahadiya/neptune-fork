@@ -1,5 +1,5 @@
 {
- "description": "M5a diagnostics of the 1846-09-23 longitude miss; best of 24 λ₀ starts per fit. dlon = perturber − true Neptune, geocentric, light-time corrected, ecliptic of date.",
+ "description": "M5a diagnostics of the 1846-09-23 longitude miss; best of n_starts λ₀ starts per fit (24 unless raised to 48, see N_LAM0_STARTS_RAISED). dlon = perturber − true Neptune, geocentric, light-time corrected, ecliptic of date.",
  "true_neptune_lon_ecl_of_date_deg": 325.873,
  "le_verrier_1846": {
   "a_au": 36.15,
@@ -24,20 +24,61 @@
     "mass_earth": 17.136,
     "a_au": 30.242,
     "e": 0.0036,
-    "varpi_ecl_j2000_deg": 86.75,
+    "varpi_ecl_j2000_deg": 87.04,
     "chi2": 0.001,
     "dof": 78,
     "chi2_per_dof": 0.0,
     "rms_post_1781_arcsec": 0.014,
-    "galle_lon_ecl_of_date_deg": 325.802,
-    "dlon_vs_neptune_deg": -0.071,
-    "n_distinct_minima": 5,
+    "galle_lon_ecl_of_date_deg": 325.801,
+    "dlon_vs_neptune_deg": -0.072,
+    "n_distinct_minima": 9,
+    "status_counts": {
+     "converged": 23,
+     "stalled_at_guard": 0,
+     "null": 1,
+     "failed": 0
+    },
+    "n_starts": 24
+   },
+   "free_a_unbounded": {
+    "mass_earth": 17.136,
+    "a_au": 30.242,
+    "e": 0.0036,
+    "varpi_ecl_j2000_deg": 87.04,
+    "chi2": 0.001,
+    "dof": 78,
+    "chi2_per_dof": 0.0,
+    "rms_post_1781_arcsec": 0.014,
+    "galle_lon_ecl_of_date_deg": 325.801,
+    "dlon_vs_neptune_deg": -0.072,
+    "n_distinct_minima": 8,
     "status_counts": {
      "converged": 19,
-     "stalled_at_guard": 5,
-     "null": 0,
+     "stalled_at_guard": 2,
+     "null": 3,
      "failed": 0
-    }
+    },
+    "n_starts": 24
+   },
+   "le_verrier_unbounded": {
+    "mass_earth": 21.321,
+    "a_au": 38.4,
+    "e": 0.2459,
+    "varpi_ecl_j2000_deg": 209.73,
+    "chi2": 0.851,
+    "dof": 79,
+    "chi2_per_dof": 0.0108,
+    "rms_post_1781_arcsec": 0.322,
+    "galle_lon_ecl_of_date_deg": 316.391,
+    "dlon_vs_neptune_deg": -9.482,
+    "n_distinct_minima": 6,
+    "status_counts": {
+     "converged": 20,
+     "stalled_at_guard": 3,
+     "null": 1,
+     "failed": 0
+    },
+    "n_starts": 24
    },
    "le_verrier": {
     "mass_earth": 21.321,
@@ -52,49 +93,52 @@
     "dlon_vs_neptune_deg": -9.482,
     "n_distinct_minima": 5,
     "status_counts": {
-     "converged": 21,
-     "stalled_at_guard": 2,
-     "null": 1,
+     "converged": 24,
+     "stalled_at_guard": 0,
+     "null": 0,
      "failed": 0
-    }
+    },
+    "n_starts": 24
    },
    "free_a_e_max_0.1": {
     "mass_earth": 17.136,
-    "a_au": 30.241,
+    "a_au": 30.242,
     "e": 0.0036,
-    "varpi_ecl_j2000_deg": 86.52,
+    "varpi_ecl_j2000_deg": 87.04,
     "chi2": 0.001,
     "dof": 78,
     "chi2_per_dof": 0.0,
     "rms_post_1781_arcsec": 0.014,
-    "galle_lon_ecl_of_date_deg": 325.803,
-    "dlon_vs_neptune_deg": -0.07,
-    "n_distinct_minima": 10,
+    "galle_lon_ecl_of_date_deg": 325.801,
+    "dlon_vs_neptune_deg": -0.072,
+    "n_distinct_minima": 5,
     "status_counts": {
-     "converged": 21,
+     "converged": 24,
      "stalled_at_guard": 0,
-     "null": 2,
-     "failed": 1
-    }
+     "null": 0,
+     "failed": 0
+    },
+    "n_starts": 24
    },
    "free_a_e_max_0.05": {
-    "mass_earth": 17.137,
-    "a_au": 30.243,
-    "e": 0.0035,
-    "varpi_ecl_j2000_deg": 87.91,
+    "mass_earth": 17.136,
+    "a_au": 30.242,
+    "e": 0.0036,
+    "varpi_ecl_j2000_deg": 87.04,
     "chi2": 0.001,
     "dof": 78,
     "chi2_per_dof": 0.0,
     "rms_post_1781_arcsec": 0.014,
-    "galle_lon_ecl_of_date_deg": 325.798,
-    "dlon_vs_neptune_deg": -0.075,
-    "n_distinct_minima": 14,
+    "galle_lon_ecl_of_date_deg": 325.801,
+    "dlon_vs_neptune_deg": -0.072,
+    "n_distinct_minima": 7,
     "status_counts": {
-     "converged": 23,
+     "converged": 24,
      "stalled_at_guard": 0,
-     "null": 1,
+     "null": 0,
      "failed": 0
-    }
+    },
+    "n_starts": 24
    },
    "le_verrier_1846": {
     "mass_earth": 36.624,
@@ -114,6 +158,7 @@
      "null": 15,
      "failed": 0
     },
+    "n_starts": 24,
     "heliocentric_1847_jan1": {
      "mean_lon_ecl_of_date_deg": 326.746,
      "true_lon_ecl_of_date_deg": 334.767
@@ -137,6 +182,7 @@
      "null": 15,
      "failed": 0
     },
+    "n_starts": 24,
     "heliocentric_1847_jan1": {
      "mean_lon_ecl_of_date_deg": 326.369,
      "true_lon_ecl_of_date_deg": 334.33
@@ -151,15 +197,16 @@
     "dof": 81,
     "chi2_per_dof": 0.4316,
     "rms_post_1781_arcsec": 0.553,
-    "galle_lon_ecl_of_date_deg": 325.109,
-    "dlon_vs_neptune_deg": -0.764,
+    "galle_lon_ecl_of_date_deg": 325.11,
+    "dlon_vs_neptune_deg": -0.763,
     "n_distinct_minima": 2,
     "status_counts": {
-     "converged": 15,
+     "converged": 16,
      "stalled_at_guard": 0,
-     "null": 9,
+     "null": 8,
      "failed": 0
     },
+    "n_starts": 24,
     "heliocentric_1847_jan1": {
      "mean_lon_ecl_of_date_deg": 319.83,
      "true_lon_ecl_of_date_deg": 326.671
@@ -168,7 +215,7 @@
   },
   "seed_0": {
    "free_a": {
-    "mass_earth": 15.509,
+    "mass_earth": 15.508,
     "a_au": 27.312,
     "e": 0.1652,
     "varpi_ecl_j2000_deg": 35.88,
@@ -176,56 +223,99 @@
     "dof": 78,
     "chi2_per_dof": 0.9219,
     "rms_post_1781_arcsec": 2.776,
-    "galle_lon_ecl_of_date_deg": 337.647,
-    "dlon_vs_neptune_deg": 11.774,
-    "n_distinct_minima": 4,
+    "galle_lon_ecl_of_date_deg": 337.649,
+    "dlon_vs_neptune_deg": 11.776,
+    "n_distinct_minima": 8,
     "status_counts": {
-     "converged": 20,
-     "stalled_at_guard": 3,
-     "null": 1,
+     "converged": 24,
+     "stalled_at_guard": 0,
+     "null": 0,
      "failed": 0
-    }
+    },
+    "n_starts": 24
    },
-   "le_verrier": {
+   "free_a_unbounded": {
+    "mass_earth": 15.508,
+    "a_au": 27.312,
+    "e": 0.1652,
+    "varpi_ecl_j2000_deg": 35.88,
+    "chi2": 71.907,
+    "dof": 78,
+    "chi2_per_dof": 0.9219,
+    "rms_post_1781_arcsec": 2.776,
+    "galle_lon_ecl_of_date_deg": 337.649,
+    "dlon_vs_neptune_deg": 11.776,
+    "n_distinct_minima": 6,
+    "status_counts": {
+     "converged": 21,
+     "stalled_at_guard": 1,
+     "null": 2,
+     "failed": 0
+    },
+    "n_starts": 24
+   },
+   "le_verrier_unbounded": {
     "mass_earth": 20.338,
     "a_au": 38.4,
-    "e": 0.2651,
-    "varpi_ecl_j2000_deg": 210.91,
+    "e": 0.265,
+    "varpi_ecl_j2000_deg": 210.92,
     "chi2": 75.557,
     "dof": 79,
     "chi2_per_dof": 0.9564,
     "rms_post_1781_arcsec": 2.865,
-    "galle_lon_ecl_of_date_deg": 318.999,
-    "dlon_vs_neptune_deg": -6.874,
+    "galle_lon_ecl_of_date_deg": 319.0,
+    "dlon_vs_neptune_deg": -6.873,
     "n_distinct_minima": 6,
     "status_counts": {
-     "converged": 22,
+     "converged": 21,
      "stalled_at_guard": 2,
+     "null": 1,
+     "failed": 0
+    },
+    "n_starts": 24
+   },
+   "le_verrier": {
+    "mass_earth": 20.338,
+    "a_au": 38.4,
+    "e": 0.265,
+    "varpi_ecl_j2000_deg": 210.92,
+    "chi2": 75.557,
+    "dof": 79,
+    "chi2_per_dof": 0.9564,
+    "rms_post_1781_arcsec": 2.865,
+    "galle_lon_ecl_of_date_deg": 319.0,
+    "dlon_vs_neptune_deg": -6.873,
+    "n_distinct_minima": 5,
+    "status_counts": {
+     "converged": 24,
+     "stalled_at_guard": 0,
      "null": 0,
      "failed": 0
-    }
+    },
+    "n_starts": 24
    },
    "free_a_e_max_0.1": {
-    "mass_earth": 15.856,
-    "a_au": 29.79,
-    "e": 0.0043,
-    "varpi_ecl_j2000_deg": 93.15,
-    "chi2": 72.784,
+    "mass_earth": 15.427,
+    "a_au": 28.164,
+    "e": 0.1,
+    "varpi_ecl_j2000_deg": 34.55,
+    "chi2": 72.072,
     "dof": 78,
-    "chi2_per_dof": 0.9331,
-    "rms_post_1781_arcsec": 2.799,
-    "galle_lon_ecl_of_date_deg": 328.659,
-    "dlon_vs_neptune_deg": 2.786,
-    "n_distinct_minima": 11,
+    "chi2_per_dof": 0.924,
+    "rms_post_1781_arcsec": 2.781,
+    "galle_lon_ecl_of_date_deg": 333.794,
+    "dlon_vs_neptune_deg": 7.921,
+    "n_distinct_minima": 6,
     "status_counts": {
-     "converged": 20,
+     "converged": 24,
      "stalled_at_guard": 0,
-     "null": 2,
-     "failed": 2
-    }
+     "null": 0,
+     "failed": 0
+    },
+    "n_starts": 24
    },
    "free_a_e_max_0.05": {
-    "mass_earth": 15.571,
+    "mass_earth": 15.572,
     "a_au": 28.939,
     "e": 0.05,
     "varpi_ecl_j2000_deg": 35.28,
@@ -233,15 +323,16 @@
     "dof": 78,
     "chi2_per_dof": 0.928,
     "rms_post_1781_arcsec": 2.789,
-    "galle_lon_ecl_of_date_deg": 331.07,
-    "dlon_vs_neptune_deg": 5.197,
-    "n_distinct_minima": 10,
+    "galle_lon_ecl_of_date_deg": 331.069,
+    "dlon_vs_neptune_deg": 5.196,
+    "n_distinct_minima": 6,
     "status_counts": {
-     "converged": 22,
+     "converged": 24,
      "stalled_at_guard": 0,
-     "null": 2,
+     "null": 0,
      "failed": 0
-    }
+    },
+    "n_starts": 24
    },
    "le_verrier_1846": {
     "mass_earth": 36.624,
@@ -261,6 +352,7 @@
      "null": 15,
      "failed": 0
     },
+    "n_starts": 24,
     "heliocentric_1847_jan1": {
      "mean_lon_ecl_of_date_deg": 327.144,
      "true_lon_ecl_of_date_deg": 335.229
@@ -284,6 +376,7 @@
      "null": 15,
      "failed": 0
     },
+    "n_starts": 24,
     "heliocentric_1847_jan1": {
      "mean_lon_ecl_of_date_deg": 326.794,
      "true_lon_ecl_of_date_deg": 334.822
@@ -302,11 +395,12 @@
     "dlon_vs_neptune_deg": 0.414,
     "n_distinct_minima": 2,
     "status_counts": {
-     "converged": 17,
+     "converged": 16,
      "stalled_at_guard": 0,
-     "null": 7,
+     "null": 8,
      "failed": 0
     },
+    "n_starts": 24,
     "heliocentric_1847_jan1": {
      "mean_lon_ecl_of_date_deg": 320.801,
      "true_lon_ecl_of_date_deg": 327.816
@@ -315,7 +409,7 @@
   },
   "seed_1": {
    "free_a": {
-    "mass_earth": 16.553,
+    "mass_earth": 16.554,
     "a_au": 28.744,
     "e": 0.0779,
     "varpi_ecl_j2000_deg": 35.12,
@@ -323,72 +417,116 @@
     "dof": 78,
     "chi2_per_dof": 0.7911,
     "rms_post_1781_arcsec": 2.775,
-    "galle_lon_ecl_of_date_deg": 330.291,
-    "dlon_vs_neptune_deg": 4.418,
-    "n_distinct_minima": 11,
+    "galle_lon_ecl_of_date_deg": 330.29,
+    "dlon_vs_neptune_deg": 4.417,
+    "n_distinct_minima": 9,
     "status_counts": {
-     "converged": 20,
-     "stalled_at_guard": 4,
+     "converged": 24,
+     "stalled_at_guard": 0,
      "null": 0,
      "failed": 0
-    }
+    },
+    "n_starts": 24
+   },
+   "free_a_unbounded": {
+    "mass_earth": 16.554,
+    "a_au": 28.744,
+    "e": 0.0779,
+    "varpi_ecl_j2000_deg": 35.12,
+    "chi2": 61.708,
+    "dof": 78,
+    "chi2_per_dof": 0.7911,
+    "rms_post_1781_arcsec": 2.775,
+    "galle_lon_ecl_of_date_deg": 330.29,
+    "dlon_vs_neptune_deg": 4.417,
+    "n_distinct_minima": 9,
+    "status_counts": {
+     "converged": 20,
+     "stalled_at_guard": 1,
+     "null": 3,
+     "failed": 0
+    },
+    "n_starts": 24
+   },
+   "le_verrier_unbounded": {
+    "mass_earth": 21.31,
+    "a_au": 38.4,
+    "e": 0.2502,
+    "varpi_ecl_j2000_deg": 209.53,
+    "chi2": 63.362,
+    "dof": 79,
+    "chi2_per_dof": 0.802,
+    "rms_post_1781_arcsec": 2.805,
+    "galle_lon_ecl_of_date_deg": 316.861,
+    "dlon_vs_neptune_deg": -9.012,
+    "n_distinct_minima": 5,
+    "status_counts": {
+     "converged": 19,
+     "stalled_at_guard": 3,
+     "null": 1,
+     "failed": 1
+    },
+    "n_starts": 24
    },
    "le_verrier": {
     "mass_earth": 21.31,
     "a_au": 38.4,
     "e": 0.2502,
-    "varpi_ecl_j2000_deg": 209.54,
+    "varpi_ecl_j2000_deg": 209.53,
     "chi2": 63.362,
     "dof": 79,
     "chi2_per_dof": 0.802,
     "rms_post_1781_arcsec": 2.805,
-    "galle_lon_ecl_of_date_deg": 316.862,
-    "dlon_vs_neptune_deg": -9.011,
-    "n_distinct_minima": 6,
+    "galle_lon_ecl_of_date_deg": 316.861,
+    "dlon_vs_neptune_deg": -9.012,
+    "n_distinct_minima": 5,
     "status_counts": {
-     "converged": 22,
-     "stalled_at_guard": 2,
+     "converged": 24,
+     "stalled_at_guard": 0,
      "null": 0,
      "failed": 0
-    }
+    },
+    "n_starts": 24
    },
    "free_a_e_max_0.1": {
-    "mass_earth": 16.557,
-    "a_au": 28.765,
-    "e": 0.0766,
-    "varpi_ecl_j2000_deg": 35.15,
+    "mass_earth": 16.554,
+    "a_au": 28.744,
+    "e": 0.0779,
+    "varpi_ecl_j2000_deg": 35.12,
     "chi2": 61.708,
     "dof": 78,
     "chi2_per_dof": 0.7911,
     "rms_post_1781_arcsec": 2.775,
-    "galle_lon_ecl_of_date_deg": 330.217,
-    "dlon_vs_neptune_deg": 4.344,
-    "n_distinct_minima": 13,
+    "galle_lon_ecl_of_date_deg": 330.29,
+    "dlon_vs_neptune_deg": 4.417,
+    "n_distinct_minima": 6,
     "status_counts": {
-     "converged": 23,
+     "converged": 24,
      "stalled_at_guard": 0,
-     "null": 1,
+     "null": 0,
      "failed": 0
-    }
+    },
+    "n_starts": 24
    },
    "free_a_e_max_0.05": {
-    "mass_earth": 16.677,
-    "a_au": 29.22,
+    "mass_earth": 16.674,
+    "a_au": 29.219,
     "e": 0.05,
-    "varpi_ecl_j2000_deg": 36.67,
+    "varpi_ecl_j2000_deg": 36.68,
     "chi2": 61.731,
     "dof": 78,
     "chi2_per_dof": 0.7914,
     "rms_post_1781_arcsec": 2.775,
-    "galle_lon_ecl_of_date_deg": 328.758,
-    "dlon_vs_neptune_deg": 2.885,
-    "n_distinct_minima": 14,
+    "galle_lon_ecl_of_date_deg": 328.761,
+    "dlon_vs_neptune_deg": 2.888,
+    "n_distinct_minima": 6,
     "status_counts": {
-     "converged": 22,
+     "converged": 24,
      "stalled_at_guard": 0,
-     "null": 1,
-     "failed": 1
-    }
+     "null": 0,
+     "failed": 0
+    },
+    "n_starts": 24
    },
    "le_verrier_1846": {
     "mass_earth": 36.624,
@@ -408,6 +546,7 @@
      "null": 15,
      "failed": 0
     },
+    "n_starts": 24,
     "heliocentric_1847_jan1": {
      "mean_lon_ecl_of_date_deg": 326.975,
      "true_lon_ecl_of_date_deg": 335.033
@@ -431,6 +570,7 @@
      "null": 15,
      "failed": 0
     },
+    "n_starts": 24,
     "heliocentric_1847_jan1": {
      "mean_lon_ecl_of_date_deg": 326.612,
      "true_lon_ecl_of_date_deg": 334.611
@@ -454,31 +594,73 @@
      "null": 8,
      "failed": 0
     },
+    "n_starts": 24,
     "heliocentric_1847_jan1": {
      "mean_lon_ecl_of_date_deg": 320.277,
-     "true_lon_ecl_of_date_deg": 327.199
+     "true_lon_ecl_of_date_deg": 327.198
     }
    }
   },
   "seed_2": {
    "free_a": {
-    "mass_earth": 25.078,
-    "a_au": 55.489,
-    "e": 0.5091,
-    "varpi_ecl_j2000_deg": 210.78,
-    "chi2": 80.02,
+    "mass_earth": 20.188,
+    "a_au": 39.671,
+    "e": 0.3,
+    "varpi_ecl_j2000_deg": 207.86,
+    "chi2": 80.171,
+    "dof": 78,
+    "chi2_per_dof": 1.0278,
+    "rms_post_1781_arcsec": 2.976,
+    "galle_lon_ecl_of_date_deg": 317.033,
+    "dlon_vs_neptune_deg": -8.84,
+    "n_distinct_minima": 7,
+    "status_counts": {
+     "converged": 24,
+     "stalled_at_guard": 0,
+     "null": 0,
+     "failed": 0
+    },
+    "n_starts": 24
+   },
+   "free_a_unbounded": {
+    "mass_earth": 24.412,
+    "a_au": 52.714,
+    "e": 0.4825,
+    "varpi_ecl_j2000_deg": 210.38,
+    "chi2": 80.021,
     "dof": 78,
     "chi2_per_dof": 1.0259,
     "rms_post_1781_arcsec": 2.972,
-    "galle_lon_ecl_of_date_deg": 313.746,
-    "dlon_vs_neptune_deg": -12.127,
-    "n_distinct_minima": 12,
+    "galle_lon_ecl_of_date_deg": 314.043,
+    "dlon_vs_neptune_deg": -11.83,
+    "n_distinct_minima": 5,
     "status_counts": {
-     "converged": 22,
-     "stalled_at_guard": 1,
-     "null": 1,
+     "converged": 18,
+     "stalled_at_guard": 3,
+     "null": 3,
      "failed": 0
-    }
+    },
+    "n_starts": 24
+   },
+   "le_verrier_unbounded": {
+    "mass_earth": 19.585,
+    "a_au": 38.4,
+    "e": 0.276,
+    "varpi_ecl_j2000_deg": 207.28,
+    "chi2": 80.221,
+    "dof": 79,
+    "chi2_per_dof": 1.0155,
+    "rms_post_1781_arcsec": 2.977,
+    "galle_lon_ecl_of_date_deg": 317.655,
+    "dlon_vs_neptune_deg": -8.218,
+    "n_distinct_minima": 6,
+    "status_counts": {
+     "converged": 21,
+     "stalled_at_guard": 1,
+     "null": 2,
+     "failed": 0
+    },
+    "n_starts": 24
    },
    "le_verrier": {
     "mass_earth": 19.585,
@@ -491,51 +673,54 @@
     "rms_post_1781_arcsec": 2.977,
     "galle_lon_ecl_of_date_deg": 317.655,
     "dlon_vs_neptune_deg": -8.218,
-    "n_distinct_minima": 5,
+    "n_distinct_minima": 4,
     "status_counts": {
-     "converged": 21,
-     "stalled_at_guard": 3,
+     "converged": 24,
+     "stalled_at_guard": 0,
      "null": 0,
      "failed": 0
-    }
+    },
+    "n_starts": 24
    },
    "free_a_e_max_0.1": {
-    "mass_earth": 16.67,
+    "mass_earth": 16.668,
     "a_au": 32.16,
     "e": 0.1,
-    "varpi_ecl_j2000_deg": 206.28,
+    "varpi_ecl_j2000_deg": 206.27,
     "chi2": 80.978,
     "dof": 78,
     "chi2_per_dof": 1.0382,
     "rms_post_1781_arcsec": 2.995,
-    "galle_lon_ecl_of_date_deg": 323.184,
-    "dlon_vs_neptune_deg": -2.689,
-    "n_distinct_minima": 12,
+    "galle_lon_ecl_of_date_deg": 323.185,
+    "dlon_vs_neptune_deg": -2.688,
+    "n_distinct_minima": 6,
     "status_counts": {
-     "converged": 21,
+     "converged": 24,
      "stalled_at_guard": 0,
-     "null": 3,
+     "null": 0,
      "failed": 0
-    }
+    },
+    "n_starts": 24
    },
    "free_a_e_max_0.05": {
-    "mass_earth": 16.073,
-    "a_au": 30.925,
+    "mass_earth": 16.075,
+    "a_au": 30.926,
     "e": 0.05,
-    "varpi_ecl_j2000_deg": 205.72,
+    "varpi_ecl_j2000_deg": 205.73,
     "chi2": 81.408,
     "dof": 78,
     "chi2_per_dof": 1.0437,
     "rms_post_1781_arcsec": 3.005,
-    "galle_lon_ecl_of_date_deg": 325.34,
-    "dlon_vs_neptune_deg": -0.534,
-    "n_distinct_minima": 12,
+    "galle_lon_ecl_of_date_deg": 325.338,
+    "dlon_vs_neptune_deg": -0.535,
+    "n_distinct_minima": 6,
     "status_counts": {
-     "converged": 22,
+     "converged": 23,
      "stalled_at_guard": 0,
      "null": 1,
-     "failed": 1
-    }
+     "failed": 0
+    },
+    "n_starts": 24
    },
    "le_verrier_1846": {
     "mass_earth": 36.624,
@@ -555,6 +740,7 @@
      "null": 15,
      "failed": 0
     },
+    "n_starts": 24,
     "heliocentric_1847_jan1": {
      "mean_lon_ecl_of_date_deg": 326.82,
      "true_lon_ecl_of_date_deg": 334.853
@@ -578,6 +764,7 @@
      "null": 15,
      "failed": 0
     },
+    "n_starts": 24,
     "heliocentric_1847_jan1": {
      "mean_lon_ecl_of_date_deg": 326.447,
      "true_lon_ecl_of_date_deg": 334.421
@@ -592,42 +779,64 @@
     "dof": 81,
     "chi2_per_dof": 1.416,
     "rms_post_1781_arcsec": 3.037,
-    "galle_lon_ecl_of_date_deg": 325.152,
-    "dlon_vs_neptune_deg": -0.721,
-    "n_distinct_minima": 3,
+    "galle_lon_ecl_of_date_deg": 325.151,
+    "dlon_vs_neptune_deg": -0.722,
+    "n_distinct_minima": 2,
     "status_counts": {
-     "converged": 18,
+     "converged": 16,
      "stalled_at_guard": 0,
-     "null": 6,
+     "null": 8,
      "failed": 0
     },
+    "n_starts": 24,
     "heliocentric_1847_jan1": {
      "mean_lon_ecl_of_date_deg": 319.865,
-     "true_lon_ecl_of_date_deg": 326.712
+     "true_lon_ecl_of_date_deg": 326.711
     }
    }
   },
   "seed_3": {
    "free_a": {
-    "mass_earth": 16.064,
-    "a_au": 33.682,
-    "e": 0.2438,
-    "varpi_ecl_j2000_deg": 191.46,
+    "mass_earth": 16.083,
+    "a_au": 33.712,
+    "e": 0.2447,
+    "varpi_ecl_j2000_deg": 191.5,
     "chi2": 91.67,
     "dof": 78,
     "chi2_per_dof": 1.1753,
     "rms_post_1781_arcsec": 2.984,
-    "galle_lon_ecl_of_date_deg": 319.791,
-    "dlon_vs_neptune_deg": -6.082,
-    "n_distinct_minima": 12,
+    "galle_lon_ecl_of_date_deg": 319.764,
+    "dlon_vs_neptune_deg": -6.109,
+    "n_distinct_minima": 7,
     "status_counts": {
-     "converged": 21,
-     "stalled_at_guard": 2,
-     "null": 1,
+     "converged": 24,
+     "stalled_at_guard": 0,
+     "null": 0,
      "failed": 0
-    }
+    },
+    "n_starts": 24
    },
-   "le_verrier": {
+   "free_a_unbounded": {
+    "mass_earth": 16.083,
+    "a_au": 33.712,
+    "e": 0.2447,
+    "varpi_ecl_j2000_deg": 191.5,
+    "chi2": 91.67,
+    "dof": 78,
+    "chi2_per_dof": 1.1753,
+    "rms_post_1781_arcsec": 2.984,
+    "galle_lon_ecl_of_date_deg": 319.764,
+    "dlon_vs_neptune_deg": -6.109,
+    "n_distinct_minima": 8,
+    "status_counts": {
+     "converged": 18,
+     "stalled_at_guard": 1,
+     "null": 2,
+     "failed": 3
+    },
+    "n_starts": 24
+   },
+   "le_verrier_unbounded": {
     "mass_earth": 18.893,
     "a_au": 38.4,
     "e": 0.3599,
@@ -637,52 +846,75 @@
     "chi2_per_dof": 1.1621,
     "rms_post_1781_arcsec": 2.984,
     "galle_lon_ecl_of_date_deg": 316.667,
-    "dlon_vs_neptune_deg": -9.207,
-    "n_distinct_minima": 4,
+    "dlon_vs_neptune_deg": -9.206,
+    "n_distinct_minima": 6,
     "status_counts": {
-     "converged": 21,
-     "stalled_at_guard": 3,
+     "converged": 20,
+     "stalled_at_guard": 4,
      "null": 0,
      "failed": 0
-    }
+    },
+    "n_starts": 24
+   },
+   "le_verrier": {
+    "mass_earth": 19.209,
+    "a_au": 38.4,
+    "e": 0.3,
+    "varpi_ecl_j2000_deg": 201.65,
+    "chi2": 93.666,
+    "dof": 79,
+    "chi2_per_dof": 1.1856,
+    "rms_post_1781_arcsec": 2.992,
+    "galle_lon_ecl_of_date_deg": 316.468,
+    "dlon_vs_neptune_deg": -9.405,
+    "n_distinct_minima": 4,
+    "status_counts": {
+     "converged": 24,
+     "stalled_at_guard": 0,
+     "null": 0,
+     "failed": 0
+    },
+    "n_starts": 24
    },
    "free_a_e_max_0.1": {
-    "mass_earth": 13.62,
-    "a_au": 30.024,
+    "mass_earth": 13.619,
+    "a_au": 30.022,
     "e": 0.1,
-    "varpi_ecl_j2000_deg": 185.18,
+    "varpi_ecl_j2000_deg": 185.16,
     "chi2": 92.009,
     "dof": 78,
     "chi2_per_dof": 1.1796,
     "rms_post_1781_arcsec": 2.996,
     "galle_lon_ecl_of_date_deg": 325.55,
     "dlon_vs_neptune_deg": -0.323,
-    "n_distinct_minima": 13,
+    "n_distinct_minima": 6,
     "status_counts": {
-     "converged": 21,
+     "converged": 24,
      "stalled_at_guard": 0,
-     "null": 1,
-     "failed": 2
-    }
+     "null": 0,
+     "failed": 0
+    },
+    "n_starts": 24
    },
    "free_a_e_max_0.05": {
-    "mass_earth": 13.051,
-    "a_au": 29.086,
+    "mass_earth": 13.049,
+    "a_au": 29.085,
     "e": 0.05,
-    "varpi_ecl_j2000_deg": 173.37,
+    "varpi_ecl_j2000_deg": 173.36,
     "chi2": 92.371,
     "dof": 78,
     "chi2_per_dof": 1.1842,
     "rms_post_1781_arcsec": 3.005,
-    "galle_lon_ecl_of_date_deg": 328.212,
-    "dlon_vs_neptune_deg": 2.339,
-    "n_distinct_minima": 13,
+    "galle_lon_ecl_of_date_deg": 328.215,
+    "dlon_vs_neptune_deg": 2.342,
+    "n_distinct_minima": 6,
     "status_counts": {
-     "converged": 21,
-     "stalled_at_guard": 1,
-     "null": 1,
-     "failed": 1
-    }
+     "converged": 24,
+     "stalled_at_guard": 0,
+     "null": 0,
+     "failed": 0
+    },
+    "n_starts": 24
    },
    "le_verrier_1846": {
     "mass_earth": 36.624,
@@ -702,6 +934,7 @@
      "null": 8,
      "failed": 0
     },
+    "n_starts": 24,
     "heliocentric_1847_jan1": {
      "mean_lon_ecl_of_date_deg": 326.75,
      "true_lon_ecl_of_date_deg": 334.772
@@ -725,6 +958,7 @@
      "null": 8,
      "failed": 0
     },
+    "n_starts": 24,
     "heliocentric_1847_jan1": {
      "mean_lon_ecl_of_date_deg": 326.373,
      "true_lon_ecl_of_date_deg": 334.335
@@ -739,43 +973,65 @@
     "dof": 81,
     "chi2_per_dof": 1.8061,
     "rms_post_1781_arcsec": 3.035,
-    "galle_lon_ecl_of_date_deg": 324.893,
-    "dlon_vs_neptune_deg": -0.98,
+    "galle_lon_ecl_of_date_deg": 324.892,
+    "dlon_vs_neptune_deg": -0.981,
     "n_distinct_minima": 2,
     "status_counts": {
-     "converged": 17,
+     "converged": 16,
      "stalled_at_guard": 0,
-     "null": 7,
+     "null": 8,
      "failed": 0
     },
+    "n_starts": 24,
     "heliocentric_1847_jan1": {
-     "mean_lon_ecl_of_date_deg": 319.652,
-     "true_lon_ecl_of_date_deg": 326.46
+     "mean_lon_ecl_of_date_deg": 319.651,
+     "true_lon_ecl_of_date_deg": 326.459
     }
    }
   },
   "seed_4": {
    "free_a": {
-    "mass_earth": 18.744,
-    "a_au": 29.04,
-    "e": 0.095,
+    "mass_earth": 18.746,
+    "a_au": 29.046,
+    "e": 0.0946,
     "varpi_ecl_j2000_deg": 33.33,
     "chi2": 89.827,
     "dof": 78,
     "chi2_per_dof": 1.1516,
     "rms_post_1781_arcsec": 2.981,
-    "galle_lon_ecl_of_date_deg": 327.467,
-    "dlon_vs_neptune_deg": 1.594,
-    "n_distinct_minima": 4,
+    "galle_lon_ecl_of_date_deg": 327.447,
+    "dlon_vs_neptune_deg": 1.574,
+    "n_distinct_minima": 8,
     "status_counts": {
-     "converged": 21,
-     "stalled_at_guard": 2,
+     "converged": 24,
+     "stalled_at_guard": 0,
      "null": 0,
-     "failed": 1
-    }
+     "failed": 0
+    },
+    "n_starts": 24
    },
-   "le_verrier": {
-    "mass_earth": 23.886,
+   "free_a_unbounded": {
+    "mass_earth": 18.746,
+    "a_au": 29.046,
+    "e": 0.0946,
+    "varpi_ecl_j2000_deg": 33.33,
+    "chi2": 89.827,
+    "dof": 78,
+    "chi2_per_dof": 1.1516,
+    "rms_post_1781_arcsec": 2.981,
+    "galle_lon_ecl_of_date_deg": 327.447,
+    "dlon_vs_neptune_deg": 1.574,
+    "n_distinct_minima": 6,
+    "status_counts": {
+     "converged": 20,
+     "stalled_at_guard": 3,
+     "null": 1,
+     "failed": 0
+    },
+    "n_starts": 24
+   },
+   "le_verrier_unbounded": {
+    "mass_earth": 23.887,
     "a_au": 38.4,
     "e": 0.2083,
     "varpi_ecl_j2000_deg": 212.38,
@@ -783,53 +1039,76 @@
     "dof": 79,
     "chi2_per_dof": 1.1593,
     "rms_post_1781_arcsec": 3.017,
-    "galle_lon_ecl_of_date_deg": 314.194,
-    "dlon_vs_neptune_deg": -11.68,
-    "n_distinct_minima": 5,
+    "galle_lon_ecl_of_date_deg": 314.192,
+    "dlon_vs_neptune_deg": -11.681,
+    "n_distinct_minima": 8,
     "status_counts": {
-     "converged": 21,
-     "stalled_at_guard": 3,
+     "converged": 23,
+     "stalled_at_guard": 1,
      "null": 0,
      "failed": 0
-    }
+    },
+    "n_starts": 24
+   },
+   "le_verrier": {
+    "mass_earth": 23.887,
+    "a_au": 38.4,
+    "e": 0.2083,
+    "varpi_ecl_j2000_deg": 212.38,
+    "chi2": 91.585,
+    "dof": 79,
+    "chi2_per_dof": 1.1593,
+    "rms_post_1781_arcsec": 3.017,
+    "galle_lon_ecl_of_date_deg": 314.192,
+    "dlon_vs_neptune_deg": -11.681,
+    "n_distinct_minima": 5,
+    "status_counts": {
+     "converged": 24,
+     "stalled_at_guard": 0,
+     "null": 0,
+     "failed": 0
+    },
+    "n_starts": 24
    },
    "free_a_e_max_0.1": {
-    "mass_earth": 19.474,
-    "a_au": 30.955,
-    "e": 0.0027,
-    "varpi_ecl_j2000_deg": 88.19,
-    "chi2": 90.104,
+    "mass_earth": 18.746,
+    "a_au": 29.046,
+    "e": 0.0946,
+    "varpi_ecl_j2000_deg": 33.33,
+    "chi2": 89.827,
     "dof": 78,
-    "chi2_per_dof": 1.1552,
-    "rms_post_1781_arcsec": 2.987,
-    "galle_lon_ecl_of_date_deg": 322.459,
-    "dlon_vs_neptune_deg": -3.414,
-    "n_distinct_minima": 9,
+    "chi2_per_dof": 1.1516,
+    "rms_post_1781_arcsec": 2.981,
+    "galle_lon_ecl_of_date_deg": 327.447,
+    "dlon_vs_neptune_deg": 1.574,
+    "n_distinct_minima": 6,
     "status_counts": {
-     "converged": 20,
+     "converged": 23,
      "stalled_at_guard": 0,
-     "null": 2,
-     "failed": 2
-    }
+     "null": 1,
+     "failed": 0
+    },
+    "n_starts": 24
    },
    "free_a_e_max_0.05": {
-    "mass_earth": 19.011,
-    "a_au": 29.892,
+    "mass_earth": 19.014,
+    "a_au": 29.893,
     "e": 0.05,
-    "varpi_ecl_j2000_deg": 33.73,
+    "varpi_ecl_j2000_deg": 33.7,
     "chi2": 89.898,
     "dof": 78,
     "chi2_per_dof": 1.1525,
     "rms_post_1781_arcsec": 2.982,
     "galle_lon_ecl_of_date_deg": 324.954,
     "dlon_vs_neptune_deg": -0.919,
-    "n_distinct_minima": 13,
+    "n_distinct_minima": 6,
     "status_counts": {
-     "converged": 23,
+     "converged": 24,
      "stalled_at_guard": 0,
-     "null": 1,
+     "null": 0,
      "failed": 0
-    }
+    },
+    "n_starts": 24
    },
    "le_verrier_1846": {
     "mass_earth": 36.624,
@@ -849,9 +1128,10 @@
      "null": 15,
      "failed": 0
     },
+    "n_starts": 24,
     "heliocentric_1847_jan1": {
      "mean_lon_ecl_of_date_deg": 326.589,
-     "true_lon_ecl_of_date_deg": 334.584
+     "true_lon_ecl_of_date_deg": 334.585
     }
    },
    "le_verrier_1846_m_1_9300": {
@@ -863,8 +1143,8 @@
     "dof": 82,
     "chi2_per_dof": 4.4289,
     "rms_post_1781_arcsec": 6.334,
-    "galle_lon_ecl_of_date_deg": 332.785,
-    "dlon_vs_neptune_deg": 6.912,
+    "galle_lon_ecl_of_date_deg": 332.784,
+    "dlon_vs_neptune_deg": 6.911,
     "n_distinct_minima": 1,
     "status_counts": {
      "converged": 9,
@@ -872,6 +1152,7 @@
      "null": 15,
      "failed": 0
     },
+    "n_starts": 24,
     "heliocentric_1847_jan1": {
      "mean_lon_ecl_of_date_deg": 326.197,
      "true_lon_ecl_of_date_deg": 334.13
@@ -888,13 +1169,14 @@
     "rms_post_1781_arcsec": 3.086,
     "galle_lon_ecl_of_date_deg": 324.486,
     "dlon_vs_neptune_deg": -1.387,
-    "n_distinct_minima": 3,
+    "n_distinct_minima": 2,
     "status_counts": {
-     "converged": 17,
+     "converged": 16,
      "stalled_at_guard": 0,
-     "null": 7,
+     "null": 8,
      "failed": 0
     },
+    "n_starts": 24,
     "heliocentric_1847_jan1": {
      "mean_lon_ecl_of_date_deg": 319.317,
      "true_lon_ecl_of_date_deg": 326.064

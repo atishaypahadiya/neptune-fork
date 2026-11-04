@@ -401,10 +401,11 @@ def test_le_verrier_published_solution_on_seed0(ctx, seed0_obs):
 
 
 @pytest.mark.slow
-@pytest.mark.parametrize(("e_max", "chi2", "dlon"), [(0.1, 72.78, 2.79), (0.05, 72.38, 5.20)])
+@pytest.mark.parametrize(("e_max", "chi2", "dlon"), [(0.1, 72.07, 7.92), (0.05, 72.38, 5.20)])
 def test_e_capped_free_a_on_seed0(ctx, seed0_obs, e_max, chi2, dlon):
-    """Free a with e capped (24 starts). Measured values pinned; note 0.05 beats 0.1 in χ²,
-    which a global optimiser could not do — the multistart misses minima at Δχ² ~ 0.5. ~15 s."""
+    """Free a with e capped (24 starts), bounded fit. Measured values pinned. The e ≤ 0.1 fit
+    sits on the bound (e = 0.100); before the boundary phase it stopped near e = 0 at χ² 72.78
+    (+2.79°), worse than the e ≤ 0.05 fit. ~15 s."""
     from fork.model.forward import uranus_inc_raan_at_epoch
 
     r = fit_perturber_multistart(seed0_obs, ctx, uranus_inc_raan_at_epoch(EPOCH), e_max=e_max,
