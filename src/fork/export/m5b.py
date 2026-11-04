@@ -478,6 +478,11 @@ def profile_intervals(seed: int | None) -> dict | None:
     return None
 
 
+def summary_rng(seed: int | None, run: str) -> np.random.Generator:
+    """Subsampling rng for a run's summary (noise-free ↦ 10 000, as in ``Job.rng``)."""
+    return np.random.default_rng([7, 10_000 if seed is None else seed, RUNS.index(run)])
+
+
 def summarize_run(seed: int | None, run: str, data, truth_p: dict, n_workers: int) -> dict | None:
     from fork.inference.nested import ERR_INFLATION, NestedResult, PartitionedResult, cells_for
     from fork.inference.profile import GalleGeometry, galle_lon_of_date_rad
@@ -489,7 +494,7 @@ def summarize_run(seed: int | None, run: str, data, truth_p: dict, n_workers: in
         return None
     res = [NestedResult.load(j.path(".pkl")) for j in jobs]
     geo = GalleGeometry.from_horizons()
-    rng = np.random.default_rng([7, seed, RUNS.index(run)])
+    rng = summary_rng(seed, run)
     nep = truth_p["galle_lon_ecl_of_date_deg"]
 
     def lon_of(space, q: np.ndarray, n: int) -> np.ndarray:
