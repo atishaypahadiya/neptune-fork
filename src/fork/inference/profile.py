@@ -24,7 +24,7 @@ left→right and right→left, carry any lower branch across the whole grid; see
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 import numpy as np
 from scipy.optimize import least_squares
@@ -148,38 +148,62 @@ class ConstrainedFit:
 
 def _run_constrained(z_rest0, lam0_guess, pq, space, obs, context, geo, target_rad
                      ) -> ConstrainedFit:  # fmt: skip
-    """One constrained LM run; e ≤ space.e_max by the same two-phase scheme as the point fits
-    (``fork.inference.fit._fit_bounded``). ``z_rest`` is returned in the interior layout."""
-    solver = _Lam0Solver(lam0_guess)
-
-    def lm(sp: PerturberSpace, z0):
-        args = (pq, sp, obs, context, geo, target_rad, solver)
-        return least_squares(_constrained_residuals, z0, args=args, method="lm", x_scale="jac",
-                             xtol=1e-10, ftol=1e-10, gtol=1e-10, max_nfev=400)  # fmt: skip
-
+    """One constrained LM run; e ≤ space.e_max by the two-phase scheme of the point fits
+    (``fork.inference.fit._fit_bounded``), with one addition. When phase 1 leaves the bound, or
+    the start already sits on it, the boundary phase is also run from the start's own
+    projection onto the bound, and the lower χ² is kept. Without it, a continuation start on
+    the bound lost its branch: phase 1 slid far into e > e_max and phase 2, started there,
+    found another branch or diverged (seed 0 free a, 314° → 313°: χ² 1791 instead of 79.75).
+    ``z_rest`` is returned in the interior layout."""
     inner = space.interior()
-    used, sol = inner, lm(inner, z_rest0)
-    nfev = int(sol.nfev)
-    if space.bounds_e:
-        fin = solver.solve(sol.x, pq, inner, context, geo, target_rad)
-        if fin is not None:
-            y = inner.y_from_z(np.concatenate([sol.x[4:], [fin[0]]]))
-            if y[2] ** 2 + y[3] ** 2 > space.e_max:
-                used = space.boundary()
-                sol = lm(used, np.concatenate([sol.x[:4], used.z_from_y(y)[:-1]]))
-                nfev += int(sol.nfev)
-    fin = solver.solve(sol.x, pq, used, context, geo, target_rad)
-    if fin is None:
-        return ConstrainedFit(float(target_rad), sol.x.copy(), np.full(11, np.nan), np.inf,
-                              np.inf, False, nfev)  # fmt: skip
-    theta = _unpack_perturber_z(np.concatenate([sol.x, [fin[0]]]), pq, used)
-    lon_u = predict_uranus_lon(theta, obs.jd_tdb, context)
-    chi2 = float(np.sum((wrap_rad(obs.lon_ecl_j2000_rad - lon_u) / obs.sigma_rad) ** 2))
-    miss = fin[1] * 206264.80624709636
-    ok = bool(sol.success) and not _outside_guards(theta)
-    y_fin = used.y_from_z(np.concatenate([sol.x[4:], [fin[0]]]))
-    z_rest = np.concatenate([sol.x[:4], inner.z_from_y(y_fin)[:-1]])
-    return ConstrainedFit(float(target_rad), z_rest, theta, chi2, miss, ok, nfev)
+    nfev = 0
+
+    def lm(sp: PerturberSpace, z0, solver: _Lam0Solver):
+        nonlocal nfev
+        args = (pq, sp, obs, context, geo, target_rad, solver)
+        sol = least_squares(_constrained_residuals, z0, args=args, method="lm", x_scale="jac",
+                            xtol=1e-10, ftol=1e-10, gtol=1e-10, max_nfev=400)  # fmt: skip
+        nfev += int(sol.nfev)
+        return sol
+
+    def finish(sol, used: PerturberSpace, solver: _Lam0Solver) -> ConstrainedFit:
+        fin = solver.solve(sol.x, pq, used, context, geo, target_rad)
+        if fin is None:
+            return ConstrainedFit(float(target_rad), sol.x.copy(), np.full(11, np.nan), np.inf,
+                                  np.inf, False, nfev)  # fmt: skip
+        theta = _unpack_perturber_z(np.concatenate([sol.x, [fin[0]]]), pq, used)
+        lon_u = predict_uranus_lon(theta, obs.jd_tdb, context)
+        chi2 = float(np.sum((wrap_rad(obs.lon_ecl_j2000_rad - lon_u) / obs.sigma_rad) ** 2))
+        ok = bool(sol.success) and not _outside_guards(theta)
+        y_fin = used.y_from_z(np.concatenate([sol.x[4:], [fin[0]]]))
+        z_rest = np.concatenate([sol.x[:4], inner.z_from_y(y_fin)[:-1]])
+        return ConstrainedFit(float(target_rad), z_rest, theta, chi2, fin[1] * 206264.80624709636,
+                              ok, nfev)  # fmt: skip
+
+    solver = _Lam0Solver(lam0_guess)
+    sol = lm(inner, z_rest0, solver)
+    if not space.bounds_e:
+        return finish(sol, inner, solver)
+    bnd = space.boundary()
+    y0 = inner.y_from_z(np.concatenate([z_rest0[4:], [lam0_guess]]))
+    start_on_bound = y0[2] ** 2 + y0[3] ** 2 >= space.e_max * (1.0 - 1e-9)
+    fin = solver.solve(sol.x, pq, inner, context, geo, target_rad)
+    left_bound = False
+    if fin is not None:
+        y = inner.y_from_z(np.concatenate([sol.x[4:], [fin[0]]]))
+        left_bound = y[2] ** 2 + y[3] ** 2 > space.e_max
+    if left_bound:
+        fits = [finish(lm(bnd, np.concatenate([sol.x[:4], bnd.z_from_y(y)[:-1]]), solver), bnd,
+                       solver)]  # fmt: skip
+    else:
+        fits = [finish(sol, inner, solver)]
+    if left_bound or start_on_bound:
+        s0 = _Lam0Solver(lam0_guess)
+        z_b = np.concatenate([z_rest0[:4], bnd.z_from_y(y0)[:-1]])
+        fits.append(finish(lm(bnd, z_b, s0), bnd, s0))
+    good = [f for f in fits if f.success] or fits
+    best = min(good, key=lambda f: f.chi2)
+    return replace(best, nfev=nfev)
 
 
 def _start_vectors(space: PerturberSpace, xu: np.ndarray, context, geo, target_rad: float,
