@@ -15,6 +15,9 @@ Posteriors (PHASE1_SPEC M5b, as amended after the partitioned validation):
     sampled. Seeds 0–4, one unpartitioned run each, provided seed 0 passes the single-mode
     check (``lv_single_mode``: two rng seeds agree, no mass far from the main peak); otherwise
     seeds 1–4 are not run and the summary says so.
+  - noise-free truth, free a, e ≤ 0.3, the same four cells: scheduled after every job A3b needs
+    and summarized after A3b, as a prior-bias check (``noise_free_check``: truth inside the
+    68 % intervals, and the median's offset from truth in σ).
 Every ln Z error that is reported or compared is ``nested.ERR_INFLATION`` × dynesty's quoted
 error (the scatter measured on seed 0). The seed-0 e ≤ 0.3 cells [25, 28] and [28, 60] are
 the validation runs (same prior and settings), reused.
@@ -54,6 +57,9 @@ PROGRESS_LOG = CACHE / "progress.log"
 DRIVER_LOG = CACHE / "driver.log"
 OUT_NAME = "m5b_posteriors.json"
 NOISE_SEEDS = tuple(range(10))
+# noise-free truth (seed None): free a, e ≤ 0.3, the same four cells; scheduled after every job
+# A3b needs, summarized after A3b, as a prior-bias check
+NOISE_FREE_RUNS = ("free_a_e0.3",)
 RUNS = ("free_a_e0.3", "free_a_e0.1", "le_verrier_shape")
 RUN_SEEDS: dict[str, tuple[int, ...]] = {
     "free_a_e0.3": NOISE_SEEDS,
@@ -86,7 +92,7 @@ LV_COST = 0.7
 
 @dataclass(frozen=True)
 class Job:
-    seed: int
+    seed: int | None  # None: noise-free truth
     run: str
     cell: int | None  # index into nested.cells_for(E_MAX[run]); None: unpartitioned
     rep: int = 1  # Le Verrier shape on seed 0 also runs rep 2 (single-mode check)
@@ -94,13 +100,15 @@ class Job:
     @property
     def id(self) -> str:
         part = "all" if self.cell is None else f"c{self.cell}"
-        return f"seed_{self.seed}/{self.run}/{part}" + ("" if self.rep == 1 else f"_r{self.rep}")
+        rep = "" if self.rep == 1 else f"_r{self.rep}"
+        return f"{dataset_key(self.seed)}/{self.run}/{part}{rep}"
 
     @staticmethod
     def from_id(job_id: str) -> Job:
         key, run, part = job_id.split("/")
         part, _, rep = part.partition("_r")
-        return Job(int(key.removeprefix("seed_")), run,
+        seed = None if key == "noise_free" else int(key.removeprefix("seed_"))
+        return Job(seed, run,
                    None if part == "all" else int(part.removeprefix("c")),
                    int(rep) if rep else 1)  # fmt: skip
 
@@ -123,14 +131,21 @@ class Job:
 
     def rng(self) -> np.random.Generator:
         cell = 0 if self.cell is None else self.cell + 1  # SeedSequence entries must be ≥ 0
-        return np.random.default_rng([2026, self.seed, RUNS.index(self.run), cell, self.rep])
+        seed = 10_000 if self.seed is None else self.seed
+        return np.random.default_rng([2026, seed, RUNS.index(self.run), cell, self.rep])
 
 
-def runs_for(seed: int) -> list[str]:
+def dataset_key(seed: int | None) -> str:
+    return "noise_free" if seed is None else f"seed_{seed}"
+
+
+def runs_for(seed: int | None) -> list[str]:
+    if seed is None:
+        return list(NOISE_FREE_RUNS)
     return [r for r in RUNS if seed in RUN_SEEDS[r]]
 
 
-def jobs_for(seed: int, *, with_lv: bool = True) -> list[Job]:
+def jobs_for(seed: int | None, *, with_lv: bool = True) -> list[Job]:
     """This dataset's jobs. The Le Verrier-shape job for seeds other than ``LV_CHECK_SEED`` is
     only listed when ``with_lv`` (i.e. after seed 0 passed the single-mode check)."""
     from fork.inference.nested import cells_for
@@ -148,22 +163,25 @@ def jobs_for(seed: int, *, with_lv: bool = True) -> list[Job]:
 
 
 def all_jobs(*, with_lv: bool = True) -> list[Job]:
-    return [j for s in NOISE_SEEDS for j in jobs_for(s, with_lv=with_lv)]
+    return [j for s in (*NOISE_SEEDS, None) for j in jobs_for(s, with_lv=with_lv)]
 
 
 # ------------------------------------------------------------------ one dataset's problem
 
 
-def dataset(seed: int):
-    """(observations, forward context, Uranus inc/raan, (p, q), Uranus box) for a noise seed."""
-    from fork.data.synthetic import make_synthetic_observations
+def dataset(seed: int | None):
+    """(observations, forward context, Uranus inc/raan, (p, q), Uranus box) for a noise seed,
+    or for the noise-free truth (``seed=None``: seed 0's epochs and σ, true longitudes)."""
+    from fork.data.synthetic import LongitudeObservations, make_synthetic_observations
     from fork.inference.fit import uranus_theta_to_x
     from fork.inference.priors import UranusBox
     from fork.model.forward import ForwardContext, uranus_inc_raan_at_epoch
 
     ctx = ForwardContext.from_horizons(A1_EPOCH_JD_TDB)
     inc_raan = uranus_inc_raan_at_epoch(A1_EPOCH_JD_TDB)
-    obs, _ = make_synthetic_observations(np.random.default_rng(seed))
+    obs, truth = make_synthetic_observations(np.random.default_rng(0 if seed is None else seed))
+    if seed is None:
+        obs = LongitudeObservations(obs.jd_tdb, truth, obs.sigma_rad, obs.source)
     box = UranusBox.from_uranus_only_fit(obs, ctx, inc_raan)
     pq = tuple(uranus_theta_to_x(np.array([19.2, 0.0, *inc_raan, 0.0, 0.0]))[4:])
     return obs, ctx, inc_raan, pq, box
@@ -289,8 +307,11 @@ def _log(msg: str) -> None:
 
 
 def ordered(jobs: list[Job]) -> list[Job]:
-    """Le Verrier check runs first (they decide four more jobs), then longest first."""
-    return sorted(jobs, key=lambda j: (not (j.run == LV and j.seed == LV_CHECK_SEED), -j.cost))
+    """Le Verrier check runs first (they decide four more jobs), then longest first; the
+    noise-free jobs come last, after everything A3b needs."""
+    return sorted(
+        jobs, key=lambda j: (j.seed is None, not (j.run == LV and j.seed == LV_CHECK_SEED), -j.cost)
+    )
 
 
 def run_all(n_workers: int, per_job: int) -> None:
@@ -403,12 +424,12 @@ def _heliocentric_lon_of_date_deg(theta: np.ndarray, ctx, jd: float) -> float:
     return math.degrees(math.atan2(r[1], r[0])) % 360.0
 
 
-def point_fit(seed: int, run: str, obs, ctx, inc_raan, n_workers: int) -> dict:
+def point_fit(seed: int | None, run: str, obs, ctx, inc_raan, n_workers: int) -> dict:
     """Bounded 24-start multistart point fit for this posterior (cached)."""
     from fork.inference import fit
     from fork.model.hidden_mass import LE_VERRIER_1846 as LVE
 
-    path = CACHE / "points" / f"seed_{seed}__{run}.json"
+    path = CACHE / "points" / f"{dataset_key(seed)}__{run}.json"
     if path.exists():
         return json.loads(path.read_text())
     if run == LV:
@@ -425,7 +446,7 @@ def point_fit(seed: int, run: str, obs, ctx, inc_raan, n_workers: int) -> dict:
     return rec
 
 
-def profile_intervals(seed: int) -> dict | None:
+def profile_intervals(seed: int | None) -> dict | None:
     """The committed M5a profile's Δχ² ≤ 1 intervals for this dataset (both modes), or None if
     the dataset was not profiled."""
     path = SITE_DATA / "m5a_profile.json"
@@ -441,7 +462,7 @@ def profile_intervals(seed: int) -> dict | None:
     return None
 
 
-def summarize_run(seed: int, run: str, data, truth_p: dict, n_workers: int) -> dict | None:
+def summarize_run(seed: int | None, run: str, data, truth_p: dict, n_workers: int) -> dict | None:
     from fork.inference.nested import ERR_INFLATION, NestedResult, PartitionedResult, cells_for
     from fork.inference.profile import GalleGeometry, galle_lon_of_date_rad
     from fork.model.hidden_mass import LE_VERRIER_1846 as LVE
@@ -508,7 +529,7 @@ def summarize_run(seed: int, run: str, data, truth_p: dict, n_workers: int) -> d
 
 
 def calibration(datasets: dict, run_name: str) -> dict:
-    noisy = [d for d in datasets.values() if run_name in d["runs"]]
+    noisy = [d for d in datasets.values() if d["noise"] and run_name in d["runs"]]
     hits = [d["runs"][run_name]["galle_lon_ecl_of_date_deg"]["truth_in_68"] for d in noisy]
     widths = [d["runs"][run_name]["galle_lon_ecl_of_date_deg"]["width68"] for d in noisy]
     frac = float(np.mean(hits)) if hits else float("nan")
@@ -532,50 +553,73 @@ def truth_params() -> dict:
                 true_neptune_geocentric_longitude().lon_ecl_of_date_rad), 4)}  # fmt: skip
 
 
+def summarize_dataset(seed: int | None, truth_p: dict, n_workers: int) -> dict:
+    data = dataset(seed)
+    out = {"seed": seed, "noise": seed is not None, "runs": {}, "missing": []}
+    for run in runs_for(seed):
+        rec = summarize_run(seed, run, data, truth_p, n_workers)
+        if rec is None:
+            out["missing"].append(run)
+        else:
+            out["runs"][run] = rec
+    if LV in out["runs"] and "free_a_e0.3" in out["runs"]:
+        a, b = out["runs"]["free_a_e0.3"], out["runs"][LV]
+        out["le_verrier_shape_vs_free_a"] = {
+            "delta_chi2": round(b["chi2_best"] - a["chi2_best"], 4),
+            "delta_ln_likelihood": round(-0.5 * (b["chi2_best"] - a["chi2_best"]), 4),
+            "ln_bayes_factor": round(b["evidence"]["logz"] - a["evidence"]["logz"], 4),
+            "ln_bayes_factor_err": round(math.hypot(b["evidence"]["logzerr"],
+                                                    a["evidence"]["logzerr"]), 4)}  # fmt: skip
+    out["profile_m5a"] = profile_intervals(seed)
+    print(
+        f"{dataset_key(seed)}: "
+        + ", ".join(
+            f"{r} lon {v['galle_lon_ecl_of_date_deg']['median']:.2f} "
+            f"[{v['galle_lon_ecl_of_date_deg']['lo68']:.2f}, "
+            f"{v['galle_lon_ecl_of_date_deg']['hi68']:.2f}] "
+            f"in68 {v['galle_lon_ecl_of_date_deg']['truth_in_68']}"
+            for r, v in out["runs"].items()
+        )
+        + (f"; missing {out['missing']}" if out["missing"] else ""),
+        flush=True,
+    )
+    return out
+
+
+def noise_free_check(nf: dict) -> dict:
+    """Prior-bias measurement on the noise-free posterior (free a, e ≤ 0.3): for the 1846
+    longitude, m, a and e, whether truth lies in the 68 % interval, and the median's offset from
+    truth in units of the 68 % half-width on the side facing truth (median − truth)/σ."""
+    run = "free_a_e0.3"
+    if run not in nf["runs"]:
+        return {"status": "missing"}
+    r = nf["runs"][run]
+    out = {"status": "done", "run": run}
+    for name in ("galle_lon_ecl_of_date_deg", "mass_earth", "a_au", "e"):
+        x = r[name]
+        off = x["median_minus_truth"] if "median_minus_truth" in x else x["median"] - x["truth"]
+        sig = x["minus"] if off > 0 else x["plus"]  # half-width on the side facing truth
+        out[name] = {"median": x["median"], "truth": x["truth"],
+                     "truth_in_68": x["truth_in_68"], "median_minus_truth": round(off, 4),
+                     "offset_sigma": round(off / sig, 3) if sig > 0 else None}  # fmt: skip
+    return out
+
+
 def summarize(n_workers: int) -> None:
+    """A3b first (noise seeds; the JSON is written once they are summarized), then the
+    noise-free posterior check is appended and the JSON rewritten."""
     from fork.inference.nested import BOUND, DLOGZ, ERR_INFLATION, SAMPLE, cells_for
 
     truth_p = truth_params()
     lv = lv_check_state()
-    datasets = {}
-    for seed in NOISE_SEEDS:
-        data = dataset(seed)
-        out = {"seed": seed, "noise": True, "runs": {}, "missing": []}
-        for run in runs_for(seed):
-            rec = summarize_run(seed, run, data, truth_p, n_workers)
-            if rec is None:
-                out["missing"].append(run)
-            else:
-                out["runs"][run] = rec
-        if LV in out["runs"] and "free_a_e0.3" in out["runs"]:
-            a, b = out["runs"]["free_a_e0.3"], out["runs"][LV]
-            out["le_verrier_shape_vs_free_a"] = {
-                "delta_chi2": round(b["chi2_best"] - a["chi2_best"], 4),
-                "delta_ln_likelihood": round(-0.5 * (b["chi2_best"] - a["chi2_best"]), 4),
-                "ln_bayes_factor": round(b["evidence"]["logz"] - a["evidence"]["logz"], 4),
-                "ln_bayes_factor_err": round(math.hypot(b["evidence"]["logzerr"],
-                                                        a["evidence"]["logzerr"]), 4)}  # fmt: skip
-        out["profile_m5a"] = profile_intervals(seed)
-        datasets[f"seed_{seed}"] = out
-        print(
-            f"seed_{seed}: "
-            + ", ".join(
-                f"{r} lon {v['galle_lon_ecl_of_date_deg']['median']:.2f} "
-                f"[{v['galle_lon_ecl_of_date_deg']['lo68']:.2f}, "
-                f"{v['galle_lon_ecl_of_date_deg']['hi68']:.2f}] "
-                f"in68 {v['galle_lon_ecl_of_date_deg']['truth_in_68']}"
-                for r, v in out["runs"].items()
-            )
-            + (f"; missing {out['missing']}" if out["missing"] else ""),
-            flush=True,
-        )
+    datasets = {dataset_key(s): summarize_dataset(s, truth_p, n_workers) for s in NOISE_SEEDS}
     payload = {
         "description": "M5b partitioned nested-sampling (dynesty) posteriors on synthetic data "
-        "(Horizons Uranus incl. real Neptune + noise). Intervals are 16/50/84 % marginal "
-        "percentiles of the combined posterior; the 1846 longitude is the perturber's "
-        "light-time-corrected geocentric ecliptic-of-date longitude on 1846-09-23. ln Z errors "
-        "are dynesty's quoted errors × err_inflation (measured on seed 0). Raw runs are not "
-        "committed (data/cache/nested/m5b/).",
+        "(Horizons Uranus incl. real Neptune + noise; noise_free: the true longitudes). "
+        "Intervals are 16/50/84 % marginal percentiles of the combined posterior; the 1846 "
+        "longitude is the perturber's light-time-corrected geocentric ecliptic-of-date "
+        "longitude on 1846-09-23. ln Z errors are dynesty's quoted errors × err_inflation "
+        "(measured on seed 0). Raw runs are not committed (data/cache/nested/m5b/).",
         "priors": {"log10_m_earth": [0.0, 2.0], "a_au_log_uniform": [20.0, 60.0],
                    "e_uniform_max": E_MAX, "angles": "uniform",
                    "uranus": "box ±50 scaled σ around the Uranus-only fit"},
@@ -589,15 +633,22 @@ def summarize(n_workers: int) -> None:
                     "le_verrier_shape": "unpartitioned" if lv and lv["single_mode"] else
                     "seed 0 only (single-mode check not passed)" if lv else "check pending"},
         "le_verrier_single_mode_check": lv,
-        "run_seeds": {r: list(v) for r, v in RUN_SEEDS.items()},
+        "run_seeds": {**{r: list(v) for r, v in RUN_SEEDS.items()},
+                      "noise_free": list(NOISE_FREE_RUNS)},
         "profile_m5a": "per dataset: M5a profile Δχ² ≤ 1 intervals (site/data/"
         "m5a_profile.json) where that dataset was profiled, else null",
         "truth": truth_p,
         "datasets": datasets,
         "a3b_calibration": {r: calibration(datasets, r) for r in ("free_a_e0.3", "free_a_e0.1")},
+        "noise_free_check": {"status": "pending"},
     }  # fmt: skip
     write_json(OUT_NAME, payload)
-    print(json.dumps(payload["a3b_calibration"], indent=1))
+    print(json.dumps(payload["a3b_calibration"], indent=1), flush=True)
+    nf = summarize_dataset(None, truth_p, n_workers)
+    datasets["noise_free"] = nf
+    payload["noise_free_check"] = noise_free_check(nf)
+    write_json(OUT_NAME, payload)
+    print(json.dumps(payload["noise_free_check"], indent=1))
     print(f"wrote {SITE_DATA / OUT_NAME}")
 
 

@@ -87,7 +87,9 @@ def test_committed_posteriors_complete():
     d = json.loads(POSTERIORS.read_text())
     assert d["sampler"]["err_inflation"] == ERR_INFLATION
     lv_ok = d["le_verrier_single_mode_check"]["single_mode"]
-    assert sorted(v["seed"] for v in d["datasets"].values()) == list(range(10))
+    assert sorted(v["seed"] for v in d["datasets"].values() if v["noise"]) == list(range(10))
+    assert set(d["datasets"]["noise_free"]["runs"]) == {"free_a_e0.3"}
+    assert d["noise_free_check"]["status"] == "done"
     for v in d["datasets"].values():
         want = {r for r in runs_for(v["seed"])
                 if r != "le_verrier_shape" or lv_ok or v["seed"] == 0}  # fmt: skip
