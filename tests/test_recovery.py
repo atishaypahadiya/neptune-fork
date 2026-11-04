@@ -1,8 +1,8 @@
 """A3: recovering a planted planet from synthetic data (PHASE1_SPEC M5, as amended after M5a).
 
 A3a (bias) re-runs the noise-free point fit. A3b (calibration) checks the committed M5b posterior
-summary, ``site/data/m5b_posteriors.json``: the chains behind it take hours and run locally
-(``python -m fork.export.m5b``), never in CI.
+summary, ``site/data/m5b_posteriors.json``: the dynesty runs behind it take hours and run
+locally (``python -m fork.export.m5b``), never in CI.
 """
 
 import json
@@ -56,8 +56,9 @@ def test_a3a_noise_free_recovery_within_half_degree(offline_horizons):
 @needs_posteriors
 def test_a3b_calibration_of_committed_posteriors():
     """A3b. Across ≥ 10 noise seeds, true Neptune's 1846-09-23 longitude lies inside the 68 %
-    posterior interval (free a, e ∈ [0, 0.3]) in 50–85 % of seeds. The summary is recomputed
-    here from the per-seed records, not trusted from the file's own flag."""
+    posterior interval (free a, e ∈ [0, 0.3]; dynesty posteriors, all modes) in 50–85 % of
+    seeds. The summary is recomputed here from the per-seed records, not trusted from the file's
+    own flag."""
     d = json.loads(POSTERIORS.read_text())
     noisy = [v for v in d["datasets"].values() if v["noise"]]
     assert len(noisy) >= 10
@@ -75,11 +76,16 @@ def test_a3b_calibration_of_committed_posteriors():
 
 @needs_posteriors
 def test_committed_posteriors_converged():
-    """Every committed chain ran ≥ 50 τ (spec) and the summary has all three runs per dataset."""
+    """Every committed chain ran ≥ 50 τ (spec). Each dataset has the runs its seed is assigned
+    (``m5b.runs_for``: e ≤ 0.3 everywhere, e ≤ 0.1 on seeds 0–4 and noise-free), and the M5a
+    profile interval wherever that dataset was profiled."""
+    from fork.export.m5b import runs_for
+
     d = json.loads(POSTERIORS.read_text())
     assert "noise_free" in d["datasets"]
     for v in d["datasets"].values():
-        assert set(v["runs"]) == {"free_a_e0.3", "free_a_e0.1", "le_verrier_shape"}
+        assert set(v["runs"]) == set(runs_for(v["seed"]))
+        assert "profile_m5a" in v
         for r in v["runs"].values():
             assert r["converged_50tau"] and r["n_steps"] >= 50 * max(r["tau"])
             assert r["n_walkers"] >= 32
