@@ -83,6 +83,8 @@ REUSE = {
 DERIVED_MAX_SAMPLES = 6000  # 1846 longitude is computed on at most this many posterior draws
 CELL_LON_SAMPLES = 1000
 A3B_RANGE = (0.50, 0.85)
+# summarize's own compute, for its ledger row: derived-quantity integrations, point-fit nfev
+_SUMMARY_COUNT = {"derived_integrations": 0, "point_fit_nfev": 0}
 # rough cost of one job in "nlive-1000 cell" units, for longest-first ordering and the ETA
 LV_COST = 0.7
 
@@ -450,7 +452,9 @@ def point_fit(seed: int | None, run: str, obs, ctx, inc_raan, n_workers: int) ->
                                             s * math.sin(varpi), None)), mode=LV)  # fmt: skip
     else:
         kw = dict(e_max=E_MAX[run])
-    b = fit.fit_perturber_multistart(obs, ctx, inc_raan, n_workers=n_workers, **kw).best
+    ms = fit.fit_perturber_multistart(obs, ctx, inc_raan, n_workers=n_workers, **kw)
+    _SUMMARY_COUNT["point_fit_nfev"] += sum(int(f.nfev) for f in ms.fits)
+    b = ms.best
     rec = {"chi2": round(b.chi2, 4), "dof": b.dof, "mass_earth": round(b.mass_earth, 3),
            "a_au": round(float(b.theta[7]), 3), "e": round(float(b.theta[8]), 4)}  # fmt: skip
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -490,6 +494,7 @@ def summarize_run(seed: int | None, run: str, data, truth_p: dict, n_workers: in
 
     def lon_of(space, q: np.ndarray, n: int) -> np.ndarray:
         idx = rng.choice(len(q), size=min(n, len(q)), replace=False)
+        _SUMMARY_COUNT["derived_integrations"] += len(idx)
         return np.array([math.degrees(galle_lon_of_date_rad(space.theta(v), ctx, geo))
                          for v in q[idx]])  # fmt: skip
 
@@ -534,6 +539,7 @@ def summarize_run(seed: int | None, run: str, data, truth_p: dict, n_workers: in
     else:
         sub = thetas[rng.choice(len(thetas), size=min(2000, len(thetas)), replace=False)]
         helio = np.array([_heliocentric_lon_of_date_deg(th, ctx, LVE.epoch_jd) for th in sub])
+        _SUMMARY_COUNT["derived_integrations"] += len(sub)
         rec["heliocentric_true_lon_1847_jan1_deg"] = {
             **{k: v for k, v in _lon_summary(helio).items() if k in ("median", "lo68", "hi68")},
             "le_verrier_published": round(LVE.true_lon_ecl_of_date_deg, 4)}  # fmt: skip
@@ -620,8 +626,10 @@ def noise_free_check(nf: dict) -> dict:
 def summarize(n_workers: int) -> None:
     """A3b first (noise seeds; the JSON is written once they are summarized), then the
     noise-free posterior check is appended and the JSON rewritten."""
+    from fork import ledger
     from fork.inference.nested import BOUND, DLOGZ, ERR_INFLATION, SAMPLE, cells_for
 
+    t0, c0 = time.time(), ledger.cpu_now()
     truth_p = truth_params()
     lv = lv_check_state()
     datasets = {dataset_key(s): summarize_dataset(s, truth_p, n_workers) for s in NOISE_SEEDS}
@@ -662,6 +670,14 @@ def summarize(n_workers: int) -> None:
     write_json(OUT_NAME, payload)
     print(json.dumps(payload["noise_free_check"], indent=1))
     print(f"wrote {SITE_DATA / OUT_NAME}")
+    n_fit, n_der = _SUMMARY_COUNT["point_fit_nfev"], _SUMMARY_COUNT["derived_integrations"]
+    yrs = ledger.sim_years_per_integration(dataset(0)[0].jd_tdb, A1_EPOCH_JD_TDB)
+    ledger.append("m5b/summarize", "summarize", n_likelihood_calls=n_fit,
+                  n_integrations=n_fit + n_der, sim_years=(n_fit + n_der) * yrs,
+                  wall_s=time.time() - t0, cpu_s=ledger.cpu_now() - c0, n_workers=n_workers,
+                  estimated=True, derived_integrations=n_der, point_fit_nfev=n_fit,
+                  note="point-fit nfev excludes finite-difference Jacobian calls (lower "
+                  "bound); cached point fits count 0")  # fmt: skip
 
 
 def main(argv: list[str] | None = None) -> None:
