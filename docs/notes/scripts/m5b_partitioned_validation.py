@@ -56,6 +56,7 @@ EMCEE = {0: ("check_seed_0_free_a_e0.3_init343", (0.25, 0.3)),
          2: ("seed_0_free_a_e0.3", (0.0, 0.12))}  # fmt: skip
 N_LON = 3000
 TOL_SIGMA = 0.5
+CELL0_SEEDS = (1, 2, 3)  # cell [20, 25] gets a third seed (rng 1 vs 2 disagreed on the a tail)
 
 
 def setup():
@@ -120,12 +121,20 @@ def lon_summary(x: np.ndarray) -> dict:
             "width68": round(rel_deg(hi, med) - rel_deg(lo, med), 3)}  # fmt: skip
 
 
-def compare(dyn: dict, emc: dict) -> dict:
+def half_width(p: list[float], angle: bool) -> float:
+    return 0.5 * ((rel_deg(p[2], p[1]) - rel_deg(p[0], p[1])) if angle else p[2] - p[0])
+
+
+def compare(dyn: dict, emc: dict, symmetric: bool = False) -> dict:
+    """Percentiles of ``dyn`` against the reference ``emc``, in units of the reference's 68 %
+    half-width σ; ``symmetric`` (dynesty vs dynesty) uses the mean of both half-widths."""
     out, ok = {}, True
     for name in dyn:
         angle = name.endswith("_deg")
         d, e = pct(dyn[name], angle), pct(emc[name], angle)
-        sig = 0.5 * ((rel_deg(e[2], e[1]) - rel_deg(e[0], e[1])) if angle else e[2] - e[0])
+        sig = half_width(e, angle)
+        if symmetric:
+            sig = 0.5 * (sig + half_width(d, angle))
         diff = [(rel_deg(a, b) if angle else a - b) / sig for a, b in zip(d, e, strict=True)]
         width = ((rel_deg(d[2], d[1]) - rel_deg(d[0], d[1])) if angle else d[2] - d[0]) / (2 * sig)
         within = abs(diff[1]) <= TOL_SIGMA
@@ -136,6 +145,62 @@ def compare(dyn: dict, emc: dict) -> dict:
                      "width_ratio": round(width, 3), "median_within_tol": bool(within)}  # fmt: skip
     out["all_medians_within_tol"] = bool(ok)
     return out
+
+
+def cell0_three_seeds(restricted: dict, ref: dict, ctx, geo, rng) -> dict:
+    """Cell [20, 25] on three rng seeds, all restricted to e > 0.25 like chain B. Rule: rng 3
+    agreeing (all medians ≤ 0.5σ) with chain B and with rng 1 passes, rng 2 being an outlier
+    draw; rng 3 agreeing with rng 2 passes on dynesty (2 of 3), chain B under-exploring the a
+    tail near the e bound. Dynesty-vs-dynesty σ is the mean of both half-widths. Also the
+    run-to-run scatter: per quantity, the spread of the three seeds' 16/50/84 points in units
+    of chain B's σ, and of ln Z_k against its quoted error."""
+    e_lo, e_hi = ref["e_range"]
+    ph, logz = {}, {}
+    for r in CELL0_SEEDS:
+        res = NestedResult.load(run_path(0, r, ".pkl"))
+        logz[r] = (res.logz, res.logzerr)
+        if (r, 0) in restricted:
+            ph[r] = restricted[(r, 0)]
+            continue
+        eq = res.equal_weight(np.random.default_rng(100 * r))
+        p = physical(res.space, eq)
+        m = (p["e"] >= e_lo) & (p["e"] <= e_hi)
+        p = {n: v[m] for n, v in p.items()}
+        p["lon_1846_deg"] = lon_deg(res.space, eq[m], ctx, geo, rng)
+        ph[r] = p
+    vs_b = {f"rng{r}": compare(ph[r], ref["ph"]) for r in CELL0_SEEDS}
+    pairs = {f"rng{a}_vs_rng{b}": compare(ph[a], ph[b], symmetric=True)
+             for a, b in ((3, 1), (3, 2), (1, 2))}  # fmt: skip
+    ok = {k: v["all_medians_within_tol"] for k, v in {**vs_b, **pairs}.items()}
+    with_b_and_1 = ok["rng3"] and ok["rng3_vs_rng1"]
+    with_2 = ok["rng3_vs_rng2"]
+    if with_b_and_1 and with_2:
+        verdict = "pass: rng 3 agrees with chain B, rng 1 and rng 2"
+    elif with_b_and_1:
+        verdict = "pass: rng 3 agrees with chain B and rng 1; rng 2 is an outlier draw"
+    elif with_2:
+        verdict = ("pass on dynesty (2 of 3): rng 3 agrees with rng 2; chain B under-explores "
+                   "the a tail near the e bound")  # fmt: skip
+    else:
+        verdict = "fail: rng 3 agrees with neither chain B + rng 1 nor rng 2"
+    scatter = {}
+    for name in ref["ph"]:
+        angle = name.endswith("_deg")
+        sig = half_width(pct(ref["ph"][name], angle), angle)
+        pts = np.array([pct(ph[r][name], angle) for r in CELL0_SEEDS])
+        if angle:
+            pts = np.array([[rel_deg(v, pts[0, 1]) for v in row] for row in pts])
+        sd, rg = pts.std(axis=0, ddof=1) / sig, float(np.ptp(pts[:, 1]) / sig)
+        scatter[name] = {"sd_16_50_84_in_sigmaB": [round(float(v), 3) for v in sd],
+                         "range_50_in_sigmaB": round(rg, 3)}  # fmt: skip
+    z = np.array([logz[r][0] for r in CELL0_SEEDS])
+    return {"seeds": list(CELL0_SEEDS), "e_range": [e_lo, e_hi],
+            "n_samples_in_comparison": {f"rng{r}": len(ph[r]["e"]) for r in CELL0_SEEDS},
+            "logz_k": {f"rng{r}": [round(v, 4) for v in logz[r]] for r in CELL0_SEEDS},
+            "logz_k_sd": round(float(z.std(ddof=1)), 4),
+            "logzerr_k_mean": round(float(np.mean([logz[r][1] for r in CELL0_SEEDS])), 4),
+            "vs_chainB": vs_b, "pairs": pairs, "agree": ok, "verdict": verdict,
+            "scatter": scatter}  # fmt: skip
 
 
 def summarize() -> None:
@@ -166,6 +231,7 @@ def summarize() -> None:
                                                         "frac_in_comparison")}
                                for k, v in emc.items()},
            "rng": {}}  # fmt: skip
+    restricted = {}
     for r, p in parts.items():
         rec = {"logz": round(p.logz, 4), "logzerr": round(p.logzerr, 4),
                "shares": [round(float(v), 5) for v in p.shares],
@@ -186,6 +252,7 @@ def summarize() -> None:
                 m = (ph["e"] >= e_lo) & (ph["e"] <= e_hi)
                 ph = {n: v[m] for n, v in ph.items()}
                 ph["lon_1846_deg"] = lon_deg(res.space, eq[m], ctx, geo, rng)
+                restricted[(r, k)] = ph
                 s["vs_emcee"] = compare(ph, emc[k]["ph"])
                 s["vs_emcee"]["frac_in_comparison"] = round(float(m.mean()), 4)
             rec["cells"].append(s)
@@ -202,6 +269,7 @@ def summarize() -> None:
         gate1.append({"cell": cell_label(k), "delta_logz_k": round(dz, 4), "err": round(ez, 4),
                       "logz_k_within": bool(abs(dz) <= ez), "delta_share": round(ds, 5),
                       "share_err": round(es, 5), "share_within": bool(abs(ds) <= es)})  # fmt: skip
+    out["cell0_three_seeds"] = cell0_three_seeds(restricted, emc[0], ctx, geo, rng)
     dz, ez = r2["logz"] - r1["logz"], math.hypot(r1["logzerr"], r2["logzerr"])
     out["gate"] = {
         "1_per_cell_across_rng": gate1,
@@ -210,6 +278,7 @@ def summarize() -> None:
                                   "all_shares_within": all(g["share_within"] for g in gate1)},
         "3_cell0_vs_chainB_e_gt_0.25": [out["rng"][f"rng{r}"]["cells"][0]["vs_emcee"][
             "all_medians_within_tol"] for r in RNG_SEEDS],
+        "3_cell0_three_seed_rule": out["cell0_three_seeds"]["verdict"],
         "3_cell2_vs_chainA": [out["rng"][f"rng{r}"]["cells"][2]["vs_emcee"][
             "all_medians_within_tol"] for r in RNG_SEEDS],
     }  # fmt: skip
