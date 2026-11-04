@@ -150,22 +150,91 @@ def test_point_fits_enforce_e_prior_bound(ctx):
     assert free.chi2 < 1e-4 and abs(free.theta[8] - 0.5) < 1e-3
 
 
+def test_bounded_fit_also_runs_the_boundary_phase_from_the_start():
+    """``_fit_bounded`` with a scripted optimizer. Phase 1 leaves e ≤ 0.3, so the boundary phase
+    runs from the phase-1 optimum (warm) and from the start's projection; the lowest-cost
+    successful run wins and nfev is summed. A start on the bound gets the extra run even when
+    phase 1 stays inside; otherwise phase 1 alone is the answer. Motivating case (LM, before
+    the shared path): seed 2, free a, the 105° start went 444.66 (a 66.1 AU) → 80.171; across
+    the 24 starts the old path left 7 at a = 297–2819 AU and 3 more on worse branches."""
+    from types import SimpleNamespace
+
+    from fork.inference.fit import _fit_bounded
+
+    space = le_verrier_space(None)  # z = Uranus 4 + (log10 m, a, k, h, λ₀) / (log10 m, a, ϖ, λ₀)
+    head = [19.1, -0.05, 0.005, 1.67]
+
+    def run(z0, script):
+        calls = []
+
+        def lm(sp, z, warm):
+            out = script(sp, np.asarray(z), warm)
+            calls.append((sp.on_e_bound, warm is not None, np.asarray(z).copy()))
+            return SimpleNamespace(x=out[0], cost=out[1], success=out[2], nfev=10)
+
+        sol, used = _fit_bounded(lm, np.array(z0), space)
+        return sol, used, calls
+
+    z_in = [*head, 1.0, 38.4, 0.1, 0.0, 2.0]  # e = 0.01
+    far = np.array([*head, 1.5, 50.0, 0.8, 0.0, 2.0])  # e = 0.64: phase 1 leaves the bound
+
+    def leaves(sp, z, warm):
+        if not sp.on_e_bound:
+            return far, 50.0, True
+        return (z, 900.0, True) if warm is not None else (z, 40.0, True)
+
+    sol, used, calls = run(z_in, leaves)
+    assert used.on_e_bound and sol.cost == 40.0 and sol.nfev == 30
+    assert [(b, w) for b, w, _ in calls] == [(False, False), (True, True), (True, False)]
+    assert calls[1][2][6] == pytest.approx(0.0) and calls[2][2][4:6].tolist() == [1.0, 38.4]
+    sol, _, _ = run(z_in, lambda sp, z, w: leaves(sp, z, w) if w is not None or not sp.on_e_bound
+                    else (z, 10.0, False))  # fmt: skip
+    assert sol.cost == 900.0  # unsuccessful runs lose
+    on_bound = [*head, 1.0, 38.4, math.sqrt(0.3), 0.0, 2.0]
+    sol, used, calls = run(on_bound, lambda sp, z, w: (z, 70.0 if sp.on_e_bound else 60.0, True))
+    assert len(calls) == 2 and not used.on_e_bound and sol.cost == 60.0
+    sol, used, calls = run(z_in, lambda sp, z, w: (z, 60.0, True))
+    assert len(calls) == 1 and not used.on_e_bound
+
+
+def test_prior_box_bounds_m_and_a_in_every_layout():
+    """The optimizer's box: log10 m ∈ [0, 2] and a ∈ [20, 60] AU (the shared prior), nothing
+    else bounded, in the interior, boundary (ϖ inserted after m, a) and profile (no λ₀) layouts,
+    with a held or free."""
+    from fork.inference.fit import _prior_box
+    from fork.inference.priors import PRIOR_A_AU, PRIOR_LOG10_M_EARTH
+
+    inf = math.inf
+    m, a, u = PRIOR_LOG10_M_EARTH, PRIOR_A_AU, (-inf, inf)
+    free, held = le_verrier_space(None), le_verrier_space(38.4)
+    cases = {(free, True): [m, a, u, u, u], (free.boundary(), True): [m, a, u, u],
+             (free, False): [m, a, u, u], (free.boundary(), False): [m, a, u],
+             (held, True): [m, u, u, u], (held.boundary(), False): [m, u]}  # fmt: skip
+    for (sp, lam0_in_z), want in cases.items():
+        lo, hi = _prior_box(sp, lam0_in_z=lam0_in_z)
+        assert list(zip(lo, hi, strict=True)) == want
+    assert _prior_box(held_orbit_space(1.0, 30.0, 0.1, 0.0))[0].tolist() == [-inf]
+
+
 @pytest.mark.slow
-def test_point_fit_boundary_phase_also_starts_from_the_start(ctx):
-    """Seed 2, free a, the 105° start. Its interior phase leaves e ≤ 0.3. The boundary phase
-    from that projected optimum alone (the pre-fix path) ended at χ² 444.66, a 66.1 AU. Also
-    run from the start projected onto the bound (the profile fix, now shared), it reaches the
-    multistart best: χ² 80.171, a 39.67, e = 0.3. Across all 24 starts, the old path left 7 at
-    a = 297–2819 AU (classed null) and 3 more on worse branches; seed 3, Le Verrier mode: 4.
-    ~10 s."""
+def test_point_fit_stays_in_the_prior_box(ctx):
+    """Seed 2, free a, the grid's 75° start. Without bounds on a, LM ended at a = 16.3 AU,
+    χ² 198.98, outside the prior's [20, 60]; earlier, before the shared bounded path, 7 of the
+    24 starts ran to a = 297–2819 AU. With the box (trust-region reflective): a 23.45,
+    χ² 83.974. Seeds 0, 2, 3 (72 starts): no fit now leaves the box (before: 1, 1, 5), the
+    best minima are unchanged (71.9069, 80.1712, 93.6662), but fewer starts reach them (2, 3
+    and 6 fewer than with LM). ~5 s."""
     from fork.data.synthetic import make_synthetic_observations
     from fork.model.forward import uranus_inc_raan_at_epoch
 
     obs, _ = make_synthetic_observations(np.random.default_rng(2))
+    start = np.arange(24)[5:6] * (2 * math.pi / 24)  # exactly the production grid's 75° start
     f = fit_perturber_multistart(obs, ctx, uranus_inc_raan_at_epoch(EPOCH),
-                                 lam0_starts_rad=np.radians([105.0])).fits[0]  # fmt: skip
+                                 lam0_starts_rad=start).fits[0]  # fmt: skip
     assert f.status == "converged" and f.in_m5_prior
-    assert f.chi2 == pytest.approx(80.171, abs=0.01) and 35.0 < f.theta[7] < 45.0
+    assert 20.0 <= f.theta[7] <= 60.0 and 0.0 <= f.theta[6] <= 2.0
+    # The basin reached is path-dependent: np.radians(75.0), 2e-16 away, ends at χ² 153.12.
+    assert f.chi2 == pytest.approx(83.974, abs=0.01)
 
 
 # ------------------------------------------------------------------- profile likelihood
