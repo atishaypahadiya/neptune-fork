@@ -3,11 +3,14 @@
     uv run python -m fork.export.m5b            # all datasets (hours; local only, not CI)
     uv run python -m fork.export.m5b --seeds 0 1  # a subset (merged into the existing JSON)
 
-Per dataset (noise seeds 0–9, plus noise-free truth), three posteriors:
-  - ``free_a_e0.3``: free a, e ∈ [0, 0.3] (the M5 prior);
-  - ``free_a_e0.1``: free a, e ∈ [0, 0.1] (prior-sensitivity run);
+Per dataset (noise seeds 0–9, plus noise-free truth), up to three posteriors:
+  - ``free_a_e0.3``: free a, e ∈ [0, 0.3] (the M5 prior), every dataset (A3b needs ≥ 10 seeds);
+  - ``free_a_e0.1``: free a, e ∈ [0, 0.1] (prior-sensitivity run), seeds 0–4 and noise-free;
   - ``le_verrier_shape``: a, e, ϖ held at Le Verrier's published 1846 values; m, λ₀ and Uranus
-    sampled.
+    sampled. Every dataset, unless seed 0's chain took > 30 min of wall time, in which case
+    seeds 0–4 and noise-free only (``LV_SHAPE_SLOW_S``).
+Each dataset also carries the M5a profile's Δχ² ≤ 1 interval for the 1846 longitude (from
+``m5a_profile.json``, where that dataset was profiled) beside the posterior 68 % interval.
 Raw chains go to ``data/cache/chains/`` (gitignored) and are reused on re-runs, so an interrupted
 run resumes. Reported per posterior: median and 16/84 % for m, a, e and the derived 1846-09-23
 geocentric longitude (light-time corrected, ecliptic of date), whether truth lies inside each
@@ -33,6 +36,13 @@ CHAIN_DIR = Path(__file__).resolve().parents[3] / "data" / "cache" / "chains"
 OUT_NAME = "m5b_posteriors.json"
 NOISE_SEEDS = tuple(range(10))
 RUNS = ("free_a_e0.3", "free_a_e0.1", "le_verrier_shape")
+REDUCED_SEEDS: tuple[int | None, ...] = (0, 1, 2, 3, 4, None)
+RUN_SEEDS: dict[str, tuple[int | None, ...] | None] = {  # None: every dataset
+    "free_a_e0.3": None,
+    "free_a_e0.1": REDUCED_SEEDS,
+    "le_verrier_shape": None,  # → REDUCED_SEEDS if seed 0's chain exceeds LV_SHAPE_SLOW_S
+}
+LV_SHAPE_SLOW_S = 1800.0
 N_WALKERS = 48
 N_STEPS = 20000
 MAX_STEPS = 60000
@@ -90,6 +100,39 @@ def _spaces(pq):
     }  # fmt: skip
 
 
+def runs_for(seed: int | None) -> list[str]:
+    """Posteriors sampled for this dataset (see ``RUN_SEEDS``; the Le Verrier-shape cut is
+    decided from seed 0's recorded chain wall time once that chain exists)."""
+    out = []
+    for r in RUNS:
+        allowed = RUN_SEEDS[r]
+        if r == "le_verrier_shape" and allowed is None:
+            p0 = CHAIN_DIR / "seed_0_le_verrier_shape.npz"
+            if p0.exists():
+                wall = json.loads(str(np.load(p0)["meta"])).get("wall_s")
+                if wall is not None and wall > LV_SHAPE_SLOW_S:
+                    allowed = REDUCED_SEEDS
+        if allowed is None or seed in allowed:
+            out.append(r)
+    return out
+
+
+def profile_intervals(seed: int | None) -> dict | None:
+    """The committed M5a profile's Δχ² ≤ 1 intervals for this dataset (both modes), or None if
+    the dataset was not profiled."""
+    path = SITE_DATA / "m5a_profile.json"
+    if not path.exists():
+        return None
+    for d in json.loads(path.read_text())["datasets"]:
+        if d["seed"] == seed:
+            return {mode: {"dchi2_le_1_intervals_deg": m["dchi2_le_1_intervals_deg"],
+                           "overall_min_lon_ecl_of_date_deg":
+                               m["overall_min"]["lon_ecl_of_date_deg"],
+                           "dchi2_at_true_neptune": m["dchi2_at_true_neptune"]}
+                    for mode, m in d["modes"].items()}  # fmt: skip
+    return None
+
+
 def run_dataset(seed: int | None, ctx, inc_raan, n_workers: int, truth_p: dict) -> dict:
     from multiprocessing import get_context
 
@@ -103,7 +146,9 @@ def run_dataset(seed: int | None, ctx, inc_raan, n_workers: int, truth_p: dict) 
     pq = tuple(uranus_theta_to_x(np.array([19.2, 0.0, *inc_raan, 0.0, 0.0]))[4:])
     geo = GalleGeometry.from_horizons()
     out = {"seed": seed, "noise": seed is not None, "runs": {}}
-    for run_name, (space, fit_kw) in _spaces(pq).items():
+    spaces = _spaces(pq)
+    for run_name in runs_for(seed):
+        space, fit_kw = spaces[run_name]
         t0 = time.time()
         point = fit_perturber_multistart(obs, ctx, inc_raan, n_workers=n_workers, **fit_kw).best
         path = CHAIN_DIR / f"{key}_{run_name}.npz"
@@ -112,7 +157,8 @@ def run_dataset(seed: int | None, ctx, inc_raan, n_workers: int, truth_p: dict) 
             samples, lp = z["samples"], z["log_prob"]
             meta = json.loads(str(z["meta"]))
         else:
-            q0 = space.q_from_theta(point.theta)
+            q0 = space.q_from_theta(point.theta)  # walkers: small ball around the point fit
+            t_chain = time.time()
             # per-dataset, per-run sampler seed: reproducible and independent of run order
             rng = np.random.default_rng([2026, -1 if seed is None else seed, RUNS.index(run_name)])
             with get_context("spawn").Pool(n_workers) as pool:
@@ -123,7 +169,8 @@ def run_dataset(seed: int | None, ctx, inc_raan, n_workers: int, truth_p: dict) 
                     "n_walkers": ch.n_walkers, "burn": ch.burn, "thin": ch.thin,
                     "acceptance": round(ch.acceptance, 4), "converged_50tau": ch.converged,
                     "chi2_chain_min": round(-2.0 * ch.max_log_prob, 4),
-                    "names": list(space.names)}  # fmt: skip
+                    "names": list(space.names),
+                    "wall_s": round(time.time() - t_chain, 1)}  # fmt: skip
             CHAIN_DIR.mkdir(parents=True, exist_ok=True)
             np.savez_compressed(path, samples=samples, log_prob=lp, meta=json.dumps(meta))
         idx = np.linspace(0, len(samples) - 1, min(len(samples), DERIVED_MAX_SAMPLES)).astype(int)
@@ -169,12 +216,14 @@ def run_dataset(seed: int | None, ctx, inc_raan, n_workers: int, truth_p: dict) 
             f"steps {meta['n_steps']}, {time.time() - t0:.0f} s",
             flush=True,
         )
-    fa = out["runs"]["free_a_e0.3"]["chi2_best"]
-    lvs = out["runs"]["le_verrier_shape"]["chi2_best"]
-    out["le_verrier_shape_vs_free_a"] = {
-        "delta_chi2": round(lvs - fa, 4),
-        "delta_ln_likelihood": round(-0.5 * (lvs - fa), 4),
-    }
+    if "le_verrier_shape" in out["runs"]:
+        fa = out["runs"]["free_a_e0.3"]["chi2_best"]
+        lvs = out["runs"]["le_verrier_shape"]["chi2_best"]
+        out["le_verrier_shape_vs_free_a"] = {
+            "delta_chi2": round(lvs - fa, 4),
+            "delta_ln_likelihood": round(-0.5 * (lvs - fa), 4),
+        }
+    out["profile_m5a"] = profile_intervals(seed)
     return out
 
 
@@ -220,6 +269,8 @@ def main(argv: list[str] | None = None) -> None:
                    true_neptune_geocentric_longitude().lon_ecl_of_date_rad), 4)}  # fmt: skip
     path = SITE_DATA / OUT_NAME
     existing = json.loads(path.read_text())["datasets"] if path.exists() else {}
+    for v in existing.values():  # refresh the profile intervals (the profile is re-exported)
+        v["profile_m5a"] = profile_intervals(v["seed"])
     for seed in seeds:
         key = "noise_free" if seed is None else f"seed_{seed}"
         existing[key] = run_dataset(seed, ctx, inc_raan, args.n_workers, truth_p)
@@ -234,7 +285,12 @@ def main(argv: list[str] | None = None) -> None:
             "le_verrier_shape": "a = 36.15 AU, e = 0.10761, ϖ = 284°45′ (equinox 1847.0) held",
             "sampler": {"package": "emcee", "moves": "0.8 DEMove + 0.2 DESnookerMove",
                         "n_walkers": N_WALKERS, "min_steps": N_STEPS, "max_steps": MAX_STEPS,
-                        "target_steps_per_tau": 50, "burn_tau": 10},
+                        "target_steps_per_tau": 50, "burn_tau": 10,
+                        "init": "small ball around the bounded 24-start point fit"},
+            "run_seeds": {r: "all" if v is None else [("none" if x is None else x) for x in v]
+                          for r, v in RUN_SEEDS.items()},
+            "profile_m5a": "per dataset: M5a profile Δχ² ≤ 1 intervals (site/data/"
+            "m5a_profile.json) where that dataset was profiled, else null",
             "truth": truth_p,
             "datasets": dict(sorted(existing.items())),
             "a3b_calibration": {r: calibration(existing, r) for r in RUNS},
