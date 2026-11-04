@@ -171,3 +171,45 @@ def test_partitioned_combination_and_error_propagation():
     assert [wq[k == i].sum() for i in range(3)] == pytest.approx(s)
     with pytest.raises(ValueError, match="partition"):
         PartitionedResult(tuple(runs[:2]))
+
+
+def test_e_cells_partition_the_prior_and_renormalise():
+    """M5b cells: [28, 60] AU split at e = 0.12. Cell weights are w_a · (e_hi − e_lo)/e_max and
+    sum to 1 over ``PARTITION_CELLS``; inside an e cell the transform stays in it and is
+    uniform in e; log_prior rejects e outside; an e slice needs (k, h) free and e_hi ≤ e_max."""
+    from fork.inference.nested import PARTITION_CELLS, cell_space
+
+    full = free_a_space(PQ, 0.3, BOX)
+    spaces = [cell_space(full, c) for c in PARTITION_CELLS]
+    w_a = math.log(60.0 / 28.0) / math.log(3.0)
+    assert [s.slice_weight for s in spaces[2:]] == pytest.approx([w_a * 0.4, w_a * 0.6])
+    assert sum(s.slice_weight for s in spaces) == pytest.approx(1.0)
+    for sp, (e_lo, e_hi) in ((spaces[2], (0.0, 0.12)), (spaces[3], (0.12, 0.3))):
+        q = _draws(sp, 5000)
+        e, a = q[:, 6] ** 2 + q[:, 7] ** 2, np.exp(q[:, 5])
+        assert e.min() >= e_lo and e.max() <= e_hi and a.min() >= 28.0
+        assert np.mean(e < 0.5 * (e_lo + e_hi)) == pytest.approx(0.5, abs=0.03)  # uniform in e
+        assert all(sp.log_prior(v) == 0.0 for v in q[:500])
+    q = spaces[3].prior_transform(np.full(spaces[3].ndim, 0.5))
+    q[6], q[7] = math.sqrt(0.1), 0.0  # e = 0.1: in the circular cell, not the eccentric one
+    assert spaces[3].log_prior(q) == -math.inf and spaces[2].log_prior(q) == 0.0
+    with pytest.raises(ValueError):
+        full.with_e_slice(0.12, 0.31)
+    with pytest.raises(ValueError):
+        held_shape_space(PQ, 36.15, 0.10761, 5.0, BOX).with_e_slice(0.0, 0.1)
+
+
+def test_partitioned_result_accepts_the_four_cells():
+    from types import SimpleNamespace
+
+    from fork.inference.nested import PARTITION_CELLS, PartitionedResult, cell_space
+
+    full = free_a_space(PQ, 0.3, BOX)
+    runs = tuple(SimpleNamespace(space=cell_space(full, c), logz=-74.0, logzerr=0.2,
+                                 samples=np.zeros((2, 9)), weights=np.full(2, 0.5))
+                 for c in PARTITION_CELLS)  # fmt: skip
+    p = PartitionedResult(runs)
+    assert p.logz == pytest.approx(-74.0)  # equal Z_k: Z = Σ w_k Z_k = Z_k
+    assert p.shares == pytest.approx([r.space.slice_weight for r in runs])
+    with pytest.raises(ValueError, match="partition"):
+        PartitionedResult(runs[:3])

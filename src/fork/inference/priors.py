@@ -26,10 +26,12 @@ The density is flat in q on its support, so ``log_prior`` returns 0 or −∞ (u
 needs nothing more), and ``prior_transform`` maps the unit cube onto exactly that support for
 nested sampling, whose evidence is normalised by construction.
 
-**Slices** (partitioned nested sampling): ``PosteriorSpace.a_au_range`` restricts a to
-[a_lo, a_hi] ⊂ [20, 60] AU, with the prior renormalised on the slice. The slice's share of
-the full prior is w = ln(a_hi/a_lo) / ln(60/20) (``slice_weight``), so the full evidence is
-Z = Σ_k w_k Z_k. Slice edges change only how hard each sub-run is, not the result.
+**Cells** (partitioned nested sampling): ``PosteriorSpace.a_au_range`` restricts a to
+[a_lo, a_hi] ⊂ [20, 60] AU and ``e_range`` restricts e to [e_lo, e_hi] ⊂ [0, e_max], with
+the prior renormalised on the cell. Both pieces are independent, so the cell's share of the
+full prior is w = [ln(a_hi/a_lo) / ln(60/20)] · [(e_hi − e_lo) / e_max] (``slice_weight``),
+and the full evidence is Z = Σ_k w_k Z_k. Cell edges change only how hard each sub-run is,
+not the result.
 """
 
 from __future__ import annotations
@@ -117,6 +119,11 @@ class PosteriorSpace:
     pq: tuple[float, float] = (0.0, 0.0)
     uranus_box: UranusBox | None = None  # required for prior_transform (nested sampling)
     a_au_range: tuple[float, float] = PRIOR_A_AU  # a slice of the a prior (renormalised on it)
+    e_range: tuple[float, float] | None = None  # e slice of [0, e_max]; None = all of it
+
+    @property
+    def e_bounds(self) -> tuple[float, float]:
+        return (0.0, self.e_max) if self.e_range is None else self.e_range
 
     @property
     def free(self) -> np.ndarray:
@@ -143,11 +150,21 @@ class PosteriorSpace:
             raise ValueError("a slice must lie inside the a prior, with a free")
         return replace(self, a_au_range=(float(a_lo_au), float(a_hi_au)))
 
+    def with_e_slice(self, e_lo: float, e_hi: float) -> PosteriorSpace:
+        from dataclasses import replace
+
+        if not (0.0 <= e_lo < e_hi <= self.e_max) or not (self.free[2] and self.free[3]):
+            raise ValueError("an e slice must lie inside [0, e_max], with (k, h) free")
+        return replace(self, e_range=(float(e_lo), float(e_hi)))
+
     @property
     def slice_weight(self) -> float:
-        """Prior mass of this a slice within the full log-uniform a prior (1 for no slice)."""
+        """Prior mass of this cell (a slice × e slice) within the full prior: log-uniform in a,
+        uniform in e (1 for no slicing)."""
         lo, hi = self.a_au_range
-        return math.log(hi / lo) / math.log(PRIOR_A_AU[1] / PRIOR_A_AU[0])
+        e_lo, e_hi = self.e_bounds
+        return (math.log(hi / lo) / math.log(PRIOR_A_AU[1] / PRIOR_A_AU[0])
+                * (e_hi - e_lo) / self.e_max)  # fmt: skip
 
     def full_perturber_q(self, q: np.ndarray) -> np.ndarray:
         y = np.array([0.0 if v is None else v for v in self.held])
@@ -178,8 +195,10 @@ class PosteriorSpace:
         lo_a, hi_a = self.a_au_range
         if self.free[1] and not math.log(lo_a) <= ln_a <= math.log(hi_a):
             return -math.inf
-        if (self.free[2] or self.free[3]) and k * k + h * h > self.e_max:
-            return -math.inf
+        if self.free[2] or self.free[3]:
+            e_lo, e_hi = self.e_bounds
+            if not e_lo <= k * k + h * h <= e_hi:
+                return -math.inf
         if self.uranus_box is not None:
             if not self.uranus_box.contains(np.asarray(q[:4])):
                 return -math.inf
@@ -213,8 +232,8 @@ class PosteriorSpace:
 
     def prior_transform(self, u: np.ndarray) -> np.ndarray:
         """Unit cube → q, pushing the uniform measure onto exactly the ``log_prior`` support:
-        Uranus box; log10 m = 2u; ln a uniform; e = e_max·u, ϖ = 2πu → (√e cos ϖ, √e sin ϖ);
-        λ₀ = 2πu."""
+        Uranus box; log10 m = 2u; ln a uniform; e = e_lo + (e_hi − e_lo)·u, ϖ = 2πu →
+        (√e cos ϖ, √e sin ϖ); λ₀ = 2πu."""
         self._check_transformable()
         box = self.uranus_box
         u = np.asarray(u, dtype=float)
@@ -231,7 +250,8 @@ class PosteriorSpace:
                 lo, hi = math.log(self.a_au_range[0]), math.log(self.a_au_range[1])
                 q[out] = lo + (hi - lo) * u[j]
             elif n == "e":  # consumes (e, ϖ) → (k, h)
-                s = math.sqrt(self.e_max * u[j])
+                e_lo, e_hi = self.e_bounds
+                s = math.sqrt(e_lo + (e_hi - e_lo) * u[j])
                 varpi = TWO_PI * u[j + 1]
                 q[out], q[out + 1] = s * math.cos(varpi), s * math.sin(varpi)
                 j += 1
