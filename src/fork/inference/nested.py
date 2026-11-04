@@ -231,24 +231,44 @@ def a_au_of(space: PosteriorSpace, samples: np.ndarray) -> np.ndarray:
     return np.exp(samples[:, 4 + int(space.free[0])])
 
 
-# ------------------------------------------------------------------ partitioned (a slices)
+# ------------------------------------------------------------------ partitioned (cells)
 
+# Round-1 partition (a only); kept for the record of that validation.
 A_SLICES_AU: tuple[tuple[float, float], ...] = ((20.0, 25.0), (25.0, 28.0), (28.0, 60.0))
+
+# M5b partition: cells of (a [AU], e) with e = None for all of [0, e_max]. [28, 60] AU is
+# split by eccentricity (circular vs eccentric), not by a: it holds mode A (e ≈ 0.03) and
+# an eccentric branch (a ≳ 33, e ≈ 0.16–0.3) that one sub-run weighs inconsistently, and
+# every alternative branch found so far is eccentric. The e edge assumes e_max = 0.3.
+PARTITION_CELLS: tuple[tuple[tuple[float, float], tuple[float, float] | None], ...] = (
+    ((20.0, 25.0), None),
+    ((25.0, 28.0), None),
+    ((28.0, 60.0), (0.0, 0.12)),
+    ((28.0, 60.0), (0.12, 0.3)),
+)
+
+
+def cell_space(space: PosteriorSpace, cell) -> PosteriorSpace:
+    """The restricted prior of one partition cell ((a_lo, a_hi), e range or None)."""
+    (a_lo, a_hi), e_rng = cell
+    out = space.with_a_slice(a_lo, a_hi)
+    return out if e_rng is None else out.with_e_slice(*e_rng)
 
 
 @dataclass(frozen=True)
 class PartitionedResult:
-    """Nested runs on disjoint a slices of one prior, combined: Z = Σ_k w_k Z_k with w_k the
-    slice's prior mass (``PosteriorSpace.slice_weight``). Errors are propagated from each
-    run's ln Z error, assumed independent: σ(ln Z)² = Σ_k s_k² σ_k², with s_k = w_k Z_k / Z the
-    slice's posterior mass share; var(s_k) = Σ_j s_k² (δ_kj − s_j)² σ_j²."""
+    """Nested runs on disjoint cells (a slice × e slice) of one prior, combined:
+    Z = Σ_k w_k Z_k with w_k the cell's prior mass (``PosteriorSpace.slice_weight``). Errors
+    are propagated from each run's ln Z error, assumed independent: σ(ln Z)² = Σ_k s_k² σ_k²,
+    with s_k = w_k Z_k / Z the cell's posterior mass share;
+    var(s_k) = Σ_j s_k² (δ_kj − s_j)² σ_j²."""
 
     slices: tuple[NestedResult, ...]
 
     def __post_init__(self) -> None:
         w = sum(r.space.slice_weight for r in self.slices)
         if abs(w - 1.0) > 1e-9:
-            raise ValueError(f"slices must partition the a prior (weights sum to {w})")
+            raise ValueError(f"cells must partition the prior (weights sum to {w})")
 
     @property
     def ln_terms(self) -> np.ndarray:
@@ -276,7 +296,7 @@ class PartitionedResult:
         return np.sqrt([np.sum(s[k] ** 2 * (eye[k] - s) ** 2 * sig**2) for k in range(len(s))])
 
     def samples_and_weights(self) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-        """All slices' samples with combined posterior weights (summing to 1) and the slice
+        """All cells' samples with combined posterior weights (summing to 1) and the cell
         index of each sample."""
         q = np.concatenate([r.samples for r in self.slices])
         w = np.concatenate([s * r.weights for s, r in zip(self.shares, self.slices, strict=True)])
