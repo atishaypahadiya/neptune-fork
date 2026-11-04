@@ -3,7 +3,8 @@
     uv run python docs/notes/scripts/m5a_diagnostics.py
 
 Datasets: noise-free Horizons truth, and synthetic noise seeds 0–4 (same schedule).
-  1. Noise-free recovery: free-a and Le Verrier-mode 24-start multistart. All fits bound the
+  1. Noise-free recovery: free-a and Le Verrier-mode multistart (24 λ₀ starts per fit; 48
+     where ``N_LAM0_STARTS_RAISED`` says so). All fits bound the
      perturber's e at the M5 prior's 0.3 (two-phase, see ``PerturberSpace``); the
      ``*_unbounded`` entries repeat the fit without the bound, as a record of the e > 0.3 bug.
   3. Eccentricity sensitivity: free-a multistart with the perturber's e capped at 0.05 and 0.1
@@ -105,10 +106,67 @@ def summary(run, obs, ctx, nep_rad: float, with_1847: bool = False) -> dict:
         "galle_lon_ecl_of_date_deg": round(math.degrees(g.lon_ecl_of_date_rad), 3),
         "dlon_vs_neptune_deg": round(math.degrees(wrap_rad(g.lon_ecl_of_date_rad - nep_rad)), 3),
         "n_distinct_minima": len(run.minima), "status_counts": run.status_counts(),
+        "n_starts": len(run.fits),
     }  # fmt: skip
     if with_1847:
         out["heliocentric_1847_jan1"] = heliocentric_1847(b.theta, ctx)
     return out
+
+
+# λ₀ starts per fit. A fit is raised to 48 only when its 24-start best got worse than the
+# committed M5a_diagnostics.json by > 0.05 in χ² (rule set at the 6c8bc82 box change; the
+# 48-start grid contains the 24-start one). Keys "dataset/fit", e.g. "seed_2/free_a".
+N_LAM0_STARTS = 24
+N_LAM0_STARTS_RAISED: dict[str, int] = {}
+MULTISTART_KW = {
+    "free_a": dict(),  # e ≤ 0.3 (default bound, the M5 prior)
+    "free_a_unbounded": dict(e_max=None),  # before the bound fix, for the record
+    "le_verrier_unbounded": dict(a_fixed_au=BODE_A_AU, e_max=None),
+    "le_verrier": dict(a_fixed_au=BODE_A_AU),
+    "free_a_e_max_0.1": dict(e_max=0.1),
+    "free_a_e_max_0.05": dict(e_max=0.05),
+}
+
+
+def le_verrier_spaces() -> dict[str, PerturberSpace]:
+    lv = LE_VERRIER_1846
+    varpi = lv.varpi_ecl_j2000_rad()
+    log10_m_alt = math.log10(LE_VERRIER_1846_MASS_ALT_MSUN / M_EARTH_MSUN)
+    held = held_orbit_space(lv.log10_m_earth, lv.a_au, lv.e, varpi)
+    return {
+        "le_verrier_1846": held,
+        "le_verrier_1846_m_1_9300": held_orbit_space(log10_m_alt, lv.a_au, lv.e, varpi),
+        # context only (not item 4's spec): his a, e, ϖ held, mass free as well as λ₀
+        "le_verrier_1846_m_free": PerturberSpace((None, *held.held[1:])),
+    }
+
+
+def fit_names() -> list[str]:
+    return [*MULTISTART_KW, *le_verrier_spaces()]
+
+
+def dataset(seed: int | None) -> tuple[str, LongitudeObservations]:
+    obs, truth = make_synthetic_observations(np.random.default_rng(0 if seed is None else seed))
+    if seed is None:
+        obs = LongitudeObservations(obs.jd_tdb, truth, obs.sigma_rad, obs.source)
+    return ("noise_free" if seed is None else f"seed_{seed}"), obs
+
+
+def fit_one(key: str, name: str, obs, ctx, inc_raan, nep_rad: float,
+            n_lam0_starts: int | None = None) -> dict:  # fmt: skip
+    """One diagnostics fit (cached per dataset, fit and start count)."""
+    n = n_lam0_starts or N_LAM0_STARTS_RAISED.get(f"{key}/{name}", N_LAM0_STARTS)
+    cache_name = name if n == N_LAM0_STARTS else f"{name}_n{n}"
+    if name in MULTISTART_KW:
+        kw = MULTISTART_KW[name]
+        return _cached(key, cache_name, lambda: summary(
+            fit_perturber_multistart(obs, ctx, inc_raan, n_lam0_starts=n, n_workers=N_WORKERS,
+                                     **kw), obs, ctx, nep_rad))  # fmt: skip
+    space = le_verrier_spaces()[name]
+    return _cached(key, cache_name, lambda: summary(
+        fit_perturber_multistart(obs, ctx, inc_raan, space=space, mode=name, n_lam0_starts=n,
+                                 n_workers=N_WORKERS),
+        obs, ctx, nep_rad, with_1847=True))  # fmt: skip
 
 
 def main() -> None:
@@ -117,45 +175,16 @@ def main() -> None:
     inc_raan = uranus_inc_raan_at_epoch(EPOCH)
     nep_rad = true_neptune_geocentric_longitude().lon_ecl_of_date_rad
     lv = LE_VERRIER_1846
-    varpi = lv.varpi_ecl_j2000_rad()
-    log10_m_alt = math.log10(LE_VERRIER_1846_MASS_ALT_MSUN / M_EARTH_MSUN)
-    held = held_orbit_space(lv.log10_m_earth, lv.a_au, lv.e, varpi)
-    lv_spaces = {
-        "le_verrier_1846": held,
-        "le_verrier_1846_m_1_9300": held_orbit_space(log10_m_alt, lv.a_au, lv.e, varpi),
-        # context only (not item 4's spec): his a, e, ϖ held, mass free as well as λ₀
-        "le_verrier_1846_m_free": PerturberSpace((None, *held.held[1:])),
-    }
     results = {}
     for seed in SEEDS:
-        obs, truth = make_synthetic_observations(np.random.default_rng(0 if seed is None else seed))
-        if seed is None:
-            obs = LongitudeObservations(obs.jd_tdb, truth, obs.sigma_rad, obs.source)
-        key = "noise_free" if seed is None else f"seed_{seed}"
-        res = {}
-        runs = {
-            "free_a": dict(),  # e ≤ 0.3 (default bound, the M5 prior)
-            "free_a_unbounded": dict(e_max=None),  # before the bound fix, for the record
-            "le_verrier_unbounded": dict(a_fixed_au=BODE_A_AU, e_max=None),
-            "le_verrier": dict(a_fixed_au=BODE_A_AU),
-            "free_a_e_max_0.1": dict(e_max=0.1),
-            "free_a_e_max_0.05": dict(e_max=0.05),
-        }
-        for name, kw in runs.items():
-            res[name] = _cached(key, name, lambda kw=kw: summary(
-                fit_perturber_multistart(obs, ctx, inc_raan, n_workers=N_WORKERS, **kw),
-                obs, ctx, nep_rad))  # fmt: skip
-        for name, space in lv_spaces.items():
-            res[name] = _cached(key, name, lambda name=name, space=space: summary(
-                fit_perturber_multistart(obs, ctx, inc_raan, space=space, mode=name,
-                                         n_workers=N_WORKERS),
-                obs, ctx, nep_rad, with_1847=True))  # fmt: skip
+        key, obs = dataset(seed)
+        res = {name: fit_one(key, name, obs, ctx, inc_raan, nep_rad) for name in fit_names()}
         results[key] = res
         print(key, {k: (v["dlon_vs_neptune_deg"], v["chi2"]) for k, v in res.items()}, flush=True)
     payload = {
-        "description": "M5a diagnostics of the 1846-09-23 longitude miss; best of 24 λ₀ starts "
-        "per fit. dlon = perturber − true Neptune, geocentric, light-time corrected, ecliptic "
-        "of date.",
+        "description": "M5a diagnostics of the 1846-09-23 longitude miss; best of n_starts λ₀ "
+        "starts per fit (24 unless raised to 48, see N_LAM0_STARTS_RAISED). dlon = perturber "
+        "− true Neptune, geocentric, light-time corrected, ecliptic of date.",
         "true_neptune_lon_ecl_of_date_deg": round(math.degrees(nep_rad), 4),
         "le_verrier_1846": {
             "a_au": lv.a_au,
@@ -173,8 +202,14 @@ def main() -> None:
         },
         "results": results,
     }
-    OUT.write_text(json.dumps(payload, indent=1, ensure_ascii=False) + "\n")
+    write_out(payload)
     print(f"wrote {OUT} in {time.time() - t0:.0f} s")
+
+
+def write_out(payload: dict) -> None:
+    tmp = OUT.with_suffix(".tmp")
+    tmp.write_text(json.dumps(payload, indent=1, ensure_ascii=False) + "\n")
+    tmp.replace(OUT)
 
 
 if __name__ == "__main__":
