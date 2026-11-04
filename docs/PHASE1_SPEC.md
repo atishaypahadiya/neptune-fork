@@ -144,6 +144,44 @@ post-1781 residual RMS is **≤ 1.5 σ_noise** (4.5″); without Neptune the sam
     and cell [28, 60] × e < 0.12 matches emcee chain A, same tolerances;
   - report the 1846 longitude median and 68% interval, combined and per cell.
 
+  *Amended (round 2, decision): the gate passes with measured errors.* **Evidence errors:**
+  dynesty's quoted ln Z error understates the run-to-run scatter on these posteriors. On seed
+  0 the pooled single-run SD of ln Z_k across rng seeds was 0.40 against a quoted 0.22
+  (four cells, cell [20, 25] on three seeds: 5 degrees of freedom, so the factor's own 68%
+  range is about 1.5–2.6). Every ln Z error that is reported or compared is therefore
+  σ_eff = 1.8 · σ_quoted (`nested.ERR_INFLATION`), and share errors scale with it. **This
+  applies to Phase 2 evidence too.** Seed-0 comparisons, quoted and corrected:
+
+  | comparison | Δ/σ quoted | Δ/σ with ×1.8 |
+  |---|---|---|
+  | ln Z_k [20, 25], rng 1 vs 2 | 0.03 | 0.02 |
+  | ln Z_k [25, 28], rng 1 vs 2 | 0.13 | 0.07 |
+  | ln Z_k [28, 60] × e < 0.12, rng 1 vs 2 | 0.79 | 0.44 |
+  | ln Z_k [28, 60] × e ≥ 0.12, rng 1 vs 2 | 1.39 | 0.77 |
+  | share [20, 25], rng 1 vs 2 | 0.29 | 0.16 |
+  | share [25, 28], rng 1 vs 2 | 0.17 | 0.09 |
+  | share [28, 60] × e < 0.12, rng 1 vs 2 | 1.36 | 0.76 |
+  | share [28, 60] × e ≥ 0.12, rng 1 vs 2 | 1.53 | 0.85 |
+  | combined ln Z, rng 1 vs 2 | 0.44 | 0.25 |
+  | ln Z_k [20, 25], rng 3 vs rng 1 / rng 2 | 3.08 / 3.12 | **1.71 / 1.73** |
+
+  The rng 3 comparison stays above 1σ after correction: rng 3's ln Z_k is 1.0 higher with the
+  same posterior shape, which points to the thin mode-B pocket being under-sampled at nlive
+  1000. Hence nlive 2000 for that cell in the full run.
+
+  **Full run** (`python -m fork.export.m5b run`, then `summarize`):
+  - free a, e ≤ 0.3: noise seeds 0–9 × the four cells, one rng seed per cell; cell [20, 25] at
+    nlive 2000, the others at 1000. The seed-0 validation runs of the other three cells are
+    reused.
+  - free a, e ≤ 0.1: seeds 0–4, only the cells that can hold e ≤ 0.1 (`nested.cells_for`):
+    [20, 25] and [25, 28] AU, and [28, 60] AU × e ∈ [0, 0.1]. The [28, 60] × e ≥ 0.12 cell is
+    outside this prior.
+  - Le Verrier shape: seeds 0–4. The shape is fixed, so one unpartitioned run per seed, if seed
+    0 passes a single-mode check: two rng seeds agree on ln Z within σ_eff and on the medians of
+    log10 m and λ₀ within 0.5σ, and in each run < 0.5% of the mass lies beyond 8 half-widths of
+    the median. If it fails, seeds 1–4 are not run until the shape is partitioned.
+  - No noise-free posterior (A3a is the point fit's job). A3b over the 10 seeds as above.
+
   Every long run writes a progress log and checkpoints, so it can be monitored and resumed.
 - **Priors** (one definition, `inference/priors.py`, used by emcee and dynesty alike). The
   sampled vector is q = (Uranus a, e·cos ϖ, e·sin ϖ, λ₀; perturber log10 m, ln a, √e·cos ϖ,

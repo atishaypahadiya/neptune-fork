@@ -213,3 +213,29 @@ def test_partitioned_result_accepts_the_four_cells():
     assert p.shares == pytest.approx([r.space.slice_weight for r in runs])
     with pytest.raises(ValueError, match="partition"):
         PartitionedResult(runs[:3])
+
+
+def test_cells_for_a_tighter_e_prior_and_error_inflation():
+    """e ≤ 0.1 keeps the three cells that can hold it (the eccentric [28, 60] cell is outside
+    the prior), clipped to [0, 0.1], with weights summing to 1. ``err_scale`` multiplies every
+    cell's ln Z error, so the combined error and share errors scale with it."""
+    from types import SimpleNamespace
+
+    from fork.inference.nested import ERR_INFLATION, PartitionedResult, cell_space, cells_for
+
+    assert ERR_INFLATION == 1.8
+    cells = cells_for(0.1)
+    assert cells == (((20.0, 25.0), None), ((25.0, 28.0), None), ((28.0, 60.0), (0.0, 0.1)))
+    assert len(cells_for(0.3)) == 4
+    full = free_a_space(PQ, 0.1, BOX)
+    spaces = [cell_space(full, c) for c in cells]
+    assert sum(s.slice_weight for s in spaces) == pytest.approx(1.0)
+    e = _draws(spaces[2], 2000)[:, 6:8]
+    assert ((e**2).sum(axis=1)).max() <= 0.1
+    runs = tuple(SimpleNamespace(space=s, logz=z, logzerr=0.2, samples=np.zeros((2, 9)),
+                                 weights=np.full(2, 0.5))
+                 for s, z in zip(spaces, (-76.0, -74.0, -73.0), strict=True))  # fmt: skip
+    p1, p18 = PartitionedResult(runs), PartitionedResult(runs, err_scale=ERR_INFLATION)
+    assert p18.logz == p1.logz and p18.shares == pytest.approx(p1.shares)
+    assert p18.logzerr == pytest.approx(1.8 * p1.logzerr)
+    assert p18.share_errs == pytest.approx(1.8 * p1.share_errs)

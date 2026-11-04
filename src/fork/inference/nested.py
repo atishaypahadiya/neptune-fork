@@ -248,6 +248,27 @@ PARTITION_CELLS: tuple[tuple[tuple[float, float], tuple[float, float] | None], .
 )
 
 
+# Empirical ln Z error inflation (PHASE1_SPEC M5b, "Evidence errors"). On seed 0's validation
+# the single-run ln Z scatter between rng seeds was ≈ 1.8× dynesty's quoted logzerr (pooled
+# over the four cells, 5 degrees of freedom), so every ln Z error that enters a comparison is
+# σ_eff = ERR_INFLATION · σ_quoted. Applies to Phase 2 evidence too.
+ERR_INFLATION = 1.8
+
+
+def cells_for(e_max: float) -> tuple:
+    """``PARTITION_CELLS`` restricted to e ≤ e_max: e ranges are clipped to [0, e_max] and
+    cells left empty are dropped (e ≤ 0.1 keeps three cells, without [28, 60] × e ≥ 0.12)."""
+    out = []
+    for a_rng, e_rng in PARTITION_CELLS:
+        if e_rng is None:
+            out.append((a_rng, None))
+            continue
+        lo, hi = e_rng[0], min(e_rng[1], e_max)
+        if lo < hi:
+            out.append((a_rng, (lo, hi)))
+    return tuple(out)
+
+
 def cell_space(space: PosteriorSpace, cell) -> PosteriorSpace:
     """The restricted prior of one partition cell ((a_lo, a_hi), e range or None)."""
     (a_lo, a_hi), e_rng = cell
@@ -261,9 +282,11 @@ class PartitionedResult:
     Z = Σ_k w_k Z_k with w_k the cell's prior mass (``PosteriorSpace.slice_weight``). Errors
     are propagated from each run's ln Z error, assumed independent: σ(ln Z)² = Σ_k s_k² σ_k²,
     with s_k = w_k Z_k / Z the cell's posterior mass share;
-    var(s_k) = Σ_j s_k² (δ_kj − s_j)² σ_j²."""
+    var(s_k) = Σ_j s_k² (δ_kj − s_j)² σ_j². Each σ_k is the run's quoted logzerr times
+    ``err_scale`` (``ERR_INFLATION`` for reported results; 1 reproduces dynesty's own)."""
 
     slices: tuple[NestedResult, ...]
+    err_scale: float = 1.0
 
     def __post_init__(self) -> None:
         w = sum(r.space.slice_weight for r in self.slices)
@@ -285,13 +308,13 @@ class PartitionedResult:
 
     @property
     def logzerr(self) -> float:
-        sig = np.array([r.logzerr for r in self.slices])
+        sig = self.err_scale * np.array([r.logzerr for r in self.slices])
         return float(math.sqrt(np.sum((self.shares * sig) ** 2)))
 
     @property
     def share_errs(self) -> np.ndarray:
         s = self.shares
-        sig = np.array([r.logzerr for r in self.slices])
+        sig = self.err_scale * np.array([r.logzerr for r in self.slices])
         eye = np.eye(len(s))
         return np.sqrt([np.sum(s[k] ** 2 * (eye[k] - s) ** 2 * sig**2) for k in range(len(s))])
 
