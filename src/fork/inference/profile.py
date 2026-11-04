@@ -28,7 +28,6 @@ import math
 from dataclasses import dataclass
 
 import numpy as np
-from scipy.optimize import least_squares
 
 from fork.data.frames import (
     geocentric_lon_lat_ecl_j2000_light_time,
@@ -41,6 +40,7 @@ from fork.inference.fit import (
     TWO_PI,
     PerturberSpace,
     _fit_bounded,
+    _lsq,
     _outside_guards,
     _unpack_perturber_z,
     fit_uranus_elements,
@@ -159,8 +159,7 @@ def _run_constrained(z_rest0, lam0_guess, pq, space, obs, context, geo, target_r
     def lm(sp: PerturberSpace, z0, warm):
         solver = _Lam0Solver(lam0_guess) if warm is None else copy.copy(warm.solver)
         args = (pq, sp, obs, context, geo, target_rad, solver)
-        sol = least_squares(_constrained_residuals, z0, args=args, method="lm", x_scale="jac",
-                            xtol=1e-10, ftol=1e-10, gtol=1e-10, max_nfev=400)  # fmt: skip
+        sol = _lsq(_constrained_residuals, z0, args, sp, lam0_in_z=False, max_nfev=400)
         sol.solver = solver
         return sol
 

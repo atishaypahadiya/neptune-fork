@@ -390,9 +390,41 @@ def _perturber_residuals(z, pq, space, obs: LongitudeObservations, context) -> n
     return wrap_rad(obs.lon_ecl_j2000_rad - pred) / obs.sigma_rad
 
 
-def _lm(fun, z0, args):
-    return least_squares(fun, z0, args=args, method="lm", x_scale="jac", xtol=1e-10, ftol=1e-10,
-                         gtol=1e-10, max_nfev=3000)  # fmt: skip
+def _prior_box(space: PerturberSpace, *, lam0_in_z: bool = True) -> tuple[np.ndarray, np.ndarray]:
+    """(lower, upper) bounds on the perturber part of a fit vector in ``space``'s layout: the M5
+    prior's rectangular part, log10 m ∈ ``PRIOR_LOG10_M_EARTH`` and a ∈ ``PRIOR_A_AU`` (from
+    ``fork.inference.priors``, the single prior definition); everything else is unbounded.
+    e ≤ e_max is a disk in (k, h), not a box, and stays with ``_fit_bounded``'s two phases.
+    ``lam0_in_z=False``: λ₀ (last) is not in the vector (the profile solves it)."""
+    from fork.inference.priors import PRIOR_A_AU, PRIOR_LOG10_M_EARTH  # priors imports fit
+
+    free = space.free.copy()
+    per_y = [PRIOR_LOG10_M_EARTH, PRIOR_A_AU, (-math.inf, math.inf), (-math.inf, math.inf),
+             (-math.inf, math.inf)]  # fmt: skip
+    if space.on_e_bound:
+        free[2:4] = False
+    box = [per_y[i] for i in range(5) if free[i]]
+    if space.on_e_bound:
+        box.insert(int(free[:2].sum()), (-math.inf, math.inf))  # ϖ
+    if not lam0_in_z:
+        if not free[4]:
+            raise ValueError("lam0_in_z=False needs λ₀ free")
+        box = box[:-1]
+    lo, hi = np.array(box, dtype=np.float64).reshape(-1, 2).T
+    return lo, hi
+
+
+def _lsq(fun, z0, args, space: PerturberSpace, *, lam0_in_z: bool = True, max_nfev: int = 3000):
+    """One perturber least-squares run: z = Uranus 4 (unbounded) + the perturber variables of
+    ``space``, held to ``_prior_box`` by the optimizer's native bounds (trust-region reflective;
+    LM takes no bounds). The start is clipped into the box. Shared by point and profile fits."""
+    lo_p, hi_p = _prior_box(space, lam0_in_z=lam0_in_z)
+    n_head = len(z0) - lo_p.size
+    lo = np.concatenate([np.full(n_head, -np.inf), lo_p])
+    hi = np.concatenate([np.full(n_head, np.inf), hi_p])
+    z0 = np.clip(np.asarray(z0, dtype=np.float64), lo, hi)
+    return least_squares(fun, z0, args=args, method="trf", bounds=(lo, hi), x_scale="jac",
+                         xtol=1e-10, ftol=1e-10, gtol=1e-10, max_nfev=max_nfev)  # fmt: skip
 
 
 def _fit_bounded(lm, z0, space: PerturberSpace, *, lam0_in_z: bool = True):
@@ -441,7 +473,7 @@ def _run_perturber_start(z0, pq, space, obs, context, lam0: float) -> PerturberF
     """One bounded LM run (``_fit_bounded``); module level so a process pool can pickle it."""
 
     def lm(sp, z, warm):
-        return _lm(_perturber_residuals, z, (pq, sp, obs, context))
+        return _lsq(_perturber_residuals, z, (pq, sp, obs, context), sp)
 
     sol, used = _fit_bounded(lm, z0, space)
     theta = _unpack_perturber_z(sol.x, pq, used)
