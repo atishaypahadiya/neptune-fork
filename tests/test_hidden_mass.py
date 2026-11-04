@@ -71,8 +71,12 @@ def test_hidden_mass_model_interface(ctx, theta_planted):
     model = HiddenMassModel(ctx)
     assert len(model.param_names) == 11 and model.param_names[6] == "p_log10_m_earth"
     jd = jd_tdb_jan1([1781, 1822, 1845])
-    np.testing.assert_array_equal(model.predict(theta_planted, jd),
-                                  predict_uranus_lon(theta_planted, jd, ctx))  # fmt: skip
+    np.testing.assert_allclose(
+        model.predict(theta_planted, jd),
+        predict_uranus_lon(theta_planted, jd, ctx),
+        rtol=0,
+        atol=1e-12,
+    )
     with pytest.raises(ValueError):
         model.predict(theta_planted[:6], jd)
 
@@ -83,7 +87,8 @@ def test_state_prediction_matches_longitude_prediction(ctx, theta_planted):
         pos, vel = predict_states_ecl_j2000(theta, jd, ctx)
         assert pos.shape == vel.shape == (jd.size, 3 if theta.size == 6 else 4, 3)
         lon = np.arctan2(pos[:, 2, 1], pos[:, 2, 0])
-        assert np.max(np.abs(wrap_rad(lon - predict_uranus_lon(theta, jd, ctx)))) == 0.0
+        # two code paths (numpy arctan2 vs the forward model): equal to rounding, not bits
+        assert np.max(np.abs(wrap_rad(lon - predict_uranus_lon(theta, jd, ctx)))) < 1e-12
 
 
 def test_light_time_geometry():

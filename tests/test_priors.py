@@ -236,6 +236,7 @@ def test_cells_for_a_tighter_e_prior_and_error_inflation():
                                  weights=np.full(2, 0.5))
                  for s, z in zip(spaces, (-76.0, -74.0, -73.0), strict=True))  # fmt: skip
     p1, p18 = PartitionedResult(runs), PartitionedResult(runs, err_scale=ERR_INFLATION)
-    assert p18.logz == p1.logz and p18.shares == pytest.approx(p1.shares)
+    assert p18.logz == pytest.approx(p1.logz, abs=1e-12)
+    assert p18.shares == pytest.approx(p1.shares)
     assert p18.logzerr == pytest.approx(1.8 * p1.logzerr)
     assert p18.share_errs == pytest.approx(1.8 * p1.share_errs)

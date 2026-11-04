@@ -73,6 +73,11 @@ forward-model interface generic: `predict(theta, t_jd) -> lon_rad` with a model-
 - Time: Julian Date (TDB) floats internally; convert with astropy only at boundaries.
 - Randomness: every stochastic function takes an explicit `rng: np.random.Generator`.
 - Mark tests over ~5 s with `@pytest.mark.slow`.
+- No exact float equality in tests: compare computed values with a tolerance
+  (`pytest.approx`, `np.testing.assert_allclose`, `abs(diff) < 1e-12`), since CI runs on x86 and
+  libm/numba results can differ in the last bit from ARM. Exact `==` only where equality is the
+  point or holds by construction: literals, sentinels (log_prior's 0/−∞), copies and pickle
+  round trips, same-seed reruns on one machine, documented bit-identity invariants.
 - Each milestone ends with: tests green, a short note in `docs/notes/Mx.md` (what was built, numbers
   achieved, surprises), and one commit per milestone minimum.
 
