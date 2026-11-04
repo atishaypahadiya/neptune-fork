@@ -117,8 +117,15 @@ def _dlon_deg(a_rad: float, b_rad: float) -> float:
     return math.degrees((a_rad - b_rad + math.pi) % (2 * math.pi) - math.pi)
 
 
-def m5a_fits_data(n_workers: int = 1) -> dict:
-    """M5a site export. Deterministic given ``M5A_SEED`` (serial and pooled runs agree)."""
+# λ₀ starts per mode. A mode is raised to 48 only when the 24-start best got worse than a
+# previous export by > 0.05 in χ² (rule set at the 6c8bc82 box change); the 48-start grid
+# contains the 24-start one, so its best is never worse.
+M5A_N_LAM0_STARTS = {"le_verrier": 24, "free_a": 24}
+
+
+def m5a_fits_data(n_workers: int = 1, n_lam0_starts: dict[str, int] | None = None) -> dict:
+    """M5a site export. Deterministic given ``M5A_SEED`` (serial and pooled runs agree).
+    ``n_lam0_starts``: per-mode start counts (default ``M5A_N_LAM0_STARTS``)."""
     from fork.data.horizons import states_about_inner_barycenter_ecl_j2000 as about_bary
     from fork.data.synthetic import jd_tdb_jan1, make_synthetic_observations
     from fork.data.synthetic import true_uranus_lon_ecl_j2000_rad as true_lon
@@ -148,10 +155,13 @@ def m5a_fits_data(n_workers: int = 1) -> dict:
     def curve(theta):
         return _r(wrap_rad(truth_grid - predict_uranus_lon(theta, grid, ctx)) * RAD_TO_ARCSEC, 4)
 
+    n_starts = {**M5A_N_LAM0_STARTS, **(n_lam0_starts or {})}
     runs = {
         "le_verrier": fit_perturber_multistart(obs, ctx, inc_raan, a_fixed_au=BODE_A_AU,
+                                               n_lam0_starts=n_starts["le_verrier"],
                                                n_workers=n_workers),
-        "free_a": fit_perturber_multistart(obs, ctx, inc_raan, n_workers=n_workers),
+        "free_a": fit_perturber_multistart(obs, ctx, inc_raan, n_lam0_starts=n_starts["free_a"],
+                                           n_workers=n_workers),
     }  # fmt: skip
     uranus_only = runs["free_a"].uranus_only
     curves = [{"id": "no_perturber", "label": "No perturber (A2)",
