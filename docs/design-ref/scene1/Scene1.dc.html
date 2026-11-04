@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Scene 1, something unseen</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500&amp;family=EB+Garamond:ital@1&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#EDEDED}a:hover{color:#FFFFFF}
+</style>
+</helmet>
+<div style="width: 1440px; height: 900px; position: relative; overflow: hidden; background: #000000; color: #EDEDED; font-family: 'Barlow Condensed', 'Helvetica Neue', sans-serif">
+
+<svg width="1440" height="900" viewBox="0 0 1440 900" role="img" aria-label="Perspective grid of the plane of the solar system receding to a glowing horizon. Uranus's observed path curves toward the viewer, drifting ahead of then behind its predicted dashed path, with annotations at 1690, 1781, 1822 and 1846. An unseen shaded sphere hangs above, with lines converging on the 1822 point." style="position: absolute; inset: 0">
+<defs>
+<radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.75"></stop><stop offset="0.45" stop-color="#BFBFBF" stop-opacity="0.22"></stop><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"></stop></radialGradient>
+<radialGradient id="ball" cx="38%" cy="32%" r="70%"><stop offset="0" stop-color="#F4F4F2"></stop><stop offset="0.42" stop-color="#8E8E8A"></stop><stop offset="0.8" stop-color="#1C1C1C"></stop><stop offset="1" stop-color="#050505"></stop></radialGradient>
+<linearGradient id="fadeG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000000"></stop><stop offset="0.12" stop-color="#555555"></stop><stop offset="1" stop-color="#FFFFFF"></stop></linearGradient>
+<mask id="floorMask" maskUnits="userSpaceOnUse" x="0" y="470" width="1440" height="430"><rect x="0" y="470" width="1440" height="430" fill="url(#fadeG)"></rect></mask>
+<filter id="soft" x="-20%" y="-60%" width="140%" height="220%"><feGaussianBlur stdDeviation="18"></feGaussianBlur></filter>
+<filter id="grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="5" stitchTiles="stitch"></feTurbulence><feColorMatrix type="matrix" values="0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0 0 0 0 1"></feColorMatrix></filter>
+</defs>
+
+<sc-for list="{{stars}}" as="s" hint-placeholder-count="80">
+<circle cx="{{s.x}}" cy="{{s.y}}" r="{{s.r}}" fill="#FFFFFF" fill-opacity="{{s.o}}"></circle>
+</sc-for>
+
+<ellipse cx="720" cy="472" rx="860" ry="96" fill="url(#glow)" filter="url(#soft)"></ellipse>
+<line x1="0" y1="470" x2="1440" y2="470" stroke="#FFFFFF" stroke-width="0.8" opacity="0.7"></line>
+
+<g mask="url(#floorMask)" stroke="#FFFFFF" stroke-width="0.8" fill="none">
+<sc-for list="{{rows}}" as="g" hint-placeholder-count="12"><line x1="0" y1="{{g.y}}" x2="1440" y2="{{g.y}}" opacity="0.55"></line></sc-for>
+<sc-for list="{{cols}}" as="g" hint-placeholder-count="30"><line x1="{{g.x1}}" y1="{{g.y1}}" x2="{{g.x2}}" y2="{{g.y2}}" opacity="0.45"></line></sc-for>
+</g>
+
+<polyline points="{{pred}}" fill="none" stroke="#FFFFFF" stroke-width="1.2" stroke-dasharray="6 6" opacity="0.65"></polyline>
+<polyline points="{{obs}}" fill="none" stroke="#FFFFFF" stroke-width="2"></polyline>
+
+<sc-for list="{{pull}}" as="p" hint-placeholder-count="12">
+<line x1="{{p.x}}" y1="{{p.y}}" x2="{{focus.x}}" y2="{{focus.y}}" stroke="#FFFFFF" stroke-width="0.6" opacity="0.4"></line>
+</sc-for>
+<circle cx="1010" cy="300" r="72" fill="url(#ball)"></circle>
+<circle cx="1010" cy="300" r="96" fill="none" stroke="#FFFFFF" stroke-width="0.6" stroke-dasharray="2 5" opacity="0.6"></circle>
+<text x="1118" y="262" font-family="Barlow Condensed, sans-serif" font-size="14" letter-spacing="2.2" fill="#EDEDED">UNSEEN · MASS ?  DISTANCE ?</text>
+<text x="1118" y="282" font-family="EB Garamond, serif" font-style="italic" font-size="20" fill="#CFCFCF">F = G M m / r²</text>
+
+<sc-for list="{{stages}}" as="st" hint-placeholder-count="4">
+<rect x="{{st.mx}}" y="{{st.my}}" width="8" height="8" fill="#FFFFFF"></rect>
+<line x1="{{st.x}}" y1="{{st.y}}" x2="{{st.lx}}" y2="{{st.ly}}" stroke="#FFFFFF" stroke-width="0.7" opacity="0.8"></line>
+<text x="{{st.tx}}" y="{{st.ty}}" font-family="Barlow Condensed, sans-serif" font-size="15" font-weight="500" letter-spacing="1.8" fill="#FFFFFF" text-anchor="{{st.anchor}}">{{st.title}}</text>
+<text x="{{st.tx}}" y="{{st.ty2}}" font-family="Barlow Condensed, sans-serif" font-size="13" letter-spacing="0.6" fill="#B5B5B5" text-anchor="{{st.anchor}}">{{st.line1}}</text>
+<text x="{{st.tx}}" y="{{st.ty3}}" font-family="Barlow Condensed, sans-serif" font-size="13" letter-spacing="0.6" fill="#B5B5B5" text-anchor="{{st.anchor}}">{{st.line2}}</text>
+</sc-for>
+
+<g stroke="#FFFFFF" stroke-width="0.8" opacity="0.55">
+<line x1="232" y1="190" x2="248" y2="190"></line><line x1="240" y1="182" x2="240" y2="198"></line>
+<line x1="592" y1="330" x2="608" y2="330"></line><line x1="600" y1="322" x2="600" y2="338"></line>
+<line x1="1252" y1="140" x2="1268" y2="140"></line><line x1="1260" y1="132" x2="1260" y2="148"></line>
+<line x1="812" y1="160" x2="828" y2="160"></line><line x1="820" y1="152" x2="820" y2="168"></line>
+<line x1="372" y1="420" x2="388" y2="420"></line><line x1="380" y1="412" x2="380" y2="428"></line>
+</g>
+
+<text x="40" y="440" font-family="EB Garamond, serif" font-style="italic" font-size="18" fill="#8F8F8F">T² = 4π² a³ / G M</text>
+<text x="40" y="872" font-family="EB Garamond, serif" font-style="italic" font-size="18" fill="#9A9A9A">R = G m′ ( 1 / |r − r′|  −  r · r′ / |r′|³ )</text>
+
+<rect width="1440" height="900" filter="url(#grain)" opacity="0.14" style="mix-blend-mode: screen"></rect>
+</svg>
+
+<div style="position: absolute; left: 40px; top: 36px; display: flex; flex-direction: column; gap: 18px; max-width: 620px">
+<span style="font-size: 14px; letter-spacing: 0.22em; color: #B5B5B5">01 · SOMETHING UNSEEN</span>
+<h1 style="margin: 0; font-size: 64px; line-height: 1.02; font-weight: 300; letter-spacing: 0.01em">Something unseen was pulling on Uranus</h1>
+<p style="margin: 0; font-size: 18px; line-height: 1.45; color: #B5B5B5; max-width: 30rem; font-weight: 400">The solid line is where Uranus went. The dashed line is where the known planets said it should go. In 1846 one man worked out what made the difference.</p>
+</div>
+
+<div style="position: absolute; right: 64px; top: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; font-size: 13px; letter-spacing: 0.14em; color: #B5B5B5; font-variant-numeric: tabular-nums">
+<span>EPOCH 1846.73</span>
+<span>RESIDUAL −45″</span>
+<span style="color: #FFFFFF">TARGET λ 325.9°</span>
+</div>
+
+<div style="position: absolute; right: 18px; top: 0; height: 900px; display: flex; align-items: center; writing-mode: vertical-rl; font-size: 13px; letter-spacing: 0.4em; color: #8F8F8F">NEPTUNE-FORK — REDISCOVERING 1846</div>
+
+<div style="position: absolute; right: 64px; bottom: 34px; display: flex; gap: 28px; align-items: center; font-size: 13px; letter-spacing: 0.14em; color: #B5B5B5">
+<span style="display: flex; align-items: center; gap: 10px"><span aria-hidden="true" style="width: 28px; height: 2px; background: #FFFFFF; display: inline-block"></span>OBSERVED</span>
+<span style="display: flex; align-items: center; gap: 10px"><span aria-hidden="true" style="width: 28px; height: 0; border-top: 1px dashed #FFFFFF; display: inline-block"></span>PREDICTED · SUN, JUPITER, SATURN</span>
+<a href="Scene2.dc.html" style="color: #FFFFFF; text-decoration: none; padding: 10px 0">NEXT · THE PULL →</a>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const H = 470, D = 430, VX = 720, K = 130;
+    const proj = (X, Z) => ({ x: VX + X * K / Z, y: H + D / Z });
+    const rows = [1, 1.2, 1.45, 1.8, 2.25, 2.9, 3.8, 5, 7, 10, 15, 24].map((z) => ({ y: H + D / z }));
+    const cols = [];
+    for (let X = -40; X <= 40; X += 2) {
+      const a = proj(X, 60), b = proj(X, 0.9);
+      cols.push({ x1: a.x, y1: a.y, x2: b.x, y2: b.y });
+    }
+    const zAt = (u) => 14 * Math.pow(1.15 / 14, u);
+    const xp = (u) => -6 + 10 * u;
+    const sh = (u) => { const q = (u - 0.62) / 0.1; return q * Math.exp(-q * q); };
+    const obsPt = (u) => proj(xp(u) + 2.4 * sh(u), zAt(u));
+    const predPt = (u) => proj(xp(u), zAt(u));
+    const pred = [], obs = [];
+    for (let k = 0; k <= 120; k++) {
+      const u = k / 120;
+      const p = predPt(u), o = obsPt(u);
+      pred.push(p.x.toFixed(1) + ',' + p.y.toFixed(1));
+      obs.push(o.x.toFixed(1) + ',' + o.y.toFixed(1));
+    }
+    const defs = [
+      { u: 0, dx: -40, dy: -46, anchor: 'end', title: '1690 · FLAMSTEED', line1: 'Logs it as a star', line2: 'Nobody knows it moves' },
+      { u: 0.38, dx: -70, dy: 24, anchor: 'end', title: '1781 · HERSCHEL', line1: 'It moves: a new planet', line2: 'Its orbit is computed' },
+      { u: 0.62, dx: -150, dy: 72, anchor: 'end', title: '1822 · THE PULL FLIPS', line1: 'Uranus overtakes something', line2: 'Ahead, then behind schedule' },
+      { u: 0.92, dx: 70, dy: -30, anchor: 'start', title: '1846 · −45″ OFF SCHEDULE', line1: 'Too large to be error', line2: 'Le Verrier starts the search' }
+    ];
+    const stages = defs.map((s) => {
+      const o = obsPt(s.u);
+      const lx = o.x + s.dx, ly = o.y + s.dy;
+      const tx = s.anchor === 'end' ? lx - 6 : lx + 6;
+      return { x: o.x, y: o.y, mx: o.x - 4, my: o.y - 4, lx, ly, tx, ty: ly - 2, ty2: ly + 15, ty3: ly + 30, anchor: s.anchor, title: s.title, line1: s.line1, line2: s.line2 };
+    });
+    const focus = obsPt(0.62);
+    const pull = [];
+    for (let i = 0; i < 13; i++) {
+      const a = (200 + i * 11.7) * Math.PI / 180;
+      pull.push({ x: 1010 + 72 * Math.cos(a), y: 300 - 72 * Math.sin(a) });
+    }
+    let s = 3;
+    const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
+    const stars = [];
+    for (let i = 0; i < 220; i++) stars.push({ x: rnd() * 1440, y: rnd() * 455, r: 0.4 + rnd() * 1.1, o: 0.2 + rnd() * 0.7 });
+    return { rows, cols, pred: pred.join(' '), obs: obs.join(' '), stages, focus, pull, stars };
+  }
+}
+</script>
+</body>
+</html>
