@@ -66,3 +66,11 @@ def test_le_verrier_single_mode_check(logz2, lam2, frac, single):
     r2 = _fake_run(rng, logz2, lam2, frac)
     rec = m5b.lv_single_mode(r1, r2)
     assert rec["single_mode"] is single
+
+
+def test_summary_rng_accepts_noise_free_and_is_per_dataset():
+    from fork.export.m5b import summary_rng
+
+    a = summary_rng(None, "free_a_e0.3").random(3)
+    np.testing.assert_array_equal(a, summary_rng(None, "free_a_e0.3").random(3))  # same seed
+    assert not np.allclose(a, summary_rng(0, "free_a_e0.3").random(3))
