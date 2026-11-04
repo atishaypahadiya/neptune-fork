@@ -43,6 +43,31 @@ from fork.model.hidden_mass import (
 
 EPOCH = 2371628.5
 OUT = Path(__file__).resolve().parents[1] / "M5a_diagnostics.json"
+# per-fit cache (resume after a kill) and progress log; gitignored
+CACHE = Path(__file__).resolve().parents[3] / "data" / "cache" / "diagnostics"
+PROGRESS_LOG = CACHE / "progress.log"
+
+
+def _log(msg: str) -> None:
+    CACHE.mkdir(parents=True, exist_ok=True)
+    with PROGRESS_LOG.open("a") as f:
+        f.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')} {msg}\n")
+
+
+def _cached(key: str, name: str, compute) -> dict:
+    """Load this fit's summary from the cache, or compute, cache and log it."""
+    path = CACHE / f"{key}_{name}.json"
+    if path.exists():
+        _log(f"{key} {name}: cached")
+        return json.loads(path.read_text())
+    t = time.time()
+    out = compute()
+    CACHE.mkdir(parents=True, exist_ok=True)
+    path.with_suffix(".tmp").write_text(json.dumps(out))
+    path.with_suffix(".tmp").replace(path)
+    _log(f"{key} {name}: dlon {out['dlon_vs_neptune_deg']:+.2f}°, chi2 {out['chi2']:.3f} "
+         f"({time.time() - t:.0f} s)")  # fmt: skip
+    return out
 ARC = math.degrees(1.0) * 3600.0
 SEEDS = (None, 0, 1, 2, 3, 4)  # None: noise-free
 N_WORKERS = min(12, os.cpu_count() or 1)
@@ -117,12 +142,14 @@ def main() -> None:
             "free_a_e_max_0.05": dict(e_max=0.05),
         }
         for name, kw in runs.items():
-            run = fit_perturber_multistart(obs, ctx, inc_raan, n_workers=N_WORKERS, **kw)
-            res[name] = summary(run, obs, ctx, nep_rad)
+            res[name] = _cached(key, name, lambda kw=kw: summary(
+                fit_perturber_multistart(obs, ctx, inc_raan, n_workers=N_WORKERS, **kw),
+                obs, ctx, nep_rad))  # fmt: skip
         for name, space in lv_spaces.items():
-            run = fit_perturber_multistart(obs, ctx, inc_raan, space=space, mode=name,
-                                           n_workers=N_WORKERS)  # fmt: skip
-            res[name] = summary(run, obs, ctx, nep_rad, with_1847=True)
+            res[name] = _cached(key, name, lambda name=name, space=space: summary(
+                fit_perturber_multistart(obs, ctx, inc_raan, space=space, mode=name,
+                                         n_workers=N_WORKERS),
+                obs, ctx, nep_rad, with_1847=True))  # fmt: skip
         results[key] = res
         print(key, {k: (v["dlon_vs_neptune_deg"], v["chi2"]) for k, v in res.items()}, flush=True)
     payload = {
