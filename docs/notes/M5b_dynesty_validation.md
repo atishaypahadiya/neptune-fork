@@ -35,3 +35,39 @@ What the runs show:
 
 Conclusion: these settings are not adequate for M5b. Next step proposed in the review
 message (partitioned nested sampling).
+
+## Partitioned validation, round 1 (three a slices): gate **not passed**
+
+Slices [20, 25], [25, 28], [28, 60] AU, same settings, two rng seeds per slice (4 workers,
+73–79 min per run). Script: `scripts/m5b_partitioned_validation.py` (at the commit that adds
+this section); numbers: `M5b_partitioned_validation.json`.
+
+| slice (a, AU) | ln Z_k rng 1 | ln Z_k rng 2 | Δ / σ | share rng 1 | share rng 2 |
+|---|---|---|---|---|---|
+| [20, 25] | −76.08 ± 0.23 | −76.09 ± 0.23 | 0.03 | 0.015 | 0.021 |
+| [25, 28] | −73.86 ± 0.22 | −73.82 ± 0.22 | 0.13 | 0.072 | 0.105 |
+| [28, 60] | −73.23 ± 0.22 | −73.60 ± 0.22 | **1.20** | 0.912 | 0.874 |
+| combined | −73.50 ± 0.20 | −73.83 ± 0.20 | 1.17 | | |
+
+- **Gate 1** fails on [28, 60] (1.2σ); shares agree.
+- **Gate 2** (vs unpartitioned −73.05 / −73.31) fails: Δ −0.19 to −0.79, up to 2.7σ. The
+  reference itself is unreliable. Split by slice, the unpartitioned runs give mode B zero
+  mass in both seeds and [25, 28] 1.3 % vs 39 %, i.e. implied ln Z_k −75.1 vs −72.0, where
+  the partitioned runs give −73.86 and −73.82.
+- **Gate 3**: [28, 60] matches chain A on both seeds. [20, 25] matches chain B on rng 1; on
+  rng 2 the a median is 0.55σ off (tolerance 0.5σ), and the a width is 1.68× chain B's: a
+  tail toward 25 AU (98th percentile 23.8 vs 23.2) that the single-mode chain does not
+  reach. The longitude median passes (0.41σ).
+- **Gate 4**, 1846 longitude, median [68 %]: combined 329.1° [325.7, 332.4] (rng 1),
+  328.6° [323.9, 333.0] (rng 2). Per slice in the JSON.
+
+Cause: [28, 60] holds a second branch. Besides mode A (a ≈ 30, e ≈ 0.03) there is an
+eccentric branch at a ≥ 33 (mean e 0.16–0.26), the e ≈ 0.3 branch of the profile fits. The
+seeds weigh it 3 % vs 18 %; the a < 33 part has ln Z −73.26 vs −73.80. This is the same
+mode-allocation scatter that broke the unpartitioned runs, now inside one slice, and it is
+not in dynesty's quoted error.
+
+Decision: split [28, 60] by eccentricity rather than by a, into e ∈ [0, 0.12) and
+[0.12, 0.3], since every alternative branch found so far is eccentric. Gate 2 becomes
+agreement of combined ln Z and all cell shares across seeds; gate 3 for [20, 25] compares
+chain B with the slice's e > 0.25 samples.
