@@ -1,0 +1,52 @@
+"""M5b job planning and the Le Verrier-shape single-mode check (fast; the runs themselves are
+local and take a day, ``python -m fork.export.m5b run``)."""
+
+import math
+from types import SimpleNamespace
+
+import numpy as np
+import pytest
+
+from fork.export import m5b
+
+
+def test_job_plan_matches_the_m5b_decision():
+    """10 seeds × 4 cells at e ≤ 0.3 (cell [20, 25] at nlive 2000), seeds 0–4 × 3 cells at
+    e ≤ 0.1, Le Verrier shape unpartitioned on seeds 0–4 (seed 0 twice, for the check); the
+    seed-0 e ≤ 0.3 cells 1–3 reuse the validation runs; ids round-trip; one rng per job."""
+    jobs = m5b.all_jobs()
+    by_run = {r: [j for j in jobs if j.run == r] for r in m5b.RUNS}
+    assert len(by_run["free_a_e0.3"]) == 40 and len(by_run["free_a_e0.1"]) == 15
+    assert len(by_run["le_verrier_shape"]) == 6
+    assert len(m5b.all_jobs(with_lv=False)) == 57  # only seed 0's two check runs
+    assert {j.nlive for j in by_run["free_a_e0.3"] if j.cell == 0} == {2000}
+    assert {j.nlive for j in jobs if not (j.run == "free_a_e0.3" and j.cell == 0)} == {1000}
+    assert [j.cell for j in jobs if j.reuse_source is not None] == [1, 2, 3]
+    assert all(m5b.Job.from_id(j.id) == j for j in jobs)
+    draws = {j.id: j.rng().random() for j in jobs}
+    assert len(set(draws.values())) == len(jobs)
+    assert m5b.ordered(jobs)[0].run == "le_verrier_shape"  # the check decides 4 more jobs
+
+
+def _fake_run(rng, logz, lam_centre, frac_second=0.0, n=20000):
+    q = np.zeros((n, 6))
+    q[:, 4] = rng.normal(1.39, 0.02, n)  # log10 m
+    lam = rng.normal(lam_centre, 0.01, n)
+    k = int(frac_second * n)
+    lam[:k] = rng.normal(lam_centre + 1.0, 0.01, k)  # a second mode ~57° away
+    q[:, 5] = lam % (2 * math.pi)
+    return SimpleNamespace(samples=q, weights=np.full(n, 1.0 / n), logz=logz, logzerr=0.2)
+
+
+@pytest.mark.parametrize(("logz2", "lam2", "frac", "single"), [
+    (-80.1, 6.27, 0.0, True),    # agree; λ₀ near the 0/2π wrap is handled
+    (-80.1, 6.27, 0.02, False),  # 2 % of the mass in a second λ₀ mode
+    (-81.0, 6.27, 0.0, False),   # ln Z differs by 1.0 > 1.8 · 0.28
+    (-80.1, 6.30, 0.0, False),   # λ₀ medians 3σ apart
+])  # fmt: skip
+def test_le_verrier_single_mode_check(logz2, lam2, frac, single):
+    rng = np.random.default_rng(0)
+    r1 = _fake_run(rng, -80.0, 6.27)
+    r2 = _fake_run(rng, logz2, lam2, frac)
+    rec = m5b.lv_single_mode(r1, r2)
+    assert rec["single_mode"] is single

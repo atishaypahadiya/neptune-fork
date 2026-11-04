@@ -75,17 +75,32 @@ def test_a3b_calibration_of_committed_posteriors():
 
 
 @needs_posteriors
-def test_committed_posteriors_converged():
-    """Every committed chain ran ≥ 50 τ (spec). Each dataset has the runs its seed is assigned
-    (``m5b.runs_for``: e ≤ 0.3 everywhere, e ≤ 0.1 on seeds 0–4 and noise-free), and the M5a
-    profile interval wherever that dataset was profiled."""
-    from fork.export.m5b import runs_for
+def test_committed_posteriors_complete():
+    """Every noise seed has the posteriors it is assigned (``m5b.runs_for``: e ≤ 0.3 on seeds
+    0–9, e ≤ 0.1 and Le Verrier shape on 0–4; Le Verrier shape beyond seed 0 only if the
+    single-mode check passed). Each partitioned run has every cell of ``nested.cells_for`` at
+    its nlive, ln Z errors carry the measured inflation, and the M5a profile interval is
+    attached wherever the dataset was profiled."""
+    from fork.export.m5b import E_MAX, NLIVE_CELL, NLIVE_DEFAULT, runs_for
+    from fork.inference.nested import ERR_INFLATION, cells_for
 
     d = json.loads(POSTERIORS.read_text())
-    assert "noise_free" in d["datasets"]
+    assert d["sampler"]["err_inflation"] == ERR_INFLATION
+    lv_ok = d["le_verrier_single_mode_check"]["single_mode"]
+    assert sorted(v["seed"] for v in d["datasets"].values()) == list(range(10))
     for v in d["datasets"].values():
-        assert set(v["runs"]) == set(runs_for(v["seed"]))
+        want = {r for r in runs_for(v["seed"])
+                if r != "le_verrier_shape" or lv_ok or v["seed"] == 0}  # fmt: skip
+        assert set(v["runs"]) == want
         assert "profile_m5a" in v
-        for r in v["runs"].values():
-            assert r["converged_50tau"] and r["n_steps"] >= 50 * max(r["tau"])
-            assert r["n_walkers"] >= 32
+        for name, r in v["runs"].items():
+            ev = r["evidence"]
+            assert ev["logzerr"] == pytest.approx(ERR_INFLATION * ev["logzerr_quoted"], abs=2e-4)
+            if name == "le_verrier_shape":
+                assert not ev["partitioned"]
+                continue
+            cells = cells_for(E_MAX[name])
+            assert len(ev["cells"]) == len(cells)
+            assert sum(c["share"] for c in ev["cells"]) == pytest.approx(1.0, abs=1e-4)
+            for k, c in enumerate(ev["cells"]):
+                assert c["nlive"] == NLIVE_CELL.get((name, k), NLIVE_DEFAULT)
