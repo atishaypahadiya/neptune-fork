@@ -25,6 +25,11 @@ Prior (PHASE1_SPEC M5, "Priors"), a product of independent pieces:
 The density is flat in q on its support, so ``log_prior`` returns 0 or −∞ (unnormalised; emcee
 needs nothing more), and ``prior_transform`` maps the unit cube onto exactly that support for
 nested sampling, whose evidence is normalised by construction.
+
+**Slices** (partitioned nested sampling): ``PosteriorSpace.a_au_range`` restricts a to
+[a_lo, a_hi] ⊂ [20, 60] AU, with the prior renormalised on the slice. The slice's share of
+the full prior is w = ln(a_hi/a_lo) / ln(60/20) (``slice_weight``), so the full evidence is
+Z = Σ_k w_k Z_k. Slice edges change only how hard each sub-run is, not the result.
 """
 
 from __future__ import annotations
@@ -111,6 +116,7 @@ class PosteriorSpace:
     e_max: float = E_PRIOR_MAX
     pq: tuple[float, float] = (0.0, 0.0)
     uranus_box: UranusBox | None = None  # required for prior_transform (nested sampling)
+    a_au_range: tuple[float, float] = PRIOR_A_AU  # a slice of the a prior (renormalised on it)
 
     @property
     def free(self) -> np.ndarray:
@@ -129,6 +135,19 @@ class PosteriorSpace:
         from dataclasses import replace
 
         return replace(self, uranus_box=box)
+
+    def with_a_slice(self, a_lo_au: float, a_hi_au: float) -> PosteriorSpace:
+        from dataclasses import replace
+
+        if not (PRIOR_A_AU[0] <= a_lo_au < a_hi_au <= PRIOR_A_AU[1]) or not self.free[1]:
+            raise ValueError("a slice must lie inside the a prior, with a free")
+        return replace(self, a_au_range=(float(a_lo_au), float(a_hi_au)))
+
+    @property
+    def slice_weight(self) -> float:
+        """Prior mass of this a slice within the full log-uniform a prior (1 for no slice)."""
+        lo, hi = self.a_au_range
+        return math.log(hi / lo) / math.log(PRIOR_A_AU[1] / PRIOR_A_AU[0])
 
     def full_perturber_q(self, q: np.ndarray) -> np.ndarray:
         y = np.array([0.0 if v is None else v for v in self.held])
@@ -156,7 +175,8 @@ class PosteriorSpace:
         log10_m, ln_a, k, h, _ = self.full_perturber_q(q)
         if self.free[0] and not PRIOR_LOG10_M_EARTH[0] <= log10_m <= PRIOR_LOG10_M_EARTH[1]:
             return -math.inf
-        if self.free[1] and not math.log(PRIOR_A_AU[0]) <= ln_a <= math.log(PRIOR_A_AU[1]):
+        lo_a, hi_a = self.a_au_range
+        if self.free[1] and not math.log(lo_a) <= ln_a <= math.log(hi_a):
             return -math.inf
         if (self.free[2] or self.free[3]) and k * k + h * h > self.e_max:
             return -math.inf
@@ -208,7 +228,7 @@ class PosteriorSpace:
                 lo, hi = PRIOR_LOG10_M_EARTH
                 q[out] = lo + (hi - lo) * u[j]
             elif n == "ln_a":
-                lo, hi = math.log(PRIOR_A_AU[0]), math.log(PRIOR_A_AU[1])
+                lo, hi = math.log(self.a_au_range[0]), math.log(self.a_au_range[1])
                 q[out] = lo + (hi - lo) * u[j]
             elif n == "e":  # consumes (e, ϖ) → (k, h)
                 s = math.sqrt(self.e_max * u[j])

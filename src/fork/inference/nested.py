@@ -229,3 +229,62 @@ def a_au_of(space: PosteriorSpace, samples: np.ndarray) -> np.ndarray:
     if not space.free[1]:
         return np.full(len(samples), math.exp(space.held[1]))  # type: ignore[arg-type]
     return np.exp(samples[:, 4 + int(space.free[0])])
+
+
+# ------------------------------------------------------------------ partitioned (a slices)
+
+A_SLICES_AU: tuple[tuple[float, float], ...] = ((20.0, 25.0), (25.0, 28.0), (28.0, 60.0))
+
+
+@dataclass(frozen=True)
+class PartitionedResult:
+    """Nested runs on disjoint a slices of one prior, combined: Z = Σ_k w_k Z_k with w_k the
+    slice's prior mass (``PosteriorSpace.slice_weight``). Errors are propagated from each
+    run's ln Z error, assumed independent: σ(ln Z)² = Σ_k s_k² σ_k², with s_k = w_k Z_k / Z the
+    slice's posterior mass share; var(s_k) = Σ_j s_k² (δ_kj − s_j)² σ_j²."""
+
+    slices: tuple[NestedResult, ...]
+
+    def __post_init__(self) -> None:
+        w = sum(r.space.slice_weight for r in self.slices)
+        if abs(w - 1.0) > 1e-9:
+            raise ValueError(f"slices must partition the a prior (weights sum to {w})")
+
+    @property
+    def ln_terms(self) -> np.ndarray:
+        return np.array([math.log(r.space.slice_weight) + r.logz for r in self.slices])
+
+    @property
+    def logz(self) -> float:
+        t = self.ln_terms
+        return float(t.max() + math.log(np.exp(t - t.max()).sum()))
+
+    @property
+    def shares(self) -> np.ndarray:
+        return np.exp(self.ln_terms - self.logz)
+
+    @property
+    def logzerr(self) -> float:
+        sig = np.array([r.logzerr for r in self.slices])
+        return float(math.sqrt(np.sum((self.shares * sig) ** 2)))
+
+    @property
+    def share_errs(self) -> np.ndarray:
+        s = self.shares
+        sig = np.array([r.logzerr for r in self.slices])
+        eye = np.eye(len(s))
+        return np.sqrt([np.sum(s[k] ** 2 * (eye[k] - s) ** 2 * sig**2) for k in range(len(s))])
+
+    def samples_and_weights(self) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """All slices' samples with combined posterior weights (summing to 1) and the slice
+        index of each sample."""
+        q = np.concatenate([r.samples for r in self.slices])
+        w = np.concatenate([s * r.weights for s, r in zip(self.shares, self.slices, strict=True)])
+        k = np.concatenate([np.full(len(r.samples), i) for i, r in enumerate(self.slices)])
+        return q, w / w.sum(), k
+
+    def equal_weight(self, rng: np.random.Generator) -> np.ndarray:
+        from dynesty.utils import resample_equal
+
+        q, w, _ = self.samples_and_weights()
+        return resample_equal(q, w, rstate=rng)
