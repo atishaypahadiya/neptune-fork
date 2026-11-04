@@ -9,6 +9,11 @@ returns ln Z, which Phase 2's model comparison needs anyway.
 
 Settings (PHASE1_SPEC M5b): bound='multi', sample='rslice' (dynesty's default 3 + ndim slices),
 nlive=1000, stop at Δln Z < 0.1; the perturber's ϖ and λ₀ are periodic in the unit cube.
+
+Long runs are monitorable and resumable: ``progress_log`` gets one status line per
+``progress_every_s`` (iteration, calls, ln Z, Δln Z remaining, elapsed), and
+``checkpoint_file`` is saved every ``checkpoint_every_s``; if it exists when ``run_nested`` is
+called, the run resumes from it.
 """
 
 from __future__ import annotations
@@ -106,6 +111,31 @@ class NestedResult:
             return pickle.load(f)
 
 
+class _ProgressLog:
+    """dynesty print_func: appends a status line to ``path`` at most every ``every_s`` s."""
+
+    def __init__(self, path: Path, every_s: float, label: str) -> None:
+        self.path, self.every_s, self.label = Path(path), every_s, label
+        self.t0 = self.last = time.time()
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+
+    def line(self, text: str) -> None:
+        stamp = time.strftime("%Y-%m-%d %H:%M:%S")
+        with self.path.open("a") as f:
+            f.write(f"{stamp} [{self.label}] {text}\n")
+
+    def __call__(self, itresult, niter, ncall, **kw) -> None:
+        now = time.time()
+        if now - self.last < self.every_s:
+            return
+        self.last = now
+        from dynesty.utils import get_print_fn_args
+
+        a = get_print_fn_args(itresult, niter, ncall, **kw)
+        self.line(f"iter {niter} | " + " | ".join(a.long_str) +
+                  f" | elapsed {(now - self.t0) / 60:.1f} min")  # fmt: skip
+
+
 def run_nested(
     obs: LongitudeObservations,
     context: ForwardContext,
@@ -116,9 +146,18 @@ def run_nested(
     dlogz: float = DLOGZ,
     n_workers: int = 1,
     maxiter: int | None = None,
-    print_progress: bool = False,
+    progress_log: Path | None = None,
+    progress_every_s: float = 60.0,
+    checkpoint_file: Path | None = None,
+    checkpoint_every_s: float = 300.0,
+    label: str = "nested",
 ) -> NestedResult:
-    """Static nested sampling over ``space``'s prior (which must carry a Uranus box)."""
+    """Static nested sampling over ``space``'s prior (which must carry a Uranus box).
+
+    With ``checkpoint_file`` set, the sampler state is saved every ``checkpoint_every_s`` and a
+    run whose checkpoint exists resumes from it (same settings assumed; ``rng`` is then ignored,
+    the checkpoint carries its own generator state). ``wall_s`` counts this call only."""
+    from contextlib import nullcontext
     from multiprocessing import get_context
 
     import dynesty
@@ -127,17 +166,37 @@ def run_nested(
     _init_worker(space, obs, context)
     kw = dict(nlive=nlive, bound=BOUND, sample=SAMPLE, periodic=space.periodic_unit_dims,
               rstate=rng)  # fmt: skip
+    log = None if progress_log is None else _ProgressLog(progress_log, progress_every_s, label)
+    ckpt = None if checkpoint_file is None else Path(checkpoint_file)
+    if ckpt is not None:
+        ckpt.parent.mkdir(parents=True, exist_ok=True)
+    run_kw = dict(dlogz=dlogz, maxiter=maxiter, print_progress=log is not None, print_func=log,
+                  checkpoint_file=None if ckpt is None else str(ckpt),
+                  checkpoint_every=checkpoint_every_s)  # fmt: skip
     t0 = time.time()
-    if n_workers > 1:
-        with get_context("spawn").Pool(n_workers, initializer=_init_worker,
-                                       initargs=(space, obs, context)) as pool:  # fmt: skip
+    pool_cm = (get_context("spawn").Pool(n_workers, initializer=_init_worker,
+                                         initargs=(space, obs, context))
+               if n_workers > 1 else nullcontext(None))  # fmt: skip
+    with pool_cm as pool:
+        pool_kw = {} if pool is None else dict(pool=pool, queue_size=n_workers)
+        if ckpt is not None and ckpt.exists():
+            # dynesty's own checkpoint (pickle), written by this function for this run
+            sampler = dynesty.NestedSampler.restore(str(ckpt), pool=pool)
+            if log is not None:
+                log.line(f"resumed from {ckpt} at iteration {sampler.it}")
+            sampler.run_nested(resume=True, **run_kw)
+        else:
+            if log is not None:
+                log.line(f"start: ndim {space.ndim}, nlive {nlive}, {BOUND}/{SAMPLE}, "
+                         f"dlogz {dlogz}, {n_workers} workers")  # fmt: skip
             sampler = dynesty.NestedSampler(_log_likelihood, _prior_transform, space.ndim,
-                                            pool=pool, queue_size=n_workers, **kw)  # fmt: skip
-            sampler.run_nested(dlogz=dlogz, maxiter=maxiter, print_progress=print_progress)
-    else:
-        sampler = dynesty.NestedSampler(_log_likelihood, _prior_transform, space.ndim, **kw)
-        sampler.run_nested(dlogz=dlogz, maxiter=maxiter, print_progress=print_progress)
-    return NestedResult(space, sampler.results, nlive, dlogz, time.time() - t0)
+                                            **pool_kw, **kw)  # fmt: skip
+            sampler.run_nested(**run_kw)
+    res = NestedResult(space, sampler.results, nlive, dlogz, time.time() - t0)
+    if log is not None:
+        log.line(f"done: {res.niter} it, {res.ncall} calls, ln Z {res.logz:.3f} ± "
+                 f"{res.logzerr:.3f}, {res.wall_s / 60:.1f} min")  # fmt: skip
+    return res
 
 
 def weighted_quantiles(x: np.ndarray, w: np.ndarray, q=(0.16, 0.5, 0.84)) -> list[float]:
