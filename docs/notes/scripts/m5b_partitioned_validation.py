@@ -3,19 +3,23 @@
     uv run python docs/notes/scripts/m5b_partitioned_validation.py --run K RNG [--n-workers N]
     uv run python docs/notes/scripts/m5b_partitioned_validation.py --summarize
 
-Slices in a: [20, 25], [25, 28], [28, 60] AU (``nested.A_SLICES_AU``), each sampled
-separately by dynesty (nlive 1000, multi/rslice, Δln Z < 0.1), rng seeds 1 and 2. ``--run``
-does one (slice, rng) run. It logs progress to data/cache/nested/progress.log, checkpoints to
-data/cache/nested/*.ckpt (an interrupted run resumes), and caches the result as a .pkl.
+Cells (``nested.PARTITION_CELLS``): a [20, 25] and [25, 28] AU (all e), and [28, 60] AU split
+by eccentricity into e ∈ [0, 0.12) and [0.12, 0.3]. Each cell is sampled separately by
+dynesty (nlive 1000, multi/rslice, Δln Z < 0.1), rng seeds 1 and 2. ``--run`` does one
+(cell, rng) run. It logs progress to data/cache/nested/progress.log, checkpoints to
+data/cache/nested/*.ckpt (an interrupted run resumes), and caches the result as a .pkl. The
+two a-only cells reuse the round-1 slice runs (same restricted prior, same files).
 ``--summarize`` combines Z = Σ w_k Z_k per rng seed and checks the gate:
 
-1. per-slice ln Z_k and mass shares agree across rng seeds within the combined error;
-2. combined ln Z agrees with the unpartitioned runs (−73.046 ± 0.222, −73.313 ± 0.222);
-3. slice [20, 25] recovers mode B and matches emcee chain B, and slice [28, 60] matches emcee
-   chain A restricted to a ≥ 28 (medians within 0.5σ of the emcee σ);
-4. the 1846-09-23 longitude posterior (median, 68 %), combined and per slice.
+1. per-cell ln Z_k and mass shares agree across rng seeds within the combined error;
+2. combined ln Z and all cell shares agree across rng seeds within the combined error;
+3. cell [20, 25] matches emcee chain B, both restricted to e > 0.25 (mode B, like-for-like),
+   and cell [28, 60] × e < 0.12 matches emcee chain A restricted to that cell (medians within
+   0.5σ of the emcee σ);
+4. the 1846-09-23 longitude posterior (median, 68 %), combined and per cell.
 
-Output: docs/notes/M5b_partitioned_validation.json.
+Round 1 (three a slices, gate not passed) is in M5b_partitioned_validation.json and
+M5b_dynesty_validation.md. Output: docs/notes/M5b_partitioned_validation_cells.json.
 """
 
 import argparse
@@ -28,7 +32,13 @@ import numpy as np
 from fork.data.synthetic import make_synthetic_observations
 from fork.inference.fit import uranus_theta_to_x
 from fork.inference.mcmc import circular_interval_deg
-from fork.inference.nested import A_SLICES_AU, NestedResult, PartitionedResult, run_nested
+from fork.inference.nested import (
+    PARTITION_CELLS,
+    NestedResult,
+    PartitionedResult,
+    cell_space,
+    run_nested,
+)
 from fork.inference.priors import UranusBox, free_a_space
 from fork.inference.profile import GalleGeometry, galle_lon_of_date_rad
 from fork.model.forward import ForwardContext, uranus_inc_raan_at_epoch
@@ -37,10 +47,13 @@ EPOCH = 2371628.5
 ROOT = Path(__file__).resolve().parents[3]
 CHAINS = ROOT / "data" / "cache" / "chains"
 CACHE = ROOT / "data" / "cache" / "nested"
-OUT = ROOT / "docs" / "notes" / "M5b_partitioned_validation.json"
+OUT = ROOT / "docs" / "notes" / "M5b_partitioned_validation_cells.json"
 RNG_SEEDS = (1, 2)
-UNPARTITIONED = {"rng1": (-73.046, 0.222), "rng2": (-73.313, 0.222)}
-EMCEE = {0: "check_seed_0_free_a_e0.3_init343", 2: "seed_0_free_a_e0.3"}  # slice → chain
+# cache file stem per cell; the a-only cells are the round-1 slice runs
+CELL_FILES = ("slice0", "slice1", "cell2_a28-60_e0-0.12", "cell3_a28-60_e0.12-0.3")
+# cell → (emcee chain, e range the comparison is restricted to, for both samplers)
+EMCEE = {0: ("check_seed_0_free_a_e0.3_init343", (0.25, 0.3)),
+         2: ("seed_0_free_a_e0.3", (0.0, 0.12))}  # fmt: skip
 N_LON = 3000
 TOL_SIGMA = 0.5
 
@@ -55,13 +68,17 @@ def setup():
 
 
 def run_path(k: int, rng: int, suffix: str) -> Path:
-    return CACHE / f"seed_0_free_a_e0.3_slice{k}_rng{rng}{suffix}"
+    return CACHE / f"seed_0_free_a_e0.3_{CELL_FILES[k]}_rng{rng}{suffix}"
+
+
+def cell_label(k: int) -> str:
+    (lo, hi), e_rng = PARTITION_CELLS[k]
+    return f"a[{lo:g},{hi:g}]" + ("" if e_rng is None else f" e[{e_rng[0]:g},{e_rng[1]:g}]")
 
 
 def do_run(k: int, rng: int, n_workers: int) -> None:
     ctx, obs, full = setup()
-    lo, hi = A_SLICES_AU[k]
-    space = full.with_a_slice(lo, hi)
+    space = cell_space(full, PARTITION_CELLS[k])
     out = run_path(k, rng, ".pkl")
     if out.exists():
         print(f"cached: {out}")
@@ -69,9 +86,9 @@ def do_run(k: int, rng: int, n_workers: int) -> None:
     res = run_nested(obs, ctx, space, np.random.default_rng([rng, k]), n_workers=n_workers,
                      progress_log=CACHE / "progress.log",
                      checkpoint_file=run_path(k, rng, ".ckpt"),
-                     label=f"slice{k} a[{lo:g},{hi:g}] rng{rng}")  # fmt: skip
+                     label=f"cell{k} {cell_label(k)} rng{rng}")  # fmt: skip
     NestedResult(res.space, res.results, res.nlive, res.dlogz, res.wall_s, rng).save(out)
-    print(f"slice {k} rng {rng}: ln Z_k {res.logz:.3f} ± {res.logzerr:.3f}, {res.niter} it, "
+    print(f"cell {k} rng {rng}: ln Z_k {res.logz:.3f} ± {res.logzerr:.3f}, {res.niter} it, "
           f"{res.wall_s / 60:.1f} min")  # fmt: skip
 
 
@@ -126,33 +143,38 @@ def summarize() -> None:
     geo = GalleGeometry.from_horizons()
     rng = np.random.default_rng(11)
     parts = {r: PartitionedResult(tuple(NestedResult.load(run_path(k, r, ".pkl"))
-                                        for k in range(len(A_SLICES_AU))))
+                                        for k in range(len(PARTITION_CELLS))))
              for r in RNG_SEEDS}  # fmt: skip
     emc = {}
-    for k, name in EMCEE.items():
+    for k, (name, e_rng) in EMCEE.items():
         q = np.load(CHAINS / f"{name}.npz")["samples"]
-        a = np.exp(q[:, 5])
-        lo, hi = A_SLICES_AU[k]
-        inside = (a >= lo) & (a <= hi)
+        a, e = np.exp(q[:, 5]), q[:, 6] ** 2 + q[:, 7] ** 2
+        lo, hi = PARTITION_CELLS[k][0]
+        in_a = (a >= lo) & (a <= hi)
+        inside = in_a & (e >= e_rng[0]) & (e <= e_rng[1])
         ph = physical(full, q[inside])
         ph["lon_1846_deg"] = lon_deg(full, q[inside], ctx, geo, rng)
-        emc[k] = {"ph": ph, "chain": name, "frac_in_slice": round(float(inside.mean()), 4)}
-    out = {"dataset": "seed 0", "space": "free a, e ≤ 0.3", "slices_au": A_SLICES_AU,
-           "slice_prior_weights": [round(full.with_a_slice(*s).slice_weight, 6)
-                                   for s in A_SLICES_AU],
-           "unpartitioned_logz": UNPARTITIONED, "tol_sigma": TOL_SIGMA,
-           "emcee_reference": {k: {"chain": v["chain"], "frac_in_slice": v["frac_in_slice"]}
+        emc[k] = {"ph": ph, "chain": name, "e_range": e_rng,
+                  "frac_in_a": round(float(in_a.mean()), 4),
+                  "frac_in_comparison": round(float(inside.mean()), 4)}  # fmt: skip
+    out = {"dataset": "seed 0", "space": "free a, e ≤ 0.3",
+           "cells": [{"a_au": a_rng, "e": e_rng} for a_rng, e_rng in PARTITION_CELLS],
+           "cell_prior_weights": [round(cell_space(full, c).slice_weight, 6)
+                                  for c in PARTITION_CELLS],
+           "tol_sigma": TOL_SIGMA,
+           "emcee_reference": {k: {kk: v[kk] for kk in ("chain", "e_range", "frac_in_a",
+                                                        "frac_in_comparison")}
                                for k, v in emc.items()},
            "rng": {}}  # fmt: skip
     for r, p in parts.items():
         rec = {"logz": round(p.logz, 4), "logzerr": round(p.logzerr, 4),
                "shares": [round(float(v), 5) for v in p.shares],
-               "share_errs": [round(float(v), 5) for v in p.share_errs], "slices": []}  # fmt: skip
+               "share_errs": [round(float(v), 5) for v in p.share_errs], "cells": []}  # fmt: skip
         for k, res in enumerate(p.slices):
             eq = res.equal_weight(np.random.default_rng(100 * r + k))
             lon = lon_deg(res.space, eq, ctx, geo, rng)
             th_best = res.space.theta(res.samples[int(np.argmax(res.results["logl"]))])
-            s = {"a_au": A_SLICES_AU[k], "logz_k": round(res.logz, 4),
+            s = {"cell": cell_label(k), "logz_k": round(res.logz, 4),
                  "logzerr_k": round(res.logzerr, 4), "niter": res.niter, "ncall": res.ncall,
                  "wall_min": round(res.wall_s / 60, 1), "chi2_min": round(-2 * res.max_logl, 4),
                  "best": {"a_au": round(float(th_best[7]), 3), "e": round(float(th_best[8]), 4),
@@ -160,34 +182,35 @@ def summarize() -> None:
                  "lon_1846_deg": lon_summary(lon)}  # fmt: skip
             if k in emc:
                 ph = physical(res.space, eq)
-                ph["lon_1846_deg"] = lon
+                e_lo, e_hi = emc[k]["e_range"]
+                m = (ph["e"] >= e_lo) & (ph["e"] <= e_hi)
+                ph = {n: v[m] for n, v in ph.items()}
+                ph["lon_1846_deg"] = lon_deg(res.space, eq[m], ctx, geo, rng)
                 s["vs_emcee"] = compare(ph, emc[k]["ph"])
-            rec["slices"].append(s)
+                s["vs_emcee"]["frac_in_comparison"] = round(float(m.mean()), 4)
+            rec["cells"].append(s)
         rec["lon_1846_deg_combined"] = lon_summary(lon_deg(full, p.equal_weight(
             np.random.default_rng(300 + r)), ctx, geo, rng))  # fmt: skip
-        rec["vs_unpartitioned"] = {
-            f"rng{u_r}": {"delta": round(p.logz - uz, 4),
-                          "combined_err": round(math.hypot(p.logzerr, uerr), 4),
-                          "delta_in_sigma": round((p.logz - uz) / math.hypot(p.logzerr, uerr), 3)}
-            for u_r, (uz, uerr) in ((1, UNPARTITIONED["rng1"]), (2, UNPARTITIONED["rng2"]))
-        }  # fmt: skip
         out["rng"][f"rng{r}"] = rec
     r1, r2 = (out["rng"][f"rng{r}"] for r in RNG_SEEDS)
     gate1 = []
-    for k in range(len(A_SLICES_AU)):
-        a, b = r1["slices"][k], r2["slices"][k]
+    for k in range(len(PARTITION_CELLS)):
+        a, b = r1["cells"][k], r2["cells"][k]
         dz, ez = b["logz_k"] - a["logz_k"], math.hypot(a["logzerr_k"], b["logzerr_k"])
         ds, es = r2["shares"][k] - r1["shares"][k], math.hypot(r1["share_errs"][k],
                                                                 r2["share_errs"][k])  # fmt: skip
-        gate1.append({"slice": k, "delta_logz_k": round(dz, 4), "err": round(ez, 4),
+        gate1.append({"cell": cell_label(k), "delta_logz_k": round(dz, 4), "err": round(ez, 4),
                       "logz_k_within": bool(abs(dz) <= ez), "delta_share": round(ds, 5),
                       "share_err": round(es, 5), "share_within": bool(abs(ds) <= es)})  # fmt: skip
+    dz, ez = r2["logz"] - r1["logz"], math.hypot(r1["logzerr"], r2["logzerr"])
     out["gate"] = {
-        "1_per_slice_across_rng": gate1,
-        "2_combined_vs_unpartitioned": {k: v["vs_unpartitioned"] for k, v in out["rng"].items()},
-        "3_slice0_vs_chainB": [out["rng"][f"rng{r}"]["slices"][0]["vs_emcee"][
+        "1_per_cell_across_rng": gate1,
+        "2_combined_across_rng": {"delta_logz": round(dz, 4), "err": round(ez, 4),
+                                  "logz_within": bool(abs(dz) <= ez),
+                                  "all_shares_within": all(g["share_within"] for g in gate1)},
+        "3_cell0_vs_chainB_e_gt_0.25": [out["rng"][f"rng{r}"]["cells"][0]["vs_emcee"][
             "all_medians_within_tol"] for r in RNG_SEEDS],
-        "3_slice2_vs_chainA": [out["rng"][f"rng{r}"]["slices"][2]["vs_emcee"][
+        "3_cell2_vs_chainA": [out["rng"][f"rng{r}"]["cells"][2]["vs_emcee"][
             "all_medians_within_tol"] for r in RNG_SEEDS],
     }  # fmt: skip
     OUT.write_text(json.dumps(out, indent=1) + "\n")
@@ -195,10 +218,10 @@ def summarize() -> None:
     for r, rec in out["rng"].items():
         print(r, "ln Z", rec["logz"], "±", rec["logzerr"], "shares", rec["shares"], "±",
               rec["share_errs"], "lon", rec["lon_1846_deg_combined"])  # fmt: skip
-        for s in rec["slices"]:
+        for s in rec["cells"]:
             print(
                 "  ",
-                s["a_au"],
+                s["cell"],
                 "ln Z_k",
                 s["logz_k"],
                 "±",
