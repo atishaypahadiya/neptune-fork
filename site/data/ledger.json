@@ -13,18 +13,18 @@
  ],
  "totals": {
   "all": {
-   "n_rows": 21,
+   "n_rows": 22,
    "n_likelihood_calls": 35996343,
    "n_integrations": 35996343,
    "sim_years": 5579433165.0,
-   "wall_s": 83999.9,
+   "wall_s": 96392.9,
    "cpu_s": 285846.6,
    "n_rows_missing": {
-    "n_likelihood_calls": 6,
-    "n_integrations": 6,
-    "sim_years": 6,
+    "n_likelihood_calls": 7,
+    "n_integrations": 7,
+    "sim_years": 7,
     "wall_s": 3,
-    "cpu_s": 8
+    "cpu_s": 9
    },
    "cpu_hours": 79.4
   },
@@ -44,18 +44,18 @@
    }
   },
   "estimated": {
-   "n_rows": 21,
+   "n_rows": 22,
    "n_likelihood_calls": 35996343,
    "n_integrations": 35996343,
    "sim_years": 5579433165.0,
-   "wall_s": 83999.9,
+   "wall_s": 96392.9,
    "cpu_s": 285846.6,
    "n_rows_missing": {
-    "n_likelihood_calls": 6,
-    "n_integrations": 6,
-    "sim_years": 6,
+    "n_likelihood_calls": 7,
+    "n_integrations": 7,
+    "sim_years": 7,
     "wall_s": 3,
-    "cpu_s": 8
+    "cpu_s": 9
    },
    "cpu_hours": 79.4
   },
@@ -104,6 +104,21 @@
      "sim_years": 4,
      "wall_s": 0,
      "cpu_s": 4
+    }
+   },
+   "profile": {
+    "n_rows": 1,
+    "n_likelihood_calls": null,
+    "n_integrations": null,
+    "sim_years": null,
+    "wall_s": 12393.0,
+    "cpu_s": null,
+    "n_rows_missing": {
+     "n_likelihood_calls": 1,
+     "n_integrations": 1,
+     "sim_years": 1,
+     "wall_s": 0,
+     "cpu_s": 1
     }
    },
    "tests": {
@@ -422,6 +437,19 @@
    "estimated": true,
    "recorded": "2026-11-04T10:36:17",
    "note": "test_perturber_fit, test_export, test_profile, test_a3a (slow); wall from queue logs"
+  },
+  {
+   "job": "m5a/profile_reexport",
+   "kind": "profile",
+   "n_likelihood_calls": null,
+   "n_integrations": null,
+   "sim_years": null,
+   "wall_s": 12393.0,
+   "cpu_s": null,
+   "n_workers": 12,
+   "estimated": true,
+   "recorded": "2026-11-04T10:45:37",
+   "note": "site/data/m5a_profile.json, 16 curves × 51 grid points, 8 starts + continuation; LM evaluations not logged; wall from queue logs"
   }
  ]
 }
