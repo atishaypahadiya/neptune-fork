@@ -129,6 +129,21 @@ post-1781 residual RMS is **≤ 1.5 σ_noise** (4.5″); without Neptune the sam
     chain A;
   - report the 1846 longitude median and 68% interval, combined and per slice.
 
+  *Amended (partitioned validation round 1, `docs/notes/M5b_dynesty_validation.md`):* the
+  three a slices failed the gate. [28, 60] AU holds mode A (e ≈ 0.03) and an eccentric branch
+  (a ≳ 33, e 0.16–0.26) that the two rng seeds weighed 3% vs 18%, so its ln Z_k differed by
+  1.2σ. The unpartitioned reference proved unreliable (mode B absent, [25, 28] at 1% vs 39%).
+  **Partition axis for [28, 60]: circular vs eccentric**, because every alternative branch
+  found so far is eccentric. The cells (`nested.PARTITION_CELLS`) are [20, 25] and [25, 28] AU
+  (all e), and [28, 60] AU × e ∈ [0, 0.12) and × e ∈ [0.12, 0.3]. A cell's weight is
+  w = w_a · (e_hi − e_lo)/0.3, with e uniform on the cell. Revised gate:
+  - per-cell ln Z_k and mass shares agree across rng seeds within error;
+  - combined ln Z and all cell shares agree across rng seeds within error (the unpartitioned
+    comparison is dropped);
+  - cell [20, 25] matches emcee chain B, both restricted to e > 0.25 (mode B, like-for-like),
+    and cell [28, 60] × e < 0.12 matches emcee chain A, same tolerances;
+  - report the 1846 longitude median and 68% interval, combined and per cell.
+
   Every long run writes a progress log and checkpoints, so it can be monitored and resumed.
 - **Priors** (one definition, `inference/priors.py`, used by emcee and dynesty alike). The
   sampled vector is q = (Uranus a, e·cos ϖ, e·sin ϖ, λ₀; perturber log10 m, ln a, √e·cos ϖ,
