@@ -150,6 +150,24 @@ def test_point_fits_enforce_e_prior_bound(ctx):
     assert free.chi2 < 1e-4 and abs(free.theta[8] - 0.5) < 1e-3
 
 
+@pytest.mark.slow
+def test_point_fit_boundary_phase_also_starts_from_the_start(ctx):
+    """Seed 2, free a, the 105° start. Its interior phase leaves e ≤ 0.3. The boundary phase
+    from that projected optimum alone (the pre-fix path) ended at χ² 444.66, a 66.1 AU. Also
+    run from the start projected onto the bound (the profile fix, now shared), it reaches the
+    multistart best: χ² 80.171, a 39.67, e = 0.3. Across all 24 starts, the old path left 7 at
+    a = 297–2819 AU (classed null) and 3 more on worse branches; seed 3, Le Verrier mode: 4.
+    ~10 s."""
+    from fork.data.synthetic import make_synthetic_observations
+    from fork.model.forward import uranus_inc_raan_at_epoch
+
+    obs, _ = make_synthetic_observations(np.random.default_rng(2))
+    f = fit_perturber_multistart(obs, ctx, uranus_inc_raan_at_epoch(EPOCH),
+                                 lam0_starts_rad=np.radians([105.0])).fits[0]  # fmt: skip
+    assert f.status == "converged" and f.in_m5_prior
+    assert f.chi2 == pytest.approx(80.171, abs=0.01) and 35.0 < f.theta[7] < 45.0
+
+
 # ------------------------------------------------------------------- profile likelihood
 
 
