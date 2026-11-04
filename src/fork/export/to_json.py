@@ -12,7 +12,8 @@ Currently exported:
   Takes ~30 s (multistart LM).
 - ``m5a_profile.json``: profile likelihood of the perturber's 1846-09-23 geocentric longitude
   (300°–350°, 1° steps, plus the true value), free a and Le Verrier mode, for noise seeds 0–3
-  and noise-free data, with continuation sweeps and an e-bound log. Slow (about an hour: the ten
+  and noise-free data (both modes) plus seeds 4–9 (free a only), with continuation sweeps and an
+  e-bound log. Slow (about an hour: the ten
   curves run in parallel, one per process); regenerate alone with ``--only m5a_profile.json``.
 
 M7 adds sightlines, residuals, sky map, degeneracy and energy exports here.
@@ -231,6 +232,7 @@ def _profile_minimum(lon_deg: np.ndarray, chi2: np.ndarray) -> dict:
 
 
 M5A_PROFILE_SEEDS: tuple[int | None, ...] = (0, 1, 2, 3, None)  # None: noise-free truth
+M5A_PROFILE_FREE_A_ONLY_SEEDS: tuple[int, ...] = (4, 5, 6, 7, 8, 9)  # profiled in free a only
 M5A_PROFILE_GRID_DEG = (300.0, 350.0, 1.0)
 M5A_PROFILE_N_STARTS = 8
 
@@ -251,8 +253,48 @@ def _profile_interval_summary(lon_deg, chi2, best_lon, best_chi2, i_true, delta_
     }
 
 
+PROFILE_CACHE = Path(__file__).resolve().parents[3] / "data" / "cache" / "profile"
+PROFILE_LOG = PROFILE_CACHE / "progress.log"
+
+
+def _log_line(label: str, msg: str, path: Path = PROFILE_LOG) -> None:
+    import time
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a") as f:
+        f.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')} [{label}] {msg}\n")
+
+
 def _profile_curve(seed: int | None, mode: str, grid_deg: tuple[float, float, float]) -> dict:
-    """One profile curve (dataset × mode), serially in this process (module level: pickled)."""
+    """One profile curve (dataset × mode), serially in this process (module level: pickled).
+
+    Resumable and monitorable: a finished curve is cached in ``PROFILE_CACHE`` (keyed by
+    dataset, mode, grid and starts) and reused; progress lines go to ``PROFILE_LOG``."""
+    import time
+
+    label = f"{'noise_free' if seed is None else f'seed_{seed}'} {mode}"
+    key = (f"{'noise_free' if seed is None else f'seed_{seed}'}_{mode}_"
+           f"{grid_deg[0]:g}-{grid_deg[1]:g}-{grid_deg[2]:g}_n{M5A_PROFILE_N_STARTS}")  # fmt: skip
+    cache = PROFILE_CACHE / f"{key}.json"
+    if cache.exists():
+        _log_line(label, f"cached: {cache.name}")
+        return json.loads(cache.read_text())
+    t0 = time.time()
+    _log_line(label, "start")
+
+    def log(msg: str) -> None:
+        _log_line(label, f"{msg} ({(time.time() - t0) / 60:.1f} min)")
+
+    out = _profile_curve_compute(seed, mode, grid_deg, log)
+    tmp = cache.with_suffix(".json.tmp")
+    tmp.write_text(json.dumps(out))
+    tmp.replace(cache)
+    log(f"done, cached {cache.name}")
+    return out
+
+
+def _profile_curve_compute(seed: int | None, mode: str, grid_deg: tuple[float, float, float],
+                           log) -> dict:  # fmt: skip
     from fork.data.synthetic import LongitudeObservations, make_synthetic_observations
     from fork.inference.fit import fit_perturber_multistart, le_verrier_space
     from fork.inference.profile import (
@@ -278,9 +320,11 @@ def _profile_curve(seed: int | None, mode: str, grid_deg: tuple[float, float, fl
     if seed is None:
         obs = LongitudeObservations(obs.jd_tdb, truth, obs.sigma_rad, obs.source)
     best = fit_perturber_multistart(obs, ctx, inc_raan, a_fixed_au=a_fixed).best
+    log(f"24-start multistart done (chi2 {best.chi2:.3f})")
     best_lon = math.degrees(galle_lon_of_date_rad(best.theta, ctx, geo))
     prof = profile_galle_longitude(obs, ctx, inc_raan, le_verrier_space(a_fixed), targets,
-                                   mode=mode, n_starts=M5A_PROFILE_N_STARTS, geo=geo)  # fmt: skip
+                                   mode=mode, n_starts=M5A_PROFILE_N_STARTS, geo=geo,
+                                   log=log)  # fmt: skip
     lon_deg = np.degrees(targets)
     after = _profile_interval_summary(lon_deg, prof.chi2, best_lon, best.chi2, i_true,
                                       delta_chi2_intervals)  # fmt: skip
@@ -340,8 +384,13 @@ def m5a_profile_data(
     n_workers: int = 1,
     seeds: tuple[int | None, ...] = M5A_PROFILE_SEEDS,
     grid_deg: tuple[float, float, float] = M5A_PROFILE_GRID_DEG,
+    free_a_only_seeds: tuple[int, ...] = M5A_PROFILE_FREE_A_ONLY_SEEDS,
 ) -> dict:
     """Profile χ² vs the perturber's 1846-09-23 geocentric longitude (ecliptic of date).
+
+    ``seeds`` are profiled in both modes; ``free_a_only_seeds`` in free a only (they extend the
+    profile-vs-posterior comparison to all ten noise seeds). Datasets are listed noise seeds in
+    order, then noise-free.
 
     For each dataset and mode: the unconstrained 24-start best fit, the profile on the grid
     (independent starts + neighbour passes + left→right / right→left continuation sweeps), and
@@ -354,13 +403,15 @@ def m5a_profile_data(
     from fork.inference.profile import GalleGeometry
     from fork.model.hidden_mass import BODE_A_AU, true_neptune_geocentric_longitude
 
-    modes = ("le_verrier", "free_a")
-    jobs = [(seed, mode, grid_deg) for seed in seeds for mode in modes]
+    modes_of = {s: ("le_verrier", "free_a") for s in seeds}
+    modes_of |= {s: ("free_a",) for s in free_a_only_seeds if s not in modes_of}
+    order = sorted(modes_of, key=lambda s: (s is None, -1 if s is None else s))
+    jobs = [(seed, mode, grid_deg) for seed in order for mode in modes_of[seed]]
     results = run_pool(_profile_curve, jobs, min(n_workers, len(jobs)))
     datasets = []
-    for seed in seeds:
+    for seed in order:
         entry = {"seed": seed, "noise": seed is not None, "modes": {}}
-        for mode in modes:
+        for mode in modes_of[seed]:
             m = results[jobs.index((seed, mode, grid_deg))]
             entry["modes"][mode] = m
             print(f"seed {seed} {mode}: min {m['overall_min']['lon_ecl_of_date_deg']:.2f}° "
@@ -401,8 +452,9 @@ def main(argv: list[str] | None = None) -> None:
 
     ap = argparse.ArgumentParser(description="Regenerate site/data/*.json")
     ap.add_argument("--only", action="append", help="write only this file (repeatable)")
+    ap.add_argument("--n-workers", type=int, default=min(12, os.cpu_count() or 1))
     args = ap.parse_args(argv)
-    n_workers = min(12, os.cpu_count() or 1)
+    n_workers = args.n_workers
     jobs = {
         "wh_convergence.json": lambda: wh_convergence_data(*a1_initial_conditions()),
         "m5a_fits.json": lambda: m5a_fits_data(n_workers=n_workers),

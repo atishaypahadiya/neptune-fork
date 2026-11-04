@@ -4,7 +4,8 @@
 
 Reads site/data/m5a_profile.json. One panel per mode (free a, Le Verrier a = 38.4 AU): Δχ² vs
 the perturber's geocentric ecliptic-of-date longitude on Galle's night, for noise seeds 0–3 and
-noise-free data. Dotted vertical: true Neptune. Horizontal: Δχ² = 1.
+noise-free data (coloured), plus seeds 4–9 in free a only (thin muted lines, one legend entry).
+Dotted vertical: true Neptune. Horizontal: Δχ² = 1.
 """
 
 import json
@@ -37,11 +38,19 @@ def main() -> None:
         ax.annotate(f"true Neptune {nep:.2f}°", (nep, 0.55 * Y_MAX), xytext=(4, 0),
                     textcoords="offset points", fontsize=8, color=INK_2, zorder=6,
                     bbox={"fc": SURFACE, "ec": "none", "pad": 1.5})  # fmt: skip
-        for k, ds in enumerate(d["datasets"]):
+        extra = [ds for ds in d["datasets"] if ds["seed"] not in (0, 1, 2, 3, None)]
+        for j, ds in enumerate(extra):  # seeds 4–9 (free a only): one muted group, no hues
+            if mode not in ds["modes"]:
+                continue
+            p = ds["modes"][mode]["profile"]
+            ax.plot(p["lon_ecl_of_date_deg"], p["dchi2"], color=INK_MUTED, lw=1.0, alpha=0.7,
+                    label="seeds 4–9" if j == 0 else None, zorder=1)  # fmt: skip
+        main_sets = [ds for ds in d["datasets"] if ds["seed"] in (0, 1, 2, 3, None)]
+        for ds in main_sets:
             m = ds["modes"][mode]
             p = m["profile"]
             noise_free = ds["seed"] is None
-            color = INK if noise_free else SEED_COLORS[k]
+            color = INK if noise_free else SEED_COLORS[ds["seed"]]
             label = "noise-free" if noise_free else f"seed {ds['seed']}"
             ax.plot(p["lon_ecl_of_date_deg"], p["dchi2"], color=color, lw=2,
                     ls="--" if noise_free else "-", label=label, clip_on=True)  # fmt: skip
