@@ -16,9 +16,12 @@ def test_job_plan_matches_the_m5b_decision():
     seed-0 e ≤ 0.3 cells 1–3 reuse the validation runs; ids round-trip; one rng per job."""
     jobs = m5b.all_jobs()
     by_run = {r: [j for j in jobs if j.run == r] for r in m5b.RUNS}
-    assert len(by_run["free_a_e0.3"]) == 40 and len(by_run["free_a_e0.1"]) == 15
+    assert len(by_run["free_a_e0.3"]) == 44 and len(by_run["free_a_e0.1"]) == 15
     assert len(by_run["le_verrier_shape"]) == 6
-    assert len(m5b.all_jobs(with_lv=False)) == 57  # only seed 0's two check runs
+    assert len(m5b.all_jobs(with_lv=False)) == 61  # only seed 0's two check runs
+    nf = [j for j in jobs if j.seed is None]
+    assert [(j.run, j.cell) for j in nf] == [("free_a_e0.3", k) for k in range(4)]
+    assert [j.seed for j in m5b.ordered(jobs)[-4:]] == [None] * 4  # after everything A3b needs
     assert {j.nlive for j in by_run["free_a_e0.3"] if j.cell == 0} == {2000}
     assert {j.nlive for j in jobs if not (j.run == "free_a_e0.3" and j.cell == 0)} == {1000}
     assert [j.cell for j in jobs if j.reuse_source is not None] == [1, 2, 3]
@@ -26,6 +29,19 @@ def test_job_plan_matches_the_m5b_decision():
     draws = {j.id: j.rng().random() for j in jobs}
     assert len(set(draws.values())) == len(jobs)
     assert m5b.ordered(jobs)[0].run == "le_verrier_shape"  # the check decides 4 more jobs
+
+
+def test_noise_free_check_offsets_in_sigma_on_the_side_facing_truth():
+    lon = {"median": 326.5, "lo68": 325.0, "hi68": 330.5, "minus": 1.5, "plus": 4.0,
+           "truth": 325.873, "median_minus_truth": 0.627, "truth_in_68": True}  # fmt: skip
+    one = {"median": 17.0, "lo68": 16.0, "hi68": 19.0, "minus": 1.0, "plus": 2.0, "truth": 17.15,
+           "truth_in_68": True}  # fmt: skip
+    nf = {"runs": {"free_a_e0.3": {"galle_lon_ecl_of_date_deg": lon, "mass_earth": one,
+                                    "a_au": one, "e": one}}}  # fmt: skip
+    rec = m5b.noise_free_check(nf)
+    assert rec["galle_lon_ecl_of_date_deg"]["offset_sigma"] == pytest.approx(0.627 / 1.5, abs=1e-3)
+    assert rec["mass_earth"]["offset_sigma"] == pytest.approx(-0.15 / 2.0, abs=1e-3)
+    assert m5b.noise_free_check({"runs": {}}) == {"status": "missing"}
 
 
 def _fake_run(rng, logz, lam_centre, frac_second=0.0, n=20000):

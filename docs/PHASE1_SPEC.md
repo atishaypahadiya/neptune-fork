@@ -180,7 +180,10 @@ post-1781 residual RMS is **≤ 1.5 σ_noise** (4.5″); without Neptune the sam
     0 passes a single-mode check: two rng seeds agree on ln Z within σ_eff and on the medians of
     log10 m and λ₀ within 0.5σ, and in each run < 0.5% of the mass lies beyond 8 half-widths of
     the median. If it fails, seeds 1–4 are not run until the shape is partitioned.
-  - No noise-free posterior (A3a is the point fit's job). A3b over the 10 seeds as above.
+  - Noise-free truth, free a, e ≤ 0.3, the four cells: scheduled last, after everything A3b
+    needs. The summary computes A3b first, then appends the noise-free check, a prior-bias
+    measurement: truth inside the 68% intervals (1846 longitude, m, a, e), and the posterior
+    median's offset from truth in σ (the 68% half-width on the side facing truth).
 
   Every long run writes a progress log and checkpoints, so it can be monitored and resumed.
 - **Priors** (one definition, `inference/priors.py`, used by emcee and dynesty alike). The
