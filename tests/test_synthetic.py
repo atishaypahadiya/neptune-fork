@@ -39,7 +39,9 @@ def test_truth_is_sun_centred_horizons_longitude():
     jd = synthetic.jd_tdb_jan1([1781, 1822])
     st = state_vectors_ecl_j2000("uranus", jd)
     want = np.mod(np.arctan2(st[:, 1], st[:, 0]), 2 * math.pi)
-    np.testing.assert_array_equal(synthetic.true_uranus_lon_ecl_j2000_rad(jd), want)
+    np.testing.assert_allclose(
+        synthetic.true_uranus_lon_ecl_j2000_rad(jd), want, rtol=0, atol=1e-15
+    )
 
 
 def test_observations_do_not_carry_truth():

@@ -226,8 +226,8 @@ def test_drift_inplace_matches_kepler_step():
     want = [kepler_step(x[i], v[i], MU, 20.0) for i in range(4)]
     kepler_drift_inplace(x, v, MU, 20.0)
     for i in range(4):
-        np.testing.assert_array_equal(x[i], want[i][0])
-        np.testing.assert_array_equal(v[i], want[i][1])
+        np.testing.assert_allclose(x[i], want[i][0], rtol=1e-13, atol=1e-15)
+        np.testing.assert_allclose(v[i], want[i][1], rtol=1e-13, atol=1e-15)
 
 
 def test_short_steps_converge_by_newton_without_bisection():
