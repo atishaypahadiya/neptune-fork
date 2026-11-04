@@ -12,8 +12,9 @@ def test_append_and_read_round_trip(tmp_path):
     p = tmp_path / "ledger.jsonl"
     ledger.append("a", "nested", n_likelihood_calls=10, n_integrations=10, sim_years=1560.0,
                   wall_s=2.0, cpu_s=7.5, n_workers=4, path=p)  # fmt: skip
-    ledger.append("b", "profile", n_likelihood_calls=None, n_integrations=None, sim_years=None,
-                  wall_s=60.0, cpu_s=None, n_workers=12, estimated=True, note="x", path=p)  # fmt: skip
+    unknown = dict(n_likelihood_calls=None, n_integrations=None, sim_years=None, cpu_s=None)
+    ledger.append("b", "profile", wall_s=60.0, n_workers=12, estimated=True, note="x", path=p,
+                  **unknown)  # fmt: skip
     rows = ledger.read(p)
     assert [r["job"] for r in rows] == ["a", "b"]
     assert rows[0]["sim_years"] == pytest.approx(1560.0) and not rows[0]["estimated"]
@@ -43,3 +44,21 @@ def test_m5b_job_appends_a_ledger_row(tmp_path, monkeypatch):
     assert row["n_likelihood_calls"] == row["n_integrations"] == 12345
     assert 150 < row["sim_years"] / 12345 < 157  # 1690–1846 observation span, ≈ 155 yr
     assert row["n_workers"] == 4 and not row["estimated"] and row["niter"] == 678
+
+
+def test_totals_split_measured_estimated_and_count_missing():
+    from fork.export.ledger import totals
+
+    rows = [
+        {"job": "a", "kind": "nested", "n_likelihood_calls": 100, "n_integrations": 100,
+         "sim_years": 15500.0, "wall_s": 10.0, "cpu_s": 36.0, "estimated": False},
+        {"job": "b", "kind": "nested", "n_likelihood_calls": 50, "n_integrations": 50,
+         "sim_years": 7750.0, "wall_s": 5.0, "cpu_s": None, "estimated": True},
+        {"job": "c", "kind": "point_fits", "n_likelihood_calls": None, "n_integrations": None,
+         "sim_years": None, "wall_s": 60.0, "cpu_s": None, "estimated": True},
+    ]  # fmt: skip
+    t = totals(rows)
+    assert t["all"]["n_likelihood_calls"] == 150 and t["all"]["wall_s"] == pytest.approx(75.0)
+    assert t["all"]["n_rows_missing"]["cpu_s"] == 2 and t["all"]["cpu_s"] == pytest.approx(36.0)
+    assert t["measured"]["n_rows"] == 1 and t["estimated"]["n_rows"] == 2
+    assert t["by_kind"]["point_fits"]["n_likelihood_calls"] is None
