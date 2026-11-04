@@ -216,12 +216,24 @@ def do_job(job: Job, n_workers: int) -> None:
         shutil.copy2(src, out)
         print(f"{job.id}: reused {src.name}")
         return
+    from fork import ledger
+
     obs, ctx, _, pq, box = dataset(job.seed)
     space = job_space(job, pq, box)
+    resumed = job.path(".ckpt").exists()
+    t0, c0 = time.time(), ledger.cpu_now()
     res = run_nested(obs, ctx, space, job.rng(), nlive=job.nlive, n_workers=n_workers,
                      progress_log=PROGRESS_LOG, checkpoint_file=job.path(".ckpt"),
                      label=job.id)  # fmt: skip
     NestedResult(res.space, res.results, res.nlive, res.dlogz, res.wall_s).save(out)
+    # one likelihood call = one forward integration; a resumed job's calls include the work
+    # before its checkpoint while wall/cpu cover this call only, so that row is estimated
+    yrs = ledger.sim_years_per_integration(obs.jd_tdb, A1_EPOCH_JD_TDB)
+    ledger.append(f"m5b/{job.id}", "nested", n_likelihood_calls=res.ncall,
+                  n_integrations=res.ncall, sim_years=res.ncall * yrs,
+                  wall_s=time.time() - t0, cpu_s=ledger.cpu_now() - c0, n_workers=n_workers,
+                  estimated=resumed, resumed=resumed, nlive=job.nlive,
+                  niter=res.niter)  # fmt: skip
     print(f"{job.id}: ln Z {res.logz:.3f} ± {res.logzerr:.3f}, {res.niter} it, "
           f"{res.wall_s / 60:.1f} min")  # fmt: skip
 
