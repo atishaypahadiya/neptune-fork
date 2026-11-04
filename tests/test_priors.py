@@ -118,3 +118,56 @@ def test_uranus_box_contains_the_perturbed_uranus(offline_horizons):
     assert box.contains(x) and rel.max() < 0.35
     raw_sigma = np.array(box.sigma_scaled) / math.sqrt(box.chi2_per_dof)
     assert np.all(np.abs(x - np.array(box.centre))[:2] / raw_sigma[:2] > 50)
+
+
+def test_a_slices_partition_the_prior_and_renormalise():
+    """The three M5b slices carry prior masses ln(hi/lo)/ln 3 that sum to 1; inside a slice
+    the transform stays on the slice and is log-uniform there; log_prior rejects a outside."""
+    from fork.inference.nested import A_SLICES_AU
+
+    full = free_a_space(PQ, 0.3, BOX)
+    spaces = [full.with_a_slice(lo, hi) for lo, hi in A_SLICES_AU]
+    w = [s.slice_weight for s in spaces]
+    assert w == pytest.approx([math.log(hi / lo) / math.log(3.0) for lo, hi in A_SLICES_AU])
+    assert sum(w) == pytest.approx(1.0) and full.slice_weight == 1.0
+    sp = spaces[1]  # [25, 28]
+    a = np.exp(_draws(sp, 5000)[:, 5])
+    assert a.min() >= 25.0 and a.max() <= 28.0
+    assert np.mean(a < math.sqrt(25.0 * 28.0)) == pytest.approx(0.5, abs=0.03)
+    q = sp.prior_transform(np.full(sp.ndim, 0.5))
+    q[5] = math.log(24.9)
+    assert sp.log_prior(q) == -math.inf and full.log_prior(q) == 0.0
+    with pytest.raises(ValueError):
+        full.with_a_slice(15.0, 25.0)
+
+
+def test_partitioned_combination_and_error_propagation():
+    """Z = Σ w_k Z_k; shares s_k = w_k Z_k / Z; σ(ln Z)² = Σ s_k² σ_k²; delta-method share
+    errors; combined weights sum to 1 and follow the shares."""
+    from types import SimpleNamespace
+
+    from fork.inference.nested import A_SLICES_AU, PartitionedResult
+
+    full = free_a_space(PQ, 0.3, BOX)
+    lnz, sig = [-75.0, -74.0, -73.2], [0.2, 0.25, 0.22]
+    runs = []
+    for i, ((lo, hi), z, e) in enumerate(zip(A_SLICES_AU, lnz, sig, strict=True)):
+        runs.append(SimpleNamespace(space=full.with_a_slice(lo, hi), logz=z, logzerr=e,
+                                    samples=np.full((4, 9), float(i)),
+                                    weights=np.full(4, 0.25)))  # fmt: skip
+    p = PartitionedResult(tuple(runs))
+    w = np.array([r.space.slice_weight for r in runs])
+    z = np.sum(w * np.exp(lnz))
+    assert p.logz == pytest.approx(math.log(z))
+    s = w * np.exp(lnz) / z
+    assert p.shares == pytest.approx(s) and p.shares.sum() == pytest.approx(1.0)
+    assert p.logzerr == pytest.approx(math.sqrt(np.sum((s * np.array(sig)) ** 2)))
+    # share error, slice 0 by hand: s0² [(1−s0)² σ0² + s1² σ1² + s2² σ2²]
+    e0 = s[0] * math.sqrt((1 - s[0]) ** 2 * sig[0] ** 2 + s[1] ** 2 * sig[1] ** 2
+                          + s[2] ** 2 * sig[2] ** 2)  # fmt: skip
+    assert p.share_errs[0] == pytest.approx(e0)
+    _, wq, k = p.samples_and_weights()
+    assert wq.sum() == pytest.approx(1.0)
+    assert [wq[k == i].sum() for i in range(3)] == pytest.approx(s)
+    with pytest.raises(ValueError, match="partition"):
+        PartitionedResult(tuple(runs[:2]))

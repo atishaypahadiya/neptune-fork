@@ -107,6 +107,29 @@ post-1781 residual RMS is **≤ 1.5 σ_noise** (4.5″); without Neptune the sam
   Validation gate, before the full run: on seed 0 (free a, e ≤ 0.3), both modes are recovered,
   with within-mode medians and 68% points matching the two emcee chains to ≲ 0.5σ. A second rng
   seed gives ln Z within the stated error and mode masses within a few %.
+  *Amended (dynesty validation, `docs/notes/M5b_dynesty_validation.md`):* unpartitioned dynesty
+  failed the gate. ln Z was reproducible (−73.05 ± 0.22 vs −73.31 ± 0.22), but mode B was never
+  found, and region C (a 24–28 AU) got 1% vs 39% of the mass. M5b therefore uses
+  **partitioned nested sampling**:
+  - the a prior is split into slices [20, 25], [25, 28] and [28, 60] AU, and each slice is
+    sampled separately (same dynesty settings), with the prior renormalised on the slice;
+  - the slice's prior mass is w_k = ln(a_hi/a_lo) / ln 3, and Z = Σ w_k Z_k;
+  - σ(ln Z)² = Σ s_k² σ_k², where s_k = w_k Z_k / Z is the slice's posterior mass share
+    (reported, with delta-method errors);
+  - the posterior is the slices' weighted samples, each slice scaled by s_k.
+
+  **Slice edges affect efficiency, not correctness.** Every slice is a valid restricted prior
+  and the weights are exact, so any partition gives the same Z and posterior in the limit. The
+  edges were chosen so that no sub-run has to discover a thin pocket next to a large mode. They
+  are fixed in advance and the same for every dataset.
+  Validation gate (seed 0, e ≤ 0.3, two rng seeds per slice):
+  - per-slice ln Z_k and mass shares agree across rng seeds within error;
+  - combined ln Z agrees with the unpartitioned runs;
+  - slice [20, 25] recovers mode B and matches emcee chain B, and slice [28, 60] matches emcee
+    chain A;
+  - report the 1846 longitude median and 68% interval, combined and per slice.
+
+  Every long run writes a progress log and checkpoints, so it can be monitored and resumed.
 - **Priors** (one definition, `inference/priors.py`, used by emcee and dynesty alike). The
   sampled vector is q = (Uranus a, e·cos ϖ, e·sin ϖ, λ₀; perturber log10 m, ln a, √e·cos ϖ,
   √e·sin ϖ, λ₀). The density is flat in q on the support below:
