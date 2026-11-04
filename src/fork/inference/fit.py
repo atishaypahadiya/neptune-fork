@@ -289,7 +289,8 @@ class PerturberSpace:
     of ``held`` that are not None are fixed at that y value; the rest are free, in order.
 
     ``e_max`` bounds the eccentricity (the M5 prior's 0.3 by default in the fits). The bound is
-    enforced in two phases by the drivers (``_fit_bounded``), not by a squashing map:
+    enforced in two phases by ``_fit_bounded`` (shared by point and profile fits), not by a
+    squashing map:
       1. the interior space (``on_e_bound=False``) maps e = k² + h², with no bound;
       2. if that optimum has e > e_max, the constrained optimum lies on the boundary, so the fit
          is redone in the boundary space (``on_e_bound=True``). There e = e_max is fixed and the
@@ -394,28 +395,55 @@ def _lm(fun, z0, args):
                          gtol=1e-10, max_nfev=3000)  # fmt: skip
 
 
-def _fit_bounded(fun, z0, args_of, space: PerturberSpace, split):
-    """Two-phase bounded LM (see ``PerturberSpace``). ``args_of(space)`` gives fun's args;
-    ``split(z)`` → (Uranus/other prefix, perturber z) so the perturber part can be re-laid out.
-    Returns (scipy solution, space the solution's z is in)."""
+def _fit_bounded(lm, z0, space: PerturberSpace, *, lam0_in_z: bool = True):
+    """Bounded LM shared by the point fits and the profile's constrained fits (see
+    ``PerturberSpace``). ``lm(sp, z, warm)`` runs one LM in layout ``sp`` from ``z``; ``warm`` is
+    the solution ``z`` was taken from (None: the caller's start). z is Uranus 4 + the free
+    perturber variables, λ₀ last unless ``lam0_in_z`` is False (the profile solves λ₀ from its
+    constraint instead of fitting it).
+
+    Phase 1 fits in the interior layout, unbounded. If its optimum has e > e_max, the bounded
+    optimum lies on the bound, and phase 2 refits in the boundary layout twice: from the
+    phase-1 optimum projected onto the bound, and from the start projected onto it. The second
+    run also happens when the start already sits on the bound. The lowest-χ² successful run is
+    kept. The start-projection run was added after phase 1 was seen to carry an on-bound start
+    far into e > e_max, from where phase 2 found another branch or diverged (seed 0 free-a
+    profile, 314° → 313°: χ² 1791 instead of 79.75).
+    Returns (scipy solution, its nfev summed over all runs; the layout its x is in)."""
     inner = space.interior()
-    sol = _lm(fun, z0, args_of(inner))
+    sol = lm(inner, z0, None)
     if not space.bounds_e:
         return sol, inner
-    head, zp = split(sol.x)
-    y = inner.y_from_z(zp)
-    if y[2] ** 2 + y[3] ** 2 <= space.e_max:
-        return sol, inner
     bnd = space.boundary()
-    sol_b = _lm(fun, np.concatenate([head, bnd.z_from_y(y)]), args_of(bnd))
-    sol_b.nfev += sol.nfev
-    return sol_b, bnd
+
+    def y_of(z: np.ndarray) -> np.ndarray:
+        zp = z[4:] if lam0_in_z else np.append(z[4:], 0.0)
+        return inner.y_from_z(zp)
+
+    def onto_bound(z: np.ndarray, y: np.ndarray) -> np.ndarray:
+        zb = bnd.z_from_y(y)
+        return np.concatenate([z[:4], zb if lam0_in_z else zb[:-1]])
+
+    z0 = np.asarray(z0, dtype=np.float64)
+    y0, y1 = y_of(z0), y_of(sol.x)
+    left_bound = y1[2] ** 2 + y1[3] ** 2 > space.e_max
+    start_on_bound = y0[2] ** 2 + y0[3] ** 2 >= space.e_max * (1.0 - 1e-9)
+    runs = [(lm(bnd, onto_bound(sol.x, y1), sol), bnd)] if left_bound else [(sol, inner)]
+    if left_bound or start_on_bound:
+        runs.append((lm(bnd, onto_bound(z0, y0), None), bnd))
+    nfev = int(sol.nfev) + sum(int(r.nfev) for r, _ in runs if r is not sol)
+    best, used = min([r for r in runs if r[0].success] or runs, key=lambda r: r[0].cost)
+    best.nfev = nfev
+    return best, used
 
 
 def _run_perturber_start(z0, pq, space, obs, context, lam0: float) -> PerturberFit:
-    """One (two-phase bounded) LM run; module level so a process pool can pickle it."""
-    sol, used = _fit_bounded(_perturber_residuals, z0, lambda sp: (pq, sp, obs, context), space,
-                             lambda z: (z[:4], z[4:]))  # fmt: skip
+    """One bounded LM run (``_fit_bounded``); module level so a process pool can pickle it."""
+
+    def lm(sp, z, warm):
+        return _lm(_perturber_residuals, z, (pq, sp, obs, context))
+
+    sol, used = _fit_bounded(lm, z0, space)
     theta = _unpack_perturber_z(sol.x, pq, used)
     chi2 = float(np.sum(sol.fun**2))
     n_obs = obs.jd_tdb.size
