@@ -229,13 +229,14 @@ MAX_SWEEP_PAIRS = 3
 
 
 def continuation_sweeps(best: list, attempt, tol: float = CONTINUATION_TOL_CHI2,
-                        max_pairs: int = MAX_SWEEP_PAIRS) -> tuple[int, set[int]]:  # fmt: skip
+                        max_pairs: int = MAX_SWEEP_PAIRS,
+                        log=None) -> tuple[int, set[int]]:  # fmt: skip
     """Sequential continuation over a sorted grid, in place: left→right, each point re-fitted
     from its left neighbour's current best (``attempt(i, j)`` → fit or None), then right→left.
     Unlike the parallel neighbour passes, a lower branch found at one point can carry across
     the whole grid within a single sweep. A fit replaces the point's best only if it lowers χ²
     by more than ``tol``. Pairs repeat until a pair changes nothing (≤ ``max_pairs``).
-    Returns (pairs run, indices improved)."""
+    Returns (pairs run, indices improved). ``log(str)``, if given, gets a line per sweep."""
     n = len(best)
     improved: set[int] = set()
     pairs, changed = 0, True
@@ -243,6 +244,7 @@ def continuation_sweeps(best: list, attempt, tol: float = CONTINUATION_TOL_CHI2,
         pairs += 1
         changed = False
         for order in (range(1, n), range(n - 2, -1, -1)):
+            n_better = 0
             for i in order:
                 j = i - 1 if order.step == 1 else i + 1
                 f = attempt(i, j)
@@ -250,6 +252,10 @@ def continuation_sweeps(best: list, attempt, tol: float = CONTINUATION_TOL_CHI2,
                     best[i] = f
                     improved.add(i)
                     changed = True
+                    n_better += 1
+            if log is not None:
+                way = "left→right" if order.step == 1 else "right→left"
+                log(f"sweep pair {pairs} {way}: {n_better} points improved")
     return pairs, improved
 
 
@@ -265,6 +271,7 @@ def profile_galle_longitude(
     n_workers: int = 1,
     geo: GalleGeometry | None = None,
     sweeps: bool = True,
+    log=None,
 ) -> ProfileResult:
     """Min χ² over all free parameters with the 1846-09-23 longitude held at each target.
 
@@ -272,8 +279,14 @@ def profile_galle_longitude(
     Stages: independent starts (pooled), parallel neighbour passes (pooled), then sequential
     ``continuation_sweeps`` (in-process; ``sweeps=False`` skips them). The sweeps were added
     after kinks in the first profiles showed missed lower branches (seed 2 free a dropped
-    Δχ² 7 → 2.5 between 305° and 306°).
+    Δχ² 7 → 2.5 between 305° and 306°). ``log(str)``, if given, gets progress lines (every
+    10 grid points of the independent starts, each neighbour pass, each sweep).
     """
+
+    def note(msg: str) -> None:
+        if log is not None:
+            log(msg)
+
     if space.held[4] is not None:
         raise ValueError("λ₀ must be free: it is the parameter the constraint mostly determines")
     geo = GalleGeometry.from_horizons() if geo is None else geo
@@ -282,17 +295,21 @@ def profile_galle_longitude(
     x = uranus_theta_to_x(uranus_only.theta)
     xu, pq = x[:4].copy(), x[4:].copy()
 
-    jobs, owner = [], []
-    for i, t in enumerate(targets):
-        for z0, lam0 in _start_vectors(space, xu, context, geo, float(t), n_starts):
-            jobs.append((z0, lam0, pq, space, obs, context, geo, float(t)))
-            owner.append(i)
-    results = run_pool(_run_constrained, jobs, n_workers)
-    n_runs = len(results)
     best: list[ConstrainedFit | None] = [None] * targets.size
-    for i, f in zip(owner, results, strict=True):
-        if f.success and (best[i] is None or f.chi2 < best[i].chi2):
-            best[i] = f
+    n_runs = 0
+    for k0 in range(0, targets.size, 10):  # in blocks of 10 grid points, for progress lines
+        jobs, owner = [], []
+        for i in range(k0, min(k0 + 10, targets.size)):
+            t = float(targets[i])
+            for z0, lam0 in _start_vectors(space, xu, context, geo, t, n_starts):
+                jobs.append((z0, lam0, pq, space, obs, context, geo, t))
+                owner.append(i)
+        results = run_pool(_run_constrained, jobs, n_workers)
+        n_runs += len(results)
+        for i, f in zip(owner, results, strict=True):
+            if f.success and (best[i] is None or f.chi2 < best[i].chi2):
+                best[i] = f
+        note(f"independent starts: {min(k0 + 10, targets.size)}/{targets.size} points")
 
     changed = set(range(targets.size))
     passes = 0
@@ -312,6 +329,7 @@ def profile_galle_longitude(
             if f.success and (best[i] is None or f.chi2 < best[i].chi2 - CONTINUATION_TOL_CHI2):
                 best[i] = f
                 changed.add(i)
+        note(f"neighbour pass {passes}: {len(jobs)} runs, {len(changed)} points improved")
     if any(b is None for b in best):
         raise RuntimeError("a profile point has no successful constrained fit")
     before = tuple(best)
@@ -326,7 +344,7 @@ def profile_galle_longitude(
             f = _run_constrained(best[j].z_rest, lam0, pq, space, obs, context, geo, t)
             return f if f.success else None
 
-        n_pairs, improved = continuation_sweeps(best, attempt)
+        n_pairs, improved = continuation_sweeps(best, attempt, log=log)
         n_runs += n_sweep_runs[0]
     return ProfileResult(mode, targets, tuple(best), n_runs, passes, before, n_pairs,
                          tuple(sorted(improved)))  # type: ignore[arg-type]  # fmt: skip
