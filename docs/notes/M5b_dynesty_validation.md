@@ -71,3 +71,40 @@ Decision: split [28, 60] by eccentricity rather than by a, into e ∈ [0, 0.12) 
 [0.12, 0.3], since every alternative branch found so far is eccentric. Gate 2 becomes
 agreement of combined ln Z and all cell shares across seeds; gate 3 for [20, 25] compares
 chain B with the slice's e > 0.25 samples.
+
+## Partitioned validation, round 2 (four cells): gate **not passed** (shares, ln Z scatter)
+
+Cells (`nested.PARTITION_CELLS`): [20, 25] and [25, 28] AU (round-1 runs reused), and
+[28, 60] AU × e < 0.12 and × e ≥ 0.12 (new; 3 workers each, 149–157 min while sharing the
+CPU). Cell [20, 25] has a third seed. Numbers: `M5b_partitioned_validation_cells.json`.
+
+| cell | weight | ln Z_k rng 1 | ln Z_k rng 2 | Δ/σ | share rng 1 | share rng 2 | Δ/σ |
+|---|---|---|---|---|---|---|---|
+| a [20, 25] | 0.203 | −76.08 ± 0.23 | −76.09 ± 0.23 | 0.03 | 0.016 | 0.014 | 0.29 |
+| a [25, 28] | 0.103 | −73.86 ± 0.22 | −73.82 ± 0.22 | 0.13 | 0.073 | 0.069 | 0.17 |
+| [28, 60] × e < 0.12 | 0.277 | −72.62 ± 0.22 | −72.38 ± 0.22 | 0.79 | 0.678 | 0.781 | **1.36** |
+| [28, 60] × e ≥ 0.12 | 0.416 | −74.10 ± 0.22 | −74.53 ± 0.22 | **1.39** | 0.233 | 0.136 | **1.53** |
+| combined | | −73.52 ± 0.16 | −73.41 ± 0.18 | 0.44 | | | |
+
+Cell [20, 25] rng 3: ln Z_k **−75.08 ± 0.23**, 1.0 above rng 1 and 2 (three-seed SD 0.58 vs
+quoted 0.23).
+
+- **Gate 1** fails on both e cells (eccentric ln Z_k 1.39σ; both shares).
+- **Gate 2**: combined ln Z agrees (0.44σ); the shares do not (the two e cells).
+- **Gate 3** passes. Cell [20, 25], e > 0.25: rng 3 matches chain B (all medians ≤ 0.29σ) and
+  rng 1, not rng 2, so by the agreed rule rng 2 is an outlier draw. The circular cell matches
+  chain A on both seeds (≤ 0.43σ; 97 % of chain A lies in the cell).
+- **Gate 4**, 1846 longitude, median [68 %]: combined 329.2° [322.2, 333.1] (rng 1), 328.1°
+  [322.5, 332.2] (rng 2). Circular cell 329.8° / 328.4°, eccentric cell 321.1° / 321.3°,
+  [20, 25] 338.1° / 334.5°, [25, 28] 337.4° / 337.3°.
+
+Cell [20, 25], three seeds: shapes agree well at the medians (seed-to-seed SD 0.09–0.39 of
+chain B's σ) and worse in the upper tail of a, u_a, u_h and mass (SD 0.70–0.99σ at the 84th
+percentile). The ln Z_k jump has the same posterior shape behind it. At fixed log L, rng 3's
+ln X runs ~1.0 above rng 1 and 2 from log L ≈ −60 on (−29.3 vs −30.1/−29.6 at −60, −36.8 vs
+−37.8 at −40), while all three agree to 0.2 down to log L −80. So the prior-volume estimates
+part where the [20, 25] contour fragments, consistent with one or more pockets being lost
+early (which biases ln Z low) in rng 1 and 2, or kept too long in rng 3.
+
+Overall: on these cells dynesty's quoted ln Z error understates the run-to-run scatter. The
+pooled single-run SD over the four cells is ≈ 0.40 against a quoted 0.22 (factor ≈ 1.8).
