@@ -15,6 +15,11 @@ Starts per grid point (``n_starts`` ≥ 8). Uranus always starts from the data-o
 fit and m from 10 M⊕. Then:
   - free-a mode: a ∈ {25, 30, 38.4, 50} AU × ϖ ∈ {0°, 180°}, e = 0.04;
   - fixed-a mode: ϖ on an 8-point grid, e = 0.1.
+Optional extra starts per grid point (``profile_galle_longitude``): ``backstop`` adds
+a = 22 AU × ϖ ∈ {0°, 180°} in free-a mode, and ``seeded_starts`` adds full-θ starts (e.g. M5b
+posterior samples near that longitude). Both were added after the bounded-fit re-export missed
+the a ≈ 22 AU, e = 0.3 branch at high longitude on six free-a seeds: no standard start reaches
+it any more (seed 4 at 345°: χ² 93.48 from the standard starts, 91.69 from a = 22).
 After the independent starts, continuation passes re-start each grid point from its neighbours'
 best solutions until no point improves by more than 0.01 in χ². Then sequential sweeps,
 left→right and right→left, carry any lower branch across the whole grid; see
@@ -53,6 +58,7 @@ from fork.model.forward import ForwardContext, predict_states_ecl_j2000, predict
 FREE_A_STARTS_AU = (25.0, 30.0, 38.4, 50.0)
 FREE_A_STARTS_VARPI_DEG = (0.0, 180.0)
 FREE_A_START_E = 0.04
+FREE_A_BACKSTOP_AU = 22.0  # reaches the a ≈ 22 AU, e = 0.3 branch the standard starts miss
 FIXED_A_STARTS_VARPI_DEG = tuple(45.0 * k for k in range(8))
 FIXED_A_START_E = 0.1
 CONTINUATION_TOL_CHI2 = 0.01
@@ -180,8 +186,10 @@ def _run_constrained(z_rest0, lam0_guess, pq, space, obs, context, geo, target_r
 
 
 def _start_vectors(space: PerturberSpace, xu: np.ndarray, context, geo, target_rad: float,
-                   n_starts: int) -> list[tuple[np.ndarray, float]]:  # fmt: skip
-    """(z_rest, λ₀ guess) per start. λ₀ guess: the target minus the epoch→1846 mean motion."""
+                   n_starts: int, backstop: bool = False
+                   ) -> list[tuple[np.ndarray, float]]:  # fmt: skip
+    """(z_rest, λ₀ guess) per start. λ₀ guess: the target minus the epoch→1846 mean motion.
+    ``backstop`` (free a only) appends a = ``FREE_A_BACKSTOP_AU`` × ϖ ∈ {0°, 180°}."""
     from fork.model.hidden_mass import BODE_A_AU
 
     free_a = bool(space.free[1])
@@ -191,8 +199,13 @@ def _start_vectors(space: PerturberSpace, xu: np.ndarray, context, geo, target_r
         combos = [(space.held[1], w, FIXED_A_START_E) for w in FIXED_A_STARTS_VARPI_DEG]
     if n_starts > len(combos):
         raise ValueError(f"at most {len(combos)} starts in this mode")
+    combos = combos[:n_starts]
+    if backstop:
+        if not free_a:
+            raise ValueError("the a backstop is a free-a start")
+        combos += [(FREE_A_BACKSTOP_AU, w, FREE_A_START_E) for w in FREE_A_STARTS_VARPI_DEG]
     out = []
-    for a, w_deg, e in combos[:n_starts]:
+    for a, w_deg, e in combos:
         s, w = math.sqrt(e), math.radians(w_deg)
         a_au = BODE_A_AU if a is None else a
         n_deg_day = 0.9856076686 / a_au**1.5
@@ -200,6 +213,19 @@ def _start_vectors(space: PerturberSpace, xu: np.ndarray, context, geo, target_r
         y = np.array([START_LOG10_M_EARTH, a_au, s * math.cos(w), s * math.sin(w), lam0])
         out.append((np.concatenate([xu, space.z_from_y(y)[:-1]]), float(lam0)))
     return out
+
+
+def start_from_theta(space: PerturberSpace, theta: np.ndarray, lon_rad: float, target_rad: float
+                     ) -> tuple[np.ndarray, float]:  # fmt: skip
+    """(z_rest, λ₀ guess) starting from a full 11-entry θ whose 1846 longitude is ``lon_rad``:
+    its Uranus in-plane elements and perturber (m, [a], e, ϖ) in the interior layout, and λ₀
+    shifted by the longitude offset to the target (as the neighbour passes do)."""
+    theta = np.asarray(theta, dtype=np.float64)
+    xu = uranus_theta_to_x(theta[:6])[:4]
+    s = math.sqrt(theta[8])
+    lam0 = float((theta[10] + target_rad - lon_rad) % TWO_PI)
+    y = np.array([theta[6], theta[7], s * math.cos(theta[9]), s * math.sin(theta[9]), lam0])
+    return np.concatenate([xu, space.interior().z_from_y(y)[:-1]]), lam0
 
 
 @dataclass(frozen=True)
@@ -269,6 +295,8 @@ def profile_galle_longitude(
     geo: GalleGeometry | None = None,
     sweeps: bool = True,
     log=None,
+    backstop: bool = False,
+    seeded_starts: list | None = None,
 ) -> ProfileResult:
     """Min χ² over all free parameters with the 1846-09-23 longitude held at each target.
 
@@ -278,6 +306,8 @@ def profile_galle_longitude(
     after kinks in the first profiles showed missed lower branches (seed 2 free a dropped
     Δχ² 7 → 2.5 between 305° and 306°). ``log(str)``, if given, gets progress lines (every
     10 grid points of the independent starts, each neighbour pass, each sweep).
+    ``backstop``: add the free-a a = 22 AU starts. ``seeded_starts``: per target, a list of
+    (θ, its 1846 longitude in rad) to start from as well (``start_from_theta``).
     """
 
     def note(msg: str) -> None:
@@ -288,6 +318,8 @@ def profile_galle_longitude(
         raise ValueError("λ₀ must be free: it is the parameter the constraint mostly determines")
     geo = GalleGeometry.from_horizons() if geo is None else geo
     targets = np.asarray(targets_lon_ecl_of_date_rad, dtype=np.float64)
+    if seeded_starts is not None and len(seeded_starts) != targets.size:
+        raise ValueError("seeded_starts needs one list per target")
     uranus_only = fit_uranus_elements(obs, context, inc_raan_ecl_j2000_rad)
     x = uranus_theta_to_x(uranus_only.theta)
     xu, pq = x[:4].copy(), x[4:].copy()
@@ -298,7 +330,10 @@ def profile_galle_longitude(
         jobs, owner = [], []
         for i in range(k0, min(k0 + 10, targets.size)):
             t = float(targets[i])
-            for z0, lam0 in _start_vectors(space, xu, context, geo, t, n_starts):
+            starts = _start_vectors(space, xu, context, geo, t, n_starts, backstop)
+            if seeded_starts is not None:
+                starts += [start_from_theta(space, th, lon, t) for th, lon in seeded_starts[i]]
+            for z0, lam0 in starts:
                 jobs.append((z0, lam0, pq, space, obs, context, geo, t))
                 owner.append(i)
         results = run_pool(_run_constrained, jobs, n_workers)

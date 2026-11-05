@@ -245,6 +245,8 @@ M5A_PROFILE_SEEDS: tuple[int | None, ...] = (0, 1, 2, 3, None)  # None: noise-fr
 M5A_PROFILE_FREE_A_ONLY_SEEDS: tuple[int, ...] = (4, 5, 6, 7, 8, 9)  # profiled in free a only
 M5A_PROFILE_GRID_DEG = (300.0, 350.0, 1.0)
 M5A_PROFILE_N_STARTS = 8
+# free a also starts from a = 22 AU (× 2 ϖ) and from the M5b posterior (fork.export.profile_seeds)
+M5A_PROFILE_FREE_A_EXTRA = "b22_post"
 
 
 def _profile_interval_summary(lon_deg, chi2, best_lon, best_chi2, i_true, delta_chi2_intervals):
@@ -284,7 +286,8 @@ def _profile_curve(seed: int | None, mode: str, grid_deg: tuple[float, float, fl
 
     label = f"{'noise_free' if seed is None else f'seed_{seed}'} {mode}"
     key = (f"{'noise_free' if seed is None else f'seed_{seed}'}_{mode}_"
-           f"{grid_deg[0]:g}-{grid_deg[1]:g}-{grid_deg[2]:g}_n{M5A_PROFILE_N_STARTS}")  # fmt: skip
+           f"{grid_deg[0]:g}-{grid_deg[1]:g}-{grid_deg[2]:g}_n{M5A_PROFILE_N_STARTS}"
+           + (f"_{M5A_PROFILE_FREE_A_EXTRA}" if mode == "free_a" else ""))  # fmt: skip
     cache = PROFILE_CACHE / f"{key}.json"
     if cache.exists():
         _log_line(label, f"cached: {cache.name}")
@@ -332,9 +335,26 @@ def _profile_curve_compute(seed: int | None, mode: str, grid_deg: tuple[float, f
     best = fit_perturber_multistart(obs, ctx, inc_raan, a_fixed_au=a_fixed).best
     log(f"24-start multistart done (chi2 {best.chi2:.3f})")
     best_lon = math.degrees(galle_lon_of_date_rad(best.theta, ctx, geo))
+    extra: dict = {}
+    if mode == "free_a":
+        from fork.export.profile_seeds import (
+            DRAWS_PER_CELL,
+            SEED_RUN,
+            SEED_WINDOW_DEG,
+            cell_draws,
+            seeded_starts,
+        )
+        from fork.inference.profile import FREE_A_BACKSTOP_AU
+
+        cells = cell_draws(seed, ctx, geo)
+        extra = {"backstop": True, "seeded_starts": seeded_starts(cells, targets)}
+        log(f"posterior seeds: {len(cells)} cells × ≤{DRAWS_PER_CELL} draws")
+        extra_meta = {"backstop_a_au": FREE_A_BACKSTOP_AU, "seeded_from": SEED_RUN,
+                      "n_seeded_per_point": len(cells), "seed_window_deg": SEED_WINDOW_DEG,
+                      "draws_per_cell": [int(c["chi2"].size) for c in cells]}  # fmt: skip
     prof = profile_galle_longitude(obs, ctx, inc_raan, le_verrier_space(a_fixed), targets,
                                    mode=mode, n_starts=M5A_PROFILE_N_STARTS, geo=geo,
-                                   log=log)  # fmt: skip
+                                   log=log, **extra)  # fmt: skip
     lon_deg = np.degrees(targets)
     after = _profile_interval_summary(lon_deg, prof.chi2, best_lon, best.chi2, i_true,
                                       delta_chi2_intervals)  # fmt: skip
@@ -387,6 +407,7 @@ def _profile_curve_compute(seed: int | None, mode: str, grid_deg: tuple[float, f
                             "on_e_bound": bool(on_bound[i_true])},
         "max_constraint_miss_arcsec": _sig(max(f.constraint_miss_arcsec for f in prof.fits), 2),
         "n_lm_runs": prof.n_runs, "n_continuation_passes": prof.n_continuation_passes,
+        **({"extra_starts": extra_meta} if extra else {}),
     }  # fmt: skip
 
 
@@ -438,7 +459,10 @@ def m5a_profile_data(
         "ecliptic-of-date longitude on 1846-09-23 (Galle). At each longitude every other free "
         "parameter (Uranus a, e, ϖ, λ₀; perturber m, [a], e ≤ 0.3, ϖ; λ₀ solved from the "
         "constraint) is re-optimised: multistart LM, neighbour continuation, then sequential "
-        "left→right / right→left sweeps; dchi2 = chi2 − min over all fits for that dataset.",
+        "left→right / right→left sweeps; dchi2 = chi2 − min over all fits for that dataset. "
+        "Free-a curves add per grid point an a = 22 AU start (× 2 ϖ) and one start per M5b "
+        "cell: its best-χ² posterior draw within ±2° of the grid longitude, else the nearest "
+        "(extra_starts).",
         "epoch_jd_tdb": A1_EPOCH_JD_TDB, "galle_jd_tdb": geo.jd_tdb, "dt_days": DEFAULT_DT_DAYS,
         "grid_deg": list(grid_deg), "n_starts_per_point": M5A_PROFILE_N_STARTS,
         "perturber_e_max": E_PRIOR_MAX,
