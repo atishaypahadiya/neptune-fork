@@ -74,3 +74,31 @@ def test_summary_rng_accepts_noise_free_and_is_per_dataset():
     a = summary_rng(None, "free_a_e0.3").random(3)
     np.testing.assert_array_equal(a, summary_rng(None, "free_a_e0.3").random(3))  # same seed
     assert not np.allclose(a, summary_rng(0, "free_a_e0.3").random(3))
+
+
+def test_a3b_binomial_and_per_seed_offsets():
+    b = m5b.binomial_calibration(7, 10)
+    assert b["spec_range_counts"] == [5, 8]
+    assert b["p_calibrated_in_spec_range"] == pytest.approx(0.8157, abs=1e-3)
+    assert b["p_value_two_sided"] == pytest.approx(1.0, abs=1e-6)  # 7 is the mode
+    assert m5b.binomial_calibration(3, 10)["p_value_two_sided"] < 0.05
+
+    def ds(seed, med, hit):
+        lon = {"median": med, "lo68": med - 2, "hi68": med + 4, "minus": 2.0, "plus": 4.0,
+               "width68": 6.0, "median_minus_truth": med - 326.0, "truth_in_68": hit}  # fmt: skip
+        return {"seed": seed, "noise": True, "runs": {"free_a_e0.3": {
+            "galle_lon_ecl_of_date_deg": lon}}}  # fmt: skip
+
+    cal = m5b.calibration({"a": ds(0, 327.0, True), "b": ds(1, 322.0, False)}, "free_a_e0.3")
+    assert [r["offset_sigma"] for r in cal["per_seed"]] == pytest.approx([0.5, -1.0])
+    assert cal["n_truth_in_68"] == 1 and cal["binomial"]["p_true"] == pytest.approx(0.68)
+
+
+def test_profile_vs_posterior_flags_ends_beyond_two_degrees():
+    lon = {"lo68": 318.0, "hi68": 334.0}
+    ok = m5b.profile_vs_posterior([[317.4, 333.0]], lon)
+    assert not ok["flag"] and ok["delta_lo_deg"] == pytest.approx(-0.6)
+    bad = m5b.profile_vs_posterior([[317.4, 320.0], [322.0, 350.0]], lon, [300.0, 350.0])
+    assert bad["flag"] and bad["n_profile_pieces"] == 2
+    assert bad["profile_end_at_grid_edge"] == [False, True]
+    assert bad["delta_hi_deg"] == pytest.approx(16.0)

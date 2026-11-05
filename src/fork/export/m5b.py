@@ -468,14 +468,41 @@ def profile_intervals(seed: int | None) -> dict | None:
     path = SITE_DATA / "m5a_profile.json"
     if not path.exists():
         return None
-    for d in json.loads(path.read_text())["datasets"]:
+    prof = json.loads(path.read_text())
+    for d in prof["datasets"]:
         if d["seed"] == seed:
             return {mode: {"dchi2_le_1_intervals_deg": m["dchi2_le_1_intervals_deg"],
                            "overall_min_lon_ecl_of_date_deg":
                                m["overall_min"]["lon_ecl_of_date_deg"],
-                           "dchi2_at_true_neptune": m["dchi2_at_true_neptune"]}
+                           "dchi2_at_true_neptune": m["dchi2_at_true_neptune"],
+                           "grid_deg": prof["grid_deg"][:2]}
                     for mode, m in d["modes"].items()}  # fmt: skip
     return None
+
+
+PROFILE_POSTERIOR_FLAG_DEG = 2.0
+
+
+def profile_vs_posterior(intervals: list, lon: dict, grid_deg: list | None = None,
+                         flag_deg: float = PROFILE_POSTERIOR_FLAG_DEG) -> dict:  # fmt: skip
+    """The profile's Δχ² ≤ 1 interval (hull of its pieces) next to the posterior 68 % interval
+    of the 1846 longitude; flagged if either end differs by more than ``flag_deg``. Same model
+    (free a, e ≤ 0.3); not the same quantity (profile likelihood vs marginal posterior). An end
+    on the profile grid's edge is a bound, not a measured end (profile_end_at_grid_edge)."""
+
+    def d(x: float, y: float) -> float:
+        return (x - y + 180.0) % 360.0 - 180.0
+
+    lo = intervals[0][0]
+    hi = intervals[-1][1]
+    dlo, dhi = d(lo, lon["lo68"]), d(hi, lon["hi68"])
+    return {"profile_dchi2_le_1_deg": [lo, hi], "n_profile_pieces": len(intervals),
+            "posterior_68_deg": [lon["lo68"], lon["hi68"]],
+            "delta_lo_deg": round(dlo, 3), "delta_hi_deg": round(dhi, 3),
+            "flag_gt_deg": flag_deg,
+            "flag": bool(max(abs(dlo), abs(dhi)) > flag_deg),
+            "profile_end_at_grid_edge": None if grid_deg is None else
+            [abs(lo - grid_deg[0]) < 1e-6, abs(hi - grid_deg[1]) < 1e-6]}  # fmt: skip
 
 
 def summary_rng(seed: int | None, run: str) -> np.random.Generator:
@@ -507,7 +534,8 @@ def summarize_run(seed: int | None, run: str, data, truth_p: dict, n_workers: in
     if run == LV:
         logz, err_q = res[0].logz, res[0].logzerr
         evidence = {"logz": round(logz, 4), "logzerr_quoted": round(err_q, 4),
-                    "logzerr": round(ERR_INFLATION * err_q, 4), "partitioned": False}  # fmt: skip
+                    "logzerr": round(ERR_INFLATION * err_q, 4),
+                    "logzerr_inflation": ERR_INFLATION, "partitioned": False}  # fmt: skip
         eq = res[0].equal_weight(rng)
     else:
         p = PartitionedResult(tuple(res), err_scale=ERR_INFLATION)
@@ -519,12 +547,14 @@ def summarize_run(seed: int | None, run: str, data, truth_p: dict, n_workers: in
                 "a_au": list(cells[k][0]), "e": None if cells[k][1] is None else list(cells[k][1]),
                 "prior_weight": round(r.space.slice_weight, 6), "nlive": r.nlive,
                 "logz_k": round(r.logz, 4), "logzerr_k_quoted": round(r.logzerr, 4),
+                "logzerr_k": round(ERR_INFLATION * r.logzerr, 4),
                 "share": round(float(s), 5), "share_err": round(float(se), 5),
                 "niter": r.niter, "ncall": r.ncall, "wall_min": round(r.wall_s / 60, 1),
                 "chi2_min": round(-2 * r.max_logl, 4), "galle_lon_ecl_of_date_deg":
                     _lon_summary(lon_k)})  # fmt: skip
         evidence = {"logz": round(p.logz, 4), "logzerr": round(p.logzerr, 4),
                     "logzerr_quoted": round(PartitionedResult(tuple(res)).logzerr, 4),
+                    "logzerr_inflation": ERR_INFLATION, "share_err_inflation": ERR_INFLATION,
                     "partitioned": True, "cells": cell_recs}  # fmt: skip
         eq = p.equal_weight(rng)
     thetas = np.array([space.theta(v) for v in eq])
@@ -551,13 +581,45 @@ def summarize_run(seed: int | None, run: str, data, truth_p: dict, n_workers: in
     return rec
 
 
+def offset_sigma(x: dict) -> tuple[float, float | None]:
+    """(median − truth, that offset over the 68 % half-width on the side facing truth)."""
+    off = x["median_minus_truth"] if "median_minus_truth" in x else x["median"] - x["truth"]
+    sig = x["minus"] if off > 0 else x["plus"]
+    return off, (off / sig if sig > 0 else None)
+
+
+def binomial_calibration(k: int, n: int, p: float = 0.68) -> dict:
+    """How surprising k of n hits is for a calibrated 68 % interval: exact two-sided binomial
+    p-value (sum of outcomes no more likely than k, scipy ``binomtest``), and the probability a
+    calibrated method lands in the spec's A3b range at all."""
+    from scipy.stats import binom, binomtest
+
+    lo, hi = math.ceil(A3B_RANGE[0] * n - 1e-9), math.floor(A3B_RANGE[1] * n + 1e-9)
+    in_range = float(binom.cdf(hi, n, p) - binom.cdf(lo - 1, n, p))
+    return {"p_true": p, "pmf_k": round(float(binom.pmf(k, n, p)), 4),
+            "p_value_two_sided": round(float(binomtest(k, n, p).pvalue), 4),
+            "spec_range_counts": [lo, hi],
+            "p_calibrated_in_spec_range": round(in_range, 4)}  # fmt: skip
+
+
 def calibration(datasets: dict, run_name: str) -> dict:
     noisy = [d for d in datasets.values() if d["noise"] and run_name in d["runs"]]
-    hits = [d["runs"][run_name]["galle_lon_ecl_of_date_deg"]["truth_in_68"] for d in noisy]
-    widths = [d["runs"][run_name]["galle_lon_ecl_of_date_deg"]["width68"] for d in noisy]
+    lons = [d["runs"][run_name]["galle_lon_ecl_of_date_deg"] for d in noisy]
+    hits = [x["truth_in_68"] for x in lons]
+    widths = [x["width68"] for x in lons]
     frac = float(np.mean(hits)) if hits else float("nan")
+    per_seed = []
+    for d, x in zip(noisy, lons, strict=True):
+        off, z = offset_sigma(x)
+        per_seed.append({"seed": d["seed"], "truth_in_68": x["truth_in_68"],
+                         "median_minus_truth_deg": round(off, 3),
+                         "offset_sigma": None if z is None else round(z, 3)})  # fmt: skip
+    zs = [r["offset_sigma"] for r in per_seed if r["offset_sigma"] is not None]
     return {"n_seeds": len(hits), "n_truth_in_68": int(sum(hits)), "fraction": round(frac, 3),
             "pass_50_85": bool(len(hits) >= 10 and A3B_RANGE[0] <= frac <= A3B_RANGE[1]),
+            "binomial": binomial_calibration(int(sum(hits)), len(hits)) if hits else None,
+            "per_seed": per_seed,
+            "offset_sigma_rms": round(float(np.sqrt(np.mean(np.square(zs)))), 3) if zs else None,
             "width68_deg_median": round(float(np.median(widths)), 3) if widths else None,
             "width68_deg_range": [round(min(widths), 3), round(max(widths), 3)]
             if widths else None}  # fmt: skip
@@ -592,8 +654,15 @@ def summarize_dataset(seed: int | None, truth_p: dict, n_workers: int) -> dict:
             "delta_ln_likelihood": round(-0.5 * (b["chi2_best"] - a["chi2_best"]), 4),
             "ln_bayes_factor": round(b["evidence"]["logz"] - a["evidence"]["logz"], 4),
             "ln_bayes_factor_err": round(math.hypot(b["evidence"]["logzerr"],
-                                                    a["evidence"]["logzerr"]), 4)}  # fmt: skip
+                                                    a["evidence"]["logzerr"]), 4),
+            "ln_bayes_factor_err_inflation": b["evidence"]["logzerr_inflation"]}  # fmt: skip
     out["profile_m5a"] = profile_intervals(seed)
+    if out["profile_m5a"] and "free_a_e0.3" in out["runs"]:
+        out["profile_vs_posterior_free_a"] = profile_vs_posterior(
+            out["profile_m5a"]["free_a"]["dchi2_le_1_intervals_deg"],
+            out["runs"]["free_a_e0.3"]["galle_lon_ecl_of_date_deg"],
+            out["profile_m5a"]["free_a"]["grid_deg"],
+        )
     print(
         f"{dataset_key(seed)}: "
         + ", ".join(
@@ -620,11 +689,10 @@ def noise_free_check(nf: dict) -> dict:
     out = {"status": "done", "run": run}
     for name in ("galle_lon_ecl_of_date_deg", "mass_earth", "a_au", "e"):
         x = r[name]
-        off = x["median_minus_truth"] if "median_minus_truth" in x else x["median"] - x["truth"]
-        sig = x["minus"] if off > 0 else x["plus"]  # half-width on the side facing truth
+        off, z = offset_sigma(x)  # half-width on the side facing truth
         out[name] = {"median": x["median"], "truth": x["truth"],
                      "truth_in_68": x["truth_in_68"], "median_minus_truth": round(off, 4),
-                     "offset_sigma": round(off / sig, 3) if sig > 0 else None}  # fmt: skip
+                     "offset_sigma": None if z is None else round(z, 3)}  # fmt: skip
     return out
 
 
