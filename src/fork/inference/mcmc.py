@@ -38,6 +38,8 @@ __all__ = ["PosteriorSpace", "UranusBox", "free_a_space", "held_shape_space", "r
 
 def chi2(q: np.ndarray, space: PosteriorSpace, obs: LongitudeObservations,
          context: ForwardContext) -> float:  # fmt: skip
+    if not isinstance(obs, LongitudeObservations):  # M6: RaDecObservations (own χ²)
+        return obs.chi2(space.theta(q), context)
     pred = predict_uranus_lon(space.theta(q), obs.jd_tdb, context)
     return float(np.sum((wrap_rad(obs.lon_ecl_j2000_rad - pred) / obs.sigma_rad) ** 2))
 
