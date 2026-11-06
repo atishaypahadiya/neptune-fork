@@ -25,8 +25,11 @@ What the memoir fixes (CdT 1849 Additions, page images; see docs/notes/M6.md):
 * **Observers and observatories.** Ancient rows from §74 (pp. 124–126): Flamsteed (Greenwich)
   1690, 1712, 1715; Le Monnier (Paris) 1750, 1764–1771; Bradley (Greenwich) 1753; Mayer
   (Göttingen) 1756. Modern rows from p. 127: Greenwich 1781–1800, January 1807/1808/1809, and
-  1828–1830; Paris 1801–1828 and 1835–1845. 1828 is in both ranges: ``ambiguous`` (pending
-  Airy's *Reduction*), with the transit evidence in ``notes``.
+  1828–1830; Paris 1801–1828 and 1835–1845. 1828 is in both ranges. Its two rows (Jul 19, 20)
+  are assigned to Greenwich by inference (user decision, 2026-11-06), with
+  ``observatory_basis`` saying so and the transit evidence in ``notes``: they fit "Greenwich
+  site, Paris mean time" to ~2 s, as every Greenwich row does, and miss every other
+  site/time combination by ≥ 563 s.
 * **Units as printed.** Ancient RA (before 1781) in arc, ° ′ ″, with the computed seconds and
   C − O in ″; modern RA in time, h m s, with computed seconds and C − O in s of time. Dec always
   ° ′ ″. Southern computed Dec seconds carry the Dec's sign. ``lv_residual`` is Le Verrier's
@@ -79,8 +82,9 @@ TIME_MERIDIAN = "Paris"
 
 COLUMNS = (
     "id", "obs_id", "epoch", "epoch_tt_jd", "epoch_ut_jd", "time_meridian", "time_reckoning",
-    "observer", "observatory", "instrument", "quantity", "value", "unit", "value_as_printed",
-    "unit_as_printed", "frame_as_printed", "equinox_ref", "equinox_epoch", "equinox_citation",
+    "observer", "observatory", "observatory_basis", "instrument", "quantity", "value", "unit",
+    "value_as_printed", "unit_as_printed", "frame_as_printed", "equinox_ref", "equinox_epoch",
+    "equinox_citation",
     "precession_constant_arcsec_per_yr", "precession_rate_arcsec_per_yr2",
     "precession_citation", "lv_residual", "lv_residual_unit", "lv_c_minus_o_as_printed",
     "lv_weight", "lv_dlon_c_minus_o_as_printed", "lv_dlat_c_minus_o_as_printed",
@@ -126,9 +130,10 @@ def parse_sexagesimal(s: str) -> float:
 @dataclass(frozen=True)
 class Attribution:
     observer: str
-    observatory: str  # "Greenwich", "Paris", "Göttingen", or "ambiguous"
+    observatory: str  # "Greenwich", "Paris", "Göttingen"
     citation: str
     note: str = ""
+    basis: str = "stated"  # "stated" in the memoir, or "inferred: <how>"
 
 
 ANCIENT = {
@@ -145,8 +150,16 @@ ANCIENT = {
 }
 
 
-def attribute(year: int, month: int) -> Attribution:
-    """Observer and observatory from the memoir's text (the table has no such column)."""
+INFERRED_1828 = {(7, 19), (7, 20)}  # the only 1828 rows (p. 134 rows 27–28)
+BASIS_1828 = (
+    "inferred: transit identity (LST = RA) fits Greenwich site with Paris mean time to "
+    "~2 s and misses Paris by ~563 s (the 9m21s offset); user decision 2026-11-06"
+)
+
+
+def attribute(year: int, month: int, day: int | None = None) -> Attribution:
+    """Observer and observatory from the memoir's text (the table has no such column), except
+    the two 1828 rows: p. 127 puts 1828 in both ranges, so they are inferred."""
     if year < FIRST_MODERN_YEAR:
         if year not in ANCIENT:
             raise ValueError(f"no attribution for ancient year {year}")
@@ -154,7 +167,10 @@ def attribute(year: int, month: int) -> Attribution:
         return Attribution(who, where, f"{SOURCE}:{ref}")
     ref = f"{SOURCE}:p127:§75"
     if year == 1828:
-        return Attribution("", "ambiguous", ref, "p127 lists 1828 under both Greenwich and Paris")
+        if (month, day) not in INFERRED_1828:
+            raise ValueError(f"1828-{month:02d}-{day}: p127 is ambiguous and no inference made")
+        note = "p127 lists 1828 under both Greenwich and Paris"
+        return Attribution("", "Greenwich", ref, note, BASIS_1828)
     if 1781 <= year <= 1800 or (year in (1807, 1808, 1809) and month == 1) or year in (1829, 1830):
         return Attribution(
             "", "Greenwich", ref, "Greenwich, via Airy's Reduction (re-reduced by LV)"
@@ -236,20 +252,19 @@ def build_rows(
                 logged.append(f"misprint (log only) {f}: {m['printed']}")
         ancient = y < FIRST_MODERN_YEAR
         era = "ancient" if ancient else "modern"
-        att = attribute(y, mo)
+        att = attribute(y, mo, d)
         t_h = parse_sexagesimal(cell["mean_time"])
         ut = epoch_ut_jd(y, mo, d, t_h)
         dt = delta_t_s(y + (mo - 0.5) / 12.0)
         ra_top = parse_sexagesimal(cell["ra_obs"])
         ra_deg = ra_top if ancient else 15.0 * ra_top
         notes = [n for n in (att.note, *logged) if n]
-        if att.observatory == "ambiguous":
-            resid = ""
-            both = {s: transit_residual_s(ut, dt, s, ra_deg / 15.0) for s in ("Greenwich", "Paris")}
-            notes.append("transit check (Paris time): "
-                         + "; ".join(f"{s} {v:+.1f} s" for s, v in both.items()))  # fmt: skip
-        else:
-            resid = f"{transit_residual_s(ut, dt, att.observatory, ra_deg / 15.0):+.1f}"
+        resid = f"{transit_residual_s(ut, dt, att.observatory, ra_deg / 15.0):+.1f}"
+        if att.basis != "stated":
+            offs = (("Paris", 0.0), ("Greenwich", LON_EAST_H["Paris"] / 24))
+            combos = (f"{site}/{tm} {transit_residual_s(ut + off, dt, site, ra_deg / 15):+.1f} s"
+                      for site in ("Greenwich", "Paris") for tm, off in offs)  # fmt: skip
+            notes.append("transit check, site/time: " + "; ".join(combos))
         obs_id = f"LV1846-T77-p{r['page']}-l{int(r['line']):02d}"
         base = {
             "obs_id": obs_id,
@@ -260,6 +275,7 @@ def build_rows(
             "time_reckoning": "astronomical (day begins at mean noon)",
             "observer": att.observer,
             "observatory": att.observatory,
+            "observatory_basis": att.basis,
             "instrument": "",
             "frame_as_printed": FRAME_AS_PRINTED,
             "equinox_ref": "of_date",
