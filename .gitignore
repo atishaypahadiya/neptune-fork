@@ -22,3 +22,4 @@ data/cache/
 
 # Historical source scans (large; hashes and URLs in data/historical/sources/MANIFEST.md)
 data/historical/sources/*.pdf
+docs/review/crops/
