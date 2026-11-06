@@ -1,0 +1,1633 @@
+{
+  "seed": 20261106,
+  "table77_sha256": "897f3cde1564998ac1aa1036c8665d91b24dda142d686e2fdf1ec5902e419127",
+  "exported": "2026-11-06T17:30:00Z",
+  "all_match_rows": [],
+  "rows": [
+    {
+      "page": "129",
+      "line": "4",
+      "reason": "resolution log: lat_c_minus_o",
+      "flagged": true,
+      "used_all_match": false,
+      "cells": {
+        "year": {
+          "value": "",
+          "matches": true
+        },
+        "month": {
+          "value": "",
+          "matches": true
+        },
+        "day": {
+          "value": "10",
+          "matches": true
+        },
+        "mean_time": {
+          "value": "12 19 2",
+          "matches": true
+        },
+        "ra_obs": {
+          "value": "170 25 39.3",
+          "matches": true
+        },
+        "ra_calc_sec": {
+          "value": "41.9",
+          "matches": true
+        },
+        "ra_c_minus_o": {
+          "value": "-57.4",
+          "matches": true
+        },
+        "dec_obs": {
+          "value": "+5 0 38.2",
+          "matches": true
+        },
+        "dec_calc_sec": {
+          "value": "16.3",
+          "matches": true
+        },
+        "dec_c_minus_o": {
+          "value": "+38.1",
+          "matches": true
+        },
+        "lon_c_minus_o": {
+          "value": "-67.6",
+          "matches": true
+        },
+        "lat_c_minus_o": {
+          "value": "+12.5",
+          "matches": true
+        }
+      },
+      "notes": "Checked by Claude against Gallica CdT 1849 Additions page image (PDF p. 131) on 2026-11-06; all 12 cells match as printed."
+    },
+    {
+      "page": "129",
+      "line": "10",
+      "reason": "misprint table: dec_c_minus_o",
+      "flagged": true,
+      "used_all_match": false,
+      "cells": {
+        "year": {
+          "value": "1764",
+          "matches": true
+        },
+        "month": {
+          "value": "Janv.",
+          "matches": true
+        },
+        "day": {
+          "value": "15",
+          "matches": true
+        },
+        "mean_time": {
+          "value": "5 12 0",
+          "matches": true
+        },
+        "ra_obs": {
+          "value": "12 37 39.0",
+          "matches": true
+        },
+        "ra_calc_sec": {
+          "value": "0.9",
+          "matches": true
+        },
+        "ra_c_minus_o": {
+          "value": "+21.9",
+          "matches": true
+        },
+        "dec_obs": {
+          "value": "+4 43 47.2",
+          "matches": true
+        },
+        "dec_calc_sec": {
+          "value": "44.4",
+          "matches": true
+        },
+        "dec_c_minus_o": {
+          "value": "+2.8",
+          "matches": true
+        },
+        "lon_c_minus_o": {
+          "value": "+21.2",
+          "matches": true
+        },
+        "lat_c_minus_o": {
+          "value": "-5.9",
+          "matches": true
+        }
+      },
+      "notes": "Checked by Claude against Gallica CdT 1849 Additions page image (PDF p. 131) on 2026-11-06; all 12 cells match as printed."
+    },
+    {
+      "page": "129",
+      "line": "18",
+      "reason": "random",
+      "flagged": false,
+      "used_all_match": false,
+      "cells": {
+        "year": {
+          "value": "",
+          "matches": true
+        },
+        "month": {
+          "value": "",
+          "matches": true
+        },
+        "day": {
+          "value": "23",
+          "matches": true
+        },
+        "mean_time": {
+          "value": "5 52 26",
+          "matches": true
+        },
+        "ra_obs": {
+          "value": "31 25 28.5",
+          "matches": true
+        },
+        "ra_calc_sec": {
+          "value": "46.6",
+          "matches": true
+        },
+        "ra_c_minus_o": {
+          "value": "+18.1",
+          "matches": true
+        },
+        "dec_obs": {
+          "value": "+12 16 7.5",
+          "matches": true
+        },
+        "dec_calc_sec": {
+          "value": "59.4",
+          "matches": true
+        },
+        "dec_c_minus_o": {
+          "value": "-8.1",
+          "matches": true
+        },
+        "lon_c_minus_o": {
+          "value": "+13.8",
+          "matches": true
+        },
+        "lat_c_minus_o": {
+          "value": "-13.6",
+          "matches": true
+        }
+      },
+      "notes": "Checked by Claude against Gallica CdT 1849 Additions page image (PDF p. 131) on 2026-11-06; all 12 cells match as printed."
+    },
+    {
+      "page": "129",
+      "line": "30",
+      "reason": "resolution log: ra_obs",
+      "flagged": true,
+      "used_all_match": false,
+      "cells": {
+        "year": {
+          "value": "1783",
+          "matches": true
+        },
+        "month": {
+          "value": "Oct.",
+          "matches": true
+        },
+        "day": {
+          "value": "7",
+          "matches": true
+        },
+        "mean_time": {
+          "value": "17 54 6",
+          "matches": true
+        },
+        "ra_obs": {
+          "value": "6 51 40.38",
+          "matches": true
+        },
+        "ra_calc_sec": {
+          "value": "38.83",
+          "matches": true
+        },
+        "ra_c_minus_o": {
+          "value": "-1.55",
+          "matches": true
+        },
+        "dec_obs": {
+          "value": "+23 16 45.3",
+          "matches": true
+        },
+        "dec_calc_sec": {
+          "value": "47.7",
+          "matches": true
+        },
+        "dec_c_minus_o": {
+          "value": "+2.4",
+          "matches": true
+        },
+        "lon_c_minus_o": {
+          "value": "-21.6",
+          "matches": true
+        },
+        "lat_c_minus_o": {
+          "value": "+0.6",
+          "matches": true
+        }
+      },
+      "notes": "Checked by Claude against Gallica CdT 1849 Additions page image (PDF p. 131) on 2026-11-06; all 12 cells match as printed."
+    },
+    {
+      "page": "129",
+      "line": "31",
+      "reason": "resolution log: lat_c_minus_o",
+      "flagged": true,
+      "used_all_match": false,
+      "cells": {
+        "year": {
+          "value": "",
+          "matches": true
+        },
+        "month": {
+          "value": "",
+          "matches": true
+        },
+        "day": {
+          "value": "11",
+          "matches": true
+        },
+        "mean_time": {
+          "value": "17 38 30",
+          "matches": true
+        },
+        "ra_obs": {
+          "value": "6 51 47.49",
+          "matches": true
+        },
+        "ra_calc_sec": {
+          "value": "46.10",
+          "matches": true
+        },
+        "ra_c_minus_o": {
+          "value": "-1.39",
+          "matches": true
+        },
+        "dec_obs": {
+          "value": "+23 16 41.1",
+          "matches": true
+        },
+        "dec_calc_sec": {
+          "value": "45.5",
+          "matches": true
+        },
+        "dec_c_minus_o": {
+          "value": "+4.4",
+          "matches": true
+        },
+        "lon_c_minus_o": {
+          "value": "-19.4",
+          "matches": true
+        },
+        "lat_c_minus_o": {
+          "value": "+2.6",
+          "matches": true
+        }
+      },
+      "notes": "Checked by Claude against Gallica CdT 1849 Additions page image (PDF p. 131) on 2026-11-06; all 12 cells match as printed."
+    },
+    {
+      "page": "130",
+      "line": "18",
+      "reason": "resolution log: year",
+      "flagged": true,
+      "used_all_match": false,
+      "cells": {
+        "year": {
+          "value": "1789",
+          "matches": true
+        },
+        "month": {
+          "value": "Janv.",
+          "matches": true
+        },
+        "day": {
+          "value": "18",
+          "matches": true
+        },
+        "mean_time": {
+          "value": "12 35 49",
+          "matches": true
+        },
+        "ra_obs": {
+          "value": "8 21 44.07",
+          "matches": true
+        },
+        "ra_calc_sec": {
+          "value": "42.02",
+          "matches": true
+        },
+        "ra_c_minus_o": {
+          "value": "-2.05",
+          "matches": true
+        },
+        "dec_obs": {
+          "value": "»",
+          "matches": true
+        },
+        "dec_calc_sec": {
+          "value": "»",
+          "matches": true
+        },
+        "dec_c_minus_o": {
+          "value": "»",
+          "matches": true
+        },
+        "lon_c_minus_o": {
+          "value": "-30.3",
+          "matches": true
+        },
+        "lat_c_minus_o": {
+          "value": "»",
+          "matches": true
+        }
+      },
+      "notes": "Checked by Claude against Gallica CdT 1849 Additions page image (PDF p. 132) on 2026-11-06; all 12 cells match as printed."
+    },
+    {
+      "page": "130",
+      "line": "36",
+      "reason": "resolution log: day",
+      "flagged": true,
+      "used_all_match": false,
+      "cells": {
+        "year": {
+          "value": "",
+          "matches": true
+        },
+        "month": {
+          "value": "Nov.",
+          "matches": true
+        },
+        "day": {
+          "value": "12",
+          "matches": true
+        },
+        "mean_time": {
+          "value": "18 21 58",
+          "matches": true
+        },
+        "ra_obs": {
+          "value": "9 44 46.45",
+          "matches": true
+        },
+        "ra_calc_sec": {
+          "value": "44.77",
+          "matches": true
+        },
+        "ra_c_minus_o": {
+          "value": "-1.68",
+          "matches": true
+        },
+        "dec_obs": {
+          "value": "+14 20 6.4",
+          "matches": true
+        },
+        "dec_calc_sec": {
+          "value": "19.1",
+          "matches": true
+        },
+        "dec_c_minus_o": {
+          "value": "+12.7",
+          "matches": true
+        },
+        "lon_c_minus_o": {
+          "value": "-27.4",
+          "matches": true
+        },
+        "lat_c_minus_o": {
+          "value": "+4.0",
+          "matches": true
+        }
+      },
+      "notes": "Checked by Claude against Gallica CdT 1849 Additions page image (PDF p. 132) on 2026-11-06; all 12 cells match as printed."
+    },
+    {
+      "page": "131",
+      "line": "2",
+      "reason": "random",
+      "flagged": false,
+      "used_all_match": false,
+      "cells": {
+        "year": {
+          "value": "1793",
+          "matches": true
+        },
+        "month": {
+          "value": "Fév.",
+          "matches": true
+        },
+        "day": {
+          "value": "7",
+          "matches": true
+        },
+        "mean_time": {
+          "value": "12 32 43",
+          "matches": true
+        },
+        "ra_obs": {
+          "value": "9 37 34.86",
+          "matches": true
+        },
+        "ra_calc_sec": {
+          "value": "32.98",
+          "matches": true
+        },
+        "ra_c_minus_o": {
+          "value": "-1.88",
+          "matches": true
+        },
+        "dec_obs": {
+          "value": "+14 59 15.4",
+          "matches": true
+        },
+        "dec_calc_sec": {
+          "value": "28.4",
+          "matches": true
+        },
+        "dec_c_minus_o": {
+          "value": "+13.0",
+          "matches": true
+        },
+        "lon_c_minus_o": {
+          "value": "-30.4",
+          "matches": true
+        },
+        "lat_c_minus_o": {
+          "value": "+2.6",
+          "matches": true
+        }
+      },
+      "notes": "Checked by Claude against Gallica CdT 1849 Additions page image (PDF p. 133) on 2026-11-06; all 12 cells match as printed."
+    },
+    {
+      "page": "131",
+      "line": "8",
+      "reason": "stratum: page 131",
+      "flagged": false,
+      "used_all_match": false,
+      "cells": {
+        "year": {
+          "value": "",
+          "matches": true
+        },
+        "month": {
+          "value": "Nov.",
+          "matches": true
+        },
+        "day": {
+          "value": "18",
+          "matches": true
+        },
+        "mean_time": {
+          "value": "18 36 33",
+          "matches": true
+        },
+        "ra_obs": {
+          "value": "10 21 9.15",
+          "matches": true
+        },
+        "ra_calc_sec": {
+          "value": "7.53",
+          "matches": true
+        },
+        "ra_c_minus_o": {
+          "value": "-1.62",
+          "matches": true
+        },
+        "dec_obs": {
+          "value": "+11 5 25.6",
+          "matches": true
+        },
+        "dec_calc_sec": {
+          "value": "40.8",
+          "matches": true
+        },
+        "dec_c_minus_o": {
+          "value": "+15.2",
+          "matches": true
+        },
+        "lon_c_minus_o": {
+          "value": "-27.8",
+          "matches": true
+        },
+        "lat_c_minus_o": {
+          "value": "+5.5",
+          "matches": true
+        }
+      },
+      "notes": "Checked by Claude against Gallica CdT 1849 Additions page image (PDF p. 133) on 2026-11-06; all 12 cells match as printed."
+    },
+    {
+      "page": "132",
+      "line": "4",
+      "reason": "stratum: page 132",
+      "flagged": false,
+      "used_all_match": false,
+      "cells": {
+        "year": {
+          "value": "1804",
+          "matches": true
+        },
+        "month": {
+          "value": "Mars",
+          "matches": true
+        },
+        "day": {
+          "value": "16",
+          "matches": true
+        },
+        "mean_time": {
+          "value": "13 18 31",
+          "matches": true
+        },
+        "ra_obs": {
+          "value": "12 56 7.58",
+          "matches": true
+        },
+        "ra_calc_sec": {
+          "value": "5.46",
+          "matches": true
+        },
+        "ra_c_minus_o": {
+          "value": "-2.12",
+          "matches": true
+        },
+        "dec_obs": {
+          "value": "»",
+          "matches": true
+        },
+        "dec_calc_sec": {
+          "value": "»",
+          "matches": true
+        },
+        "dec_c_minus_o": {
+          "value": "»",
+          "matches": true
+        },
+        "lon_c_minus_o": {
+          "value": "-37.5",
+          "matches": true
+        },
+        "lat_c_minus_o": {
+          "value": "»",
+          "matches": true
+        }
+      },
+      "notes": "Checked by Claude against Gallica CdT 1849 Additions page image (PDF p. 134) on 2026-11-06; all 12 cells match as printed."
+    },
+    {
+      "page": "132",
+      "line": "10",
+      "reason": "random",
+      "flagged": false,
+      "used_all_match": false,
+      "cells": {
+        "year": {
+          "value": "",
+          "matches": true
+        },
+        "month": {
+          "value": "",
+          "matches": true
+        },
+        "day": {
+          "value": "12",
+          "matches": true
+        },
+        "mean_time": {
+          "value": "11 47 24",
+          "matches": true
+        },
+        "ra_obs": {
+          "value": "13 10 15.40",
+          "matches": true
+        },
+        "ra_calc_sec": {
+          "value": "13.24",
+          "matches": true
+        },
+        "ra_c_minus_o": {
+          "value": "-2.16",
+          "matches": true
+        },
+        "dec_obs": {
+          "value": "-6 44 48.5",
+          "matches": true
+        },
+        "dec_calc_sec": {
+          "value": "-28.4",
+          "matches": true
+        },
+        "dec_c_minus_o": {
+          "value": "+20.1",
+          "matches": true
+        },
+        "lon_c_minus_o": {
+          "value": "-37.9",
+          "matches": true
+        },
+        "lat_c_minus_o": {
+          "value": "+7.1",
+          "matches": true
+        }
+      },
+      "notes": "Checked by Claude against Gallica CdT 1849 Additions page image (PDF p. 134) on 2026-11-06; all 12 cells match as printed."
+    },
+    {
+      "page": "133",
+      "line": "10",
+      "reason": "random",
+      "flagged": false,
+      "used_all_match": false,
+      "cells": {
+        "year": {
+          "value": "",
+          "matches": true
+        },
+        "month": {
+          "value": "",
+          "matches": true
+        },
+        "day": {
+          "value": "24",
+          "matches": true
+        },
+        "mean_time": {
+          "value": "17 24 13",
+          "matches": true
+        },
+        "ra_obs": {
+          "value": "15 42 55.48",
+          "matches": true
+        },
+        "ra_calc_sec": {
+          "value": "52.81",
+          "matches": true
+        },
+        "ra_c_minus_o": {
+          "value": "-2.67",
+          "matches": true
+        },
+        "dec_obs": {
+          "value": "»",
+          "matches": true
+        },
+        "dec_calc_sec": {
+          "value": "»",
+          "matches": true
+        },
+        "dec_c_minus_o": {
+          "value": "»",
+          "matches": true
+        },
+        "lon_c_minus_o": {
+          "value": "-39.3",
+          "matches": true
+        },
+        "lat_c_minus_o": {
+          "value": "»",
+          "matches": true
+        }
+      },
+      "notes": "Checked by Claude against Gallica CdT 1849 Additions page image (PDF p. 135) on 2026-11-06; all 12 cells match as printed."
+    },
+    {
+      "page": "133",
+      "line": "13",
+      "reason": "resolution log: day",
+      "flagged": true,
+      "used_all_match": false,
+      "cells": {
+        "year": {
+          "value": "",
+          "matches": true
+        },
+        "month": {
+          "value": "",
+          "matches": true
+        },
+        "day": {
+          "value": "22",
+          "matches": true
+        },
+        "mean_time": {
+          "value": "11 32 59",
+          "matches": true
+        },
+        "ra_obs": {
+          "value": "15 33 44.11",
+          "matches": true
+        },
+        "ra_calc_sec": {
+          "value": "41.48",
+          "matches": true
+        },
+        "ra_c_minus_o": {
+          "value": "-2.63",
+          "matches": true
+        },
+        "dec_obs": {
+          "value": "-18 58 14.1",
+          "matches": true
+        },
+        "dec_calc_sec": {
+          "value": "-3.2",
+          "matches": true
+        },
+        "dec_c_minus_o": {
+          "value": "+10.9",
+          "matches": true
+        },
+        "lon_c_minus_o": {
+          "value": "-39.1",
+          "matches": true
+        },
+        "lat_c_minus_o": {
+          "value": "+2.1",
+          "matches": true
+        }
+      },
+      "notes": "Checked by Claude against Gallica CdT 1849 Additions page image (PDF p. 135) on 2026-11-06; all 12 cells match as printed."
+    },
+    {
+      "page": "133",
+      "line": "22",
+      "reason": "resolution log: lat_c_minus_o",
+      "flagged": true,
+      "used_all_match": false,
+      "cells": {
+        "year": {
+          "value": "",
+          "matches": true
+        },
+        "month": {
+          "value": "",
+          "matches": true
+        },
+        "day": {
+          "value": "26",
+          "matches": true
+        },
+        "mean_time": {
+          "value": "11 57 20",
+          "matches": true
+        },
+        "ra_obs": {
+          "value": "16 12 0.93",
+          "matches": true
+        },
+        "ra_calc_sec": {
+          "value": "58.47",
+          "matches": true
+        },
+        "ra_c_minus_o": {
+          "value": "-2.46",
+          "matches": true
+        },
+        "dec_obs": {
+          "value": "-21 1 32.3",
+          "matches": true
+        },
+        "dec_calc_sec": {
+          "value": "-24.3",
+          "matches": true
+        },
+        "dec_c_minus_o": {
+          "value": "+8.0",
+          "matches": true
+        },
+        "lon_c_minus_o": {
+          "value": "-35.2",
+          "matches": true
+        },
+        "lat_c_minus_o": {
+          "value": "+1.5",
+          "matches": true
+        }
+      },
+      "notes": "Checked by Claude against Gallica CdT 1849 Additions page image (PDF p. 135) on 2026-11-06; all 12 cells match as printed."
+    },
+    {
+      "page": "133",
+      "line": "27",
+      "reason": "resolution log: ra_obs",
+      "flagged": true,
+      "used_all_match": false,
+      "cells": {
+        "year": {
+          "value": "",
+          "matches": true
+        },
+        "month": {
+          "value": "Juin",
+          "matches": true
+        },
+        "day": {
+          "value": "1",
+          "matches": true
+        },
+        "mean_time": {
+          "value": "11 49 9",
+          "matches": true
+        },
+        "ra_obs": {
+          "value": "16 30 26.56",
+          "matches": true
+        },
+        "ra_calc_sec": {
+          "value": "24.24",
+          "matches": true
+        },
+        "ra_c_minus_o": {
+          "value": "-2.32",
+          "matches": true
+        },
+        "dec_obs": {
+          "value": "-21 48 46.5",
+          "matches": true
+        },
+        "dec_calc_sec": {
+          "value": "-43.9",
+          "matches": true
+        },
+        "dec_c_minus_o": {
+          "value": "+2.6",
+          "matches": true
+        },
+        "lon_c_minus_o": {
+          "value": "-32.7",
+          "matches": true
+        },
+        "lat_c_minus_o": {
+          "value": "-2.5",
+          "matches": true
+        }
+      },
+      "notes": "Checked by Claude against Gallica CdT 1849 Additions page image (PDF p. 135) on 2026-11-06; all 12 cells match as printed."
+    },
+    {
+      "page": "133",
+      "line": "29",
+      "reason": "random",
+      "flagged": false,
+      "used_all_match": false,
+      "cells": {
+        "year": {
+          "value": "1817",
+          "matches": true
+        },
+        "month": {
+          "value": "Juin",
+          "matches": true
+        },
+        "day": {
+          "value": "9",
+          "matches": true
+        },
+        "mean_time": {
+          "value": "11 36 54",
+          "matches": true
+        },
+        "ra_obs": {
+          "value": "16 48 45.24",
+          "matches": true
+        },
+        "ra_calc_sec": {
+          "value": "43.07",
+          "matches": true
+        },
+        "ra_c_minus_o": {
+          "value": "-2.17",
+          "matches": true
+        },
+        "dec_obs": {
+          "value": "-22 27 46.8",
+          "matches": true
+        },
+        "dec_calc_sec": {
+          "value": "-46.9",
+          "matches": true
+        },
+        "dec_c_minus_o": {
+          "value": "-0.1",
+          "matches": true
+        },
+        "lon_c_minus_o": {
+          "value": "-30.1",
+          "matches": true
+        },
+        "lat_c_minus_o": {
+          "value": "-4.1",
+          "matches": true
+        }
+      },
+      "notes": "Checked by Claude against Gallica CdT 1849 Additions page image (PDF p. 135) on 2026-11-06; all 12 cells match as printed."
+    },
+    {
+      "page": "133",
+      "line": "33",
+      "reason": "resolution log: dec_c_minus_o",
+      "flagged": true,
+      "used_all_match": false,
+      "cells": {
+        "year": {
+          "value": "",
+          "matches": true
+        },
+        "month": {
+          "value": "",
+          "matches": true
+        },
+        "day": {
+          "value": "8",
+          "matches": true
+        },
+        "mean_time": {
+          "value": "12 1 40",
+          "matches": true
+        },
+        "ra_obs": {
+          "value": "17 8 41.24",
+          "matches": true
+        },
+        "ra_calc_sec": {
+          "value": "38.51",
+          "matches": true
+        },
+        "ra_c_minus_o": {
+          "value": "-2.73",
+          "matches": true
+        },
+        "dec_obs": {
+          "value": "-23 0 43.4",
+          "matches": true
+        },
+        "dec_calc_sec": {
+          "value": "-42.1",
+          "matches": true
+        },
+        "dec_c_minus_o": {
+          "value": "+1.3",
+          "matches": true
+        },
+        "lon_c_minus_o": {
+          "value": "-37.5",
+          "matches": true
+        },
+        "lat_c_minus_o": {
+          "value": "-1.8",
+          "matches": true
+        }
+      },
+      "notes": "Checked by Claude against Gallica CdT 1849 Additions page image (PDF p. 135) on 2026-11-06; all 12 cells match as printed."
+    },
+    {
+      "page": "133",
+      "line": "35",
+      "reason": "random",
+      "flagged": false,
+      "used_all_match": false,
+      "cells": {
+        "year": {
+          "value": "",
+          "matches": true
+        },
+        "month": {
+          "value": "",
+          "matches": true
+        },
+        "day": {
+          "value": "10",
+          "matches": true
+        },
+        "mean_time": {
+          "value": "11 53 27",
+          "matches": true
+        },
+        "ra_obs": {
+          "value": "17 8 19.76",
+          "matches": true
+        },
+        "ra_calc_sec": {
+          "value": "17.25",
+          "matches": true
+        },
+        "ra_c_minus_o": {
+          "value": "-2.51",
+          "matches": true
+        },
+        "dec_obs": {
+          "value": "-23 0 19.4",
+          "matches": true
+        },
+        "dec_calc_sec": {
+          "value": "-17.1",
+          "matches": true
+        },
+        "dec_c_minus_o": {
+          "value": "+2.3",
+          "matches": true
+        },
+        "lon_c_minus_o": {
+          "value": "-34.5",
+          "matches": true
+        },
+        "lat_c_minus_o": {
+          "value": "-0.8",
+          "matches": true
+        }
+      },
+      "notes": "Checked by Claude against Gallica CdT 1849 Additions page image (PDF p. 135) on 2026-11-06; all 12 cells match as printed."
+    },
+    {
+      "page": "133",
+      "line": "36",
+      "reason": "resolution log: dec_obs",
+      "flagged": true,
+      "used_all_match": false,
+      "cells": {
+        "year": {
+          "value": "1819",
+          "matches": true
+        },
+        "month": {
+          "value": "Juin.",
+          "matches": true
+        },
+        "day": {
+          "value": "20",
+          "matches": true
+        },
+        "mean_time": {
+          "value": "11 32 59",
+          "matches": true
+        },
+        "ra_obs": {
+          "value": "17 26 17.28",
+          "matches": true
+        },
+        "ra_calc_sec": {
+          "value": "15.04",
+          "matches": true
+        },
+        "ra_c_minus_o": {
+          "value": "-2.24",
+          "matches": true
+        },
+        "dec_obs": {
+          "value": "-23 22 22.1",
+          "matches": true
+        },
+        "dec_calc_sec": {
+          "value": "-23.4",
+          "matches": true
+        },
+        "dec_c_minus_o": {
+          "value": "-1.3",
+          "matches": true
+        },
+        "lon_c_minus_o": {
+          "value": "-30.7",
+          "matches": true
+        },
+        "lat_c_minus_o": {
+          "value": "-3.1",
+          "matches": true
+        }
+      },
+      "notes": "Checked by Claude against Gallica CdT 1849 Additions page image (PDF p. 135) on 2026-11-06; all 12 cells match as printed."
+    },
+    {
+      "page": "134",
+      "line": "13",
+      "reason": "stratum: page 134",
+      "flagged": false,
+      "used_all_match": false,
+      "cells": {
+        "year": {
+          "value": "1823",
+          "matches": true
+        },
+        "month": {
+          "value": "Juill.",
+          "matches": true
+        },
+        "day": {
+          "value": "20",
+          "matches": true
+        },
+        "mean_time": {
+          "value": "10 47 12",
+          "matches": true
+        },
+        "ra_obs": {
+          "value": "18 38 47.79",
+          "matches": true
+        },
+        "ra_calc_sec": {
+          "value": "46.10",
+          "matches": true
+        },
+        "ra_c_minus_o": {
+          "value": "-1.69",
+          "matches": true
+        },
+        "dec_obs": {
+          "value": "-23 31 46.7",
+          "matches": true
+        },
+        "dec_calc_sec": {
+          "value": "-53.3",
+          "matches": true
+        },
+        "dec_c_minus_o": {
+          "value": "-6.6",
+          "matches": true
+        },
+        "lon_c_minus_o": {
+          "value": "-23.7",
+          "matches": true
+        },
+        "lat_c_minus_o": {
+          "value": "-5.1",
+          "matches": true
+        }
+      },
+      "notes": "Checked by Claude against Gallica CdT 1849 Additions page image (PDF p. 136) on 2026-11-06; all 12 cells match as printed."
+    },
+    {
+      "page": "135",
+      "line": "1",
+      "reason": "resolution log: mean_time",
+      "flagged": true,
+      "used_all_match": false,
+      "cells": {
+        "year": {
+          "value": "1830",
+          "matches": true
+        },
+        "month": {
+          "value": "Nov.",
+          "matches": true
+        },
+        "day": {
+          "value": "8",
+          "matches": true
+        },
+        "mean_time": {
+          "value": "5 37 5",
+          "matches": true
+        },
+        "ra_obs": {
+          "value": "20 37 16.86",
+          "matches": true
+        },
+        "ra_calc_sec": {
+          "value": "16.55",
+          "matches": true
+        },
+        "ra_c_minus_o": {
+          "value": "-0.31",
+          "matches": true
+        },
+        "dec_obs": {
+          "value": "-19 13 7.9",
+          "matches": true
+        },
+        "dec_calc_sec": {
+          "value": "-16.0",
+          "matches": true
+        },
+        "dec_c_minus_o": {
+          "value": "-8.1",
+          "matches": true
+        },
+        "lon_c_minus_o": {
+          "value": "-6.9",
+          "matches": true
+        },
+        "lat_c_minus_o": {
+          "value": "-7.6",
+          "matches": true
+        }
+      },
+      "notes": "Checked by Claude against Gallica CdT 1849 Additions page image (PDF p. 137) on 2026-11-06; all 12 cells match as printed."
+    },
+    {
+      "page": "135",
+      "line": "3",
+      "reason": "misprint table: dec_obs; misprint table: ra_calc_sec",
+      "flagged": true,
+      "used_all_match": false,
+      "cells": {
+        "year": {
+          "value": "",
+          "matches": true
+        },
+        "month": {
+          "value": "",
+          "matches": true
+        },
+        "day": {
+          "value": "11",
+          "matches": true
+        },
+        "mean_time": {
+          "value": "5 25 32",
+          "matches": true
+        },
+        "ra_obs": {
+          "value": "20 37 31.24",
+          "matches": true
+        },
+        "ra_calc_sec": {
+          "value": "31.59",
+          "matches": true
+        },
+        "ra_c_minus_o": {
+          "value": "+0.35",
+          "matches": true
+        },
+        "dec_obs": {
+          "value": "-18 12 6.9",
+          "matches": true
+        },
+        "dec_calc_sec": {
+          "value": "-15.4",
+          "matches": true
+        },
+        "dec_c_minus_o": {
+          "value": "-8.5",
+          "matches": true
+        },
+        "lon_c_minus_o": {
+          "value": "+2.7",
+          "matches": true
+        },
+        "lat_c_minus_o": {
+          "value": "-8.0",
+          "matches": true
+        }
+      },
+      "notes": "Checked by Claude against Gallica CdT 1849 Additions page image (PDF p. 137) on 2026-11-06; all 12 cells match as printed."
+    },
+    {
+      "page": "135",
+      "line": "4",
+      "reason": "resolution log: year",
+      "flagged": true,
+      "used_all_match": false,
+      "cells": {
+        "year": {
+          "value": "1835",
+          "matches": true
+        },
+        "month": {
+          "value": "Juill.",
+          "matches": true
+        },
+        "day": {
+          "value": "20",
+          "matches": true
+        },
+        "mean_time": {
+          "value": "14 16 6",
+          "matches": true
+        },
+        "ra_obs": {
+          "value": "22 8 36.67",
+          "matches": true
+        },
+        "ra_calc_sec": {
+          "value": "38.76",
+          "matches": true
+        },
+        "ra_c_minus_o": {
+          "value": "+2.09",
+          "matches": true
+        },
+        "dec_obs": {
+          "value": "-12 17 35.8",
+          "matches": true
+        },
+        "dec_calc_sec": {
+          "value": "-37.1",
+          "matches": true
+        },
+        "dec_c_minus_o": {
+          "value": "-1.3",
+          "matches": true
+        },
+        "lon_c_minus_o": {
+          "value": "+28.6",
+          "matches": true
+        },
+        "lat_c_minus_o": {
+          "value": "-11.4",
+          "matches": true
+        }
+      },
+      "notes": "Checked by Claude against Gallica CdT 1849 Additions page image (PDF p. 137) on 2026-11-06; all 12 cells match as printed."
+    },
+    {
+      "page": "135",
+      "line": "5",
+      "reason": "random",
+      "flagged": false,
+      "used_all_match": false,
+      "cells": {
+        "year": {
+          "value": "",
+          "matches": true
+        },
+        "month": {
+          "value": "",
+          "matches": true
+        },
+        "day": {
+          "value": "21",
+          "matches": true
+        },
+        "mean_time": {
+          "value": "14 12 3",
+          "matches": true
+        },
+        "ra_obs": {
+          "value": "22 8 29.20",
+          "matches": true
+        },
+        "ra_calc_sec": {
+          "value": "31.48",
+          "matches": true
+        },
+        "ra_c_minus_o": {
+          "value": "+2.28",
+          "matches": true
+        },
+        "dec_obs": {
+          "value": "»",
+          "matches": true
+        },
+        "dec_calc_sec": {
+          "value": "»",
+          "matches": true
+        },
+        "dec_c_minus_o": {
+          "value": "»",
+          "matches": true
+        },
+        "lon_c_minus_o": {
+          "value": "+31.6",
+          "matches": true
+        },
+        "lat_c_minus_o": {
+          "value": "»",
+          "matches": true
+        }
+      },
+      "notes": "Checked by Claude against Gallica CdT 1849 Additions page image (PDF p. 137) on 2026-11-06; all 12 cells match as printed."
+    },
+    {
+      "page": "135",
+      "line": "9",
+      "reason": "random",
+      "flagged": false,
+      "used_all_match": false,
+      "cells": {
+        "year": {
+          "value": "",
+          "matches": true
+        },
+        "month": {
+          "value": "Août",
+          "matches": true
+        },
+        "day": {
+          "value": "10",
+          "matches": true
+        },
+        "mean_time": {
+          "value": "12 50 41",
+          "matches": true
+        },
+        "ra_obs": {
+          "value": "22 5 44.89",
+          "matches": true
+        },
+        "ra_calc_sec": {
+          "value": "46.93",
+          "matches": true
+        },
+        "ra_c_minus_o": {
+          "value": "+2.04",
+          "matches": true
+        },
+        "dec_obs": {
+          "value": "-12 33 44.9",
+          "matches": true
+        },
+        "dec_calc_sec": {
+          "value": "-44.2",
+          "matches": true
+        },
+        "dec_c_minus_o": {
+          "value": "+0.7",
+          "matches": true
+        },
+        "lon_c_minus_o": {
+          "value": "+27.8",
+          "matches": true
+        },
+        "lat_c_minus_o": {
+          "value": "-10.3",
+          "matches": true
+        }
+      },
+      "notes": "Checked by Claude against Gallica CdT 1849 Additions page image (PDF p. 137) on 2026-11-06; all 12 cells match as printed."
+    },
+    {
+      "page": "135",
+      "line": "19",
+      "reason": "resolution log: lon_c_minus_o",
+      "flagged": true,
+      "used_all_match": false,
+      "cells": {
+        "year": {
+          "value": "",
+          "matches": true
+        },
+        "month": {
+          "value": "",
+          "matches": true
+        },
+        "day": {
+          "value": "31",
+          "matches": true
+        },
+        "mean_time": {
+          "value": "11 37 39",
+          "matches": true
+        },
+        "ra_obs": {
+          "value": "22 18 17.85",
+          "matches": true
+        },
+        "ra_calc_sec": {
+          "value": "20.49",
+          "matches": true
+        },
+        "ra_c_minus_o": {
+          "value": "+2.64",
+          "matches": true
+        },
+        "dec_obs": {
+          "value": "-11 24 43.9",
+          "matches": true
+        },
+        "dec_calc_sec": {
+          "value": "-40.6",
+          "matches": true
+        },
+        "dec_c_minus_o": {
+          "value": "+3.3",
+          "matches": true
+        },
+        "lon_c_minus_o": {
+          "value": "+37.3",
+          "matches": true
+        },
+        "lat_c_minus_o": {
+          "value": "-9.9",
+          "matches": true
+        }
+      },
+      "notes": "Checked by Claude against Gallica CdT 1849 Additions page image (PDF p. 137) on 2026-11-06; all 12 cells match as printed."
+    },
+    {
+      "page": "135",
+      "line": "38",
+      "reason": "random",
+      "flagged": false,
+      "used_all_match": false,
+      "cells": {
+        "year": {
+          "value": "",
+          "matches": true
+        },
+        "month": {
+          "value": "",
+          "matches": true
+        },
+        "day": {
+          "value": "7",
+          "matches": true
+        },
+        "mean_time": {
+          "value": "5 53 46",
+          "matches": true
+        },
+        "ra_obs": {
+          "value": "22 57 0.35",
+          "matches": true
+        },
+        "ra_calc_sec": {
+          "value": "4.17",
+          "matches": true
+        },
+        "ra_c_minus_o": {
+          "value": "+3.82",
+          "matches": true
+        },
+        "dec_obs": {
+          "value": "-7 33 10.4",
+          "matches": true
+        },
+        "dec_calc_sec": {
+          "value": "-59.6",
+          "matches": true
+        },
+        "dec_c_minus_o": {
+          "value": "+10.8",
+          "matches": true
+        },
+        "lon_c_minus_o": {
+          "value": "+57.2",
+          "matches": true
+        },
+        "lat_c_minus_o": {
+          "value": "-11.9",
+          "matches": true
+        }
+      },
+      "notes": "Checked by Claude against Gallica CdT 1849 Additions page image (PDF p. 137) on 2026-11-06; all 12 cells match as printed."
+    },
+    {
+      "page": "136",
+      "line": "11",
+      "reason": "resolution log: dec_calc_sec",
+      "flagged": true,
+      "used_all_match": false,
+      "cells": {
+        "year": {
+          "value": "1842",
+          "matches": true
+        },
+        "month": {
+          "value": "Sept.",
+          "matches": true
+        },
+        "day": {
+          "value": "13",
+          "matches": true
+        },
+        "mean_time": {
+          "value": "12 18 19",
+          "matches": true
+        },
+        "ra_obs": {
+          "value": "23 48 34.45",
+          "matches": true
+        },
+        "ra_calc_sec": {
+          "value": "39.94",
+          "matches": true
+        },
+        "ra_c_minus_o": {
+          "value": "+5.49",
+          "matches": true
+        },
+        "dec_obs": {
+          "value": "-2 6 8.3",
+          "matches": true
+        },
+        "dec_calc_sec": {
+          "value": "-43.7",
+          "matches": true
+        },
+        "dec_c_minus_o": {
+          "value": "+24.6",
+          "matches": true
+        },
+        "lon_c_minus_o": {
+          "value": "+85.1",
+          "matches": true
+        },
+        "lat_c_minus_o": {
+          "value": "-10.2",
+          "matches": true
+        }
+      },
+      "notes": "Checked by Claude against Gallica CdT 1849 Additions page image (PDF p. 138) on 2026-11-06; all 12 cells match as printed."
+    }
+  ],
+  "reviewer": "Claude (chat), against Gallica scan only; not an independent human check"
+}
