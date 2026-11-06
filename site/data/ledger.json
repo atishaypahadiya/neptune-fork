@@ -13,12 +13,12 @@
  ],
  "totals": {
   "all": {
-   "n_rows": 102,
+   "n_rows": 103,
    "n_likelihood_calls": 256769395,
-   "n_integrations": 257389395,
-   "sim_years": 39894295478.1,
-   "wall_s": 493060.7,
-   "cpu_s": 1566572.9,
+   "n_integrations": 257629395,
+   "sim_years": 39931494328.2,
+   "wall_s": 493601.0,
+   "cpu_s": 1567110.8,
    "n_rows_missing": {
     "n_likelihood_calls": 7,
     "n_integrations": 7,
@@ -26,7 +26,7 @@
     "wall_s": 3,
     "cpu_s": 9
    },
-   "cpu_hours": 435.16
+   "cpu_hours": 435.31
   },
   "measured": {
    "n_rows": 77,
@@ -45,12 +45,12 @@
    "cpu_hours": 353.36
   },
   "estimated": {
-   "n_rows": 25,
+   "n_rows": 26,
    "n_likelihood_calls": 36132856,
-   "n_integrations": 36752856,
-   "sim_years": 5696689055.3,
-   "wall_s": 100437.7,
-   "cpu_s": 294466.3,
+   "n_integrations": 36992856,
+   "sim_years": 5733887905.4,
+   "wall_s": 100978.0,
+   "cpu_s": 295004.2,
    "n_rows_missing": {
     "n_likelihood_calls": 7,
     "n_integrations": 7,
@@ -58,7 +58,7 @@
     "wall_s": 3,
     "cpu_s": 9
    },
-   "cpu_hours": 81.8
+   "cpu_hours": 81.95
   },
   "by_kind": {
    "emcee": {
@@ -123,12 +123,12 @@
     }
    },
    "summarize": {
-    "n_rows": 3,
+    "n_rows": 4,
     "n_likelihood_calls": 136513,
-    "n_integrations": 756513,
-    "sim_years": 117255890.3,
-    "wall_s": 4044.8,
-    "cpu_s": 8619.7,
+    "n_integrations": 996513,
+    "sim_years": 154454740.4,
+    "wall_s": 4585.1,
+    "cpu_s": 9157.6,
     "n_rows_missing": {
      "n_likelihood_calls": 0,
      "n_integrations": 0,
@@ -136,7 +136,7 @@
      "wall_s": 0,
      "cpu_s": 0
     },
-    "cpu_hours": 2.39
+    "cpu_hours": 2.54
    },
    "tests": {
     "n_rows": 1,
@@ -1666,6 +1666,21 @@
    "recorded": "2026-11-06T02:36:03",
    "derived_integrations": 240000,
    "point_fit_nfev": 39995,
+   "note": "point-fit nfev excludes finite-difference Jacobian calls (lower bound); cached point fits count 0"
+  },
+  {
+   "job": "m5b/summarize",
+   "kind": "summarize",
+   "n_likelihood_calls": 0,
+   "n_integrations": 240000,
+   "sim_years": 37198850.1,
+   "wall_s": 540.3,
+   "cpu_s": 537.9,
+   "n_workers": 12,
+   "estimated": true,
+   "recorded": "2026-11-06T06:17:23",
+   "derived_integrations": 240000,
+   "point_fit_nfev": 0,
    "note": "point-fit nfev excludes finite-difference Jacobian calls (lower bound); cached point fits count 0"
   }
  ]
