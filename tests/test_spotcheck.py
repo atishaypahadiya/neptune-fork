@@ -1,0 +1,38 @@
+"""M6a spot-check sample: fixed seed, stratified, reproducible (fast; no scan needed)."""
+
+import csv
+
+import numpy as np
+
+from fork.data import spotcheck as sc
+from fork.data import transcription as tr
+
+
+def _inputs():
+    table = tr.read_pass(tr.RECONCILED_FILE)
+    forced = sc._forced(tr.read_resolutions(tr.RESOLUTION_FILE),
+                        tr.read_misprints(tr.MISPRINT_FILE, table))  # fmt: skip
+    return table, forced
+
+
+def test_sample_meets_the_strata_and_includes_every_logged_row():
+    table, forced = _inputs()
+    picks = sc.select_rows(table, forced, np.random.default_rng(sc.SPOTCHECK_SEED))
+    keys = [(p.page, p.line) for p in picks]
+    assert len(keys) == sc.N_ROWS == 28 and len(set(keys)) == 28
+    assert set(forced) <= set(keys)
+    ancient = {(r["page"], r["line"]) for r in table[: [r["year"] for r in table].index("1781")]}
+    assert len(set(keys) & ancient) >= sc.MIN_ANCIENT
+    assert {p for p, _ in keys} == {r["page"] for r in table}
+
+
+def test_sample_is_fixed_by_the_seed_and_matches_the_committed_selection():
+    table, forced = _inputs()
+    a = sc.select_rows(table, forced, np.random.default_rng(sc.SPOTCHECK_SEED))
+    b = sc.select_rows(table, forced, np.random.default_rng(sc.SPOTCHECK_SEED))
+    assert a == b
+    with sc.SELECTION_FILE.open(newline="", encoding="utf-8") as fh:
+        committed = [
+            (r["page"], r["line"], r["reason"], int(r["seed"])) for r in csv.DictReader(fh)
+        ]
+    assert committed == [(p.page, p.line, p.reason, sc.SPOTCHECK_SEED) for p in a]
