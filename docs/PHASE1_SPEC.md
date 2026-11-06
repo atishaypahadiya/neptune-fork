@@ -277,6 +277,8 @@ Process:
   - Fit per-group offsets and scales. Groups are observer × instrument × era, falling back to coarser groups if counts are small.
   - This uses only Uranus truth, not Neptune, so it isn't leakage. State this explicitly in M6.md.
 - **Likelihood.** The current likelihood plus per-group nuisance offsets, and error scales fixed from the calibration.
+  - **Offset priors (pre-registered 2026-11-06, for A6c and the M6c headline):** b_g ~ N(0, τ²), τ = 2″ for modern groups and 5″ for the ancient group. The offsets are free nuisance parameters, marginalised, never fixed to O − JPL. A6c's synthetic truth draws the group offsets from these same priors.
+  - **τ_ancient sensitivity (M6c, not A6c):** τ_ancient = 10″ and τ_ancient → ∞ (the latter should approach the `bouvard` variant). Report the posterior 1846 longitude and ln B against τ_ancient.
   - Run a sensitivity case with the scales free, using weak priors.
   - Robustness check: a Student-t likelihood (ν = 4) to catch outliers such as Flamsteed 1690.
 

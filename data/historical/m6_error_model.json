@@ -1,5 +1,5 @@
 {
- "basis": "O - JPL calibration (fork.data.calibration): sigma = MAD sigma per group; tau = rms of robust group means within the era, floor 1 arcsec",
+ "basis": "sigma: O - JPL calibration (fork.data.calibration), MAD sigma per group; tau: pre-registered 2 arcsec modern, 5 arcsec ancient",
  "sigma_arcsec": {
   "ancient:ra": 4.66,
   "ancient:dec": 5.08,
@@ -11,14 +11,14 @@
   "paris_1835_1845:dec": 1.16
  },
  "offset_prior_arcsec": {
-  "ancient:ra": 1.0,
-  "ancient:dec": 1.0,
-  "greenwich:ra": 1.0,
-  "greenwich:dec": 1.0,
-  "paris_1801_1827:ra": 1.0,
-  "paris_1801_1827:dec": 1.0,
-  "paris_1835_1845:ra": 1.0,
-  "paris_1835_1845:dec": 1.0
+  "ancient:ra": 5.0,
+  "ancient:dec": 5.0,
+  "greenwich:ra": 2.0,
+  "greenwich:dec": 2.0,
+  "paris_1801_1827:ra": 2.0,
+  "paris_1801_1827:dec": 2.0,
+  "paris_1835_1845:ra": 2.0,
+  "paris_1835_1845:dec": 2.0
  },
  "note": "group means are reported only; offsets stay free nuisance parameters with prior mean 0 in every fit",
  "table": [
