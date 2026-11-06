@@ -109,28 +109,43 @@ def test_ra_only_rows_have_no_dec_row(rows):
     ("year", "month", "observatory"),
     [(1756, 9, "Göttingen"), (1750, 10, "Paris"), (1781, 9, "Greenwich"), (1800, 3, "Greenwich"),
      (1801, 3, "Paris"), (1807, 1, "Greenwich"), (1807, 4, "Paris"), (1827, 7, "Paris"),
-     (1828, 7, "ambiguous"), (1829, 7, "Greenwich"), (1830, 11, "Greenwich"),
+     (1829, 7, "Greenwich"), (1830, 11, "Greenwich"),
      (1835, 7, "Paris"), (1845, 9, "Paris")],
 )  # fmt: skip
 def test_observatory_from_page_127(year, month, observatory):
     assert obs.attribute(year, month).observatory == observatory
+    assert obs.attribute(year, month).basis == "stated"
     with pytest.raises(ValueError):
         obs.attribute(1832, 1)  # no source for 1831–1834 (p. 127)
+
+
+def test_1828_is_inferred_greenwich_only_for_its_two_rows():
+    """p. 127 lists 1828 under both observatories; the two rows are Greenwich by inference."""
+    for day in (19, 20):
+        att = obs.attribute(1828, 7, day)
+        assert att.observatory == "Greenwich" and att.basis.startswith("inferred: transit")
+    with pytest.raises(ValueError):
+        obs.attribute(1828, 3, 1)  # any other 1828 date has no basis
 
 
 def test_times_are_paris_mean_time_by_the_transit_condition(rows):
     """Meridian observations: apparent sidereal time at the site equals the observed RA.
     With Paris mean time (astronomical day) every row fits to < 4 s except the one logged
-    1768 row; the 1828 rows fit Greenwich and miss Paris by the 9 m 21 s offset."""
+    1768 row. The 1828 rows fit only "Greenwich site, Paris time", like every Greenwich row:
+    their times were converted to Paris time, as the others were."""
     ra = [r for r in rows if r["quantity"] == "ra"]
     bad = {
         r["obs_id"] for r in ra if r["transit_resid_s"] and abs(float(r["transit_resid_s"])) >= 4
     }
     assert bad == {"LV1846-T77-p129-l12"}
-    amb = [r for r in ra if r["observatory"] == "ambiguous"]
-    assert len(amb) == 2 and all(
-        "Greenwich +" in r["notes"] and "Paris +56" in r["notes"] for r in amb
-    )
+    inferred = [r for r in ra if r["observatory_basis"] != "stated"]
+    assert [r["obs_id"] for r in inferred] == ["LV1846-T77-p134-l27", "LV1846-T77-p134-l28"]
+    for r in inferred:
+        assert r["observatory"] == "Greenwich" and abs(float(r["transit_resid_s"])) < 3
+        combos = dict(c.rsplit(" ", 2)[:2] for c in r["notes"].split(": ", 1)[1].split("; ")
+                      if "/" in c)  # fmt: skip
+        assert abs(float(combos["Greenwich/Paris"])) < 3
+        assert all(abs(float(v)) > 500 for k, v in combos.items() if k != "Greenwich/Paris")
     # Greenwich rows timed in Greenwich mean time would miss by ~563 s: check one directly.
     g = next(r for r in ra if r["obs_id"] == "LV1846-T77-p129-l30")  # 1783 Oct 7
     ut_if_gmt = float(g["epoch_ut_jd"]) + obs.LON_EAST_H["Paris"] / 24
@@ -170,10 +185,13 @@ def test_misprints_applied_only_where_tabled(rows):
 # --- A6b loader test --------------------------------------------------------------------------
 
 
+PLACEHOLDER_CONSTANT = "50.10"  # ″/yr; spec A6b step 2; not a historical constant
+
+
 def _record(t_jd, **kw):
     r = {"id": "syn", "obs_id": "syn", "epoch_tt_jd": f"{t_jd:.8f}", "quantity": "lon",
          "value": "0", "unit": "deg", "equinox_ref": "fixed", "equinox_epoch": "",
-         "equinox_citation": "synthetic", "precession_constant_arcsec_per_yr": "50.10",
+         "equinox_citation": "synthetic", "precession_constant_arcsec_per_yr": PLACEHOLDER_CONSTANT,
          "precession_citation": "synthetic", "source_ref": "synthetic"}  # fmt: skip
     r.update(kw)
     return r
@@ -186,7 +204,12 @@ def _sep_arcsec(a, b):
 def test_a6b_fixed_epoch_reduction_is_undone_with_the_sources_constant():
     """J2000 longitudes at 1690–1846 → of date (IAU 2006) → pre-reduced to 1800.0 with
     50.10″/yr, as a source would. The loader recovers J2000 to < 0.01″; treating the values as
-    of date, or undoing the reduction with IAU 2006, is off by > 1″ somewhere."""
+    of date, or undoing the reduction with IAU 2006, is off by > 1″ somewhere.
+
+    50.10″/yr is a placeholder, not a historical constant: it is the value the spec fixes for
+    this test (docs/PHASE1_SPEC.md, "A6b loader test", step 2), chosen to sit ~0.14″/yr below
+    IAU 2006's general precession rate at 1800 (50.244″/yr), far enough apart that the right
+    and wrong paths separate by more than 1″ over 1690–1846. No source in Table 77 uses it."""
     rng = np.random.default_rng(6)
     years = np.linspace(1690.0, 1846.0, 14)
     t = obs.J2000_JD + (years - 2000.0) * obs.JULIAN_YEAR_D
@@ -194,8 +217,9 @@ def test_a6b_fixed_epoch_reduction_is_undone_with_the_sources_constant():
     lon_j = rng.uniform(0, 2 * math.pi, years.size)
     lat_j = rng.uniform(-0.01, 0.01, years.size)
     lon_d, lat_d = frames.ecl_j2000_to_ecl_of_date(lon_j, lat_j, t)
-    lon_1800 = np.mod(lon_d - 50.10 * (t - epoch) / obs.JULIAN_YEAR_D / obs.ARCSEC_PER_RAD,
-                      2 * math.pi)  # fmt: skip
+    reduction_arcsec = float(PLACEHOLDER_CONSTANT) * (t - epoch) / obs.JULIAN_YEAR_D
+    reduction_rad = reduction_arcsec / obs.ARCSEC_PER_RAD
+    lon_1800 = np.mod(lon_d - reduction_rad, 2 * math.pi)
 
     good, wrong_a, wrong_b = [], [], []
     for i in range(years.size):
