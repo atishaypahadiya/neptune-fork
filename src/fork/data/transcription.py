@@ -25,6 +25,9 @@ DATA_FIELDS = COLUMNS[2:-1]  # compared between passes (notes are free text)
 RESOLUTION_FILE = HIST / "leverrier_1846_resolution_log.csv"
 RESOLUTION_COLUMNS = ("page", "line", "field", "pass1", "pass2", "resolved", "witness", "reason")
 RECONCILED_FILE = HIST / "leverrier_1846_table77.csv"
+MISPRINT_FILE = HIST / "leverrier_1846_misprints.csv"
+MISPRINT_COLUMNS = ("page", "line", "field", "printed", "corrected", "action", "reason",
+                    "uses_ephemeris")  # fmt: skip
 NO_VALUE = "»"
 
 
@@ -120,7 +123,40 @@ def read_resolutions(path: Path) -> dict[tuple[str, str, str], dict[str, str]]:
         rd = csv.DictReader(fh)
         if tuple(rd.fieldnames or ()) != RESOLUTION_COLUMNS:
             raise ValueError(f"{path.name}: header {rd.fieldnames} != {RESOLUTION_COLUMNS}")
-        return {(r["page"], r["line"], r["field"]): r for r in rd}
+        rows = list(rd)
+    for r in rows:
+        if None in r or any(v is None for v in r.values()):
+            raise ValueError(f"{path.name}: row {r.get('page')}/{r.get('line')} has the wrong "
+                             "number of fields (quote any comma)")  # fmt: skip
+    return {(r["page"], r["line"], r["field"]): r for r in rows}
+
+
+def read_misprints(path: Path, table: list[dict[str, str]]) -> list[dict[str, str]]:
+    """Misprints in the source, kept out of the transcription (which stays as printed). Each
+    entry's ``printed`` must equal the reconciled table's cell; ``action`` is ``apply`` (the
+    loader substitutes ``corrected``) or ``log_only`` (a column we do not ingest)."""
+    with path.open(newline="", encoding="utf-8") as fh:
+        rd = csv.DictReader(fh)
+        if tuple(rd.fieldnames or ()) != MISPRINT_COLUMNS:
+            raise ValueError(f"{path.name}: header {rd.fieldnames} != {MISPRINT_COLUMNS}")
+        rows = list(rd)
+    cells = {(r["page"], r["line"]): r for r in table}
+    for m in rows:
+        if None in m or any(v is None for v in m.values()):
+            raise ValueError(f"{path.name}: {m.get('page')}/{m.get('line')}: wrong field count")
+        if m["field"] not in DATA_FIELDS:
+            raise ValueError(f"{path.name}: unknown field {m['field']!r}")
+        row = cells.get((m["page"], m["line"]))
+        if row is None or row[m["field"]] != m["printed"]:
+            raise ValueError(f"{path.name}: {m['page']}/{m['line']} {m['field']}: printed "
+                             f"{m['printed']!r} is not the table's value")  # fmt: skip
+        if m["action"] not in ("apply", "log_only"):
+            raise ValueError(f"{path.name}: action {m['action']!r}")
+        if m["action"] == "apply" and not m["corrected"]:
+            raise ValueError(f"{path.name}: {m['page']}/{m['line']}: apply without corrected")
+        if not m["reason"]:
+            raise ValueError(f"{path.name}: {m['page']}/{m['line']}: no reason")
+    return rows
 
 
 def reconcile(
