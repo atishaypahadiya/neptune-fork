@@ -412,6 +412,26 @@ def _summary_1d(x: np.ndarray, truth: float | None, nd: int) -> dict:
     return out
 
 
+E_UPPER_PCT = (68.0, 95.0)  # one-sided upper limits on e
+E_LIMIT_KEYS = ("upper68_one_sided", "upper95_one_sided", "truth_below_upper68",
+                "truth_below_upper95", "prior_median")  # fmt: skip
+
+
+def _e_summary(e: np.ndarray, truth: float | None, e_max: float) -> dict:
+    """e is bounded below by 0, and the true e (0.0039) sits on that edge, so a central 16–84 %
+    interval excludes it by construction. Alongside the central interval (kept for reference):
+    one-sided 68 % and 95 % upper limits, and the prior median (e uniform on [0, e_max]) beside
+    the posterior median, to show how weakly the data constrain e."""
+    out = _summary_1d(e, truth, 4)
+    up68, up95 = (float(v) for v in np.percentile(e, E_UPPER_PCT))
+    out |= {"upper68_one_sided": round(up68, 4), "upper95_one_sided": round(up95, 4),
+            "prior_median": round(e_max / 2.0, 4)}  # fmt: skip
+    if truth is not None:
+        out |= {"truth_below_upper68": bool(truth <= up68),
+                "truth_below_upper95": bool(truth <= up95)}  # fmt: skip
+    return out
+
+
 def _lon_summary(lon: np.ndarray, truth: float | None = None) -> dict:
     from fork.inference.mcmc import circular_interval_deg
 
@@ -608,7 +628,7 @@ def summarize_run(seed: int | None, run: str, data, truth_p: dict, n_workers: in
     }  # fmt: skip
     if run != LV:
         rec["a_au"] = _summary_1d(thetas[:, 7], truth_p["a_au"], 3)
-        rec["e"] = _summary_1d(thetas[:, 8], truth_p["e"], 4)
+        rec["e"] = _e_summary(thetas[:, 8], truth_p["e"], E_MAX[run])
     else:
         sub = thetas[rng.choice(len(thetas), size=min(2000, len(thetas)), replace=False)]
         helio = np.array([_heliocentric_lon_of_date_deg(th, ctx, LVE.epoch_jd) for th in sub])
@@ -721,7 +741,8 @@ def summarize_dataset(seed: int | None, truth_p: dict, n_workers: int) -> dict:
 def noise_free_check(nf: dict) -> dict:
     """Prior-bias measurement on the noise-free posterior (free a, e ≤ 0.3): for the 1846
     longitude, m, a and e, whether truth lies in the 68 % interval, and the median's offset from
-    truth in units of the 68 % half-width on the side facing truth (median − truth)/σ."""
+    truth in units of the 68 % half-width on the side facing truth (median − truth)/σ. For e
+    (truth on the e = 0 boundary) also the one-sided upper limits and the prior median."""
     run = "free_a_e0.3"
     if run not in nf["runs"]:
         return {"status": "missing"}
@@ -733,6 +754,13 @@ def noise_free_check(nf: dict) -> dict:
         out[name] = {"median": x["median"], "truth": x["truth"],
                      "truth_in_68": x["truth_in_68"], "median_minus_truth": round(off, 4),
                      "offset_sigma": None if z is None else round(z, 3)}  # fmt: skip
+    e = r["e"]
+    out["e"] |= {k: e[k] for k in E_LIMIT_KEYS}
+    out["e"]["note"] = (
+        "e ≥ 0 and the true e sits on that boundary: a central 68 % interval excludes a boundary "
+        "truth by construction, so the one-sided upper limits are the check that applies. The "
+        "posterior median against the prior median (uniform e) shows how weakly e is constrained."
+    )
     return out
 
 
@@ -751,7 +779,9 @@ def summarize(n_workers: int) -> None:
         "(Horizons Uranus incl. real Neptune + noise; noise_free: the true longitudes). "
         "Intervals are 16/50/84 % marginal percentiles of the combined posterior; the 1846 "
         "longitude is the perturber's light-time-corrected geocentric ecliptic-of-date "
-        "longitude on 1846-09-23. ln Z errors are dynesty's quoted errors × err_inflation "
+        "longitude on 1846-09-23. e also carries one-sided 68 / 95 % upper limits and its prior "
+        "median (a central interval excludes a truth on the e = 0 boundary by construction). "
+        "ln Z errors are dynesty's quoted errors × err_inflation "
         "(measured on seed 0). Raw runs are not committed (data/cache/nested/m5b/).",
         "priors": {"log10_m_earth": [0.0, 2.0], "a_au_log_uniform": [20.0, 60.0],
                    "e_uniform_max": E_MAX, "angles": "uniform",

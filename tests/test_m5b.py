@@ -36,9 +36,16 @@ def test_noise_free_check_offsets_in_sigma_on_the_side_facing_truth():
            "truth": 325.873, "median_minus_truth": 0.627, "truth_in_68": True}  # fmt: skip
     one = {"median": 17.0, "lo68": 16.0, "hi68": 19.0, "minus": 1.0, "plus": 2.0, "truth": 17.15,
            "truth_in_68": True}  # fmt: skip
+    e = m5b._e_summary(np.linspace(0.0, 0.3, 30_001), 0.0039, 0.3)  # uniform: the prior itself
     nf = {"runs": {"free_a_e0.3": {"galle_lon_ecl_of_date_deg": lon, "mass_earth": one,
-                                    "a_au": one, "e": one}}}  # fmt: skip
+                                    "a_au": one, "e": e}}}  # fmt: skip
     rec = m5b.noise_free_check(nf)
+    assert not rec["e"]["truth_in_68"]  # central interval [0.048, 0.252] excludes the edge
+    assert rec["e"]["truth_below_upper68"] and rec["e"]["truth_below_upper95"]
+    assert rec["e"]["upper68_one_sided"] == pytest.approx(0.204, abs=1e-3)
+    assert rec["e"]["upper95_one_sided"] == pytest.approx(0.285, abs=1e-3)
+    assert rec["e"]["prior_median"] == pytest.approx(0.15, abs=1e-9)
+    assert rec["e"]["median"] == pytest.approx(0.15, abs=1e-3) and "boundary" in rec["e"]["note"]
     assert rec["galle_lon_ecl_of_date_deg"]["offset_sigma"] == pytest.approx(0.627 / 1.5, abs=1e-3)
     assert rec["mass_earth"]["offset_sigma"] == pytest.approx(-0.15 / 2.0, abs=1e-3)
     assert m5b.noise_free_check({"runs": {}}) == {"status": "missing"}
