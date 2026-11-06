@@ -138,6 +138,21 @@ def write_selection(path: Path, picks: list[Pick]) -> None:
             w.writerow((p.page, p.line, p.reason, SPOTCHECK_SEED))
 
 
+def read_selection(path: Path) -> list[Pick]:
+    """The committed sample: the record of what was reviewed (2026-11-06). Later additions to
+    the resolution log or misprint table do not change it; ``--reselect`` draws a new one."""
+    with path.open(newline="", encoding="utf-8") as fh:
+        rows = list(csv.DictReader(fh))
+    if {int(r["seed"]) for r in rows} != {SPOTCHECK_SEED}:
+        raise ValueError(f"{path.name}: seed is not {SPOTCHECK_SEED}")
+    return [Pick(r["page"], r["line"], r["reason"]) for r in rows]
+
+
+def forced_in_selection(picks: list[Pick]) -> dict[tuple[str, str], list[str]]:
+    """The forced rows as they were when the sample was drawn, from its recorded reasons."""
+    return {(p.page, p.line): p.reason.split("; ") for p in picks if is_flagged(p)}
+
+
 # --- row images ----------------------------------------------------------------------------
 
 
@@ -462,13 +477,21 @@ def main(argv: list[str] | None = None) -> None:
 
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--overlay", type=Path, help="also write per-page row overlays here")
+    ap.add_argument(
+        "--reselect",
+        action="store_true",
+        help="draw a new sample from the current logs (replaces the reviewed one)",
+    )
     args = ap.parse_args(argv)
 
     table = tr.read_pass(tr.RECONCILED_FILE)
-    forced = _forced(tr.read_resolutions(tr.RESOLUTION_FILE),
-                     tr.read_misprints(tr.MISPRINT_FILE, table))  # fmt: skip
-    picks = select_rows(table, forced, np.random.default_rng(SPOTCHECK_SEED))
-    write_selection(SELECTION_FILE, picks)
+    if SELECTION_FILE.exists() and not args.reselect:
+        picks = read_selection(SELECTION_FILE)  # the reviewed sample stays fixed
+    else:
+        forced = _forced(tr.read_resolutions(tr.RESOLUTION_FILE),
+                         tr.read_misprints(tr.MISPRINT_FILE, table))  # fmt: skip
+        picks = select_rows(table, forced, np.random.default_rng(SPOTCHECK_SEED))
+        write_selection(SELECTION_FILE, picks)
 
     doc = pymupdf.open(GALLICA_PDF)
     CROP_DIR.mkdir(parents=True, exist_ok=True)

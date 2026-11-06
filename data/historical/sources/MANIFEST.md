@@ -32,3 +32,17 @@ offsets.
   independently.
 - The Gallica CdT scan is the third witness. It resolves every pass 1 / pass 2 disagreement.
 - The embedded OCR is not used for tables. Transcription is from page images only.
+
+## Verification record
+
+- **Double entry.** Pass 1 and pass 2 were transcribed by two separate AI agents. Each
+  worked from one scan, from page images, under the brief in the session scratchpad. That
+  gave 14 disagreeing cells, all resolved from the Gallica images
+  (`leverrier_1846_resolution_log.csv`).
+- **Spot check** (2026-11-06): 28 rows, 336 cells, 0 mismatches
+  (`docs/review/spotcheck_results.json`).
+  - The reviewer was an AI model in a chat session, against the Gallica images only. It was not an
+    independent human check.
+  - Transcription, reconciliation and spot check were all done by the same model family.
+- **Misprints in the source** (`leverrier_1846_misprints.csv`) were each checked against the
+  Gallica image. None was checked by a human.
