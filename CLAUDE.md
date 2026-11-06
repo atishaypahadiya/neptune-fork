@@ -8,7 +8,7 @@ Current phase: **Phase 1**. Full milestone spec: `docs/PHASE1_SPEC.md`. Work mil
 
 ## Prior art (credit it, don't duplicate it)
 - Jonathan Whitmore, *discoverneptune* (2026): https://jbwhit.github.io/discoverneptune/ — REBOUND-based
-  reconstruction, ~2.5–2.9″ RMS. Our benchmark for A4. Check its license before reusing any bundled data;
+  reconstruction, ~2.5–2.9″ RMS. Our benchmark for the M6 residuals (A6b). Check its license before reusing any bundled data;
   cite it in README either way.
 - Lai et al. (1990), forward + inverse treatment of Uranus perturbations.
 - CoFI example "Finding Neptune using Uranus"; KTH thesis (2018, Gauss–Newton + RK4).
@@ -61,7 +61,7 @@ src/fork/
                  nested.py (dynesty: multimodal posteriors + evidence), profile.py
   export/        to_json.py
 tests/           test_kepler.py, test_integrators.py (A1), test_residuals.py (A2),
-                 test_recovery.py (A3, slow), test_historical.py (A4, slow)
+                 test_recovery.py (A3, slow), test_historical.py (A6a, A6b)
 site/            index.html, js/, data/
 docs/            PHASE1_SPEC.md, notes/
 ```
