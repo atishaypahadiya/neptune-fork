@@ -43,5 +43,40 @@ def test_arithmetic_check_on_printed_rows():
     south = _row("133", "1", "17", "17 16 56", dec_obs="-17 6 13.3", dec_calc_sec="1.2",
                  dec_c_minus_o="+12.1")  # fmt: skip
     assert tr.arithmetic_check(south)["dec"] == pytest.approx(0.0, abs=1e-6)
+    signed = _row("136", "11", "13", "12 18 19", dec_obs="-2 6 8.3", dec_calc_sec="-43.7",
+                  dec_c_minus_o="+24.6")  # fmt: skip  # sign printed on the seconds
+    assert tr.arithmetic_check(signed)["dec"] == pytest.approx(0.0, abs=1e-6)
     bad = {**r1690, "ra_c_minus_o": "-66.4"}  # a misread digit
     assert tr.arithmetic_check(bad)["ra"] == pytest.approx(0.5, abs=1e-6)
+
+
+def _res(page, line, field, p1, p2, resolved):
+    return {(page, line, field): dict(page=page, line=line, field=field, pass1=p1, pass2=p2,
+                                      resolved=resolved, witness="w", reason="r")}  # fmt: skip
+
+
+def test_reconcile_takes_logged_resolutions_and_refuses_gaps():
+    a = [_row("129", "1", "23", "9 41 25", ra_obs="55 49 19.7", notes="x"),
+         _row("129", "2", "2", "9 46 47", year="1780")]  # fmt: skip
+    b = [_row("129", "1", "23", "9 41 25", ra_obs="55 49 19.7"),
+         _row("129", "2", "2", "9 46 47", year="1789", notes="y")]  # fmt: skip
+    log = _res("129", "2", "year", "1780", "1789", "1789")
+    out = tr.reconcile(a, b, log)
+    assert [r["year"] for r in out] == ["", "1789"]
+    assert [r["notes"] for r in out] == ["p1: x", "p2: y"]
+    with pytest.raises(ValueError, match="without a resolution"):
+        tr.reconcile(a, b, {})
+    with pytest.raises(ValueError, match="match no disagreement"):
+        tr.reconcile(a, b, {**log, **_res("129", "1", "day", "1", "2", "1")})
+    with pytest.raises(ValueError, match="log says"):
+        tr.reconcile(a, b, _res("129", "2", "year", "1780", "1788", "1789"))
+
+
+def test_committed_table77_is_the_reconciliation_of_the_committed_passes():
+    """The reconciled file on disk equals reconcile(pass1, pass2, log): no hand edits."""
+    a, b = (tr.read_pass(p) for p in tr.PASS_FILES)
+    rows = tr.reconcile(a, b, tr.read_resolutions(tr.RESOLUTION_FILE))
+    assert tr.read_pass(tr.RECONCILED_FILE) == rows
+    assert len(rows) == 279
+    assert sum(int(r["year"] or 0) < 1781 for r in rows if r["year"]) == 10  # ancient year groups
+    assert [r["year"] for r in rows].index("1781") == 19  # 19 ancient rows, 260 modern
