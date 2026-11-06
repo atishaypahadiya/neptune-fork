@@ -52,6 +52,9 @@ _URANUS_MAX_E = 0.95  # physical guard, only used when no Uranus box is set
 PERTURBER_Q_NAMES = ("p_log10_m_earth", "p_ln_a_au", "p_sqrt_e_cos_varpi", "p_sqrt_e_sin_varpi",
                      "p_lam0_ecl_j2000_rad")  # fmt: skip
 URANUS_Q_NAMES = ("u_a_au", "u_e_cos_varpi", "u_e_sin_varpi", "u_lam0_ecl_j2000_rad")
+# M6 inclined perturber: (sin i cos Ω, sin i sin Ω), i and Ω relative to Uranus's orbital plane
+INCLINATION_Q_NAMES = ("p_sin_i_cos_node_rel_uranus", "p_sin_i_sin_node_rel_uranus")
+INC_PRIOR_MAX_DEG = 10.0
 # finite-difference steps for the Uranus-only Jacobian, in q units (a, k, h, λ₀)
 _FD_STEP = (1e-6, 1e-7, 1e-7, 1e-8)
 
@@ -120,6 +123,10 @@ class PosteriorSpace:
     uranus_box: UranusBox | None = None  # required for prior_transform (nested sampling)
     a_au_range: tuple[float, float] = PRIOR_A_AU  # a slice of the a prior (renormalised on it)
     e_range: tuple[float, float] | None = None  # e slice of [0, e_max]; None = all of it
+    # M6: perturber inclined relative to Uranus's plane; q gains (sin i cos Ω, sin i sin Ω).
+    # Prior: cos i uniform on [cos inc_max, 1] and Ω uniform, i.e. density ∝ 1/cos i in q.
+    inclined: bool = False
+    inc_max_deg: float = INC_PRIOR_MAX_DEG
 
     @property
     def e_bounds(self) -> tuple[float, float]:
@@ -131,12 +138,13 @@ class PosteriorSpace:
 
     @property
     def ndim(self) -> int:
-        return 4 + int(self.free.sum())
+        return 4 + int(self.free.sum()) + 2 * int(self.inclined)
 
     @property
     def names(self) -> tuple[str, ...]:
+        inc = INCLINATION_Q_NAMES if self.inclined else ()
         return URANUS_Q_NAMES + tuple(n for n, f in zip(PERTURBER_Q_NAMES, self.free,
-                                                         strict=True) if f)  # fmt: skip
+                                                         strict=True) if f) + inc  # fmt: skip
 
     def with_box(self, box: UranusBox) -> PosteriorSpace:
         from dataclasses import replace
@@ -168,15 +176,18 @@ class PosteriorSpace:
 
     def full_perturber_q(self, q: np.ndarray) -> np.ndarray:
         y = np.array([0.0 if v is None else v for v in self.held])
-        y[self.free] = q[4:]
+        y[self.free] = q[4 : 4 + int(self.free.sum())]
         return y
 
     def theta(self, q: np.ndarray) -> np.ndarray:
-        """q → 11-entry forward-model θ."""
+        """q → 11-entry forward-model θ (13 when ``inclined``: + i, Ω relative to Uranus)."""
         theta_u = uranus_x_to_theta(np.concatenate([q[:4], self.pq]))
         log10_m, ln_a, k, h, lam0 = self.full_perturber_q(q)
-        return np.concatenate([theta_u, [log10_m, math.exp(ln_a), k * k + h * h,
-                                         math.atan2(h, k) % TWO_PI, lam0 % TWO_PI]])  # fmt: skip
+        out = [log10_m, math.exp(ln_a), k * k + h * h, math.atan2(h, k) % TWO_PI, lam0 % TWO_PI]
+        if self.inclined:
+            sc, ss = q[-2], q[-1]
+            out += [math.asin(min(math.hypot(sc, ss), 1.0)), math.atan2(ss, sc) % TWO_PI]
+        return np.concatenate([theta_u, out])
 
     def q_from_theta(self, theta: np.ndarray) -> np.ndarray:
         from fork.inference.fit import uranus_theta_to_x
@@ -185,10 +196,15 @@ class PosteriorSpace:
         s = math.sqrt(theta[8])
         y = np.array([theta[6], math.log(theta[7]), s * math.cos(theta[9]),
                       s * math.sin(theta[9]), theta[10]])  # fmt: skip
-        return np.concatenate([xu, y[self.free]])
+        inc = []
+        if self.inclined:
+            si = math.sin(theta[11])
+            inc = [si * math.cos(theta[12]), si * math.sin(theta[12])]
+        return np.concatenate([xu, y[self.free], inc])
 
     def log_prior(self, q: np.ndarray) -> float:
-        """0 inside the support, −∞ outside (the density is flat in q; unnormalised)."""
+        """0 inside the support, −∞ outside (the density is flat in q; unnormalised). With
+        ``inclined``, the (sin i cos Ω, sin i sin Ω) pair adds −ln cos i (uniform cos i)."""
         log10_m, ln_a, k, h, _ = self.full_perturber_q(q)
         if self.free[0] and not PRIOR_LOG10_M_EARTH[0] <= log10_m <= PRIOR_LOG10_M_EARTH[1]:
             return -math.inf
@@ -204,6 +220,11 @@ class PosteriorSpace:
                 return -math.inf
         elif math.hypot(q[1], q[2]) >= _URANUS_MAX_E or q[0] <= 0.0:
             return -math.inf
+        if self.inclined:
+            s2 = q[-2] ** 2 + q[-1] ** 2
+            if s2 > math.sin(math.radians(self.inc_max_deg)) ** 2:
+                return -math.inf
+            return -0.5 * math.log1p(-s2)
         return 0.0
 
     # ---------------------------------------------------------------- nested sampling
@@ -222,13 +243,15 @@ class PosteriorSpace:
         for name, f in zip(("log10_m", "ln_a", "e", "varpi", "lam0"), self.free, strict=True):
             if f:
                 names.append(name)
+        if self.inclined:
+            names += ["cos_i", "node"]
         return tuple(names)
 
     @property
     def periodic_unit_dims(self) -> list[int]:
         """Unit-cube indices that wrap: the perturber's ϖ and λ₀ (Uranus's λ₀ lives in a box
         of width ~1e-3 rad, so it is not periodic)."""
-        return [i for i, n in enumerate(self.unit_names) if n in ("varpi", "lam0")]
+        return [i for i, n in enumerate(self.unit_names) if n in ("varpi", "lam0", "node")]
 
     def prior_transform(self, u: np.ndarray) -> np.ndarray:
         """Unit cube → q, pushing the uniform measure onto exactly the ``log_prior`` support:
@@ -258,14 +281,22 @@ class PosteriorSpace:
                 out += 1
             elif n == "lam0":
                 q[out] = TWO_PI * u[j]
+            elif n == "cos_i":  # consumes (cos i, Ω) → (sin i cos Ω, sin i sin Ω)
+                cos_i = 1.0 - (1.0 - math.cos(math.radians(self.inc_max_deg))) * u[j]
+                s = math.sqrt(max(0.0, 1.0 - cos_i * cos_i))
+                node = TWO_PI * u[j + 1]
+                q[out], q[out + 1] = s * math.cos(node), s * math.sin(node)
+                j += 1
+                out += 1
             j += 1
             out += 1
         return q
 
 
 def free_a_space(pq: tuple[float, float], e_max: float = E_PRIOR_MAX,
-                 uranus_box: UranusBox | None = None) -> PosteriorSpace:  # fmt: skip
-    return PosteriorSpace(e_max=e_max, pq=pq, uranus_box=uranus_box)
+                 uranus_box: UranusBox | None = None, *,
+                 inclined: bool = False) -> PosteriorSpace:  # fmt: skip
+    return PosteriorSpace(e_max=e_max, pq=pq, uranus_box=uranus_box, inclined=inclined)
 
 
 def held_shape_space(pq: tuple[float, float], a_au: float, e: float, varpi_rad: float,

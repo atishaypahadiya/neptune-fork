@@ -240,3 +240,31 @@ def test_cells_for_a_tighter_e_prior_and_error_inflation():
     assert p18.shares == pytest.approx(p1.shares)
     assert p18.logzerr == pytest.approx(1.8 * p1.logzerr)
     assert p18.share_errs == pytest.approx(1.8 * p1.share_errs)
+
+
+def test_inclined_prior_uniform_in_cos_i_and_node():
+    """M6 inclined perturber: q gains (sin i cos Ω, sin i sin Ω) relative to Uranus's plane.
+    prior_transform gives cos i uniform on [cos 10°, 1] and Ω uniform; log_prior on that support
+    is −ln cos i (the density of that distribution in q), and −∞ beyond i = 10°."""
+    space = free_a_space(PQ, 0.3, BOX, inclined=True)
+    assert space.ndim == 11 and space.names[-2:] == ("p_sin_i_cos_node_rel_uranus",
+                                                     "p_sin_i_sin_node_rel_uranus")  # fmt: skip
+    assert space.unit_names[-2:] == ("cos_i", "node") and space.periodic_unit_dims == [7, 8, 10]
+    q = _draws(space, 20000)
+    sc, ss = q[:, -2], q[:, -1]
+    cos_i = np.sqrt(1.0 - sc**2 - ss**2)
+    c10 = math.cos(math.radians(10.0))
+    tol = 0.015
+    assert np.mean(cos_i > 0.5 * (1.0 + c10)) == pytest.approx(0.5, abs=tol)
+    assert cos_i.min() >= c10 - 1e-12
+    assert np.mean(np.arctan2(ss, sc) % (2 * math.pi) < math.pi / 2) == pytest.approx(0.25, abs=tol)
+    for v in q[:200]:
+        s2 = v[-2] ** 2 + v[-1] ** 2
+        assert space.log_prior(v) == pytest.approx(-0.5 * math.log1p(-s2), abs=1e-12)
+    bad = q[0].copy()
+    bad[-2], bad[-1] = math.sin(math.radians(10.01)), 0.0
+    assert space.log_prior(bad) == -math.inf
+    th = space.theta(q[0])
+    assert th.shape == (13,)
+    np.testing.assert_allclose(space.q_from_theta(th), q[0], rtol=0, atol=1e-12)
+    assert math.cos(th[11]) == pytest.approx(cos_i[0], abs=1e-12)
