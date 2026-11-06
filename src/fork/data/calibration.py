@@ -10,8 +10,10 @@ perturber model, so it is not leakage (spec M6b). It sets two things, and nothin
 
 - **σ_g**, each group's error scale: the MAD-based σ (1.4826 · median |r − median r|), with a
   bootstrap 68 % interval. A Student-t (ν = 4) ML scale is reported beside it as a cross-check.
-- **τ_g**, the offset prior width: the rms of the robust group means within the era (6 modern
-  groups, 2 ancient), floored at 1″.
+- σ_g only. The offset prior widths τ_g are **pre-registered**, not calibrated (user
+  decision, 2026-11-06): τ = 2″ modern and 5″ ancient (``TAU_PREREGISTERED_ARCSEC``; the
+  rationale is in docs/notes/M6.md). The first rule, the rms of the group means floored at
+  1″, gave 1″ everywhere, which is too informative for the ancient groups.
 
 The measured group means are reported and not used. In every fit the offsets stay free
 nuisance parameters with prior mean 0 (``fork.model.observation``). Fixing them to O − JPL
@@ -30,7 +32,7 @@ from fork.model import observation as om
 
 N_BOOT = 4000
 STUDENT_NU = 4.0
-TAU_FLOOR_ARCSEC = 1.0
+TAU_PREREGISTERED_ARCSEC = {"ancient": 5.0, "modern": 2.0}
 MAD_TO_SIGMA = 1.482602218505602  # 1 / Φ⁻¹(3/4)
 
 
@@ -100,14 +102,11 @@ def calibrate(rng: np.random.Generator) -> tuple[list[GroupCalibration], om.Erro
     ids = obs.obs_id[obs.epoch_index]
     table = [calibrate_group(g, resid[obs.group_index == k], ids[obs.group_index == k], rng)
              for k, g in enumerate(om.GROUPS)]  # fmt: skip
-    tau = {}
-    for era in ("ancient", "modern"):
-        sel = [c for c in table if c.group.startswith("ancient") == (era == "ancient")]
-        t = max(TAU_FLOOR_ARCSEC, math.sqrt(np.mean([c.median**2 for c in sel])))
-        tau |= {c.group: round(t, 2) for c in sel}
+    tau = {c.group: TAU_PREREGISTERED_ARCSEC["ancient" if c.group.startswith("ancient")
+                                             else "modern"] for c in table}  # fmt: skip
     sigma = {c.group: round(c.sigma_mad, 2) for c in table}
-    basis = ("O - JPL calibration (fork.data.calibration): sigma = MAD sigma per group; "
-             "tau = rms of robust group means within the era, floor 1 arcsec")  # fmt: skip
+    basis = ("sigma: O - JPL calibration (fork.data.calibration), MAD sigma per group; "
+             "tau: pre-registered 2 arcsec modern, 5 arcsec ancient")  # fmt: skip
     return table, om.ErrorModel(sigma, tau, basis)
 
 
