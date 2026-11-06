@@ -11,14 +11,14 @@ from fork.export import m5b
 
 
 def test_job_plan_matches_the_m5b_decision():
-    """10 seeds × 4 cells at e ≤ 0.3 (cell [20, 25] at nlive 2000), seeds 0–4 × 3 cells at
+    """10 seeds × 4 cells at e ≤ 0.3 (cell [20, 25] at nlive 2000), seeds 0–9 × 3 cells at
     e ≤ 0.1, Le Verrier shape unpartitioned on seeds 0–4 (seed 0 twice, for the check); the
     seed-0 e ≤ 0.3 cells 1–3 reuse the validation runs; ids round-trip; one rng per job."""
     jobs = m5b.all_jobs()
     by_run = {r: [j for j in jobs if j.run == r] for r in m5b.RUNS}
-    assert len(by_run["free_a_e0.3"]) == 44 and len(by_run["free_a_e0.1"]) == 15
+    assert len(by_run["free_a_e0.3"]) == 44 and len(by_run["free_a_e0.1"]) == 30
     assert len(by_run["le_verrier_shape"]) == 6
-    assert len(m5b.all_jobs(with_lv=False)) == 61  # only seed 0's two check runs
+    assert len(m5b.all_jobs(with_lv=False)) == 76  # only seed 0's two check runs
     nf = [j for j in jobs if j.seed is None]
     assert [(j.run, j.cell) for j in nf] == [("free_a_e0.3", k) for k in range(4)]
     assert [j.seed for j in m5b.ordered(jobs)[-4:]] == [None] * 4  # after everything A3b needs
