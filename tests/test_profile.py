@@ -304,10 +304,11 @@ def test_committed_profile_json_schema():
     assert (lo, hi, step) == (300.0, 350.0, 1.0) and d["n_starts_per_point"] >= 8
     assert d["true_neptune_lon_ecl_of_date_deg"] == pytest.approx(325.873, abs=1e-3)
     seeds = [ds["seed"] for ds in d["datasets"]]
-    assert seeds[:4] == [0, 1, 2, 3] and None in seeds
+    assert seeds == [*range(10), None]
     for ds in d["datasets"]:
-        for mode in ("le_verrier", "free_a"):
-            m = ds["modes"][mode]
+        both = ds["seed"] in (0, 1, 2, 3, None)
+        assert set(ds["modes"]) == ({"le_verrier", "free_a"} if both else {"free_a"})
+        for mode, m in ds["modes"].items():
             p = m["profile"]
             assert len(p["lon_ecl_of_date_deg"]) == n_grid == len(p["dchi2"]) == len(p["a_au"])
             assert min(p["dchi2"]) >= -1e-3 and m["dchi2_at_true_neptune"] >= -1e-3
@@ -317,6 +318,7 @@ def test_committed_profile_json_schema():
                 assert lo <= a <= b <= hi or a == b
             if mode == "le_verrier":
                 assert set(p["a_au"]) == {d["le_verrier_a_au"]}
+            assert len(p["on_e_bound"]) == n_grid and "before_sweeps" in m
 
 
 @pytest.mark.slow
