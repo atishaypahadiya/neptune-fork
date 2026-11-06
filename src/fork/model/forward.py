@@ -15,6 +15,13 @@ Uranus θ (6), all angles in ecl_j2000:
     a_au, e, inc_rad, raan_rad (Ω), varpi_rad (ϖ = Ω + ω), lam0_rad (mean longitude λ = ϖ + M)
 Perturber θ (5, optional, planar: i = 0 in ecl_j2000):
     log10_m_earth, a_au, e, varpi_rad, lam0_rad
+Inclined perturber θ (7, M6): the same five, then inc_rel_rad, raan_rel_rad, its inclination
+and node relative to Uranus's orbital plane. All of (ϖ, λ₀, Ω_rel) are then measured in the
+Uranus-plane frame F = Rz(Ω_U)·Rx(i_U)·Rz(−Ω_U) (Ω_U, i_U from θ's Uranus part). F maps
+the ecliptic onto Uranus's plane about their line of nodes, so it tends to ecl_j2000 as
+i_U → 0, and longitudes in F differ from ecliptic ones by O(i_U²) (i_U = 0.77°). Why
+inclined: declinations see the perturber's out-of-plane pull, ~2″ by the 1840s for Neptune,
+which heliocentric longitudes hardly do (0.017″). See ``tests/test_observation.py``.
 
 Elements are converted with μ = G (M_central + m_body), the body's own heliocentric two-body μ.
 The integrator is ``wisdom_holman`` with its project defaults (dt = 12 d, REBOUND composition).
@@ -65,6 +72,36 @@ PERTURBER_PARAM_NAMES: tuple[str, ...] = (
     "p_varpi_ecl_j2000_rad",
     "p_lam0_ecl_j2000_rad",
 )
+INCLINED_PERTURBER_PARAM_NAMES: tuple[str, ...] = (
+    "p_log10_m_earth",
+    "p_a_au",
+    "p_e",
+    "p_varpi_uranus_frame_rad",
+    "p_lam0_uranus_frame_rad",
+    "p_inc_rel_uranus_plane_rad",
+    "p_raan_rel_uranus_plane_rad",
+)
+
+
+@njit(cache=True)
+def uranus_frame_matrix(inc_u: float, raan_u: float) -> np.ndarray:
+    """F = Rz(Ω)·Rx(i)·Rz(−Ω): x_ecl_j2000 = F @ x_uranus_frame."""
+    ci, si = math.cos(inc_u), math.sin(inc_u)
+    co, so = math.cos(raan_u), math.sin(raan_u)
+    rz = np.array([[co, -so, 0.0], [so, co, 0.0], [0.0, 0.0, 1.0]])
+    rx = np.array([[1.0, 0.0, 0.0], [0.0, ci, -si], [0.0, si, ci]])
+    rzi = np.array([[co, so, 0.0], [-so, co, 0.0], [0.0, 0.0, 1.0]])
+    out = np.zeros((3, 3))
+    tmp = np.zeros((3, 3))
+    for i in range(3):
+        for j in range(3):
+            for k in range(3):
+                tmp[i, j] += rx[i, k] * rzi[k, j]
+    for i in range(3):
+        for j in range(3):
+            for k in range(3):
+                out[i, j] += rz[i, k] * tmp[k, j]
+    return out
 
 
 @njit(cache=True)
@@ -101,11 +138,19 @@ def _initial_conditions(
             perturber_el[3],
             perturber_el[4],
         )
-        rp, vp = elements_to_state(
-            a_p, e_p, 0.0, 0.0, varpi_p, lam0_p - varpi_p, G * (M_CENTRAL_MSUN + m_p)
-        )
-        x0[3] = rp
-        v0[3] = vp
+        mu_p = G * (M_CENTRAL_MSUN + m_p)
+        if perturber_el.size == 7:
+            inc_r, node_r = perturber_el[5], perturber_el[6]
+            rf, vf = elements_to_state(a_p, e_p, inc_r, node_r, varpi_p - node_r,
+                                       lam0_p - varpi_p, mu_p)  # fmt: skip
+            f = uranus_frame_matrix(inc, raan)
+            for i in range(3):
+                x0[3, i] = f[i, 0] * rf[0] + f[i, 1] * rf[1] + f[i, 2] * rf[2]
+                v0[3, i] = f[i, 0] * vf[0] + f[i, 1] * vf[1] + f[i, 2] * vf[2]
+        else:
+            rp, vp = elements_to_state(a_p, e_p, 0.0, 0.0, varpi_p, lam0_p - varpi_p, mu_p)
+            x0[3] = rp
+            v0[3] = vp
     return x0, v0, masses
 
 
@@ -187,9 +232,9 @@ def _split_theta(theta: ArrayLike) -> tuple[np.ndarray, np.ndarray]:
     theta = np.asarray(theta, dtype=np.float64)
     if theta.shape == (6,):
         return np.ascontiguousarray(theta), np.empty(0)
-    if theta.shape == (11,):
+    if theta.shape in ((11,), (13,)):
         return np.ascontiguousarray(theta[:6]), np.ascontiguousarray(theta[6:])
-    raise ValueError(f"theta must have 6 or 11 entries, got shape {theta.shape}")
+    raise ValueError(f"theta must have 6, 11 or 13 entries, got shape {theta.shape}")
 
 
 def predict_uranus_lon(theta: ArrayLike, t_jd: ArrayLike, context: ForwardContext) -> np.ndarray:
@@ -232,6 +277,20 @@ def perturber_theta_from_state(state_ecl_j2000: ArrayLike, mass_msun: float) -> 
     a, e, _inc, raan, argp, mean = state_to_elements(s[:3], s[3:], G * (M_CENTRAL_MSUN + mass_msun))
     varpi = (raan + argp) % TWO_PI
     return np.array([math.log10(mass_msun / M_EARTH_MSUN), a, e, varpi, (varpi + mean) % TWO_PI])
+
+
+def inclined_perturber_theta_from_state(
+    state_ecl_j2000: ArrayLike, mass_msun: float, uranus_inc_raan: tuple[float, float]
+) -> np.ndarray:
+    """7-element inclined perturber θ from a 3-D state, in the Uranus-plane frame of
+    ``uranus_inc_raan`` (see module docstring). Tests/diagnostics only."""
+    s = np.asarray(state_ecl_j2000, dtype=np.float64)
+    f = uranus_frame_matrix(float(uranus_inc_raan[0]), float(uranus_inc_raan[1]))
+    r, v = f.T @ s[:3], f.T @ s[3:]
+    a, e, inc, raan, argp, mean = state_to_elements(r, v, G * (M_CENTRAL_MSUN + mass_msun))
+    varpi = (raan + argp) % TWO_PI
+    return np.array([math.log10(mass_msun / M_EARTH_MSUN), a, e, varpi, (varpi + mean) % TWO_PI,
+                     inc, raan % TWO_PI])  # fmt: skip
 
 
 def uranus_inc_raan_at_epoch(epoch_jd_tdb: float) -> tuple[float, float]:

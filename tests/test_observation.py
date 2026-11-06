@@ -138,3 +138,46 @@ def test_uranus_only_fit_from_a_data_only_start(structure):
     assert 1.0 < chi2 / dof < 20.0  # Neptune's signal is in the residuals
     box = uranus_box_radec(obs, ctx, inc_raan)
     assert box.contains(uranus_theta_to_x(true_u)[:4])
+
+
+def test_inclined_perturber_reproduces_horizons(structure):
+    """The M6 forward model with an inclined perturber (i, Ω relative to Uranus's plane) and
+    θ = the true 1781 states reproduces Horizons' Uranus to < 0.05″ in every group, where the
+    planar perturber misses Dec by ~2″."""
+    from fork.data.horizons import states_about_inner_barycenter_ecl_j2000 as about
+    from fork.export.to_json import A1_EPOCH_JD_TDB as E
+    from fork.model import bodies
+    from fork.model.forward import (
+        ForwardContext,
+        inclined_perturber_theta_from_state,
+        predict_states_ecl_j2000,
+        uranus_theta_from_state,
+    )
+
+    truth = om.true_uranus_ra_dec(structure)
+    obs = structure.with_values(om.synthetic_values(structure, truth, None, noise=False)[0])
+    ctx = ForwardContext.from_horizons(E)
+    th_u = uranus_theta_from_state(about("uranus", [E])[0])
+    nep = about("neptune", [E])[0]
+    th_p = inclined_perturber_theta_from_state(nep, bodies.NEPTUNE.mass_msun, (th_u[2], th_u[3]))
+    assert math.degrees(th_p[5]) == pytest.approx(1.507, abs=0.01)  # Neptune–Uranus mutual i
+    theta = np.concatenate([th_u, th_p])
+    pos, vel = predict_states_ecl_j2000(theta, [E], ctx)
+    np.testing.assert_allclose(pos[0, 3], nep[:3], rtol=0, atol=1e-12)
+    np.testing.assert_allclose(vel[0, 3], nep[3:], rtol=0, atol=1e-15)
+    assert np.abs(obs.residuals_arcsec(*obs.predict(theta, ctx))).max() < 0.05
+
+
+def test_uranus_frame_reduces_to_the_ecliptic_when_uranus_is_planar():
+    """With Uranus at i = 0 the Uranus-plane frame is ecl_j2000, so an inclined perturber with
+    i_rel = 0 starts exactly where the planar one does."""
+    from fork.export.to_json import A1_EPOCH_JD_TDB as E
+    from fork.model.forward import ForwardContext, predict_states_ecl_j2000
+
+    ctx = ForwardContext.from_horizons(E)
+    th_u = np.array([19.14, 0.047, 0.0, 0.0, 3.02, 1.67])
+    planar = np.concatenate([th_u, [1.2, 30.0, 0.01, 1.0, 3.0]])
+    inclined = np.concatenate([planar, [0.0, 0.7]])
+    a, _ = predict_states_ecl_j2000(planar, [E], ctx)
+    b, _ = predict_states_ecl_j2000(inclined, [E], ctx)
+    np.testing.assert_allclose(a[0, 3], b[0, 3], rtol=0, atol=1e-12)
