@@ -475,7 +475,9 @@ def profile_intervals(seed: int | None) -> dict | None:
                            "overall_min_lon_ecl_of_date_deg":
                                m["overall_min"]["lon_ecl_of_date_deg"],
                            "dchi2_at_true_neptune": m["dchi2_at_true_neptune"],
-                           "grid_deg": prof["grid_deg"][:2]}
+                           "grid_deg": prof["grid_deg"][:2],
+                           "dchi2_curve": {"lon_deg": m["profile"]["lon_ecl_of_date_deg"],
+                                           "dchi2": m["profile"]["dchi2"]}}
                     for mode, m in d["modes"].items()}  # fmt: skip
     return None
 
@@ -484,11 +486,21 @@ PROFILE_POSTERIOR_FLAG_DEG = 2.0
 
 
 def profile_vs_posterior(intervals: list, lon: dict, grid_deg: list | None = None,
-                         flag_deg: float = PROFILE_POSTERIOR_FLAG_DEG) -> dict:  # fmt: skip
+                         flag_deg: float = PROFILE_POSTERIOR_FLAG_DEG, *,
+                         curve: dict | None = None, profile_min_deg: float | None = None,
+                         sampled_bins: set[int] | None = None) -> dict:  # fmt: skip
     """The profile's Δχ² ≤ 1 interval (hull of its pieces) next to the posterior 68 % interval
     of the 1846 longitude; flagged if either end differs by more than ``flag_deg``. Same model
     (free a, e ≤ 0.3); not the same quantity (profile likelihood vs marginal posterior). An end
-    on the profile grid's edge is a bound, not a measured end (profile_end_at_grid_edge)."""
+    on the profile grid's edge is a bound, not a measured end (profile_end_at_grid_edge).
+
+    Each flag is classified (``class``; needs ``curve``, ``profile_min_deg``, ``sampled_bins``):
+      - ``missed_mode``: the profile minimum is outside every posterior-sampled region, i.e. no
+        cell's own posterior draws fall in its 1° bin or the two neighbouring bins;
+      - ``volume``: otherwise, if the profile is flat (Δχ² ≤ 1 at every grid point) across each
+        flagged gap between the two ends, so the posterior leans within a flat band;
+      - ``other``: neither (e.g. the posterior extends past the profile's Δχ² ≤ 1 end).
+    """
 
     def d(x: float, y: float) -> float:
         return (x - y + 180.0) % 360.0 - 180.0
@@ -496,13 +508,38 @@ def profile_vs_posterior(intervals: list, lon: dict, grid_deg: list | None = Non
     lo = intervals[0][0]
     hi = intervals[-1][1]
     dlo, dhi = d(lo, lon["lo68"]), d(hi, lon["hi68"])
-    return {"profile_dchi2_le_1_deg": [lo, hi], "n_profile_pieces": len(intervals),
-            "posterior_68_deg": [lon["lo68"], lon["hi68"]],
-            "delta_lo_deg": round(dlo, 3), "delta_hi_deg": round(dhi, 3),
-            "flag_gt_deg": flag_deg,
-            "flag": bool(max(abs(dlo), abs(dhi)) > flag_deg),
-            "profile_end_at_grid_edge": None if grid_deg is None else
-            [abs(lo - grid_deg[0]) < 1e-6, abs(hi - grid_deg[1]) < 1e-6]}  # fmt: skip
+    flag = bool(max(abs(dlo), abs(dhi)) > flag_deg)
+    out = {"profile_dchi2_le_1_deg": [lo, hi], "n_profile_pieces": len(intervals),
+           "posterior_68_deg": [lon["lo68"], lon["hi68"]],
+           "delta_lo_deg": round(dlo, 3), "delta_hi_deg": round(dhi, 3),
+           "flag_gt_deg": flag_deg, "flag": flag,
+           "profile_end_at_grid_edge": None if grid_deg is None else
+           [abs(lo - grid_deg[0]) < 1e-6, abs(hi - grid_deg[1]) < 1e-6],
+           "class": None}  # fmt: skip
+    if not flag or curve is None or profile_min_deg is None or sampled_bins is None:
+        return out
+    b = math.floor(profile_min_deg % 360.0)
+    min_sampled = any(((b + k) % 360) in sampled_bins for k in (-1, 0, 1))
+    g_lon, g_d = np.asarray(curve["lon_deg"]), np.asarray(curve["dchi2"])
+    gaps, flat = [], []
+    for prof_end, delta in ((lo, dlo), (hi, dhi)):
+        if abs(delta) <= flag_deg:
+            continue
+        a, c = sorted((prof_end, prof_end - delta))  # prof_end − delta = post_end, unwrapped
+        sel = (g_lon >= a - 1e-9) & (g_lon <= c + 1e-9)
+        gaps.append([round(a, 3), round(c, 3)])
+        flat.append(bool(sel.any() and np.all(g_d[sel] <= 1.0)))
+    out["profile_min_deg"] = profile_min_deg
+    out["profile_min_sampled"] = min_sampled
+    out["gaps_deg"] = gaps
+    out["gap_flat"] = flat
+    out["class"] = "missed_mode" if not min_sampled else "volume" if all(flat) else "other"
+    return out
+
+
+def _sampled_bins(lon_deg: np.ndarray) -> list[int]:
+    """Whole-degree bins (0–359) holding at least one posterior draw."""
+    return sorted({int(v) for v in np.floor(np.asarray(lon_deg) % 360.0)})
 
 
 def summary_rng(seed: int | None, run: str) -> np.random.Generator:
@@ -551,7 +588,8 @@ def summarize_run(seed: int | None, run: str, data, truth_p: dict, n_workers: in
                 "share": round(float(s), 5), "share_err": round(float(se), 5),
                 "niter": r.niter, "ncall": r.ncall, "wall_min": round(r.wall_s / 60, 1),
                 "chi2_min": round(-2 * r.max_logl, 4), "galle_lon_ecl_of_date_deg":
-                    _lon_summary(lon_k)})  # fmt: skip
+                    _lon_summary(lon_k),
+                "lon_bins_sampled_deg": _sampled_bins(lon_k)})  # fmt: skip
         evidence = {"logz": round(p.logz, 4), "logzerr": round(p.logzerr, 4),
                     "logzerr_quoted": round(PartitionedResult(tuple(res)).logzerr, 4),
                     "logzerr_inflation": ERR_INFLATION, "share_err_inflation": ERR_INFLATION,
@@ -658,11 +696,13 @@ def summarize_dataset(seed: int | None, truth_p: dict, n_workers: int) -> dict:
             "ln_bayes_factor_err_inflation": b["evidence"]["logzerr_inflation"]}  # fmt: skip
     out["profile_m5a"] = profile_intervals(seed)
     if out["profile_m5a"] and "free_a_e0.3" in out["runs"]:
+        pf, run_rec = out["profile_m5a"]["free_a"], out["runs"]["free_a_e0.3"]
+        bins = {b for c in run_rec["evidence"]["cells"] for b in c["lon_bins_sampled_deg"]}
         out["profile_vs_posterior_free_a"] = profile_vs_posterior(
-            out["profile_m5a"]["free_a"]["dchi2_le_1_intervals_deg"],
-            out["runs"]["free_a_e0.3"]["galle_lon_ecl_of_date_deg"],
-            out["profile_m5a"]["free_a"]["grid_deg"],
-        )
+            pf["dchi2_le_1_intervals_deg"], run_rec["galle_lon_ecl_of_date_deg"],
+            pf["grid_deg"], curve=pf["dchi2_curve"],
+            profile_min_deg=pf["overall_min_lon_ecl_of_date_deg"], sampled_bins=bins,
+        )  # fmt: skip
     print(
         f"{dataset_key(seed)}: "
         + ", ".join(

@@ -102,3 +102,22 @@ def test_profile_vs_posterior_flags_ends_beyond_two_degrees():
     assert bad["flag"] and bad["n_profile_pieces"] == 2
     assert bad["profile_end_at_grid_edge"] == [False, True]
     assert bad["delta_hi_deg"] == pytest.approx(16.0)
+
+
+def test_profile_vs_posterior_classifies_volume_missed_mode_other():
+    grid = np.arange(300.0, 351.0, 1.0)
+    flat = {"lon_deg": list(grid), "dchi2": list(np.where((grid >= 308) & (grid <= 333), 0.2, 5.0))}
+    lon = {"lo68": 314.0, "hi68": 322.7}
+    sampled = set(range(305, 330))
+    v = m5b.profile_vs_posterior([[308.0, 333.0]], lon, [300.0, 350.0], curve=flat,
+                                 profile_min_deg=310.9, sampled_bins=sampled)  # fmt: skip
+    assert v["flag"] and v["class"] == "volume" and v["gap_flat"] == [True, True]
+    missed = m5b.profile_vs_posterior([[308.0, 333.0]], lon, [300.0, 350.0], curve=flat,
+                                      profile_min_deg=340.2, sampled_bins=sampled)  # fmt: skip
+    assert missed["class"] == "missed_mode" and not missed["profile_min_sampled"]
+    wide = {"lo68": 300.5, "hi68": 322.7}  # posterior extends past the profile's Δχ² ≤ 1 end
+    o = m5b.profile_vs_posterior([[308.0, 333.0]], wide, [300.0, 350.0], curve=flat,
+                                 profile_min_deg=310.9, sampled_bins=sampled)  # fmt: skip
+    assert o["class"] == "other" and o["gap_flat"][0] is False
+    assert m5b.profile_vs_posterior([[314.5, 322.0]], lon)["class"] is None  # no flag
+    assert m5b._sampled_bins(np.array([359.7, 0.2, -0.5, 310.0])) == [0, 310, 359]
