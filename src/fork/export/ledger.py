@@ -54,6 +54,10 @@ LOGGED_RUNS: tuple[tuple[str, str, float, int, str], ...] = (
     ("m5a/profile_reexport", "profile", _span_s("2026-11-04 07:14:49", "2026-11-04 10:41:22"),
      12, "site/data/m5a_profile.json, 16 curves × 51 grid points, 8 starts + continuation; "
      "LM evaluations not logged"),
+    ("m5a/profile_reexport_post", "profile", 11629.0, 12,
+     "site/data/m5a_profile.json, 11 free-a curves × 52 grid points (Le Verrier mode cached), "
+     "8 starts + 2 a = 22 AU backstop + 4 M5b-posterior-seeded per point, + continuation; "
+     "2026-11-05 17:36-20:50 (wall from the export log); LM evaluations not logged"),
     ("tests/slow_point_fit", "tests", 384.8, 12,
      "test_perturber_fit, test_export, test_profile, test_a3a (slow)"),
 )  # fmt: skip
