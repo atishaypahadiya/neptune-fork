@@ -173,6 +173,7 @@ def test_delta_t_polynomials_are_continuous():
 def test_misprints_applied_only_where_tabled(rows):
     applied = {r["obs_id"]: r["misprints_applied"] for r in rows if r["misprints_applied"]}
     assert applied == {
+        "LV1846-T77-p129-l19": "dec_obs: +12 25 20.2 -> +16 25 20.2",
         "LV1846-T77-p132-l05": "mean_time: 12 18 13 -> 12 17 13",
         "LV1846-T77-p132-l21": "mean_time: 11 32 34 -> 11 32 54",
         "LV1846-T77-p135-l03": "dec_obs: -18 12 6.9 -> -19 12 6.9",

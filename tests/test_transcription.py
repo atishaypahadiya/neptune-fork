@@ -92,6 +92,7 @@ def test_resolution_log_and_misprint_table_parse_strictly():
     assert {(x["page"], x["line"], x["field"], x["action"]) for x in m} == {
         ("129", "10", "dec_c_minus_o", "log_only"),
         ("129", "12", "mean_time", "log_only"),
+        ("129", "19", "dec_obs", "apply"),
         ("132", "5", "mean_time", "apply"),
         ("132", "21", "mean_time", "apply"),
         ("135", "3", "dec_obs", "apply"),
