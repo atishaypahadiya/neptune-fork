@@ -317,12 +317,37 @@ Record the predicted position and its 68% and 95% regions, and the observed posi
 | Test | Pass condition |
 |---|---|
 | A6a transcription | Double-entry disagreements all resolved and logged; 10% spot-check shows zero uncorrected errors |
-| A6b reduction | Modern-track residuals against JPL have median \|O−JPL\| within each group's published or expected precision. Report per group; no single pass/fail |
+| A6b reduction | Modern-track residuals against JPL have median \|O−JPL\| within each group's published or expected precision. Report per group; no single pass/fail. Also the equinox/precession loader test below, which must pass |
 | A6c synthetic coverage | On synthetic data with the M6 observation model, 10 seeds: truth within the 68% interval in 5–8 of 10 (same rule as A3b) |
 | A6d leakage | Static check: no code path in M6a–M6d reads Neptune's real ephemeris or the M6e precovery file |
 | A6e held-out | Reported, not pass/fail. Whether the 1795 positions fall inside the 95% predictive region. Interpret with Standish's caution that Lalande's observations are inconsistent with the others |
 
 Headline result: the `leverrier` variant on the modern track, free a, e ≤ 0.3. Everything else is sensitivity.
+
+**A6b loader test (fast, synthetic; carried over from the earlier M6 section).**
+- Every observation records two things, with a citation:
+  - its **equinox reference**: `of_date`, or `fixed` with the epoch (e.g. mean equinox of
+    1800.0);
+  - the **precession constant the source used**, e.g. Bessel's or Struve's value in ″/yr, plus
+    any rate term.
+- If a source pre-reduced its positions to a fixed epoch, first undo that reduction with *the
+  source's own* constant, to recover the position of mean equinox of date. Then convert of date
+  → J2000 with IAU 2006 (`frames.py`). Never apply IAU 2006 directly to a position another
+  precession model produced.
+- Observations missing either field fail to load.
+
+The test:
+1. Take known J2000 longitudes at 1690–1846 epochs, convert them to of date with IAU 2006, then
+   pre-reduce them to a fixed epoch (1800.0) with a non-IAU constant, as a source would.
+2. Use 50.10″/yr. Real 19th-century constants are within about 0.03″/yr of IAU 2006, too close
+   to tell the paths apart reliably.
+3. The loader must recover the J2000 longitudes to < 0.01″.
+4. Two wrong paths must each be off by > 1″ at some epoch, so the test can't pass by accident:
+   (a) treating the pre-reduced values as of date, and (b) undoing the reduction with IAU 2006
+   instead of the source's constant.
+5. A record missing equinox or constant metadata raises.
+
+The earlier M6 numeric targets (A4: residual RMS ≲ 3″, 1846 longitude within ~2°) are dropped.
 
 ### Outputs
 
