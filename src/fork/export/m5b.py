@@ -498,29 +498,40 @@ def profile_intervals(seed: int | None) -> dict | None:
                            "dchi2_at_true_neptune": m["dchi2_at_true_neptune"],
                            "grid_deg": prof["grid_deg"][:2],
                            "dchi2_curve": {"lon_deg": m["profile"]["lon_ecl_of_date_deg"],
-                                           "dchi2": m["profile"]["dchi2"]}}
+                                           "dchi2": m["profile"]["dchi2"],
+                                           "chi2": m["profile"]["chi2"]}}
                     for mode, m in d["modes"].items()}  # fmt: skip
     return None
 
 
 PROFILE_POSTERIOR_FLAG_DEG = 2.0
+# a draw counts as below the profile if its χ² is lower than the profile's, linearly interpolated
+# on the 1° grid, by more than this (the slack the interpolation needs)
+DRAW_BELOW_PROFILE_TOL = 0.1
 
 
 def profile_vs_posterior(intervals: list, lon: dict, grid_deg: list | None = None,
                          flag_deg: float = PROFILE_POSTERIOR_FLAG_DEG, *,
                          curve: dict | None = None, profile_min_deg: float | None = None,
-                         sampled_bins: set[int] | None = None) -> dict:  # fmt: skip
+                         sampled_bins: set[int] | None = None,
+                         draws: dict | None = None) -> dict:  # fmt: skip
     """The profile's Δχ² ≤ 1 interval (hull of its pieces) next to the posterior 68 % interval
     of the 1846 longitude; flagged if either end differs by more than ``flag_deg``. Same model
     (free a, e ≤ 0.3); not the same quantity (profile likelihood vs marginal posterior). An end
     on the profile grid's edge is a bound, not a measured end (profile_end_at_grid_edge).
 
-    Each flag is classified (``class``; needs ``curve``, ``profile_min_deg``, ``sampled_bins``):
+    Each flag is classified (``class``; needs ``curve``, ``profile_min_deg``, ``sampled_bins``;
+    ``volume_beyond`` also needs ``draws``, the cells' posterior draws as {lon_deg, chi2}):
       - ``missed_mode``: the profile minimum is outside every posterior-sampled region, i.e. no
         cell's own posterior draws fall in its 1° bin or the two neighbouring bins;
-      - ``volume``: otherwise, if the profile is flat (Δχ² ≤ 1 at every grid point) across each
-        flagged gap between the two ends, so the posterior leans within a flat band;
-      - ``other``: neither (e.g. the posterior extends past the profile's Δχ² ≤ 1 end).
+      - ``volume_inside``: otherwise, if the profile is flat (Δχ² ≤ 1 at every grid point)
+        across each flagged gap between the two ends, so the posterior leans within a flat band;
+      - ``volume_beyond``: otherwise, if every gap that is not flat is one where the posterior's
+        68 % end lies beyond the profile's Δχ² ≤ 1 end, and no posterior draw has χ² below the
+        profile at its longitude (by more than ``DRAW_BELOW_PROFILE_TOL``): the posterior
+        reaches where the best fit is worse but more prior volume fits, not a branch the
+        profile missed;
+      - ``other``: anything else.
     """
 
     def d(x: float, y: float) -> float:
@@ -542,25 +553,53 @@ def profile_vs_posterior(intervals: list, lon: dict, grid_deg: list | None = Non
     b = math.floor(profile_min_deg % 360.0)
     min_sampled = any(((b + k) % 360) in sampled_bins for k in (-1, 0, 1))
     g_lon, g_d = np.asarray(curve["lon_deg"]), np.asarray(curve["dchi2"])
-    gaps, flat = [], []
-    for prof_end, delta in ((lo, dlo), (hi, dhi)):
+    gaps, flat, beyond = [], [], []
+    for prof_end, delta, sign in ((lo, dlo, 1.0), (hi, dhi, -1.0)):
         if abs(delta) <= flag_deg:
             continue
         a, c = sorted((prof_end, prof_end - delta))  # prof_end − delta = post_end, unwrapped
         sel = (g_lon >= a - 1e-9) & (g_lon <= c + 1e-9)
         gaps.append([round(a, 3), round(c, 3)])
         flat.append(bool(sel.any() and np.all(g_d[sel] <= 1.0)))
+        beyond.append(bool(sign * delta > 0))  # posterior end outside the profile's interval
     out["profile_min_deg"] = profile_min_deg
     out["profile_min_sampled"] = min_sampled
     out["gaps_deg"] = gaps
     out["gap_flat"] = flat
-    out["class"] = "missed_mode" if not min_sampled else "volume" if all(flat) else "other"
+    out["gap_posterior_beyond"] = beyond
+    below = None
+    if draws is not None and "chi2" in curve:
+        dl = np.asarray(draws["lon_deg"], dtype=float) % 360.0
+        inside = (dl >= g_lon[0]) & (dl <= g_lon[-1])
+        margin = (np.asarray(draws["chi2"], dtype=float)[inside]
+                  - np.interp(dl[inside], g_lon, np.asarray(curve["chi2"])))  # fmt: skip
+        k = int(np.argmin(margin))
+        below = bool(margin[k] < -DRAW_BELOW_PROFILE_TOL)
+        out["draws_vs_profile"] = {
+            "n_draws": int(inside.sum()), "min_draw_minus_profile_chi2": round(float(margin[k]), 3),
+            "at_lon_deg": round(float(dl[inside][k]), 3), "tol": DRAW_BELOW_PROFILE_TOL,
+            "any_draw_below_profile": below}  # fmt: skip
+    if not min_sampled:
+        cls = "missed_mode"
+    elif all(flat):
+        cls = "volume_inside"
+    elif all(f or b for f, b in zip(flat, beyond, strict=True)) and below is False:
+        cls = "volume_beyond"
+    else:
+        cls = "other"
+    out["class"] = cls
     return out
 
 
 def _sampled_bins(lon_deg: np.ndarray) -> list[int]:
     """Whole-degree bins (0–359) holding at least one posterior draw."""
     return sorted({int(v) for v in np.floor(np.asarray(lon_deg) % 360.0)})
+
+
+def _chi2_of_rows(r, rows: np.ndarray) -> np.ndarray:
+    """χ² = −2 ln L of equal-weight draws: they are copies of rows of ``r.samples``."""
+    logl = dict(zip((v.tobytes() for v in r.samples), np.asarray(r.results["logl"]), strict=True))
+    return np.array([-2.0 * logl[v.tobytes()] for v in rows])
 
 
 def summary_rng(seed: int | None, run: str) -> np.random.Generator:
@@ -582,8 +621,10 @@ def summarize_run(seed: int | None, run: str, data, truth_p: dict, n_workers: in
     rng = summary_rng(seed, run)
     nep = truth_p["galle_lon_ecl_of_date_deg"]
 
-    def lon_of(space, q: np.ndarray, n: int) -> np.ndarray:
+    def lon_of(space, q: np.ndarray, n: int, rows_out: list | None = None) -> np.ndarray:
         idx = rng.choice(len(q), size=min(n, len(q)), replace=False)
+        if rows_out is not None:
+            rows_out.append(q[idx])
         _SUMMARY_COUNT["derived_integrations"] += len(idx)
         return np.array([math.degrees(galle_lon_of_date_rad(space.theta(v), ctx, geo))
                          for v in q[idx]])  # fmt: skip
@@ -598,9 +639,12 @@ def summarize_run(seed: int | None, run: str, data, truth_p: dict, n_workers: in
     else:
         p = PartitionedResult(tuple(res), err_scale=ERR_INFLATION)
         cells = cells_for(E_MAX[run])
-        cell_recs = []
+        cell_recs, draws_lon, draws_chi2 = [], [], []
         for k, (r, s, se) in enumerate(zip(res, p.shares, p.share_errs, strict=True)):
-            lon_k = lon_of(r.space, r.equal_weight(rng), CELL_LON_SAMPLES)
+            rows: list = []
+            lon_k = lon_of(r.space, r.equal_weight(rng), CELL_LON_SAMPLES, rows)
+            draws_lon.append(lon_k)
+            draws_chi2.append(_chi2_of_rows(r, rows[0]))
             cell_recs.append({
                 "a_au": list(cells[k][0]), "e": None if cells[k][1] is None else list(cells[k][1]),
                 "prior_weight": round(r.space.slice_weight, 6), "nlive": r.nlive,
@@ -628,6 +672,9 @@ def summarize_run(seed: int | None, run: str, data, truth_p: dict, n_workers: in
         "galle_lon_ecl_of_date_deg": _lon_summary(lon, nep),
     }  # fmt: skip
     if run != LV:
+        # not written to the JSON: summarize_dataset pops it for profile_vs_posterior
+        rec["_cell_draws"] = {"lon_deg": np.concatenate(draws_lon),
+                              "chi2": np.concatenate(draws_chi2)}  # fmt: skip
         rec["a_au"] = _summary_1d(thetas[:, 7], truth_p["a_au"], 3)
         rec["e"] = _e_summary(thetas[:, 8], truth_p["e"], E_MAX[run])
     else:
@@ -706,6 +753,7 @@ def summarize_dataset(seed: int | None, truth_p: dict, n_workers: int) -> dict:
             out["missing"].append(run)
         else:
             out["runs"][run] = rec
+    draws = {run: rec.pop("_cell_draws", None) for run, rec in out["runs"].items()}
     if LV in out["runs"] and "free_a_e0.3" in out["runs"]:
         a, b = out["runs"]["free_a_e0.3"], out["runs"][LV]
         out["le_verrier_shape_vs_free_a"] = {
@@ -723,6 +771,7 @@ def summarize_dataset(seed: int | None, truth_p: dict, n_workers: int) -> dict:
             pf["dchi2_le_1_intervals_deg"], run_rec["galle_lon_ecl_of_date_deg"],
             pf["grid_deg"], curve=pf["dchi2_curve"],
             profile_min_deg=pf["overall_min_lon_ecl_of_date_deg"], sampled_bins=bins,
+            draws=draws["free_a_e0.3"],
         )  # fmt: skip
     print(
         f"{dataset_key(seed)}: "
