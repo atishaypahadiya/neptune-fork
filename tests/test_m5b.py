@@ -10,6 +10,13 @@ import pytest
 from fork.export import m5b
 
 
+def test_chi2_of_rows_looks_up_equal_weight_copies():
+    r = SimpleNamespace(samples=np.array([[0.1, 0.2], [0.3, 0.4], [0.5, 0.6]]),
+                        results={"logl": np.array([-1.0, -2.0, -3.0])})  # fmt: skip
+    rows = r.samples[[2, 0, 2]]
+    np.testing.assert_allclose(m5b._chi2_of_rows(r, rows), [6.0, 2.0, 6.0], rtol=0, atol=0)
+
+
 def test_job_plan_matches_the_m5b_decision():
     """10 seeds × 4 cells at e ≤ 0.3 (cell [20, 25] at nlive 2000), seeds 0–9 × 3 cells at
     e ≤ 0.1, Le Verrier shape unpartitioned on seeds 0–4 (seed 0 twice, for the check); the
@@ -112,19 +119,35 @@ def test_profile_vs_posterior_flags_ends_beyond_two_degrees():
 
 
 def test_profile_vs_posterior_classifies_volume_missed_mode_other():
+    """volume_inside / missed_mode / volume_beyond / other on a synthetic flat-band profile."""
     grid = np.arange(300.0, 351.0, 1.0)
-    flat = {"lon_deg": list(grid), "dchi2": list(np.where((grid >= 308) & (grid <= 333), 0.2, 5.0))}
+    d = np.where((grid >= 308) & (grid <= 333), 0.2, 5.0)
+    flat = {"lon_deg": list(grid), "dchi2": list(d), "chi2": list(60.0 + d)}
     lon = {"lo68": 314.0, "hi68": 322.7}
     sampled = set(range(305, 330))
     v = m5b.profile_vs_posterior([[308.0, 333.0]], lon, [300.0, 350.0], curve=flat,
                                  profile_min_deg=310.9, sampled_bins=sampled)  # fmt: skip
-    assert v["flag"] and v["class"] == "volume" and v["gap_flat"] == [True, True]
+    assert v["flag"] and v["class"] == "volume_inside" and v["gap_flat"] == [True, True]
     missed = m5b.profile_vs_posterior([[308.0, 333.0]], lon, [300.0, 350.0], curve=flat,
                                       profile_min_deg=340.2, sampled_bins=sampled)  # fmt: skip
     assert missed["class"] == "missed_mode" and not missed["profile_min_sampled"]
     wide = {"lo68": 300.5, "hi68": 322.7}  # posterior extends past the profile's Δχ² ≤ 1 end
-    o = m5b.profile_vs_posterior([[308.0, 333.0]], wide, [300.0, 350.0], curve=flat,
-                                 profile_min_deg=310.9, sampled_bins=sampled)  # fmt: skip
+    kw = {"curve": flat, "profile_min_deg": 310.9, "sampled_bins": sampled}
+    o = m5b.profile_vs_posterior([[308.0, 333.0]], wide, [300.0, 350.0], **kw)  # no draws
     assert o["class"] == "other" and o["gap_flat"][0] is False
+    assert o["gap_posterior_beyond"] == [True, False]  # lo end beyond; hi end inside, flat
+    above = {"lon_deg": [301.0, 315.0, 320.5], "chi2": [65.3, 60.5, 60.4]}  # all above the curve
+    b = m5b.profile_vs_posterior([[308.0, 333.0]], wide, [300.0, 350.0], draws=above, **kw)
+    assert b["class"] == "volume_beyond" and not b["draws_vs_profile"]["any_draw_below_profile"]
+    assert b["draws_vs_profile"]["min_draw_minus_profile_chi2"] == pytest.approx(0.2, abs=1e-9)
+    low = {"lon_deg": [301.0, 315.0], "chi2": [64.0, 60.5]}  # 1.0 below the profile at 301°
+    m = m5b.profile_vs_posterior([[308.0, 333.0]], wide, [300.0, 350.0], draws=low, **kw)
+    assert m["class"] == "other" and m["draws_vs_profile"]["any_draw_below_profile"]
+    assert m["draws_vs_profile"]["at_lon_deg"] == pytest.approx(301.0, abs=1e-9)
+    narrow = {"lo68": 314.0, "hi68": 330.0}  # both ends inside; hi gap [330, 333] not flat
+    bumpy = {**flat, "dchi2": list(np.where(grid == 331.0, 5.0, d))}
+    n = m5b.profile_vs_posterior([[308.0, 333.0]], narrow, [300.0, 350.0], draws=above,
+                                 **{**kw, "curve": bumpy})  # fmt: skip
+    assert n["class"] == "other" and n["gap_posterior_beyond"] == [False, False]
     assert m5b.profile_vs_posterior([[314.5, 322.0]], lon)["class"] is None  # no flag
     assert m5b._sampled_bins(np.array([359.7, 0.2, -0.5, 310.0])) == [0, 310, 359]
