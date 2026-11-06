@@ -9,8 +9,9 @@ Posteriors (PHASE1_SPEC M5b, as amended after the partitioned validation):
   - ``free_a_e0.3``: free a, e ∈ [0, 0.3], noise seeds 0–9, partitioned into the four cells
     of ``nested.PARTITION_CELLS``, one rng seed per cell. Cell [20, 25] runs at nlive 2000
     (the thin mode-B pocket was under-sampled at 1000), the rest at 1000.
-  - ``free_a_e0.1``: free a, e ∈ [0, 0.1], seeds 0–4: the three cells that can hold e ≤ 0.1
-    (``nested.cells_for``), nlive 1000.
+  - ``free_a_e0.1``: free a, e ∈ [0, 0.1], seeds 0–9: the three cells that can hold e ≤ 0.1
+    (``nested.cells_for``), nlive 1000. Seeds 5–9 were added after A3b so the prior-sensitivity
+    result has its own 10-seed coverage count; it is a sensitivity result, not the headline.
   - ``le_verrier_shape``: a, e, ϖ held at Le Verrier's published values; m, λ₀ and Uranus
     sampled. Seeds 0–4, one unpartitioned run each, provided seed 0 passes the single-mode
     check (``lv_single_mode``: two rng seeds agree, no mass far from the main peak); otherwise
@@ -63,7 +64,7 @@ NOISE_FREE_RUNS = ("free_a_e0.3",)
 RUNS = ("free_a_e0.3", "free_a_e0.1", "le_verrier_shape")
 RUN_SEEDS: dict[str, tuple[int, ...]] = {
     "free_a_e0.3": NOISE_SEEDS,
-    "free_a_e0.1": (0, 1, 2, 3, 4),
+    "free_a_e0.1": NOISE_SEEDS,
     "le_verrier_shape": (0, 1, 2, 3, 4),
 }
 E_MAX = {"free_a_e0.3": 0.3, "free_a_e0.1": 0.1}
