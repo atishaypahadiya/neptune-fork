@@ -80,3 +80,17 @@ def test_committed_table77_is_the_reconciliation_of_the_committed_passes():
     assert len(rows) == 279
     assert sum(int(r["year"] or 0) < 1781 for r in rows if r["year"]) == 10  # ancient year groups
     assert [r["year"] for r in rows].index("1781") == 19  # 19 ancient rows, 260 modern
+
+
+def test_resolution_log_and_misprint_table_parse_strictly():
+    """Every log row has exactly its columns (a printed decimal comma must be quoted), and every
+    misprint entry names the table's printed value and carries a reason."""
+    table = tr.read_pass(tr.RECONCILED_FILE)
+    log = tr.read_resolutions(tr.RESOLUTION_FILE)
+    assert all(r["witness"].startswith("cdt_1849_additions.pdf p.") for r in log.values())
+    m = tr.read_misprints(tr.MISPRINT_FILE, table)
+    assert {(x["page"], x["line"], x["field"], x["action"]) for x in m} == {
+        ("129", "10", "dec_c_minus_o", "log_only"),
+        ("135", "3", "dec_obs", "apply"),
+        ("135", "3", "ra_calc_sec", "log_only"),
+    }
