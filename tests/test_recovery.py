@@ -25,11 +25,6 @@ N_WORKERS = min(12, os.cpu_count() or 1)
 POSTERIORS = Path(__file__).resolve().parents[1] / "site" / "data" / "m5b_posteriors.json"
 
 pytestmark = pytest.mark.usefixtures("offline_horizons")
-# TEMPORARY: the M5b chains were still running when A3 was rewritten. This skip goes away in the
-# commit that adds site/data/m5b_posteriors.json; after that a missing file must fail, not skip.
-needs_posteriors = pytest.mark.skipif(
-    not POSTERIORS.exists(), reason="m5b_posteriors.json not committed yet (chains running)"
-)
 
 
 @pytest.mark.slow
@@ -53,7 +48,6 @@ def test_a3a_noise_free_recovery_within_half_degree(offline_horizons):
     assert abs(best.theta[7] - th_nep[1]) < 0.3 and best.theta[8] < 0.02
 
 
-@needs_posteriors
 def test_a3b_calibration_of_committed_posteriors():
     """A3b. Across ≥ 10 noise seeds, true Neptune's 1846-09-23 longitude lies inside the 68 %
     posterior interval (free a, e ∈ [0, 0.3]; dynesty posteriors, all modes) in 50–85 % of
@@ -74,7 +68,6 @@ def test_a3b_calibration_of_committed_posteriors():
     assert 0.50 <= frac <= 0.85
 
 
-@needs_posteriors
 def test_committed_posteriors_complete():
     """Every noise seed has the posteriors it is assigned (``m5b.runs_for``: e ≤ 0.3 on seeds
     0–9, e ≤ 0.1 and Le Verrier shape on 0–4; Le Verrier shape beyond seed 0 only if the
