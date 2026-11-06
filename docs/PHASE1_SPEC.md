@@ -224,26 +224,123 @@ post-1781 residual RMS is **≤ 1.5 σ_noise** (4.5″); without Neptune the sam
   - Mass–distance posterior shows the expected ridge (plot saved).
 
 ## M6: Historical data
-- `data/observations.py`: load historical Uranus heliocentric longitudes (Whitmore's set if license
-  permits, else transcribe from Le Verrier's memoirs / Bouvard's tables). Convert to J2000 via
-  `frames.py`. Store with per-point σ and source column.
-- Every observation records its **equinox reference** — `of_date` or `fixed` with the epoch
-  (e.g. mean equinox of 1800.0) — and the **precession constant the source used** (e.g. Bessel's
-  or Struve's value, in ″/yr, plus any rate term), with a citation. If a source pre-reduced its
-  longitudes to a fixed epoch, first undo that reduction with *the source's own* constant to
-  recover longitude of mean equinox of date, then convert of-date → J2000 with IAU 2006
-  (`frames.py`). Never apply IAU 2006 directly to a longitude another precession model produced.
-  Observations missing either field fail to load.
-**Test (fast, synthetic):** take known J2000 longitudes at 1690–1846 epochs, convert to of-date
-with IAU 2006, then pre-reduce to a fixed epoch (1800.0) with a non-IAU constant, as a source would.
-Use 50.10″/yr: real 19th-century constants are within ~0.03″/yr of IAU 2006, too close to tell the
-paths apart reliably. The loader must recover the J2000 longitudes to < 0.01″. Two wrong paths
-must each be off by > 1″ at some epoch, so the test can't pass by accident: (a) treating the
-pre-reduced values as of-date, and (b) undoing the reduction with IAU 2006 instead of the source's
-constant. Also: a record missing equinox or constant metadata raises.
-- Re-run M4 and M5 on historical data.
-**A4 (acceptance, slow):** residual RMS with fitted perturber **≲ 3″**; posterior median
-1846-09-23 longitude within **~2°** of true Neptune. Document outliers dropped and why.
+M5b is closed. Its methods (partitioned nested sampling, ERR_INFLATION ×1.8, free a, e ≤ 0.3 headline prior) carry over unchanged unless this section says otherwise.
+
+### Goal
+
+Run the validated pipeline on the observations Le Verrier actually used, and answer three questions with calibrated numbers:
+
+1. Where does the real 1781–1845 Uranus data place the perturber, and does the 68% interval contain Neptune's true 1846 longitude (325.87°)?
+2. How much did the outcome depend on the data choices of 1846: Bouvard's, Adams's and Le Verrier's?
+3. Peirce's question (1847): was Galle's find a "happy accident"? Measure this as the probability that a given model points within Le Verrier's actual miss of the true position.
+
+### Ground rules (in addition to CLAUDE.md)
+
+- **Synthetic before historical, again.** Before fitting any real observation, repeat the A3b coverage test on synthetic data generated with the M6 observation model: real epochs, per-observer error structure, the same gaps. If coverage fails, stop and report. Don't tune.
+- **Pre-register.** Write the A6 thresholds into this file and commit them before the first real-data fit. Never change them after seeing real results.
+- **Keep the held-out data held out.** The Neptune precovery positions (M6e) are never used in fitting or model selection. Load them only in the A6e test.
+- **Provenance for every number.** No observation enters the pipeline without a source volume, page and row reference.
+
+### M6a: Transcription and provenance
+
+**Stop condition first.** Before writing any loader, determine what Le Verrier's memoir actually tabulates and write it up in `docs/notes/M6.md`:
+- observed positions (geocentric or heliocentric, RA/Dec or longitude/latitude), or
+- residuals O − C against his own theory, or
+- normal places (averages of several observations).
+
+If it gives only residuals against his own tables, positions can't be recovered without those tables. Report this and stop; the source plan changes.
+
+Sources, in priority order:
+1. Le Verrier, "Recherches sur les mouvements de la planète Herschel (dite Uranus)", *Connaissance des Temps pour 1849* (Additions), 1846. Bertrand (2025, *Gazette des Mathématiciens* 186) counts 279 observational data points.
+2. Le Verrier's notes in *Comptes Rendus* vols 21–23 (1845–46), on Gallica.
+3. For the "what was true" variant: the original Greenwich and Paris meridian volumes, plus Airy's Greenwich planetary reductions.
+4. The ancient sightings (1690–1771: Flamsteed, Bradley, Mayer, Lemonnier), as Le Verrier reduced them.
+
+Process:
+- Get the scans onto the local machine (the user can download them if your sandbox can't). Commit page images or stable URLs under `data/historical/sources/`.
+- **Double-entry transcription.** Do two independent passes into `data/historical/leverrier_1846_pass{1,2}.csv`, then diff them. Every disagreement is resolved against the page image and logged. The user spot-checks 10% of rows chosen at random.
+- Schema for `leverrier_1846.csv`, one row per observation or normal place:
+  - `id`, `epoch` (as printed), `epoch_tt_jd`
+  - `observer`, `observatory`, `instrument` (if known)
+  - `quantity` (what was measured), `value`, `unit`, `frame_as_printed`
+  - `lv_residual` (Le Verrier's O − C, if printed), `lv_weight` (if printed)
+  - `era` (ancient / modern), `source_ref` (volume:page:row), `notes`
+
+### M6b: Observation model
+
+- **Frames.** Convert each row from its printed frame into the pipeline's frame.
+  - Keep two reduction tracks:
+    - **1846 track:** Le Verrier's constants for precession, aberration and nutation, as recorded in his memoir.
+    - **Modern track:** IAU 2006 constants.
+  - Store both reduced values. Report the difference per epoch as a figure.
+- **Empirical error calibration.** Modern JPL ephemerides fix Uranus's true historical positions to far better than 1″. So for each observer and era, "observed minus JPL Uranus" *is* the real observation error.
+  - Fit per-group offsets and scales. Groups are observer × instrument × era, falling back to coarser groups if counts are small.
+  - This uses only Uranus truth, not Neptune, so it isn't leakage. State this explicitly in M6.md.
+- **Likelihood.** The current likelihood plus per-group nuisance offsets, and error scales fixed from the calibration.
+  - Run a sensitivity case with the scales free, using weak priors.
+  - Robustness check: a Student-t likelihood (ν = 4) to catch outliers such as Flamsteed 1690.
+
+### M6c: Fits under three data choices
+
+Use the same sampler settings and partition as M5b, with free a and e ≤ 0.3.
+
+| Variant | Data used | Historical basis |
+|---|---|---|
+| `bouvard` | modern observations only (1781–1845) | Bouvard 1821 set the ancient sightings aside |
+| `adams` | all except Flamsteed 1690 | Adams treated 1690 as uncertain |
+| `leverrier` | all | Le Verrier's choice |
+
+Run each on both reduction tracks, which gives 6 fits. Also run the Le Verrier shape model (fixed a, as in M5) on the `leverrier` variant, both tracks.
+
+Report for each fit:
+- the posterior 1846 longitude: median and 68% interval
+- the miss from 325.87°, in degrees and in units of the interval half-width (σ)
+- mass and a posteriors
+- ln Z, with the ×1.8 error inflation
+
+### M6d: The Peirce number
+
+For each fit, compute P(|λ − 325.87°| ≤ 0.87°), the probability the posterior puts on landing at least as close as Le Verrier's actual 52′ miss.
+- Compare the Le Verrier shape model against free a.
+- Express Peirce's "happy accident" as the ratio of these probabilities, together with the Bayes factor between the two models.
+
+### M6e: Held-out test on Neptune precoveries
+
+Use each M6c posterior to predict Neptune's geocentric position on:
+- Lalande, 1795 May 8 and May 10
+- Galileo, 1612 Dec 28 and 1613 Jan 28. The sources disagree on 27 vs 28 Jan; use Kowal & Drake 1980, *Nature* 287:311.
+
+Record the predicted position and its 68% and 95% regions, and the observed positions with their stated uncertainties. Galileo's are large: his drawings were sketches, not measurements.
+
+### Acceptance tests (pre-registered)
+
+| Test | Pass condition |
+|---|---|
+| A6a transcription | Double-entry disagreements all resolved and logged; 10% spot-check shows zero uncorrected errors |
+| A6b reduction | Modern-track residuals against JPL have median \|O−JPL\| within each group's published or expected precision. Report per group; no single pass/fail |
+| A6c synthetic coverage | On synthetic data with the M6 observation model, 10 seeds: truth within the 68% interval in 5–8 of 10 (same rule as A3b) |
+| A6d leakage | Static check: no code path in M6a–M6d reads Neptune's real ephemeris or the M6e precovery file |
+| A6e held-out | Reported, not pass/fail. Whether the 1795 positions fall inside the 95% predictive region. Interpret with Standish's caution that Lalande's observations are inconsistent with the others |
+
+Headline result: the `leverrier` variant on the modern track, free a, e ≤ 0.3. Everything else is sensitivity.
+
+### Outputs
+
+- `data/historical/leverrier_1846.csv`, with sources and a resolution log
+- `site/data/m6_fits.json`: all variants, both tracks, the Peirce numbers, and the held-out predictions
+- figures:
+  - residuals against JPL by observer
+  - posterior longitude for the three data choices
+  - the Peirce ratio
+  - the 1795 sky chart: predicted region, Lalande's positions, true Neptune
+- `docs/notes/M6.md`: what the memoir tabulates (from the M6a stop condition), the transcription log, the error model, results, and limitations
+- ledger entries as usual
+
+### Out of scope for M6
+
+- Re-deriving Le Verrier's own perturbation theory or his tables
+- Adams's full dataset (a possible M6+ follow-up)
+- Any change to the M5b sampler, partition or error inflation
 
 ## M7: Export and site
 - `export/to_json.py` writes `site/data/`:
