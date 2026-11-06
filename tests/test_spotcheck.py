@@ -36,3 +36,14 @@ def test_sample_is_fixed_by_the_seed_and_matches_the_committed_selection():
             (r["page"], r["line"], r["reason"], int(r["seed"])) for r in csv.DictReader(fh)
         ]
     assert committed == [(p.page, p.line, p.reason, sc.SPOTCHECK_SEED) for p in a]
+
+
+def test_all_match_is_disabled_for_logged_rows_only():
+    table, forced = _inputs()
+    picks = sc.select_rows(table, forced, np.random.default_rng(sc.SPOTCHECK_SEED))
+    flagged = [p for p in picks if sc.is_flagged(p)]
+    assert {(p.page, p.line) for p in flagged} == set(forced) and len(flagged) == 16
+    page = sc.render_html(table, picks, {(p.page, p.line): "#" for p in picks}, "0" * 64)
+    assert page.count('<button class="all" type="button" disabled>') == 16
+    assert page.count('<button class="all" type="button">All match') == 12
+    assert page.count('data-flagged="1"') == 16

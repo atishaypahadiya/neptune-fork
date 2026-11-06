@@ -323,6 +323,8 @@ table { border-collapse: collapse; width: 100%; margin-top: .5rem;
 th { font-weight: 500; color: #555; text-align: left; padding: .2rem .4rem; }
 td { padding: .2rem .4rem; white-space: nowrap; }
 .blank { color: #999; }
+.meta { color: #555; }
+p { margin: .4rem 0; }
 textarea { width: 100%; min-height: 2.6rem; font: inherit; margin-top: .4rem; }
 button { font: inherit; }
 """
@@ -337,14 +339,23 @@ document.querySelectorAll("input[type=checkbox], textarea").forEach(el => {
   }
   el.addEventListener("input", save);
 });
+document.querySelectorAll("section").forEach(sec => {
+  if (saved[sec.id + "-all"]) sec.dataset.usedAllMatch = "1";
+});
 function save() {
   const s = {};
   document.querySelectorAll("input[type=checkbox]").forEach(el => s[el.id] = el.checked);
   document.querySelectorAll("textarea").forEach(el => s[el.id] = el.value);
+  document.querySelectorAll("section").forEach(sec => {
+    if (sec.dataset.usedAllMatch) s[sec.id + "-all"] = true;
+  });
   localStorage.setItem(KEY, JSON.stringify(s));
 }
 document.querySelectorAll("button.all").forEach(b => b.addEventListener("click", () => {
-  b.closest("section").querySelectorAll("input[type=checkbox]").forEach(c => c.checked = true);
+  const sec = b.closest("section");
+  if (sec.dataset.flagged) return;  // logged rows need per-cell ticks
+  sec.querySelectorAll("input[type=checkbox]").forEach(c => c.checked = true);
+  sec.dataset.usedAllMatch = "1";
   save();
 }));
 document.getElementById("export").addEventListener("click", () => {
@@ -354,10 +365,14 @@ document.getElementById("export").addEventListener("click", () => {
       cells[c.dataset.field] = { value: c.dataset.value, matches: c.checked };
     });
     return { page: sec.dataset.page, line: sec.dataset.line, reason: sec.dataset.reason,
+             flagged: Boolean(sec.dataset.flagged),
+             used_all_match: Boolean(sec.dataset.usedAllMatch),
              cells, notes: sec.querySelector("textarea").value };
   });
   const out = { seed: Number(document.body.dataset.seed), table77_sha256: document.body.dataset.sha,
-                exported: new Date().toISOString(), rows };
+                exported: new Date().toISOString(),
+                all_match_rows: rows.filter(r => r.used_all_match).map(r => r.page + "/" + r.line),
+                rows };
   const a = document.createElement("a");
   const blob = new Blob([JSON.stringify(out, null, 2)], { type: "application/json" });
   a.href = URL.createObjectURL(blob);
@@ -365,6 +380,13 @@ document.getElementById("export").addEventListener("click", () => {
   a.click();
 });
 """
+
+
+def is_flagged(p: Pick) -> bool:
+    """In the sample because the resolution log or the misprint table touches it: these rows
+    need per-cell ticks, so "All match" is disabled for them."""
+    sources = ("resolution log", "misprint table")
+    return any(part.startswith(sources) for part in p.reason.split("; "))
 
 
 def _context(table: list[dict[str, str]]) -> dict[tuple[str, str], str]:
@@ -407,15 +429,26 @@ def render_html(table: list[dict[str, str]], picks: list[Pick], links: dict, sha
             f'aria-label="{FIELD_LABELS[f]} matches"></td>'
             for f in tr.DATA_FIELDS
         )
+        flagged = is_flagged(p)
+        button = (
+            '<button class="all" type="button" disabled>All match</button> '
+            '<span class="meta">Tick each cell: this row is in the resolution log or the '
+            "misprint table.</span>"
+            if flagged
+            else '<button class="all" type="button">All match</button>'
+        )
+        attrs = f'id="{sid}" data-page="{p.page}" data-line="{p.line}" data-reason="{e(p.reason)}"'
+        if flagged:
+            attrs += ' data-flagged="1"'
         parts += [
-            f'<section data-page="{p.page}" data-line="{p.line}" data-reason="{e(p.reason)}">',
+            f"<section {attrs}>",
             f"<h2>p. {p.page}, line {p.line}: {e(ctx[(p.page, p.line)])}</h2>",
             f'<p class="meta">In the sample by: {e(p.reason)}. Gallica PDF p. '
             f"{int(p.page) + PDF_PAGE_OFFSET}; "
             f'<a href="{e(links[(p.page, p.line)])}">full-resolution crop on Gallica</a></p>',
             f'<img src="crops/{sid}.png" alt="Gallica scan of p. {p.page}, line {p.line}">',
             f"<table><tr>{cells_h}</tr><tr>{vals}</tr><tr>{boxes}</tr></table>",
-            '<button class="all" type="button">All match</button>',
+            f"<p>{button}</p>",
             f'<textarea id="{sid}-notes" placeholder="Notes"></textarea>',
             "</section>",
         ]
