@@ -45,8 +45,10 @@ def main() -> None:
         ax.plot([lo, hi], [y, y], color=c, lw=2, solid_capstyle="round",
                 ls="-" if hit else (0, (4, 2.5)))  # fmt: skip
         ax.plot(med, y, "o", ms=6.5, mec=c, mew=1.6, mfc=c if hit else SURFACE, zorder=3)
-        if not hit:
-            ax.text(hi + 0.6, y, "miss", color=INK_2, va="center", fontsize=9)
+        if not hit:  # distance from the truth to the nearer interval end
+            miss_deg = lo - truth if truth < lo else truth - hi
+            ax.text(hi + 0.6, y, f"miss by {miss_deg:.1f}°", color=INK_2, va="center",
+                    fontsize=9)  # fmt: skip
     ax.axvline(truth, color=INK_MUTED, lw=1, zorder=0)
     ax.text(truth + 0.3, 0.75, f"true Neptune {truth:.2f}°", color=INK_2, fontsize=9,
             va="bottom")  # fmt: skip
@@ -57,7 +59,11 @@ def main() -> None:
                   color=INK_2)  # fmt: skip
     ax.set_title(f"Truth inside the 68 % interval in {cal['n_truth_in_68']} of "
                  f"{cal['n_seeds']} synthetic datasets", loc="left", color=INK,
-                 fontsize=11)  # fmt: skip
+                 fontsize=11, pad=20)  # fmt: skip
+    p_hit, n = cal["binomial"]["p_true"], cal["n_seeds"]
+    ax.text(0.0, 1.02, f"A calibrated 68 % interval misses ~{round(10 * (1 - p_hit))} in 10; "
+            f"expected hits {n * p_hit:.1f}", transform=ax.transAxes, color=INK_2,
+            fontsize=9, va="bottom")  # fmt: skip
     ax.xaxis.set_major_locator(MultipleLocator(5))
     ax.grid(axis="x", color=GRID, lw=0.8)
     ax.set_axisbelow(True)
@@ -66,7 +72,7 @@ def main() -> None:
     ax.tick_params(colors=INK_2, length=0, labelsize=9)
     ax.tick_params(axis="x", length=3, color=INK_MUTED)
     fig.text(0.01, 0.01, "free a, e ≤ 0.3, partitioned nested sampling; dot = posterior "
-             "median, line = central 68 % interval", color=INK_MUTED, fontsize=8)  # fmt: skip
+             "median, line = central 68 % interval", color=INK_2, fontsize=8)  # fmt: skip
     fig.tight_layout(rect=(0, 0.03, 1, 1))
     fig.savefig(OUT, facecolor=SURFACE)
     print(f"wrote {OUT}")
