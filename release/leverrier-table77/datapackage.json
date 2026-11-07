@@ -3,7 +3,7 @@
   "id": "https://doi.org/10.5281/zenodo.24044792",
   "name": "leverrier-1846-table77",
   "title": "Le Verrier (1846), Table n° 77: 279 observations of Uranus, 1690–1845, transcribed and reconciled",
-  "description": "Transcription of Table n° 77 of U. J. Le Verrier, 'Recherches sur les mouvements de la planète Herschel (dite Uranus)', Connaissance des Temps pour 1849, Additions, pp. 129–136 (Paris, 1846): the observed apparent right ascensions and declinations of Uranus that Le Verrier compared with theory before predicting Neptune, with his computed values and residuals. Transcribed, reconciled and spot-checked by an AI model; then spot-checked by a human against the Gallica scan (28 rows, 336 cells, 0 discrepancies). See README.md.",
+  "description": "Transcription of Table n° 77 of U. J. Le Verrier, 'Recherches sur les mouvements de la planète Herschel (dite Uranus)', Connaissance des Temps pour 1849, Additions, pp. 129–136 (Paris, 1846): the observed apparent right ascensions and declinations of Uranus that Le Verrier compared with theory before predicting Neptune, with his computed values and residuals. Machine-assisted transcription and reconciliation (an AI model), with an automated spot check; then spot-checked by a human against the Gallica scan (28 rows, 336 cells, 0 discrepancies). See README.md.",
   "version": "1.0.0",
   "homepage": "https://github.com/atishaypahadiya/neptune-fork",
   "licenses": [
@@ -752,12 +752,12 @@
       "name": "spotcheck_results",
       "path": "spotcheck_results.json",
       "title": "Spot-check results (automated)",
-      "description": "Per-cell result of the spot check by an AI model (336 cells), with the reviewer and the SHA-256 of the table checked.",
+      "description": "Per-cell result of the automated spot check (336 cells), with the reviewer and the SHA-256 of the table checked.",
       "format": "json",
       "mediatype": "application/json",
       "encoding": "utf-8",
-      "bytes": 38576,
-      "hash": "sha256:da90486b7905a8a2bf1796bca966f8a5bb9a5bad0c1c5a61e5d041e96a104ef9"
+      "bytes": 38667,
+      "hash": "sha256:51b1d1c3986ccf0d1a537c0e7de8e454510a680baaafea5db90a6aa8624f2567"
     },
     {
       "name": "observations",

@@ -179,7 +179,7 @@ scan (28 rows, 336 cells, 0 discrepancies).
 - It covers the same 28 rows as `spotcheck_results.json`.
 - The reviewer was the dataset author, on 2026-11-07.
 - Every cell was ticked individually; the "all match" shortcut was not used.
-- The review page did not show the automated results, and its ticks were stored apart from that
+- The review page did not show the automated check's results, and its ticks were stored apart from that
   review's, so nothing was pre-ticked.
 - **Method caveat:** this is verification, not blind re-transcription. The reviewer saw each
   transcribed value beside its scan crop. Its known weakness is anchoring, that is, reading

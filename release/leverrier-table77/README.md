@@ -10,8 +10,8 @@ exactly as printed. Each step that produced it is recorded: two independent pass
 witness for every disagreement, an arithmetic check of every row, a log of misprints in the
 source, and a spot check.
 
-**Read this first:** the transcription and the reconciliation were done by an AI model
-, not by an independent human. The dataset was then spot-checked by a
+**Read this first:** the transcription and the reconciliation were machine-assisted (an AI
+model), not done by an independent human. The dataset was then spot-checked by a
 human against the Gallica scan (28 rows, 336 cells, 0 discrepancies). That check was done by
 the dataset author, and the other 251 rows have had no human check. See
 [Limitations](#limitations).
@@ -24,7 +24,7 @@ the dataset author, and the other 251 rows have had no human check. See
 | `leverrier_1846_misprints.csv` | 7 cells that are wrong in the print itself, with the argument for each |
 | `leverrier_1846_resolution_log.csv` | The 14 cells where the two passes disagreed, and how each was resolved |
 | `leverrier_1846_pass1.csv`, `leverrier_1846_pass2.csv` | The two independent passes, before reconciliation |
-| `spotcheck_rows.csv`, `spotcheck_results.json` | The spot-check sample and the automated check: 28 rows, 336 cells |
+| `spotcheck_rows.csv`, `spotcheck_results.json` | The spot-check sample and the automated spot check: 28 rows, 336 cells |
 | `spotcheck_human_results.json` | The human spot check of the same 28 rows: 336 cells, 0 discrepancies |
 | `leverrier_1846.csv` | Derived: 529 RA and Dec measurements in degrees, with Julian Dates and observatories. Contains inferences |
 | `DATA_DICTIONARY.md` | Every column: meaning, units, sign conventions, formats |
@@ -98,7 +98,7 @@ appeared in. All three are public domain.
 
 ## How it was made
 
-1. **Two independent passes.** Two separate AI agents each transcribed the whole table.
+1. **Two independent passes.** Two separate machine-assisted transcriptions each covered the whole table.
    - Each worked from the page images of one scan: pass 1 from archive.org, pass 2 from
      Lille.
    - Neither used the scan's embedded OCR, and neither saw the other scan or the other pass.
@@ -149,17 +149,17 @@ appeared in. All three are public domain.
    - one Dec C − O whose sign contradicts its own row (1764 Jan 15, `log_only`);
    - one probable slip in a computed RA (1830 Nov 11, `log_only`).
 
-   An AI model checked every entry as printed in the Gallica image. The dataset author approved
+   Every entry was checked as printed in the Gallica image. The dataset author approved
    each `apply` entry.
 6. **Spot checks.** 28 rows (10 %) were checked cell by cell against the Gallica images,
    twice.
    - The sample is stratified with a fixed seed: every resolution-log row, the misprint rows
      known at review time, at least two ancient rows, every page, then random rows.
-   - **First by an AI model:** 336 cells, 0 mismatches (`spotcheck_results.json`).
+   - **First, an automated spot check:** 336 cells, 0 mismatches (`spotcheck_results.json`).
    - **Then by a human, the dataset author:** the dataset was spot-checked by a human against
      the Gallica scan (28 rows, 336 cells, 0 discrepancies) (`spotcheck_human_results.json`,
      2026-11-07).
-   - The human review page did not show the automated results, and nothing on it was pre-ticked.
+   - The human review page did not show the automated check's results, and nothing on it was pre-ticked.
    - Neither review used the "all match" shortcut: every cell was ticked individually.
    - **What the reviews were:** verification, not blind re-transcription. Each reviewer saw
      the transcribed value beside its scan crop and judged whether they matched. The known
@@ -182,9 +182,9 @@ the 1771 misprint was found.
 
 ## Limitations
 
-- **AI transcription; human check of a sample only.**
-  - Both passes, the reconciliation and the spot check were done by an AI model, in separate
-    sessions and from different scans, but by one model family.
+- **Machine-assisted transcription; human check of a sample only.**
+  - Both passes, the reconciliation and the automated spot check were machine-assisted, in
+    separate sessions and from different scans, but by one AI model family.
   - Errors that model makes systematically are not independent between passes. Reading the
     same ambiguous glyph the same way in both passes is the main risk. Such a cell produces no
     disagreement, so it never reaches the third witness, and the automated spot check may share the

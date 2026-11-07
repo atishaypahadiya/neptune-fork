@@ -11,7 +11,7 @@ infer a posterior over an unseen perturber and render where it sits in the sky o
 ## M0: Scaffold
 - `uv init`, package `fork` under `src/`, ruff + pytest config, `.gitignore` (`data/cache/`).
 - GitHub Actions: `test.yml` (fast tests on push), `pages.yml` (build + deploy `site/` on main).
-- README: one-paragraph pitch, prior-art credits, build status badge.
+- README: one-paragraph pitch, prior-art credits (Whitmore 2026, Lai et al. 1990, CoFI, KTH 2018), build status badge.
 **Exit:** `uv run pytest` runs (zero tests OK), CI green.
 
 ## M1: Frames and data access

@@ -35,14 +35,14 @@ offsets.
 
 ## Verification record
 
-- **Double entry.** Pass 1 and pass 2 were transcribed by two separate AI agents. Each
-  worked from one scan, from page images, under the brief in the session scratchpad. That
+- **Double entry.** Pass 1 and pass 2 were two separate machine-assisted transcriptions. Each
+  worked from one scan, from page images, under the same written brief. That
   gave 14 disagreeing cells, all resolved from the Gallica images
   (`leverrier_1846_resolution_log.csv`).
 - **Spot check** (2026-11-06): 28 rows, 336 cells, 0 mismatches
   (`docs/review/spotcheck_results.json`).
-  - The reviewer was an AI model in a chat session, against the Gallica images only.
-  - Transcription, reconciliation and this first check were all done by the same model family.
+  - This was an automated spot check, against the Gallica images only.
+  - Transcription, reconciliation and this first check were all done by the same AI model family.
 - **Human spot check** (2026-11-07): the same 28 rows were spot-checked by a human against the
   Gallica scan (28 rows, 336 cells, 0 discrepancies)
   (`docs/review/spotcheck_human_results.json`).
@@ -50,5 +50,5 @@ offsets.
   - It was a verification against the image, not a blind re-transcription.
   - The other 251 rows have had no human check.
 - **Misprints in the source** (`leverrier_1846_misprints.csv`) were each checked against the
-  Gallica image by an AI model. Two misprint rows (129/10 and 135/3) are in the human sample, where
+  Gallica image in the automated check. Two misprint rows (129/10 and 135/3) are in the human sample, where
   they were checked as printed. No human has reviewed the misprint judgements themselves.

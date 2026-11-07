@@ -56,7 +56,7 @@ GALLICA_VIEW_OFFSET = 467  # Gallica view f468 is PDF page 1 (views 468-725 = PD
 REVIEW_DIR = tr.ROOT / "docs" / "review"
 HTML_FILE = REVIEW_DIR / "spotcheck.html"
 HUMAN_HTML_FILE = REVIEW_DIR / "spotcheck_human.html"
-RESULTS_FILE = REVIEW_DIR / "spotcheck_results.json"  # the automated review (2026-11-06)
+RESULTS_FILE = REVIEW_DIR / "spotcheck_results.json"  # automated spot check (2026-11-06)
 HUMAN_RESULTS_FILE = REVIEW_DIR / "spotcheck_human_results.json"
 SELECTION_FILE = REVIEW_DIR / "spotcheck_rows.csv"
 CROP_DIR = REVIEW_DIR / "crops"

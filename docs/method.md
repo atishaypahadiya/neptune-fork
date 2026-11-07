@@ -94,7 +94,7 @@ pre-discovery sightings between 1690 and 1771 at σ = 12″, and one normal plac
 - **Data.** Le Verrier's 1846 memoir, Table n° 77: 279 observations (19 ancient, 260 modern),
   as apparent geocentric RA and Dec of date. 29 rows give RA only, so there are 529
   measurements. The table was transcribed twice, from two different scans. The 14 cells where
-  the passes disagreed were resolved against a third printing, and each resolution is logged.
+  the passes disagreed were resolved against a third witness (the Gallica scan of the Connaissance des Temps volume), and each resolution is logged.
   Source misprints are kept as printed in the transcription and corrected in the loader from a
   separate misprint table, each with a reason (`data/historical/`).
 - **Times.** Every row is in Paris mean time. This was established by a transit check: for a
@@ -231,7 +231,8 @@ acceptance tests check bias and coverage instead.
 - The Kepler solver's full-period closure misses 1e-12 AU for e ≳ 0.6 at large a. The cause is
   double-precision conditioning, not the algorithm, and the prior's e ≤ 0.3 is well inside the
   range where the target is met (M2).
-- The transcription passes and the reconciliation were done by AI agents. The 10 % sample
-  (28 rows, 336 cells) was checked twice against the Gallica scan: first by an AI model, then by a
+- The transcription passes and the reconciliation were machine-assisted (an AI model). The 10 %
+  sample (28 rows, 336 cells) was checked twice against the Gallica scan: first by an automated
+  spot check, then by a
   human, Atishay Pahadiya, with 0 discrepancies, cell by cell (a verification, not a blind
   re-transcription). The other 251 rows have had no human check (`docs/notes/M6.md`).

@@ -52,7 +52,7 @@ ignore = [
     "RUF001", "RUF002", "RUF003",  # allow Greek letters / ″ in strings, docstrings, comments
 ]
 
-# project rule 1: REBOUND is a test dependency only. Enforce it.
+# Project rule 1: REBOUND is a test dependency only. Enforce it.
 [tool.ruff.lint.flake8-tidy-imports.banned-api]
 "rebound".msg = "REBOUND is a test-only dependency; never import it from src/."
 

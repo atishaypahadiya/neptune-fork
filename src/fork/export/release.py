@@ -236,7 +236,7 @@ RESOURCES = [
            ["page", "line"], _TO_TABLE),
     {"name": "spotcheck_results", "path": "spotcheck_results.json",
      "title": "Spot-check results (automated)",
-     "description": "Per-cell result of the spot check by an AI model (336 cells), with the "
+     "description": "Per-cell result of the automated spot check (336 cells), with the "
                     "reviewer and the SHA-256 of the table checked.",
      "format": "json", "mediatype": "application/json", "encoding": "utf-8"},
     _table("observations", "leverrier_1846.csv", "Derived: one row per measured quantity",
@@ -290,9 +290,9 @@ def sha256(path: Path) -> str:
 def descriptor() -> dict:
     """The datapackage.json descriptor for the files currently in ``RELEASE``."""
     review = (
-        f"and spot-checked by an AI model; then {VERIFIED}"
+        f"with an automated spot check; then {VERIFIED}"
         if human_checked()
-        else "and spot-checked by an AI model; a human spot check is pending"
+        else "with an automated spot check; a human spot check is pending"
     )
     resources_ = []
     for r in resources():
@@ -308,7 +308,8 @@ def descriptor() -> dict:
             "de la planète Herschel (dite Uranus)', Connaissance des Temps pour 1849, "
             "Additions, pp. 129–136 (Paris, 1846): the observed apparent right ascensions and "
             "declinations of Uranus that Le Verrier compared with theory before predicting "
-            f"Neptune, with his computed values and residuals. Transcribed, reconciled {review}. "
+            f"Neptune, with his computed values and residuals. Machine-assisted transcription and "
+            f"reconciliation (an AI model), {review}. "
             "See README.md."
         ),
         "version": VERSION,
