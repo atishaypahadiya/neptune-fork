@@ -1,6 +1,7 @@
 """M4 / A2, A2b: fit Uranus to synthetic data without and with the true Neptune planted.
 
-Every fit frees a, e, ϖ, λ₀ from a data-only start and holds i, Ω at epoch values (rule 2).
+Every fit frees a, e, ϖ, λ₀ from a data-only start and holds i, Ω at epoch values
+(docs/RULES.md rule 2).
 """
 
 import math

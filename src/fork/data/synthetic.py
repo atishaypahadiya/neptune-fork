@@ -1,4 +1,4 @@
-"""Synthetic Uranus longitude observations (M4; project rule 3: synthetic before historical).
+"""Synthetic Uranus longitude observations (M4; docs/RULES.md rule 3: synthetic before historical).
 
 Truth = JPL Horizons heliocentric (Sun-centred) ecliptic-J2000 longitude of Uranus, which
 includes the real Neptune. Gaussian noise is added: σ = 12″ for pre-discovery sightings

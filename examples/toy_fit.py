@@ -70,7 +70,8 @@ def run(seed: int = 0, *, nlive: int = NLIVE, dlogz: float = DLOGZ, rng_seed: in
 
     t0 = time.time()
     ctx = ForwardContext.from_horizons(EPOCH_JD_TDB)
-    inc_raan = uranus_inc_raan_at_epoch(EPOCH_JD_TDB)  # held (rule 2); a, e, ϖ, λ₀ are free
+    # held (docs/RULES.md rule 2); a, e, ϖ, λ₀ are free
+    inc_raan = uranus_inc_raan_at_epoch(EPOCH_JD_TDB)
     obs, _ = make_synthetic_observations(np.random.default_rng(seed))
     box = UranusBox.from_uranus_only_fit(obs, ctx, inc_raan)
     pq = tuple(uranus_theta_to_x(np.array([19.2, 0.0, *inc_raan, 0.0, 0.0]))[4:])

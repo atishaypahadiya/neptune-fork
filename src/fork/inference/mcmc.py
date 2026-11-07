@@ -1,6 +1,6 @@
 """M5b: emcee posteriors for the hidden-mass model (PHASE1_SPEC M5).
 
-Sampled vector q (project rule 2: Uranus's in-plane four always free, i and Ω held):
+Sampled vector q (docs/RULES.md rule 2: Uranus's in-plane four always free, i and Ω held):
 
     Uranus   (a, e·cos ϖ, e·sin ϖ, λ₀)
     perturber (log10 m [M⊕], ln a, √e·cos ϖ, √e·sin ϖ, λ₀)   — any of these may be held

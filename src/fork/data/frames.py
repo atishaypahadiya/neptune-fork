@@ -1,6 +1,6 @@
 """Reference frames, precession, and state-vector ↔ orbital-element conversion.
 
-Frames used in this project (project rule 4 — every angle names its frame):
+Frames used in this project (docs/RULES.md rule 4 — every angle names its frame):
 
 ``ecl_j2000``
     Heliocentric ecliptic and mean equinox of J2000 *as used by JPL Horizons*: ICRF rotated about

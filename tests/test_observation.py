@@ -115,8 +115,8 @@ def test_planar_perturber_misfits_declination_by_arcseconds(structure):
 
 
 def test_uranus_only_fit_from_a_data_only_start(structure):
-    """The RA/Dec Uranus-only fit starts from the data alone (rule 2) and lands near the real
-    orbit; the box built from it contains the true in-plane elements."""
+    """The RA/Dec Uranus-only fit starts from the data alone (docs/RULES.md rule 2) and lands
+    near the real orbit; the box built from it contains the true in-plane elements."""
     from fork.data.horizons import states_about_inner_barycenter_ecl_j2000 as about
     from fork.export.to_json import A1_EPOCH_JD_TDB as E
     from fork.inference.fit import uranus_theta_to_x

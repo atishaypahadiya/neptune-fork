@@ -77,7 +77,7 @@ post-1781 residual RMS is **≤ 1.5 σ_noise** (4.5″); without Neptune the sam
 *Split:* **M5a** = the point fits below (no MCMC); **M5b** = MCMC, derived quantity and A3.
 - `inference/fit.py`: multistart Levenberg–Marquardt over a 24-point grid in perturber λ₀ (0–360°),
   two modes: (a) **Le Verrier mode**, a fixed at 38.4 AU (Bode's law); (b) **free a**.
-  Free: Uranus a, e, ϖ, λ₀ (i, Ω held, rule 2) and perturber (log10 m, a or fixed,
+  Free: Uranus a, e, ϖ, λ₀ (i, Ω held, docs/RULES.md rule 2) and perturber (log10 m, a or fixed,
   √e·cos ϖ, √e·sin ϖ, λ₀). M5a reports per mode: best m, a, e, χ²/dof, post-1781 residual RMS,
   number of distinct local minima, and the 1846-09-23 geocentric longitude vs true Neptune;
   exports residuals after fit to `site/data/m5a_fits.json`. Results: `docs/notes/M5.md`.
@@ -234,7 +234,7 @@ Run the validated pipeline on the observations Le Verrier actually used, and ans
 2. How much did the outcome depend on the data choices of 1846: Bouvard's, Adams's and Le Verrier's?
 3. Peirce's question (1847): was Galle's find a "happy accident"? Measure this as the probability that a given model points within Le Verrier's actual miss of the true position.
 
-### Ground rules (in addition to the project rules)
+### Ground rules (in addition to docs/RULES.md)
 
 - **Synthetic before historical, again.** Before fitting any real observation, repeat the A3b coverage test on synthetic data generated with the M6 observation model: real epochs, per-observer error structure, the same gaps. If coverage fails, stop and report. Don't tune.
 - **Pre-register.** Write the A6 thresholds into this file and commit them before the first real-data fit. Never change them after seeing real results.
@@ -257,8 +257,8 @@ Sources, in priority order:
 4. The ancient sightings (1690–1771: Flamsteed, Bradley, Mayer, Lemonnier), as Le Verrier reduced them.
 
 Process:
-- Get the scans onto the local machine (the user can download them if your sandbox can't). Commit page images or stable URLs under `data/historical/sources/`.
-- **Double-entry transcription.** Do two independent passes into `data/historical/leverrier_1846_pass{1,2}.csv`, then diff them. Every disagreement is resolved against the page image and logged. The user spot-checks 10% of rows chosen at random.
+- Get the scans onto the local machine (download them by hand where automated download is blocked). Commit page images or stable URLs under `data/historical/sources/`.
+- **Double-entry transcription.** Do two independent passes into `data/historical/leverrier_1846_pass{1,2}.csv`, then diff them. Every disagreement is resolved against the page image and logged. A human reviewer spot-checks 10% of rows chosen at random.
 - Schema for `leverrier_1846.csv`, one row per observation or normal place:
   - `id`, `epoch` (as printed), `epoch_tt_jd`
   - `observer`, `observatory`, `instrument` (if known)

@@ -133,7 +133,7 @@ def _lon_ecl(orbit_lon, inc, raan):
 
 
 def test_inc_raan_leak(offline_horizons):
-    """Project rule 2: holding Uranus's i, Ω at their 1781 values leaks < 1″ of Neptune.
+    """docs/RULES.md rule 2: holding Uranus's i, Ω at their 1781 values leaks < 1″ of Neptune.
 
     Integrate J+S+U with and without Neptune from the same 1781 ICs; Neptune's effect on Uranus's
     osculating (i, Ω) over 1781–1846 is converted to longitude as the worst case, over every

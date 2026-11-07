@@ -24,7 +24,7 @@ MU = mu_heliocentric(URANUS.mass_msun)
 
 
 def wrap(d):
-    """Wrap-safe angle difference (project rule 6)."""
+    """Wrap-safe angle difference (docs/RULES.md rule 6)."""
     return (np.asarray(d) + math.pi) % TWO_PI - math.pi
 
 

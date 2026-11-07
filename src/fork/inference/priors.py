@@ -1,6 +1,6 @@
 """The hidden-mass prior, shared by every sampler (emcee in ``mcmc``, dynesty in ``nested``).
 
-Sampled vector q (project rule 2: Uranus's in-plane four always free, i and Ω held):
+Sampled vector q (docs/RULES.md rule 2: Uranus's in-plane four always free, i and Ω held):
 
     Uranus    (a [AU], e·cos ϖ, e·sin ϖ, λ₀ [rad])
     perturber (log10 m [M⊕], ln a [AU], √e·cos ϖ, √e·sin ϖ, λ₀ [rad])  — any may be held

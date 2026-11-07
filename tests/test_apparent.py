@@ -78,8 +78,9 @@ def test_aberration_and_light_time_are_in_the_expected_range():
 
 @pytest.mark.parametrize("year", [1690, 1845])
 def test_true_of_date_differs_from_j2000_by_precession(year):
-    """Rule 4 guard: an of-date RA differs from the J2000 RA by roughly 50″/yr × (2000 − year)
-    · (cos ε + sin ε sin α tan δ); here only its order of magnitude, > 1.5°."""
+    """docs/RULES.md rule 4 guard: an of-date RA differs from the J2000 RA by roughly
+    50″/yr × (2000 − year) · (cos ε + sin ε sin α tan δ); here only its order of magnitude,
+    > 1.5°."""
     from fork.data.synthetic import jd_tdb_jan1
 
     jd = np.asarray(jd_tdb_jan1([year]))

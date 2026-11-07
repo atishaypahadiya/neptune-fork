@@ -9,7 +9,7 @@ Bodies integrated: Sun (with inner planets folded in, centred on their common ba
 Jupiter, Saturn, Uranus, and optionally one planar perturber. Jupiter and Saturn start from their
 Horizons states at the model epoch and are **not** fitted. θ carries all six osculating
 heliocentric Uranus elements at the epoch; fits free the in-plane four (a, e, ϖ, λ₀) and hold
-i, Ω at their epoch values (project rule 2, ``uranus_inc_raan_at_epoch``).
+i, Ω at their epoch values (docs/RULES.md rule 2, ``uranus_inc_raan_at_epoch``).
 
 Uranus θ (6), all angles in ecl_j2000:
     a_au, e, inc_rad, raan_rad (Ω), varpi_rad (ϖ = Ω + ω), lam0_rad (mean longitude λ = ϖ + M)
@@ -264,7 +264,7 @@ def predict_states_ecl_j2000(
 
 def uranus_theta_from_state(state_ecl_j2000: ArrayLike) -> np.ndarray:
     """6-element Uranus θ from a heliocentric state. For tests/diagnostics only — a fit must never
-    be initialised or held at Horizons in-plane elements (project rule 2)."""
+    be initialised or held at Horizons in-plane elements (docs/RULES.md rule 2)."""
     s = np.asarray(state_ecl_j2000, dtype=np.float64)
     a, e, inc, raan, argp, mean = state_to_elements(s[:3], s[3:], _MU_URANUS)
     return np.array([a, e, inc, raan, (raan + argp) % TWO_PI, (raan + argp + mean) % TWO_PI])
@@ -296,7 +296,7 @@ def inclined_perturber_theta_from_state(
 def uranus_inc_raan_at_epoch(epoch_jd_tdb: float) -> tuple[float, float]:
     """(inc_ecl_j2000_rad, raan_ecl_j2000_rad): Uranus's osculating i, Ω at the epoch, from
     Horizons (about the inner barycenter). The only Horizons Uranus information a fit may use
-    (project rule 2); the leak is bounded by ``tests/test_forward.py::test_inc_raan_leak``."""
+    (docs/RULES.md rule 2); the leak is bounded by ``tests/test_forward.py::test_inc_raan_leak``."""
     from fork.data.horizons import states_about_inner_barycenter_ecl_j2000 as about_bary
 
     theta = uranus_theta_from_state(about_bary("uranus", [epoch_jd_tdb])[0])

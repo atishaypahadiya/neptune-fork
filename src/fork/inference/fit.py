@@ -9,7 +9,7 @@ Uranus is fitted in non-singular variables
 
     x = (a, k, h, λ₀, p, q),  k + i·h = e·exp(iϖ),  p + i·q = tan(i/2)·exp(iΩ)
 
-so circular and planar orbits are interior points. Per project rule 2 the in-plane four
+so circular and planar orbits are interior points. Per docs/RULES.md rule 2 the in-plane four
 (a, k, h, λ₀) are always free and start from the data alone (mean motion from the post-1781
 longitudes, e = 0); (p, q), i.e. i and Ω, are held at their epoch values.
 
@@ -39,7 +39,7 @@ START_INC_DEG = 1.0
 
 
 def wrap_rad(d: np.ndarray) -> np.ndarray:
-    """Wrap-safe angle difference into [−π, π) (project rule 6)."""
+    """Wrap-safe angle difference into [−π, π) (docs/RULES.md rule 6)."""
     return (np.asarray(d) + math.pi) % TWO_PI - math.pi
 
 
@@ -120,7 +120,7 @@ def fit_uranus_elements(
     a, e, ϖ, λ₀ are free; (i, Ω) are held at ``inc_raan_ecl_j2000_rad`` (the epoch values, see
     ``fork.model.forward.uranus_inc_raan_at_epoch``). ``fixed_perturber_theta`` (5 entries) is
     integrated alongside but not fitted. ``free_inc_raan=True`` fits all six Uranus elements from
-    a data-only multistart — diagnostic only (project rule 2).
+    a data-only multistart — diagnostic only (docs/RULES.md rule 2).
     ``FitResult.theta`` holds the 6 Uranus elements only.
     """
     pert = np.empty(0) if fixed_perturber_theta is None else np.asarray(fixed_perturber_theta)
@@ -515,7 +515,7 @@ def fit_perturber_multistart(
     bounded by ``e_max`` (default: the M5 prior's 0.3; ``None`` = unbounded, diagnostics only).
     ``space`` overrides both, e.g. ``held_orbit_space``
     for a published solution with only λ₀ free. Uranus's i, Ω are held at
-    ``inc_raan_ecl_j2000_rad`` (project rule 2). Every start shares the data-only Uranus
+    ``inc_raan_ecl_j2000_rad`` (docs/RULES.md rule 2). Every start shares the data-only Uranus
     solution from ``fit_uranus_elements`` and the neutral perturber start above (for any variable
     not held), differing only in perturber λ₀ (``n_lam0_starts`` equally spaced over 0–360°, or
     ``lam0_starts_rad``). ``n_workers > 1`` runs starts in a process pool; results are identical

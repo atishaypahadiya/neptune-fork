@@ -1,9 +1,9 @@
 """Uranus-only least-squares fit to RA/Dec measurements, and the Uranus prior box built from it
 (the M6 counterpart of ``fit.fit_uranus_elements`` and ``priors.UranusBox.from_uranus_only_fit``).
 
-Rule 2 as in M4–M5: Uranus's in-plane (a, k, h, λ₀) are free and start from the data alone;
-(p, q), i.e. i and Ω, are held at their epoch values. Declinations would constrain i and Ω,
-but freeing them is a separate decision. The rule and its leak test are unchanged.
+docs/RULES.md rule 2, as in M4–M5: Uranus's in-plane (a, k, h, λ₀) are free and start from the
+data alone; (p, q), i.e. i and Ω, are held at their epoch values. Declinations would constrain
+i and Ω, but freeing them is a separate decision. The rule and its leak test are unchanged.
 
 Data-only start: each measured direction is turned back into a geocentric ecliptic-J2000
 longitude, using the inverse of the of-date rotation and ignoring aberration (~20″, harmless

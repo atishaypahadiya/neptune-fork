@@ -3,7 +3,7 @@
     uv run python docs/notes/scripts/m4_residuals_plot.py
 
 Top: noise-free residual curves (Horizons truth − best fit), yearly 1690–1845:
-  - A2: no perturber, a/e/ϖ/λ₀ free, i and Ω held at epoch values (rule 2), with the noisy
+  - A2: no perturber, a/e/ϖ/λ₀ free, i and Ω held at epoch values (docs/RULES.md rule 2), with the noisy
     observation residuals as dots;
   - diagnostic: no perturber, all six Uranus elements free;
   - A2b: true Neptune planted, Uranus refitted.
