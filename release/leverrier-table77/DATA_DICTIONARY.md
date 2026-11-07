@@ -76,7 +76,7 @@ The reconciled table. One row per printed row: 279 rows.
 | `ra_calc_sec` | text (decimal) | Secondes de l'AR calculée: **seconds only** of the computed RA, unsigned. ″ of arc (ancient) or s of time (modern). The computed degrees/hours and minutes are not printed. They equal the observed ones, or differ by a minute or two where the C − O crosses a minute boundary (ancient C − O reach −66.9″) |
 | `ra_c_minus_o` | text (signed decimal) | AR calculée moins AR observée: **C − O** in RA. ″ of arc (ancient) or s of time (modern) |
 | `dec_obs` | text `±d m s` | Déclinaison observée: apparent Dec, to 0.1″. `»` = no Dec observed |
-| `dec_calc_sec` | text (decimal) | Secondes de la déclinaison calculée: **seconds only** of the computed Dec, ″. A printed sign repeats the Dec's sign; it is not the sign of the seconds. Modern southern rows print `-` (155 rows). p. 136 l. 24–30 (1844–45, northern) print `+`. The other rows, including the three ancient southern rows, are unsigned. Use the magnitude: computed Dec = sign(`dec_obs`) × (its degrees, its minutes ± a minute, these seconds). `»` = none |
+| `dec_calc_sec` | text (decimal) | Secondes de la déclinaison calculée: **seconds only** of the computed Dec, ″. A printed sign repeats the Dec's sign; it is not the sign of the seconds. Modern southern rows print `-` (155 rows). p. 136 l. 24–30 (1844–45, northern) print `+`. The other rows, including the three ancient southern rows, are unsigned. Use the magnitude: computed Dec = sign(`dec_obs`) × (its degrees, its minutes ± a minute, these seconds). In 17 rows (pp. 129–134) the printed computed seconds are 60 or more, e.g. `61.6` beside an observed `+23 32 56.0` with C − O `+5.6`: Le Verrier counted them within the observed minute instead of carrying a minute. They are printed so, and the row's arithmetic closes. `»` = none |
 | `dec_c_minus_o` | text (signed decimal) | Décl. calculée moins décl. observée: **C − O** in Dec, ″. A difference of signed declinations: for observed −17° 6′ 13.3″ and computed seconds 1.2, computed is −17° 6′ 1.2″ and C − O = +12.1″. `»` = none |
 | `lon_c_minus_o` | text (signed decimal) | Longitude calculée moins longitude observée: **C − O** in geocentric ecliptic longitude, ″. Derived by Le Verrier from the RA and Dec errors (formulas A and B, pp. 127–128), not measured. RA-only rows take it from the RA alone |
 | `lat_c_minus_o` | text (signed decimal) | Latitude calculée moins latitude observée: **C − O** in geocentric latitude, ″, also derived. `»` = none |
@@ -174,12 +174,28 @@ Result: 336 of 336 cells match the Gallica image.
 
 ## `spotcheck_human_results.json`
 
-The human spot-check record. The dataset was spot-checked by a human against the Gallica scan (28 rows, 336 cells, 0 discrepancies).
+The human spot-check record. The dataset was spot-checked by a human against the Gallica
+scan (28 rows, 336 cells, 0 discrepancies).
 - It covers the same 28 rows as `spotcheck_results.json`.
 - The reviewer was the dataset author, on 2026-11-07.
 - Every cell was ticked individually; the "all match" shortcut was not used.
 - The review page did not show the automated results, and its ticks were stored apart from that
   review's, so nothing was pre-ticked.
+- **Method caveat:** this is verification, not blind re-transcription. The reviewer saw each
+  transcribed value beside its scan crop. Its known weakness is anchoring, that is, reading
+  the expected digit in an unclear glyph. The automated spot check had the same design.
+- **The other 251 rows** have had no human check. What covers them is the per-row arithmetic
+  check, which is independent of any visual check:
+  - The printed C − O equals computed − observed seconds exactly, to the last printed digit,
+    for RA in all 279 rows and for Dec in 250 rows.
+  - The exceptions are the 29 RA-only rows, which have no Dec values, and 1764 Jan 15, Dec
+    (p. 129 l. 10), a source misprint listed in `leverrier_1846_misprints.csv`.
+  - It catches any single misread digit in the seconds, decimals and C − O it reads, except a
+    tens digit off by exactly 6, which changes the value by 60.
+  - It does not read the degrees, hours or minutes of observed values, the date, the mean
+    time, or the longitude and latitude C − O.
+
+  See README.md, Limitations, for what covers those.
 
 The keys are those of `spotcheck_results.json`, except `reviewer`:
 

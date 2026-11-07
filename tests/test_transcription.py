@@ -99,3 +99,64 @@ def test_resolution_log_and_misprint_table_parse_strictly():
         ("135", "3", "ra_calc_sec", "log_only"),
     }
     assert all(x["uses_ephemeris"] == "no" for x in m)
+
+
+def _digit_positions(cell: str) -> list[tuple[int, str]]:
+    """(index, part) for each digit of a cell: part is top/min (leading sexagesimal parts) or
+    sec_tens/sec_units/frac (the last part: seconds, or a seconds-only / C − O value)."""
+    out, off = [], len(cell) - len(cell.lstrip("+-"))
+    parts = cell.lstrip("+-").split()
+    for pi, p in enumerate(parts):
+        whole = p.partition(".")[0]
+        for j, ch in enumerate(p):
+            if ch.isdigit():
+                if pi < len(parts) - 1:
+                    part = "top" if pi == 0 else "min"
+                elif j >= len(whole):
+                    part = "frac"
+                else:
+                    part = "sec_tens" if len(whole) == 2 and j == 0 else "sec_units"
+                out.append((off + j, part))
+        off += len(p) + 1
+    return out
+
+
+def test_arithmetic_check_reach_on_every_single_digit_misread():
+    """Pins the release README's statement: in every checkable row the printed C − O closes
+    exactly; of all single-digit substitutions in the digits the check reads (seconds and
+    decimals of the observed RA/Dec, the computed seconds, the C − O), it detects 98.5 %, and
+    every miss is a tens-of-seconds digit off by exactly 6 (a change of 60 that the unprinted
+    computed minute absorbs)."""
+    rows = tr.read_pass(tr.RECONCILED_FILE)
+    misprint = ("129", "10", "dec")  # 1764 Jan 15, in the misprint table
+    fields = ("ra_obs", "ra_calc_sec", "ra_c_minus_o", "dec_obs", "dec_calc_sec", "dec_c_minus_o")
+    n_checked = {"ra": 0, "dec": 0}
+    total = caught = 0
+    misses = set()
+    for r in rows:
+        base = tr.arithmetic_check(r)
+        for coord, v in base.items():
+            if v is not None:
+                n_checked[coord] += 1
+                if (r["page"], r["line"], coord) != misprint:
+                    assert abs(v) < 1e-6, (r["page"], r["line"], coord, v)
+        for f in fields:
+            coord = f.split("_")[0]
+            if base[coord] is None or (r["page"], r["line"], coord) == misprint:
+                continue
+            cell = r[f]
+            for i, part in _digit_positions(cell):
+                if f.endswith("_obs") and part in ("top", "min"):
+                    continue  # degrees/hours/minutes: not read by the check, by design
+                for d in "0123456789":
+                    if d == cell[i]:
+                        continue
+                    v = tr.arithmetic_check({**r, f: cell[:i] + d + cell[i + 1 :]})[coord]
+                    total += 1
+                    if abs(v) > 1e-6:
+                        caught += 1
+                    else:
+                        misses.add((part, abs(int(d) - int(cell[i]))))
+    assert n_checked == {"ra": 279, "dec": 250}
+    assert misses == {("sec_tens", 6)}
+    assert caught / total == pytest.approx(0.985, abs=0.0005)

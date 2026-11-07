@@ -181,3 +181,14 @@ def test_manifest_hashes_match_the_project_manifest():
     project = set(hexes.findall((tr.HIST / "sources" / "MANIFEST.md").read_text("utf-8")))
     release = set(hexes.findall((rel.RELEASE / "MANIFEST.md").read_text("utf-8")))
     assert len(project) == 3 and project <= release
+
+
+def test_transit_check_covers_every_row_as_the_readme_says():
+    """README: every row's date and mean time fit the meridian-transit identity within 3.6 s,
+    except the logged 1768 Dec 30 time (+9.5 s); a misread day or minute would miss by >= 60 s."""
+    with (rel.RELEASE / "leverrier_1846.csv").open(newline="", encoding="utf-8") as fh:
+        ra = [r for r in csv.DictReader(fh) if r["quantity"] == "ra"]
+    assert len(ra) == 279
+    resid = {r["obs_id"]: abs(float(r["transit_resid_s"])) for r in ra}
+    assert resid.pop("LV1846-T77-p129-l12") == pytest.approx(9.5, abs=0.05)
+    assert max(resid.values()) <= 3.6

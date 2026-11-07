@@ -11,8 +11,10 @@ witness for every disagreement, an arithmetic check of every row, a log of mispr
 source, and a spot check.
 
 **Read this first:** the transcription and the reconciliation were done by an AI model
-, not by an independent human. The dataset was then spot-checked by a human against the Gallica scan (28 rows, 336 cells, 0 discrepancies). That check
-was done by the dataset author. See [Limitations](#limitations).
+, not by an independent human. The dataset was then spot-checked by a
+human against the Gallica scan (28 rows, 336 cells, 0 discrepancies). That check was done by
+the dataset author, and the other 251 rows have had no human check. See
+[Limitations](#limitations).
 
 ## Contents
 
@@ -122,10 +124,12 @@ appeared in. All three are public domain.
 4. **Arithmetic check of every row.** In each row the printed C − O must equal the computed
    seconds minus the observed seconds. The computed minute is not printed, so the nearest
    consistent minute is used.
-   - All 279 RA rows and 250 Dec rows pass to within 0.05, except one: 1764 Jan 15, Dec. That
-     row is printed the same way in all three witnesses and is listed as a misprint.
+   - All 279 RA rows and 250 Dec rows close exactly, to the last printed digit, except one:
+     1764 Jan 15, Dec. That row is printed the same way in all three witnesses and is listed as
+     a misprint. The 29 RA-only rows have no Dec values to check.
    - The check catches misread seconds and C − O digits. It cannot see an error in the degrees,
-     hours or minutes.
+     hours or minutes. Its exact reach is described under
+     [Limitations](#limitations).
 5. **Misprint policy.** The transcription never corrects the source. A cell judged wrong in
    the print goes into `leverrier_1846_misprints.csv`, with:
    - the printed value and, where it can be determined, the correction;
@@ -148,10 +152,16 @@ appeared in. All three are public domain.
    - The sample is stratified with a fixed seed: every resolution-log row, the misprint rows
      known at review time, at least two ancient rows, every page, then random rows.
    - **First by an AI model:** 336 cells, 0 mismatches (`spotcheck_results.json`).
-   - **Then by a human, the dataset author:** the dataset was spot-checked by a human against the Gallica scan (28 rows, 336 cells, 0 discrepancies)
-     (`spotcheck_human_results.json`, 2026-11-07).
+   - **Then by a human, the dataset author:** the dataset was spot-checked by a human against
+     the Gallica scan (28 rows, 336 cells, 0 discrepancies) (`spotcheck_human_results.json`,
+     2026-11-07).
    - The human review page did not show the automated results, and nothing on it was pre-ticked.
    - Neither review used the "all match" shortcut: every cell was ticked individually.
+   - **What the reviews were:** verification, not blind re-transcription. Each reviewer saw
+     the transcribed value beside its scan crop and judged whether they matched. The known
+     weakness of that design is anchoring: shown the expected digit, a reviewer tends to read
+     that digit in an unclear glyph. A blind re-transcription of the same rows would not have
+     this weakness. Neither review was one.
 
 **Afterwards: comparison with a modern ephemeris.** Each observed RA and Dec was compared
 with Uranus's apparent place from JPL Horizons at the same epoch. This is not part of the
@@ -175,9 +185,42 @@ the 1771 misprint was found.
     same ambiguous glyph the same way in both passes is the main risk. Such a cell produces no
     disagreement, so it never reaches the third witness, and the automated spot check may share the
     same bias.
-  - The dataset was spot-checked by a human against the Gallica scan (28 rows, 336 cells, 0 discrepancies). That check guards against such errors only in the rows it covers.
+  - The dataset was spot-checked by a human against the Gallica scan (28 rows, 336 cells, 0
+    discrepancies). That check guards against such errors only in the rows it covers.
+  - It is verification, not blind re-transcription: the reviewer saw each transcribed value
+    beside its scan crop. Its known weakness is anchoring, that is, reading the expected digit
+    in an unclear glyph.
   - It covers the same 28 rows as the automated check. **The other 251 rows have had no human
     check.**
+  - **What covers the other 251 rows instead.** The per-row arithmetic check (step 4) is
+    independent of any visual check, and it covers every row with these exceptions:
+    - **Rows checked:** the RA half applies to all 279 rows. The Dec half applies to 250: the
+      29 RA-only rows print no Dec values (`»`), so they have nothing to check there.
+    - **Result:** in every check that applies, the printed C − O equals computed − observed
+      seconds exactly, to the last printed digit. The one exception is 1764 Jan 15, Dec
+      (p. 129 l. 10). That is a misprint printed the same in all three witnesses, so this
+      check cannot confirm that row's Dec cells.
+    - **What it reads:** six cells per row: the seconds of the observed RA and Dec, the
+      computed seconds, and the RA and Dec C − O.
+    - **What it catches:** any single misread digit in those seconds, their decimals, or the
+      C − O, with one exception. A tens-of-seconds digit misread by exactly 6 (a 1 read as 7,
+      say) changes the value by 60, and the unprinted computed minute absorbs that.
+      - In an observed value this exception gives an impossible 60 or more.
+      - In the computed seconds or a C − O it can pass, because values of 60 or more occur
+        there legitimately (see `DATA_DICTIONARY.md`).
+      - Over all rows, the check detects 98.5 % of possible single-digit substitutions in the
+        digits it reads. The rest are all this case.
+    - **What it cannot see:**
+      - the degree, hour and minute digits of the observed values;
+      - the date and the mean time;
+      - the longitude and latitude C − O.
+    - **What covers those:**
+      - The meridian-transit check covers the date and the mean time of every row. A misread
+        day or minute moves the transit by a minute or more, while every row fits within 3.6 s
+        except the logged 1768 Dec 30 time.
+      - The ephemeris comparison (above) covers the year and the degrees and minutes of the
+        observed values.
+      - The longitude and latitude C − O have no independent check.
   - The human reviewer is the dataset author, who also directed the work, approved the
     misprint corrections and confirmed one disputed glyph. It is not an independent
     third-party review.
