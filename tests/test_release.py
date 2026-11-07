@@ -170,7 +170,8 @@ def test_citation_metadata_agree():
     assert zen["license"] == rel.LICENSE["name"].lower() == "cc0-1.0"
     author = cff["authors"][0]
     assert (author["family-names"], author["given-names"]) == ("Pahadiya", "Atishay")
-    assert zen["creators"][0]["name"] == "Pahadiya, Atishay"
+    assert author["orcid"] == "https://orcid.org/0009-0004-1264-1662"
+    assert zen["creators"][0] == {"name": "Pahadiya, Atishay", "orcid": "0009-0004-1264-1662"}
     assert zen["upload_type"] == "dataset"
     assert set(zen["keywords"]) == set(cff["keywords"]) == set(rel.KEYWORDS)
 

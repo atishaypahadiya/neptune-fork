@@ -7,7 +7,7 @@ Do the steps in order. Run the commands from the repository root.
 **Status (2026-11-07):** step 2 is complete. The dataset was spot-checked by a human against the Gallica scan (28 rows, 336 cells, 0 discrepancies), by Atishay Pahadiya:
 `docs/review/spotcheck_human_results.json`, SHA-256
 `777515a11d0e2586767d3103835ef80b2beb0b73fa432650d9262bc1d1ff7a2e`. The package is out of
-the "pending" state. Next: the ORCID decision (step 1), then Zenodo (step 3).
+the "pending" state. The ORCID is filled in (step 1). Next: Zenodo (step 3).
 
 ## 1. Decisions (done 2026-11-07)
 
@@ -15,8 +15,8 @@ the "pending" state. Next: the ORCID decision (step 1), then Zenodo (step 3).
 - [x] Licence: CC0 1.0 for the data and documentation, with a "please cite" request in the
   README.
 - [x] Publish only after the human spot check.
-- [ ] ORCID: fill in the placeholder in `leverrier-table77/CITATION.cff` (and add `"orcid"` to
-  the creator in `.zenodo.json`), or delete the placeholder.
+- [x] ORCID: 0009-0004-1264-1662 (https://orcid.org/0009-0004-1264-1662), in `leverrier-table77/CITATION.cff` (as the URL) and
+  `.zenodo.json` (as the bare iD, Zenodo's format). Done 2026-11-07.
 
 ## 2. Human spot check (done 2026-11-07)
 
@@ -85,7 +85,7 @@ not matching`. The record's SHA-256 is in `leverrier-table77/MANIFEST.md`.
   - Commit, and replace those two files in the Zenodo draft. `datapackage.json` does not hash
     them, so no rebuild is needed.
 - [ ] Fill in the form from `.zenodo.json`:
-  - resource type Dataset, the title, and the creator (with ORCID if you have one);
+  - resource type Dataset, the title, and the creator with ORCID 0009-0004-1264-1662;
   - paste the description;
   - licence **CC0 1.0 Universal**, the keywords, version 1.0.0, language English;
   - related works: "is supplement to" the GitHub repository, and "is derived from" each of the

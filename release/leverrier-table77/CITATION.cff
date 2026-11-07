@@ -1,5 +1,5 @@
-# Before release: add the Zenodo DOI (uncomment `doi`), set `date-released`, and fill in or
-# delete the ORCID placeholder. See release/CHECKLIST_leverrier-table77.md.
+# Before release: add the Zenodo DOI (uncomment `doi`) and set `date-released`.
+# See release/CHECKLIST_leverrier-table77.md.
 cff-version: 1.2.0
 message: >-
   If you use this dataset, please cite it as below, and cite Le Verrier (1846) for the
@@ -12,7 +12,7 @@ version: 1.0.0
 authors:
   - family-names: Pahadiya
     given-names: Atishay
-    # orcid: "https://orcid.org/0000-0000-0000-0000"
+    orcid: "https://orcid.org/0009-0004-1264-1662"
 license: CC0-1.0
 repository-code: "https://github.com/atishaypahadiya/neptune-fork"
 abstract: >-
