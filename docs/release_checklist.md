@@ -13,8 +13,8 @@ semver: the tag is `vX.Y.Z`, and `pyproject.toml`, `CITATION.cff` and `.zenodo.j
   `LICENSE`, `README.md`, `CITATION.cff` (`license: [MIT, CC0-1.0]`) and `.zenodo.json`.
   Zenodo's `license` field takes one value, so it says MIT, and the CC0 dedication is in the
   description and notes.
-- ORCID: there is a marked placeholder in `CITATION.cff` and `.zenodo.json`, to be filled in
-  by you.
+- ORCID: 0009-0004-1264-1662 (https://orcid.org/0009-0004-1264-1662), filled in 2026-11-07: the URL in `CITATION.cff`, the bare iD
+  in `.zenodo.json`.
 
 ## Before tagging: M6 complete
 
@@ -50,9 +50,9 @@ semver: the tag is `vX.Y.Z`, and `pyproject.toml`, `CITATION.cff` and `.zenodo.j
 
 - [ ] Version set to `1.0.0` in `pyproject.toml`, then `uv lock`, and the same value in
   `CITATION.cff` and `.zenodo.json`.
-- [ ] ORCID placeholder replaced in both files:
-  - `CITATION.cff` has `https://orcid.org/0000-0000-0000-0000`;
-  - `.zenodo.json` has `PLACEHOLDER-ORCID-replace-before-release`.
+- [x] ORCID placeholder replaced in both files (2026-11-07):
+  - `CITATION.cff` had `https://orcid.org/0000-0000-0000-0000`, now `https://orcid.org/0009-0004-1264-1662`;
+  - `.zenodo.json` had `PLACEHOLDER-ORCID-replace-before-release`, now `0009-0004-1264-1662`.
 
   `grep -n "0000-0000-0000-0000\|PLACEHOLDER" CITATION.cff .zenodo.json` must print nothing.
 - [ ] `CITATION.cff`: add `date-released: YYYY-MM-DD` and validate with

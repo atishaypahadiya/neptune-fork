@@ -16,8 +16,7 @@ abstract: >-
 authors:
   - family-names: Pahadiya
     given-names: Atishay
-    # PLACEHOLDER: replace the all-zero ORCID below with the real one before release.
-    orcid: "https://orcid.org/0000-0000-0000-0000"
+    orcid: "https://orcid.org/0009-0004-1264-1662"
 repository-code: "https://github.com/atishaypahadiya/neptune-fork"
 # MIT for the code; CC0 1.0 for everything in data/historical/ (see LICENSE).
 license:
