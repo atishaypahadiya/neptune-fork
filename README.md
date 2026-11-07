@@ -9,18 +9,21 @@ where the unseen planet should be in place of a single best fit. Phase 2 will
 generalise it into a "fork engine" that weighs hidden mass, a modified law of gravity and plain
 data error as explanations for an orbital anomaly.
 
-![Posterior for the perturber's 1846 longitude on one synthetic dataset, by prior cell, above the profile likelihood](docs/notes/M5b_seed5_lon.png)
+![Ten horizontal 68% intervals for the perturber's 1846 longitude, one per synthetic dataset, against a vertical line at true Neptune; two dashed intervals miss it](docs/notes/M5b_coverage.png)
 
-*Synthetic data, seed 5: where the inferred planet sits on 1846-09-23, Galle's discovery night.*
-The top panel is the posterior, coloured by the prior cell each sample came from. The bottom
-panel is the best fit at each longitude. The likelihood is flat across about 10°, so where the
-posterior lands depends on how much prior volume fits well. This seed is the largest miss in
-the coverage test (−1.74σ).
+*Coverage test (A3b) on synthetic data.* Each row is one noise realisation. It shows the
+posterior median and central 68 % interval for where the inferred planet sits on 1846-09-23,
+Galle's discovery night. True Neptune (325.87°) lies inside 8 of the 10 intervals. For
+calibrated 68 % intervals that count gives a two-sided binomial p = 0.52, and the intervals
+are 7–11° wide.
 
-Across 10 such datasets, the 68 % interval contains true Neptune (325.87°) 8 times. A
-calibrated 68 % interval passes this test with p = 0.52, and the intervals are 7–11° wide. On
-noise-free data the fit recovers Neptune's 1846 longitude to 0.07°. Every number above comes
-from synthetic data. No fit to real observations has been run yet.
+There are two separate noise-free checks:
+- **Point fit (M5a, least squares):** recovers Neptune's 1846 longitude to 0.07°. This shows
+  the model and fitter are unbiased.
+- **Posterior (M5b):** wider, with its median at 322.05° against the true 325.87°, a −0.75σ
+  offset. The shift runs along the mass–distance degeneracy, where the likelihood is flat.
+
+Every number here comes from synthetic data. No real observations have been fitted yet.
 
 ## Status
 
@@ -114,6 +117,12 @@ What this project does differently:
 
 ## Citing and license
 
-Citation metadata is in [CITATION.cff](CITATION.cff). The code is under the MIT license
-([LICENSE](LICENSE)). The 1846 source tables are in the public domain, and the transcription's
-provenance is in `data/historical/sources/MANIFEST.md`.
+Citation metadata is in [CITATION.cff](CITATION.cff). The licenses are split ([LICENSE](LICENSE)):
+
+- **Code:** MIT. This covers everything outside `data/historical/`.
+- **Data:** CC0 1.0 (public-domain dedication) for everything in `data/historical/`: the
+  Table n° 77 transcriptions, the resolution log, the misprint table, the loader output and the
+  error model. Citing this project when you reuse them is appreciated but not required.
+
+Le Verrier's 1846 memoir itself is in the public domain. Its scans are listed, with URLs and
+hashes, in `data/historical/sources/MANIFEST.md`.

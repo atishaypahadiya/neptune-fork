@@ -192,8 +192,9 @@ A fixed tolerance on the 1846 longitude would test the noise draw, not the code.
 profile likelihood shows these data pin that longitude only to about ±10° (Δχ² = 1). So the
 acceptance tests check bias and coverage instead.
 
-- **A3a, bias.** On noise-free data, the free-a fit recovers true Neptune's 1846 longitude to
-  **0.07°**. The target was within 0.5°.
+- **A3a, bias.** On noise-free data, the free-a *point fit* (M5a, least squares) recovers true
+  Neptune's 1846 longitude to **0.07°**. The target was within 0.5°. This is a check on the
+  model and the fitter, not on the posterior. For the noise-free posterior, see below.
 - **A3b, coverage.** With free a, e ≤ 0.3 and 10 noise seeds, the true longitude (325.87°) lies
   inside the posterior's central 68 % interval for **8 of 10 seeds**. A calibrated 68 %
   interval gives a two-sided binomial p = 0.52, and the pass range was 5–8. The intervals are
@@ -203,8 +204,11 @@ acceptance tests check bias and coverage instead.
   coverage drops to 5/10 (p = 0.31). ln Z prefers e ≤ 0.1 on all 10 seeds, by
   Δln Z = +0.2 to +1.5. That is the Occam factor of the smaller prior: the data don't need
   e > 0.1.
-- **Noise-free posterior.** The posterior median sits 0.75σ from the truth in longitude, along
-  the mass–distance direction (cosine 0.99). The likelihood is flat in that direction.
+- **Noise-free posterior (M5b).** The median 1846 longitude is 322.05°, against the true
+  325.87°: an offset of −3.8°, or −0.75σ, with the truth inside the 68 % interval. The offset
+  lies along the mass–distance direction (cosine 0.99), where the likelihood is flat. So the
+  posterior settles where more of the prior volume fits well. That is a lean, not a likelihood
+  bias.
 - **Le Verrier's published orbit** (a = 36.15 AU, e = 0.108, ϖ held) is disfavoured against free
   a by ln B = −11.9 to −21.6 on seeds 0–4.
 - **A6c, coverage with the M6 observation model (running).** This repeats A3b on synthetic
