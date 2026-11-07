@@ -73,17 +73,24 @@ not matching`. The record's SHA-256 is in `leverrier-table77/MANIFEST.md`.
 
 ## 3. Zenodo
 
-- [ ] Create an account at https://zenodo.org. Sign in with GitHub or ORCID.
+- [x] Create an account at https://zenodo.org. Sign in with GitHub or ORCID.
 - [ ] Optional dry run on https://sandbox.zenodo.org. It needs a separate account and issues
   no real DOIs.
 - [ ] Choose **New upload**. Add every visible file in `release/leverrier-table77/`, flat (no
   zip). `.zenodo.json` is not read by the web form: use it as the text to paste.
-- [ ] Under "Do you already have a DOI?" choose **No**, then **Get a DOI now**, which reserves
-  the DOI. Then:
-  - Put the DOI in `README.md`, replacing both `zenodo.XXXXXXX`.
-  - Put it in `CITATION.cff`: uncomment `doi` and set `date-released`.
-  - Commit, and replace those two files in the Zenodo draft. `datapackage.json` does not hash
-    them, so no rebuild is needed.
+- [x] Under "Do you already have a DOI?" choose **No**, then **Get a DOI now**, which reserves
+  the DOI. **Reserved: 10.5281/zenodo.24044792** (https://doi.org/10.5281/zenodo.24044792), 2026-11-07. It does not resolve until the record
+  is published, so nothing (tests included) may fetch it.
+  - [x] DOI in `README.md` ("How to cite" section, with a BibTeX entry; no badge yet).
+  - [x] DOI in `CITATION.cff` (`doi` and an `identifiers` entry of type doi). It is validated
+    with cffconvert.
+  - [x] DOI as the Data Package `id` in `datapackage.json` (set by `fork.export.release`).
+  - [x] `.zenodo.json` left without a DOI: Zenodo assigns the reserved DOI to the draft
+    itself.
+  - [ ] Upload, or replace in the draft if already uploaded, `README.md`, `CITATION.cff` and
+    `datapackage.json`. The last one changed too, because it now carries the `id`.
+  - [ ] At publication: set `date-released` in `CITATION.cff` to the publication date.
+    Changing the README or CITATION.cff after that needs a new version.
 - [ ] Fill in the form from `.zenodo.json`:
   - resource type Dataset, the title, and the creator with ORCID 0009-0004-1264-1662;
   - paste the description;
@@ -95,7 +102,11 @@ not matching`. The record's SHA-256 is in `leverrier-table77/MANIFEST.md`.
 
 ## 4. Afterwards
 
-- [ ] Push and merge `data-release`. Add the DOI badge to the project README.
+- [ ] Push and merge `data-release`. Add the DOI badge for 10.5281/zenodo.24044792 to the dataset and project
+  READMEs, only after publication, since before that it points at a 404. Then remove the
+  no-badge guard in `tests/test_release.py`.
+- [ ] Zenodo also mints a concept DOI (all versions) at publication. Consider adding it to
+  `CITATION.cff` `identifiers` in the next version.
 - [ ] A later change to any file in `data/historical/` or `docs/review/` that the package
   copies fails `tests/test_release.py`. Then rebuild, and publish a new Zenodo version under
   the same concept DOI.

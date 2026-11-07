@@ -273,19 +273,47 @@ table, resolution log and spot-check sample to the table, and every file's SHA-2
 The project repository runs the same validation in its tests, together with the row counts
 (279; per page 31, 37, 34, 37, 37, 34, 39, 30).
 
-## Citation
+## How to cite
 
-The dataset is in the public domain (see [Licence](#licence)), but please cite it and Le
-Verrier's memoir:
+**DOI: [10.5281/zenodo.24044792](https://doi.org/10.5281/zenodo.24044792)** (Zenodo, version 1.0.0)
+
+The dataset is in the public domain (see [Licence](#licence)), but please cite it, and cite
+Le Verrier's memoir for the observations themselves:
 
 > Pahadiya, A. (2026). *Le Verrier (1846), Table n° 77: 279 observations of Uranus,
 > 1690–1845, transcribed and reconciled* (Version 1.0.0) [Data set]. Zenodo.
-> https://doi.org/10.5281/zenodo.XXXXXXX
+> https://doi.org/10.5281/zenodo.24044792
 
 > Le Verrier, U. J. (1846). Recherches sur les mouvements de la planète Herschel (dite Uranus).
 > *Connaissance des Temps pour l'an 1849*, Additions, 3–254. Paris: Bachelier.
 
-Machine-readable citation metadata is in `CITATION.cff`.
+BibTeX:
+
+```bibtex
+@dataset{pahadiya_2026_leverrier_table77,
+  author    = {Pahadiya, Atishay},
+  title     = {Le Verrier (1846), Table n° 77: 279 observations of Uranus, 1690–1845,
+               transcribed and reconciled},
+  year      = {2026},
+  publisher = {Zenodo},
+  version   = {1.0.0},
+  doi       = {10.5281/zenodo.24044792},
+  url       = {https://doi.org/10.5281/zenodo.24044792}
+}
+
+@article{leverrier_1846_uranus,
+  author    = {Le Verrier, Urbain Jean Joseph},
+  title     = {Recherches sur les mouvements de la plan{\`e}te Herschel (dite Uranus)},
+  journal   = {Connaissance des Temps pour l'an 1849, Additions},
+  year      = {1846},
+  pages     = {3--254},
+  publisher = {Bachelier},
+  address   = {Paris}
+}
+```
+
+Machine-readable citation metadata is in `CITATION.cff`. Cite the version you used: the DOI
+above is for version 1.0.0.
 
 ## Licence
 
@@ -295,7 +323,7 @@ and its documentation are dedicated to the public domain under
 copy, modify and redistribute them without asking.
 
 **Please cite anyway.** CC0 removes the legal requirement, not the scholarly one. If you use
-this dataset, cite it by its DOI (https://doi.org/10.5281/zenodo.XXXXXXX; the entry above,
+this dataset, cite it by its DOI (https://doi.org/10.5281/zenodo.24044792; see [How to cite](#how-to-cite),
 or `CITATION.cff`), and cite Le Verrier (1846) for the observations. Citing the version you
 used also tells readers which transcription and which checks stand behind your numbers.
 

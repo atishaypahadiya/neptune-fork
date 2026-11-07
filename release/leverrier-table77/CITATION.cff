@@ -1,4 +1,4 @@
-# Before release: add the Zenodo DOI (uncomment `doi`) and set `date-released`.
+# Before release: set `date-released` to the Zenodo publication date.
 # See release/CHECKLIST_leverrier-table77.md.
 cff-version: 1.2.0
 message: >-
@@ -7,7 +7,11 @@ message: >-
 type: dataset
 title: "Le Verrier (1846), Table n° 77: 279 observations of Uranus, 1690–1845, transcribed and reconciled"
 version: 1.0.0
-# doi: 10.5281/zenodo.XXXXXXX
+doi: 10.5281/zenodo.24044792
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.24044792
+    description: "Zenodo record of this dataset, version 1.0.0"
 # date-released: 2026-MM-DD
 authors:
   - family-names: Pahadiya

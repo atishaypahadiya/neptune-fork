@@ -1,5 +1,6 @@
 {
   "profile": "data-package",
+  "id": "https://doi.org/10.5281/zenodo.24044792",
   "name": "leverrier-1846-table77",
   "title": "Le Verrier (1846), Table n° 77: 279 observations of Uranus, 1690–1845, transcribed and reconciled",
   "description": "Transcription of Table n° 77 of U. J. Le Verrier, 'Recherches sur les mouvements de la planète Herschel (dite Uranus)', Connaissance des Temps pour 1849, Additions, pp. 129–136 (Paris, 1846): the observed apparent right ascensions and declinations of Uranus that Le Verrier compared with theory before predicting Neptune, with his computed values and residuals. Transcribed, reconciled and spot-checked by an AI model; then spot-checked by a human against the Gallica scan (28 rows, 336 cells, 0 discrepancies). See README.md.",

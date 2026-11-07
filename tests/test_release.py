@@ -193,3 +193,28 @@ def test_transit_check_covers_every_row_as_the_readme_says():
     resid = {r["obs_id"]: abs(float(r["transit_resid_s"])) for r in ra}
     assert resid.pop("LV1846-T77-p129-l12") == pytest.approx(9.5, abs=0.05)
     assert max(resid.values()) <= 3.6
+
+
+def test_reserved_doi_is_recorded_consistently_and_never_fetched():
+    """The reserved Zenodo DOI (it resolves only after publication, so nothing here fetches
+    it) is the same in CITATION.cff (doi + identifiers), the README's How to cite section and
+    the Data Package id. It is NOT in .zenodo.json: Zenodo assigns it to the draft itself.
+    There is no placeholder left, and no DOI badge before publication (it would point at a
+    404; the checklist removes this guard after publishing)."""
+    doi = "10.5281/zenodo.24044792"
+    assert rel.DOI == doi
+    cff = yaml.safe_load((rel.RELEASE / "CITATION.cff").read_text(encoding="utf-8"))
+    assert cff["doi"] == doi
+    assert {"type": "doi", "value": doi} in [
+        {k: i[k] for k in ("type", "value")} for i in cff["identifiers"]
+    ]
+    assert json.loads(PKG.read_text(encoding="utf-8"))["id"] == f"https://doi.org/{doi}"
+    readme = (rel.RELEASE / "README.md").read_text(encoding="utf-8")
+    how = readme.split("## How to cite", 1)[1].split("\n## ", 1)[0]
+    assert f"https://doi.org/{doi}" in how and f"doi       = {{{doi}}}" in how
+    assert "badge" not in readme.lower()
+    zen = (rel.RELEASE / ".zenodo.json").read_text(encoding="utf-8")
+    assert "doi" not in json.loads(zen) and "24044792" not in zen
+    for p in rel.RELEASE.iterdir():
+        if p.suffix in ("", ".md", ".cff", ".json"):
+            assert "XXXXXXX" not in p.read_text(encoding="utf-8"), p.name

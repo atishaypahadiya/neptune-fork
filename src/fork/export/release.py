@@ -32,6 +32,9 @@ TITLE = (
     "transcribed and reconciled"
 )
 VERSION = "1.0.0"
+# Zenodo DOI of version 1.0.0, reserved 2026-11-07 (it resolves once the record is published;
+# nothing here fetches it). Data Package v1 reserves `id` for a global identifier such as a DOI.
+DOI = "10.5281/zenodo.24044792"
 LICENSE = {
     "name": "CC0-1.0",
     "path": "https://creativecommons.org/publicdomain/zero/1.0/",
@@ -297,6 +300,7 @@ def descriptor() -> dict:
         resources_.append({**r, "bytes": p.stat().st_size, "hash": f"sha256:{sha256(p)}"})
     return {
         "profile": "data-package",
+        "id": f"https://doi.org/{DOI}",
         "name": NAME,
         "title": TITLE,
         "description": (
