@@ -1,8 +1,11 @@
 """M6a spot-check sample: fixed seed, stratified, reproducible (fast; no scan needed)."""
 
 import csv
+import hashlib
+import json
 
 import numpy as np
+import pytest
 
 from fork.data import spotcheck as sc
 from fork.data import transcription as tr
@@ -51,3 +54,43 @@ def test_all_match_is_disabled_for_logged_rows_only():
     assert page.count('<button class="all" type="button" disabled>') == 16
     assert page.count('<button class="all" type="button">All match') == 12
     assert page.count('data-flagged="1"') == 16
+
+
+def test_human_page_is_separate_from_the_first_review():
+    """The human page stores ticks under its own key (so nothing from the automated review is
+    pre-ticked), asks for a name, and exports a separate file marked reviewer = human."""
+    table = tr.read_pass(tr.RECONCILED_FILE)
+    picks = sc.read_selection(sc.SELECTION_FILE)
+    links = {(p.page, p.line): "#" for p in picks}
+    first = sc.render_html(table, picks, links, "0" * 64)
+    human = sc.render_html(table, picks, links, "0" * 64, human=True)
+    assert 'data-reviewer="human"' in human and "data-reviewer" not in first
+    assert 'data-export="spotcheck_human_results.json"' in human
+    assert 'id="reviewer-name"' in human and 'id="reviewer-name"' not in first
+    assert '(REVIEWER ? REVIEWER + ":" : "")' in sc.SCRIPT  # the storage key
+    assert "out.reviewer = REVIEWER" in sc.SCRIPT
+
+
+def _first_record():
+    return json.loads(sc.RESULTS_FILE.read_text(encoding="utf-8"))
+
+
+def test_check_results_flags_mismatches_and_rejects_incomplete_records():
+    table = tr.read_pass(tr.RECONCILED_FILE)
+    picks = sc.read_selection(sc.SELECTION_FILE)
+    sha = hashlib.sha256(tr.RECONCILED_FILE.read_bytes()).hexdigest()
+    rec = _first_record()
+    assert sc.check_results(rec, table, picks, sha, human=False) == []
+    human = {**_first_record(), "reviewer": "human", "reviewer_name": "A. Reviewer"}
+    human["rows"][0]["cells"]["day"]["matches"] = False
+    assert sc.check_results(human, table, picks, sha, human=True) == ["p129 l4 day: '10'"]
+    with pytest.raises(ValueError, match="reviewer = human"):
+        sc.check_results({**human, "reviewer_name": " "}, table, picks, sha, human=True)
+    with pytest.raises(ValueError, match="not the current"):
+        sc.check_results(rec, table, picks, "f" * 64, human=False)
+    with pytest.raises(ValueError, match="reviewed sample"):
+        sc.check_results({**rec, "rows": rec["rows"][1:]}, table, picks, sha, human=False)
+    wrong = _first_record()
+    wrong["rows"][0]["cells"]["day"]["value"] = "11"
+    with pytest.raises(ValueError, match="table has"):
+        sc.check_results(wrong, table, picks, sha, human=False)

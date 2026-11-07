@@ -10,16 +10,25 @@ import pytest
 import yaml
 from frictionless import Package, validate
 
+from fork.data import spotcheck as sc
 from fork.data import transcription as tr
 from fork.export import release as rel
 
 PKG = rel.RELEASE / "datapackage.json"
+DOCS = {"README.md", "MANIFEST.md", "DATA_DICTIONARY.md", "LICENSE", "CITATION.cff", ".zenodo.json",
+        "datapackage.json"}  # fmt: skip
+PENDING = "human spot check is pending"
 
 
 def test_release_files_are_byte_copies_of_the_committed_project_files():
     """The release is a snapshot: a change to a source file must come with a new release."""
-    for name, src in rel.SOURCES.items():
+    for name, src in rel.sources().items():
         assert (rel.RELEASE / name).read_bytes() == src.read_bytes(), name
+
+
+def test_release_contains_exactly_the_built_files():
+    """No stale or stray file (e.g. a human record copied in by hand, or left behind)."""
+    assert {p.name for p in rel.RELEASE.iterdir()} == set(rel.sources()) | DOCS
 
 
 def test_datapackage_json_is_the_builder_output():
@@ -33,7 +42,7 @@ def test_package_validates():
     errors = [e.message for e in report.errors]
     errors += [f"{t.name}: {e.message}" for t in report.tasks for e in t.errors]
     assert report.valid, errors[:10]
-    assert {t.name for t in report.tasks} == {r["name"] for r in rel.RESOURCES}
+    assert {t.name for t in report.tasks} == {r["name"] for r in rel.resources()}
 
 
 def test_table77_has_279_rows_with_the_printed_page_counts():
@@ -78,19 +87,48 @@ def test_validation_catches_tampering(tmp_path, file, edit, expected_error):
     assert not report.valid and expected_error in types, types
 
 
-def test_spotcheck_record_is_for_this_table():
-    rec = json.loads((rel.RELEASE / "spotcheck_results.json").read_text(encoding="utf-8"))
-    assert rec["table77_sha256"] == rel.sha256(rel.RELEASE / "leverrier_1846_table77.csv")
-    assert len(rec["rows"]) == 28
+def _record(name):
+    return json.loads((rel.RELEASE / name).read_text(encoding="utf-8"))
+
+
+def test_spotcheck_records_are_complete_for_this_table():
+    """The automated record: the reviewed sample, every cell, this table, no mismatch, and not
+    marked human. The human record, once present, must pass the same check as human."""
+    table = tr.read_pass(rel.RELEASE / "leverrier_1846_table77.csv")
+    picks = sc.read_selection(rel.RELEASE / "spotcheck_rows.csv")
+    sha = rel.sha256(rel.RELEASE / "leverrier_1846_table77.csv")
+    rec = _record("spotcheck_results.json")
+    assert sc.check_results(rec, table, picks, sha, human=False) == []
     assert sum(len(r["cells"]) for r in rec["rows"]) == 336
     assert "not an independent human" in rec["reviewer"]
+    with pytest.raises(ValueError, match="reviewer = human"):
+        sc.check_results(rec, table, picks, sha, human=True)
+    if rel.human_checked():
+        human = _record(sc.HUMAN_RESULTS_FILE.name)
+        assert sc.check_results(human, table, picks, sha, human=True) == []
+
+
+def test_pending_wording_matches_the_human_record():
+    """README, CITATION.cff, .zenodo.json and datapackage.json say the human spot check is
+    pending exactly while there is no human record (checklist: update them when it lands)."""
+    files = ("README.md", "CITATION.cff", ".zenodo.json", "datapackage.json")
+    says_pending = {f: PENDING in (rel.RELEASE / f).read_text("utf-8").lower() for f in files}
+    assert says_pending == dict.fromkeys(files, not rel.human_checked())
+
+
+def test_licence_is_cc0():
+    text = (rel.RELEASE / "LICENSE").read_text(encoding="utf-8")
+    assert "CC0 1.0 Universal" in text and "Statement of Purpose" in text
+    assert "Attribution 4.0" not in text and "DRAFT" not in text
+    readme = (rel.RELEASE / "README.md").read_text(encoding="utf-8")
+    assert "CC0 1.0 Universal" in readme and "Please cite" in readme
 
 
 def test_data_dictionary_documents_every_column():
     """Each field of each tabular resource has a row `| \\`name\\` |` in its file's section."""
     text = (rel.RELEASE / "DATA_DICTIONARY.md").read_text(encoding="utf-8")
     sections = re.split(r"^## ", text, flags=re.M)
-    for r in rel.RESOURCES:
+    for r in rel.resources():
         if "schema" not in r:
             continue
         sec = next((s for s in sections if f"`{r['path']}`" in s.splitlines()[0]), None)
@@ -109,7 +147,7 @@ def test_citation_metadata_agree():
     assert cff["title"] == zen["title"] == rel.TITLE
     assert cff["version"] == zen["version"] == rel.VERSION
     assert cff["license"] == rel.LICENSE["name"]
-    assert zen["license"] == rel.LICENSE["name"].lower()
+    assert zen["license"] == rel.LICENSE["name"].lower() == "cc0-1.0"
     author = cff["authors"][0]
     assert (author["family-names"], author["given-names"]) == ("Pahadiya", "Atishay")
     assert zen["creators"][0]["name"] == "Pahadiya, Atishay"

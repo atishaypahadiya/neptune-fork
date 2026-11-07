@@ -7,9 +7,9 @@
   "homepage": "https://github.com/atishaypahadiya/neptune-fork",
   "licenses": [
     {
-      "name": "CC-BY-4.0",
-      "path": "https://creativecommons.org/licenses/by/4.0/",
-      "title": "Creative Commons Attribution 4.0 International"
+      "name": "CC0-1.0",
+      "path": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "title": "CC0 1.0 Universal (public domain dedication)"
     }
   ],
   "contributors": [
@@ -750,8 +750,8 @@
     {
       "name": "spotcheck_results",
       "path": "spotcheck_results.json",
-      "title": "Spot-check results",
-      "description": "Per-cell result of the spot check (336 cells), with the reviewer and the SHA-256 of the table checked.",
+      "title": "Spot-check results (automated)",
+      "description": "Per-cell result of the spot check by an AI model (336 cells), with the reviewer and the SHA-256 of the table checked.",
       "format": "json",
       "mediatype": "application/json",
       "encoding": "utf-8",

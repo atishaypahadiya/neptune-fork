@@ -61,10 +61,12 @@ A minimal reader:
 ```python
 import csv
 
+
 def sexagesimal(s):  # "-0 33 2.7" -> -0.55075 (top unit: degrees, or hours for modern RA)
     sign = -1.0 if s.startswith("-") else 1.0
     a, b, c = (float(x) for x in s.lstrip("+-").split())
     return sign * (a + b / 60 + c / 3600)
+
 
 rows, year, month = [], None, None
 with open("leverrier_1846_table77.csv", encoding="utf-8") as fh:
@@ -171,7 +173,8 @@ the 1771 misprint was found.
     same bias.
   - The dataset author directed the work, approved the misprint corrections and confirmed one
     disputed glyph, but has not checked the cells systematically.
-  - **A human spot check is pending.** Its record will be added in a later version.
+  - **A human spot check is pending.** Its record will be a separate file,
+    `spotcheck_human_results.json`, marked `"reviewer": "human"`.
 - **Low-confidence agreements.** In 33 rows a transcriber noted a low-confidence reading
   (`low_conf:` in `notes`). Where both passes agreed, the cell was not sent to the third
   witness unless it fell in the spot-check sample.
@@ -218,7 +221,8 @@ The project repository runs the same validation in its tests, together with the 
 
 ## Citation
 
-Please cite this dataset and Le Verrier's memoir:
+The dataset is in the public domain (see [Licence](#licence)), but please cite it and Le
+Verrier's memoir:
 
 > Pahadiya, A. (2026). *Le Verrier (1846), Table n° 77: 279 observations of Uranus,
 > 1690–1845, transcribed and reconciled* (Version 1.0.0) [Data set]. Zenodo.
@@ -231,9 +235,15 @@ Machine-readable citation metadata is in `CITATION.cff`.
 
 ## Licence
 
-The 1846 source is in the public domain. This transcription, its logs and its documentation
-are released under the [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/)
-licence (`LICENSE`), to the extent they are protected by copyright.
+The 1846 source is in the public domain, and so is this dataset: the transcription, its logs
+and its documentation are dedicated to the public domain under
+[CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/) (`LICENSE`). You may
+copy, modify and redistribute them without asking.
+
+**Please cite anyway.** CC0 removes the legal requirement, not the scholarly one. If you use
+this dataset, cite it by its DOI (https://doi.org/10.5281/zenodo.XXXXXXX; the entry above,
+or `CITATION.cff`), and cite Le Verrier (1846) for the observations. Citing the version you
+used also tells readers which transcription and which checks stand behind your numbers.
 
 ## Related work
 

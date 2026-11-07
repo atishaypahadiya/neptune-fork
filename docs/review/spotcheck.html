@@ -248,7 +248,8 @@ button { font: inherit; }
 <textarea id="p136l11-notes" placeholder="Notes"></textarea>
 </section>
 <script>
-const KEY = "spotcheck:" + document.body.dataset.sha;
+const REVIEWER = document.body.dataset.reviewer || "";
+const KEY = "spotcheck:" + (REVIEWER ? REVIEWER + ":" : "") + document.body.dataset.sha;
 const saved = JSON.parse(localStorage.getItem(KEY) || "{}");
 document.querySelectorAll("input[type=checkbox], textarea").forEach(el => {
   if (el.id in saved) {
@@ -277,6 +278,8 @@ document.querySelectorAll("button.all").forEach(b => b.addEventListener("click",
   save();
 }));
 document.getElementById("export").addEventListener("click", () => {
+  const nameEl = document.getElementById("reviewer-name");
+  if (REVIEWER && !nameEl.value.trim()) { alert("Enter your name before exporting."); return; }
   const rows = [...document.querySelectorAll("section")].map(sec => {
     const cells = {};
     sec.querySelectorAll("input[type=checkbox]").forEach(c => {
@@ -291,10 +294,11 @@ document.getElementById("export").addEventListener("click", () => {
                 exported: new Date().toISOString(),
                 all_match_rows: rows.filter(r => r.used_all_match).map(r => r.page + "/" + r.line),
                 rows };
+  if (REVIEWER) { out.reviewer = REVIEWER; out.reviewer_name = nameEl.value.trim(); }
   const a = document.createElement("a");
   const blob = new Blob([JSON.stringify(out, null, 2)], { type: "application/json" });
   a.href = URL.createObjectURL(blob);
-  a.download = "spotcheck_results.json";
+  a.download = document.body.dataset.export || "spotcheck_results.json";
   a.click();
 });
 </script>

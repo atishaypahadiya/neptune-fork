@@ -172,6 +172,14 @@ The spot-check record. It is JSON, not a table.
 
 Result: 336 of 336 cells match the Gallica image.
 
+The human spot check, once done, is recorded in a separate file, `spotcheck_human_results.json`.
+It covers the same 28 rows and has the same structure, plus two keys:
+- `reviewer`: `"human"`;
+- `reviewer_name`: the name the reviewer entered on the review page.
+
+The human review page keeps its ticks apart from the first review's, so nothing in it is
+pre-ticked.
+
 ## `leverrier_1846.csv` (derived)
 
 A convenience file for analysis, generated from `leverrier_1846_table77.csv` and the `apply`

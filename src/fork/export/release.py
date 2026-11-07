@@ -2,10 +2,13 @@
 
     uv run python -m fork.export.release      # copy the data files, write datapackage.json
 
-The data files are byte-for-byte copies of the committed project files (``SOURCES``). This
-module copies them and writes the Frictionless Data Package descriptor (``datapackage.json``,
-Data Package v1) with each file's SHA-256, size and table schema. README.md, MANIFEST.md,
-DATA_DICTIONARY.md and the licence/citation metadata are written by hand.
+The data files are byte-for-byte copies of the committed project files (``sources()``). The
+human spot-check record (``docs/review/spotcheck_human_results.json``) joins the package once
+it exists; the build refuses it unless it is a complete human record of the reviewed sample
+with no cell marked as not matching. This module copies the files and writes the Frictionless
+Data Package descriptor (``datapackage.json``, Data Package v1) with each file's SHA-256, size
+and table schema. README.md, MANIFEST.md, DATA_DICTIONARY.md and the licence/citation metadata
+are written by hand.
 ``tests/test_release.py`` checks that the committed release equals this module's output.
 """
 
@@ -16,11 +19,12 @@ import json
 import shutil
 from pathlib import Path
 
+from fork.data import spotcheck as sc
 from fork.data import transcription as tr
 
 ROOT = tr.ROOT
 RELEASE = ROOT / "release" / "leverrier-table77"
-REVIEW = ROOT / "docs" / "review"
+REVIEW = sc.REVIEW_DIR
 
 NAME = "leverrier-1846-table77"
 TITLE = (
@@ -29,13 +33,13 @@ TITLE = (
 )
 VERSION = "1.0.0"
 LICENSE = {
-    "name": "CC-BY-4.0",
-    "path": "https://creativecommons.org/licenses/by/4.0/",
-    "title": "Creative Commons Attribution 4.0 International",
+    "name": "CC0-1.0",
+    "path": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "title": "CC0 1.0 Universal (public domain dedication)",
 }
 PAGE_COUNTS = {129: 31, 130: 37, 131: 34, 132: 37, 133: 37, 134: 34, 135: 39, 136: 30}
 
-# release file name -> committed source
+# release file name -> committed source (the human spot check is added by sources())
 SOURCES = {
     "leverrier_1846_table77.csv": tr.RECONCILED_FILE,
     "leverrier_1846_misprints.csv": tr.MISPRINT_FILE,
@@ -226,9 +230,9 @@ RESOURCES = [
            "The 28 rows checked cell by cell against the Gallica scan.", SPOTCHECK_FIELDS,
            ["page", "line"], _TO_TABLE),
     {"name": "spotcheck_results", "path": "spotcheck_results.json",
-     "title": "Spot-check results",
-     "description": "Per-cell result of the spot check (336 cells), with the reviewer and the "
-                    "SHA-256 of the table checked.",
+     "title": "Spot-check results (automated)",
+     "description": "Per-cell result of the spot check by an AI model (336 cells), with the "
+                    "reviewer and the SHA-256 of the table checked.",
      "format": "json", "mediatype": "application/json", "encoding": "utf-8"},
     _table("observations", "leverrier_1846.csv", "Derived: one row per measured quantity",
            "Convenience file derived from table77 and the apply misprints: 279 RA and 250 Dec "
@@ -238,16 +242,58 @@ RESOURCES = [
 ]  # fmt: skip
 
 
+HUMAN_RESOURCE = {
+    "name": "spotcheck_human_results", "path": sc.HUMAN_RESULTS_FILE.name,
+    "title": "Spot-check results (human)",
+    "description": "Per-cell result of the human spot check of the same 28 rows (336 cells), "
+                   "marked reviewer = human, with the SHA-256 of the table checked.",
+    "format": "json", "mediatype": "application/json", "encoding": "utf-8",
+}  # fmt: skip
+
+
+def human_checked() -> bool:
+    """Whether the human spot-check record exists. If it does, it must be a complete human
+    record of the reviewed sample for the current table with no mismatch, or this raises."""
+    path = sc.HUMAN_RESULTS_FILE
+    if not path.exists():
+        return False
+    table = tr.read_pass(tr.RECONCILED_FILE)
+    rec = json.loads(path.read_text(encoding="utf-8"))
+    bad = sc.check_results(rec, table, sc.read_selection(sc.SELECTION_FILE),
+                           sha256(tr.RECONCILED_FILE), human=True)  # fmt: skip
+    if bad:
+        raise ValueError(f"the human spot check marks {len(bad)} cells as not matching: {bad}; "
+                         "resolve them before releasing")  # fmt: skip
+    return True
+
+
+def sources() -> dict[str, Path]:
+    out = dict(SOURCES)
+    if human_checked():
+        out[sc.HUMAN_RESULTS_FILE.name] = sc.HUMAN_RESULTS_FILE
+    return out
+
+
+def resources() -> list[dict]:
+    return [*RESOURCES, HUMAN_RESOURCE] if human_checked() else list(RESOURCES)
+
+
 def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def descriptor() -> dict:
     """The datapackage.json descriptor for the files currently in ``RELEASE``."""
-    resources = []
-    for r in RESOURCES:
+    review = (
+        "and spot-checked by an AI model, then spot-checked by a human (28 rows, 336 "
+        "cells, no mismatch)"
+        if human_checked()
+        else "and spot-checked by an AI model; a human spot check is pending"
+    )
+    resources_ = []
+    for r in resources():
         p = RELEASE / r["path"]
-        resources.append({**r, "bytes": p.stat().st_size, "hash": f"sha256:{sha256(p)}"})
+        resources_.append({**r, "bytes": p.stat().st_size, "hash": f"sha256:{sha256(p)}"})
     return {
         "profile": "data-package",
         "name": NAME,
@@ -257,8 +303,8 @@ def descriptor() -> dict:
             "de la planète Herschel (dite Uranus)', Connaissance des Temps pour 1849, "
             "Additions, pp. 129–136 (Paris, 1846): the observed apparent right ascensions and "
             "declinations of Uranus that Le Verrier compared with theory before predicting "
-            "Neptune, with his computed values and residuals. Transcribed, reconciled and "
-            "spot-checked by an AI model; a human spot check is pending. See README.md."
+            f"Neptune, with his computed values and residuals. Transcribed, reconciled {review}. "
+            "See README.md."
         ),
         "version": VERSION,
         "homepage": "https://github.com/atishaypahadiya/neptune-fork",
@@ -279,7 +325,7 @@ def descriptor() -> dict:
                 "path": "https://gallica.bnf.fr/ark:/12148/bpt6k6505616w",
             },
         ],
-        "resources": resources,
+        "resources": resources_,
     }
 
 
@@ -299,11 +345,13 @@ KEYWORDS = [
 
 def build() -> None:
     RELEASE.mkdir(parents=True, exist_ok=True)
-    for name, src in SOURCES.items():
+    files = sources()
+    for name, src in files.items():
         shutil.copyfile(src, RELEASE / name)
     text = json.dumps(descriptor(), indent=2, ensure_ascii=False) + "\n"
     (RELEASE / "datapackage.json").write_text(text, encoding="utf-8")
-    print(f"wrote {len(SOURCES)} files and datapackage.json to {RELEASE.relative_to(ROOT)}")
+    print(f"wrote {len(files)} files and datapackage.json to {RELEASE.relative_to(ROOT)}"
+          f" (human spot check: {'included' if human_checked() else 'pending'})")  # fmt: skip
 
 
 if __name__ == "__main__":
