@@ -38,7 +38,10 @@ Phase 1, **M6 in progress**. Milestones M0–M5b are complete:
 
 For M6, Le Verrier's 279 observations are transcribed and double-checked (`data/historical/`),
 and the apparent-place observation model and error calibration are built. The A6c coverage test
-on synthetic data is running now. Real observations are fitted only after A6c passes.
+on synthetic data passed: the truth is inside the 68 % interval for 8 of 10 seeds (two-sided
+binomial p = 0.52), with an rms offset of 0.87σ and a median 68 % width of 5.1°. That is
+narrower than M5b's 9.1°, mostly because Table 77 has more measurements and smaller calibrated
+errors than M5b assumed ([M6 notes](docs/notes/M6.md)). The real-data fit (M6c) is next.
 
 ## Quickstart
 
@@ -91,10 +94,10 @@ site/           static site (GitHub Pages) and its data
 
 ## Compute
 
-The ledger (`site/data/ledger.json`) records **435 CPU-hours** to date: 353 timed live, plus 82
-estimated from logs. That covers 257 million likelihood evaluations, each one N-body
-integration over 1690–1846. Nested sampling for M5b accounts for nearly all of it. A6c is not
-included yet.
+The ledger (`site/data/ledger.json`) records **713 CPU-hours** to date: 631 timed live, plus 82
+estimated from logs. That covers 428 million likelihood evaluations, each one N-body
+integration over 1690–1846. Nested sampling accounts for nearly all of it: M5b, and A6c with
+277 CPU-hours.
 
 ## Prior art
 

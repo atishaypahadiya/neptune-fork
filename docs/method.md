@@ -211,12 +211,17 @@ acceptance tests check bias and coverage instead.
   bias.
 - **Le Verrier's published orbit** (a = 36.15 AU, e = 0.108, ϖ held) is disfavoured against free
   a by ln B = −11.9 to −21.6 on seeds 0–4.
-- **A6c, coverage with the M6 observation model (running).** This repeats A3b on synthetic
+- **A6c, coverage with the M6 observation model (passed).** This repeats A3b on synthetic
   data built from Table 77's real epochs. The truth is the real Uranus (Horizons, so the real
   3-D Neptune), converted to apparent RA/Dec. Group offsets are drawn from the pre-registered
   τ, and the calibrated σ_g noise is added. The fit uses the inclined perturber and the same
   four cells and settings. The pass condition is the same 5–8 of 10, and it was written into
-  the spec before the run. No real observation is fitted until A6c passes.
+  the spec before the run.
+  - **Result:** the truth is inside the 68 % interval for 8 of 10 seeds (two-sided binomial
+    p = 0.52). The rms offset is 0.87σ and the median 68 % width is 5.1°.
+  - The intervals are narrower than M5b's 9.1° mostly because Table 77 has more measurements
+    and smaller calibrated σ than M5b assumed (`docs/notes/M6.md`).
+  - Only after this pass may real observations be fitted.
 
 ## Not modelled, and known limits
 
@@ -226,5 +231,7 @@ acceptance tests check bias and coverage instead.
 - The Kepler solver's full-period closure misses 1e-12 AU for e ≳ 0.6 at large a. The cause is
   double-precision conditioning, not the algorithm, and the prior's e ≤ 0.3 is well inside the
   range where the target is met (M2).
-- The transcription passes, the reconciliation and the 10 % spot check were all done by an AI model
-  agents and sessions. No independent human has checked the rows yet (`docs/notes/M6.md`).
+- The transcription passes and the reconciliation were done by AI agents. The 10 % sample
+  (28 rows, 336 cells) was checked twice against the Gallica scan: first by an AI model, then by a
+  human, Atishay Pahadiya, with 0 discrepancies, cell by cell (a verification, not a blind
+  re-transcription). The other 251 rows have had no human check (`docs/notes/M6.md`).

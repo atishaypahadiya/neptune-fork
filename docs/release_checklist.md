@@ -18,7 +18,7 @@ semver: the tag is `vX.Y.Z`, and `pyproject.toml`, `CITATION.cff` and `.zenodo.j
 
 ## Before tagging: M6 complete
 
-- [ ] A6c passed and committed (`site/data/a6c_coverage.json`, with a note in
+- [x] A6c passed and committed (`site/data/a6c_coverage.json`, with a note in
   `docs/notes/M6.md`). If it fails, stop and report, as the spec says. Don't tag.
 - [ ] M6c fits, the M6d Peirce numbers and the M6e held-out predictions are done, with
   `site/data/m6_fits.json` and the figures the spec lists.

@@ -7,9 +7,9 @@ Ledger CPU-hours add up across jobs. Wall times are per job: many jobs ran side 
 14-core Apple Silicon machine, so summed wall time overstates the elapsed time. Jobs the ledger
 does not cover took seconds to a few minutes and are marked "not in ledger".
 
-**Ledger total so far: 435 CPU-hours** (353 timed live, 82 estimated), 257 million likelihood
-calls. One likelihood call is one N-body integration over 1690–1846, so that is 40 billion
-simulated planet-years. A6c is running now and is not in the total yet.
+**Ledger total so far: 713 CPU-hours** (631 timed live, 82 estimated), 428 million likelihood
+calls. One likelihood call is one N-body integration over 1690–1846, so that is 66 billion
+simulated planet-years.
 
 ## Setup
 
@@ -121,17 +121,18 @@ uv run pytest tests/test_apparent.py tests/test_observation.py tests/test_calibr
 Seconds, not in ledger. Calibration needs Horizons states for Uranus and Earth at the 279
 epochs, which `--fetch` caches.
 
-## A6c: synthetic coverage with the M6 model (running)
+## A6c: synthetic coverage with the M6 model (passed: 8 of 10)
 
 ```sh
 uv run python -m fork.export.a6c plan
 uv run python -m fork.export.a6c run --n-workers 12 --per-job 4
 uv run python -m fork.export.a6c summarize  # site/data/a6c_coverage.json
 ```
-There are 40 jobs (10 seeds × 4 cells), with the same nlive as M5b. The ledger has no row yet.
-The job count matches M5b's e ≤ 0.3 run (about 200 CPU-h), but each likelihood call costs more
-here, because it computes the apparent place at 279 epochs. Treat 200 CPU-h as a lower bound
-until the ledger records the real figure.
+There are 40 jobs (10 seeds × 4 cells), with the same nlive as M5b. The recorded run took
+**277 CPU-hours** and 171 million likelihood calls: 28.4 h wall on 12 workers (2026-11-06
+10:04 to 2026-11-07 14:25), with each job on 4 workers taking 86–111 min (nlive 1000) or 202–221 min (nlive 2000). Each likelihood call
+costs more than in M5b because it computes the apparent place at 279 epochs. The result is in
+`site/data/a6c_coverage.json` and `docs/notes/M6.md`.
 
 ## Toy example (not a result)
 
