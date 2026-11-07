@@ -36,12 +36,14 @@ TAU_PREREGISTERED_ARCSEC = {"ancient": 5.0, "modern": 2.0}
 MAD_TO_SIGMA = 1.482602218505602  # 1 / Φ⁻¹(3/4)
 
 
-def real_observations(rows: list[dict[str, str]] | None = None) -> om.RaDecObservations:
-    """Table 77's measured values in the observation layout. σ and τ are placeholders (1″):
-    calibration uses the residuals only."""
+def real_observations(
+    rows: list[dict[str, str]] | None = None, error_model: om.ErrorModel | None = None
+) -> om.RaDecObservations:
+    """Table 77's measured values in the observation layout. Without ``error_model``, σ and τ
+    are placeholders (1″): calibration uses the residuals only. M6c passes the frozen model."""
     rows = om.read_rows() if rows is None else rows
     unit = om.ErrorModel(dict.fromkeys(om.GROUPS, 1.0), dict.fromkeys(om.GROUPS, 1.0), "unit")
-    st = om.structure_from_rows(rows, unit)
+    st = om.structure_from_rows(rows, unit if error_model is None else error_model)
     order = {}
     jd = np.array([float(r["epoch_tt_jd"]) for r in rows])
     if np.any(np.diff(jd) < 0):
