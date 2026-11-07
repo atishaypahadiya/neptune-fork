@@ -1,0 +1,31 @@
+{
+  "title": "neptune-fork: Le Verrier's 1846 prediction of Neptune, rebuilt as a calibrated Bayesian inference",
+  "upload_type": "software",
+  "version": "0.9.0",
+  "description": "<p>Rebuilds Le Verrier's 1846 inference of Neptune from Uranus's motion from first principles: an own Wisdom–Holman N-body integrator validated against REBOUND, Uranus's orbit always fitted jointly with an unseen perturber, partitioned nested sampling (dynesty) for multimodal posteriors and evidence, and coverage tests on synthetic data.</p><p>Includes a double-entry transcription of Le Verrier's 1846 Table n° 77 (279 observations) with a resolution log and misprint table, and an apparent-place observation model with per-observer error calibration.</p><p>So far, synthetic-data results only.</p><p>Licenses: the code is MIT. Everything in <code>data/historical/</code> is dedicated to the public domain under CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/). See LICENSE.</p>",
+  "notes": "Two licenses: MIT for the code; CC0 1.0 for data/historical/. The license field below covers the code; the data dedication is stated in LICENSE and in this description.",
+  "creators": [
+    {
+      "name": "Pahadiya, Atishay",
+      "orcid": "PLACEHOLDER-ORCID-replace-before-release"
+    }
+  ],
+  "license": "MIT",
+  "keywords": [
+    "celestial mechanics",
+    "Neptune",
+    "Uranus",
+    "Le Verrier",
+    "symplectic integrator",
+    "nested sampling",
+    "Bayesian inference",
+    "history of astronomy"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://jbwhit.github.io/discoverneptune/",
+      "relation": "references",
+      "resource_type": "software"
+    }
+  ]
+}

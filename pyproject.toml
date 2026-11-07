@@ -1,6 +1,6 @@
 [project]
 name = "fork"
-version = "0.1.0"
+version = "0.9.0"
 description = "Rebuild Le Verrier's 1846 prediction of Neptune from Uranus's motion, then generalize it into an anomaly fork engine."
 readme = "README.md"
 requires-python = ">=3.11"
