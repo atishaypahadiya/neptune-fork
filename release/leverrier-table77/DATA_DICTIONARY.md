@@ -188,10 +188,13 @@ scan (28 rows, 336 cells, 0 discrepancies).
   check, which is independent of any visual check:
   - The printed C − O equals computed − observed seconds exactly, to the last printed digit,
     for RA in all 279 rows and for Dec in 250 rows.
+  - A row passes when the difference is at most half the last printed digit: 0.05 for one
+    decimal, 0.005 for two (modern RA, in s).
   - The exceptions are the 29 RA-only rows, which have no Dec values, and 1764 Jan 15, Dec
     (p. 129 l. 10), a source misprint listed in `leverrier_1846_misprints.csv`.
   - It catches any single misread digit in the seconds, decimals and C − O it reads, except a
-    tens digit off by exactly 6, which changes the value by 60.
+    tens digit off by exactly 6, which changes the value by 60. That is 98.5 % of possible
+    single-digit substitutions.
   - It does not read the degrees, hours or minutes of observed values, the date, the mean
     time, or the longitude and latitude C − O.
 

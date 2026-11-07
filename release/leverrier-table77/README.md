@@ -124,6 +124,10 @@ appeared in. All three are public domain.
 4. **Arithmetic check of every row.** In each row the printed C − O must equal the computed
    seconds minus the observed seconds. The computed minute is not printed, so the nearest
    consistent minute is used.
+   - **Tolerance:** a row passes when the difference is at most half the last printed digit.
+     That is 0.05 where one decimal is printed (the Dec, and the ancient RA in ″) and 0.005
+     where two are printed (the modern RA, in s of time). A one-unit misread in the last digit
+     therefore always fails.
    - All 279 RA rows and 250 Dec rows close exactly, to the last printed digit, except one:
      1764 Jan 15, Dec. That row is printed the same way in all three witnesses and is listed as
      a misprint. The 29 RA-only rows have no Dec values to check.
@@ -208,8 +212,9 @@ the 1771 misprint was found.
       - In an observed value this exception gives an impossible 60 or more.
       - In the computed seconds or a C − O it can pass, because values of 60 or more occur
         there legitimately (see `DATA_DICTIONARY.md`).
-      - Over all rows, the check detects 98.5 % of possible single-digit substitutions in the
-        digits it reads. The rest are all this case.
+      - At its tolerance of half the last printed digit, the check detects 98.5 % of
+        possible single-digit substitutions in the digits it reads, over all rows. The rest
+        are all this case.
     - **What it cannot see:**
       - the degree, hour and minute digits of the observed values;
       - the date and the mean time;
