@@ -10,7 +10,8 @@
 | `leverrier_1846_pass1.csv` | Pass 1 as transcribed (archive.org scan), before reconciliation |
 | `leverrier_1846_pass2.csv` | Pass 2 as transcribed (Lille scan), before reconciliation |
 | `spotcheck_rows.csv` | The 28-row spot-check sample and why each row was drawn |
-| `spotcheck_results.json` | The spot-check result, cell by cell (336 cells) |
+| `spotcheck_results.json` | Automated spot-check result, cell by cell (336 cells) |
+| `spotcheck_human_results.json` | The human spot-check result of the same 28 rows, cell by cell (336 cells, 0 discrepancies) |
 | `leverrier_1846.csv` | Derived convenience file: one row per measured RA or Dec, in degrees, with epochs |
 | `datapackage.json` | Frictionless Data Package descriptor: schemas, SHA-256 and size of every data file |
 | `DATA_DICTIONARY.md` | Every column of every file: meaning, units, sign conventions, formats |
@@ -19,6 +20,16 @@
 | `LICENSE`, `CITATION.cff`, `.zenodo.json` | Licence text and citation metadata |
 
 The SHA-256 of each data file is in `datapackage.json` (`resources[].hash`).
+
+## Verification records
+
+Both spot checks reviewed the same 28 rows of `leverrier_1846_table77.csv` (SHA-256
+`897f3cde1564998ac1aa1036c8665d91b24dda142d686e2fdf1ec5902e419127`) against the Gallica scan.
+
+| record | reviewer | date | result | SHA-256 |
+|---|---|---|---|---|
+| `spotcheck_results.json` | Automated (AI model) | 2026-11-06 | 336 cells, 0 mismatches | `da90486b7905a8a2bf1796bca966f8a5bb9a5bad0c1c5a61e5d041e96a104ef9` |
+| `spotcheck_human_results.json` | human: Atishay Pahadiya (dataset author) | 2026-11-07 | 336 cells, 0 discrepancies | `777515a11d0e2586767d3103835ef80b2beb0b73fa432650d9262bc1d1ff7a2e` |
 
 ## Source
 

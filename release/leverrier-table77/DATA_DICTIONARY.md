@@ -172,13 +172,22 @@ The spot-check record. It is JSON, not a table.
 
 Result: 336 of 336 cells match the Gallica image.
 
-The human spot check, once done, is recorded in a separate file, `spotcheck_human_results.json`.
-It covers the same 28 rows and has the same structure, plus two keys:
-- `reviewer`: `"human"`;
-- `reviewer_name`: the name the reviewer entered on the review page.
+## `spotcheck_human_results.json`
 
-The human review page keeps its ticks apart from the first review's, so nothing in it is
-pre-ticked.
+The human spot-check record. The dataset was spot-checked by a human against the Gallica scan (28 rows, 336 cells, 0 discrepancies).
+- It covers the same 28 rows as `spotcheck_results.json`.
+- The reviewer was the dataset author, on 2026-11-07.
+- Every cell was ticked individually; the "all match" shortcut was not used.
+- The review page did not show the automated results, and its ticks were stored apart from that
+  review's, so nothing was pre-ticked.
+
+The keys are those of `spotcheck_results.json`, except `reviewer`:
+
+| key | meaning |
+|---|---|
+| `reviewer` | `"human"` |
+| `reviewer_name` | The name the reviewer entered on the review page |
+| `seed`, `table77_sha256`, `exported`, `all_match_rows`, `rows[]` | As in `spotcheck_results.json`. `table77_sha256` equals the table in this package |
 
 ## `leverrier_1846.csv` (derived)
 

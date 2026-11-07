@@ -23,8 +23,9 @@ abstract: >-
   cell is kept exactly as printed. The package also contains the two independent
   transcription passes, the resolution log for their 14 disagreements (resolved against a
   third printing), a table of 7 misprints in the source with the argument for each, a
-  28-row spot-check record, and a derived file of 529 measurements in degrees with Julian
-  Dates. The transcription, reconciliation and spot check were done by an AI model, not by an independent human; a human spot check is pending.
+  28-row spot-check records, and a derived file of 529 measurements in degrees with Julian
+  Dates. The transcription and reconciliation were done by an AI model,
+  not by an independent human. The dataset was then spot-checked by a human against the Gallica scan (28 rows, 336 cells, 0 discrepancies), by the dataset author.
 keywords:
   - Le Verrier
   - Uranus

@@ -2,7 +2,7 @@
   "profile": "data-package",
   "name": "leverrier-1846-table77",
   "title": "Le Verrier (1846), Table n° 77: 279 observations of Uranus, 1690–1845, transcribed and reconciled",
-  "description": "Transcription of Table n° 77 of U. J. Le Verrier, 'Recherches sur les mouvements de la planète Herschel (dite Uranus)', Connaissance des Temps pour 1849, Additions, pp. 129–136 (Paris, 1846): the observed apparent right ascensions and declinations of Uranus that Le Verrier compared with theory before predicting Neptune, with his computed values and residuals. Transcribed, reconciled and spot-checked by an AI model; a human spot check is pending. See README.md.",
+  "description": "Transcription of Table n° 77 of U. J. Le Verrier, 'Recherches sur les mouvements de la planète Herschel (dite Uranus)', Connaissance des Temps pour 1849, Additions, pp. 129–136 (Paris, 1846): the observed apparent right ascensions and declinations of Uranus that Le Verrier compared with theory before predicting Neptune, with his computed values and residuals. Transcribed, reconciled and spot-checked by an AI model; then spot-checked by a human against the Gallica scan (28 rows, 336 cells, 0 discrepancies). See README.md.",
   "version": "1.0.0",
   "homepage": "https://github.com/atishaypahadiya/neptune-fork",
   "licenses": [
@@ -1000,6 +1000,17 @@
       },
       "bytes": 342062,
       "hash": "sha256:2f546b9979f613c62d9c2dc77cd92b8269a9dbea4d3f87eecf39d2145509ebc4"
+    },
+    {
+      "name": "spotcheck_human_results",
+      "path": "spotcheck_human_results.json",
+      "title": "Spot-check results (human)",
+      "description": "Per-cell result of the human spot check of the same 28 rows (336 cells), marked reviewer = human, with the SHA-256 of the table checked.",
+      "format": "json",
+      "mediatype": "application/json",
+      "encoding": "utf-8",
+      "bytes": 35136,
+      "hash": "sha256:777515a11d0e2586767d3103835ef80b2beb0b73fa432650d9262bc1d1ff7a2e"
     }
   ]
 }

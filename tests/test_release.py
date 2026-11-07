@@ -103,17 +103,37 @@ def test_spotcheck_records_are_complete_for_this_table():
     assert "not an independent human" in rec["reviewer"]
     with pytest.raises(ValueError, match="reviewer = human"):
         sc.check_results(rec, table, picks, sha, human=True)
-    if rel.human_checked():
-        human = _record(sc.HUMAN_RESULTS_FILE.name)
-        assert sc.check_results(human, table, picks, sha, human=True) == []
+    assert rel.human_checked()  # the release requires the human record
+    human = _record(sc.HUMAN_RESULTS_FILE.name)
+    assert sc.check_results(human, table, picks, sha, human=True) == []
+    assert human["reviewer_name"] == "Atishay Pahadiya" and human["all_match_rows"] == []
 
 
-def test_pending_wording_matches_the_human_record():
-    """README, CITATION.cff, .zenodo.json and datapackage.json say the human spot check is
-    pending exactly while there is no human record (checklist: update them when it lands)."""
-    files = ("README.md", "CITATION.cff", ".zenodo.json", "datapackage.json")
-    says_pending = {f: PENDING in (rel.RELEASE / f).read_text("utf-8").lower() for f in files}
-    assert says_pending == dict.fromkeys(files, not rel.human_checked())
+def _flat(path):
+    """Lowercase text with all whitespace runs collapsed, so wrapped lines still match."""
+    return " ".join(path.read_text(encoding="utf-8").split()).lower()
+
+
+def test_verified_wording_and_no_pending_wording():
+    """The human spot check is done: every description of the dataset states the verified
+    result, and none still says it is pending. (This guard used to require "pending" while
+    no human record existed; it now requires the record, see the test above.)"""
+    files = ("README.md", "DATA_DICTIONARY.md", "CITATION.cff", ".zenodo.json",
+             "datapackage.json", "../CHECKLIST_leverrier-table77.md")  # fmt: skip
+    assert rel.VERIFIED == (
+        "spot-checked by a human against the Gallica scan (28 rows, 336 cells, 0 discrepancies)"
+    )
+    for f in files:
+        text = _flat(rel.RELEASE / f)
+        assert rel.VERIFIED.lower() in text, f"{f}: verified wording missing"
+        if f != "../CHECKLIST_leverrier-table77.md":  # the checklist quotes the old wording
+            assert PENDING not in text, f"{f}: still says pending"
+
+
+def test_manifest_records_the_spotcheck_hashes():
+    manifest = (rel.RELEASE / "MANIFEST.md").read_text(encoding="utf-8")
+    for name in ("spotcheck_results.json", sc.HUMAN_RESULTS_FILE.name):
+        assert f"`{rel.sha256(rel.RELEASE / name)}`" in manifest, name
 
 
 def test_licence_is_cc0():

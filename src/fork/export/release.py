@@ -37,6 +37,8 @@ LICENSE = {
     "path": "https://creativecommons.org/publicdomain/zero/1.0/",
     "title": "CC0 1.0 Universal (public domain dedication)",
 }
+# How the package states the human spot check (the 0 is enforced by human_checked()).
+VERIFIED = "spot-checked by a human against the Gallica scan (28 rows, 336 cells, 0 discrepancies)"
 PAGE_COUNTS = {129: 31, 130: 37, 131: 34, 132: 37, 133: 37, 134: 34, 135: 39, 136: 30}
 
 # release file name -> committed source (the human spot check is added by sources())
@@ -285,8 +287,7 @@ def sha256(path: Path) -> str:
 def descriptor() -> dict:
     """The datapackage.json descriptor for the files currently in ``RELEASE``."""
     review = (
-        "and spot-checked by an AI model, then spot-checked by a human (28 rows, 336 "
-        "cells, no mismatch)"
+        f"and spot-checked by an AI model; then {VERIFIED}"
         if human_checked()
         else "and spot-checked by an AI model; a human spot check is pending"
     )
