@@ -1,0 +1,1606 @@
+{
+ "description": "A6c: partitioned nested-sampling posteriors on synthetic data with the M6 observation model (real Table 77 epochs and RA-only rows; truth = Horizons Uranus as apparent RA/Dec of date; group offsets ~ N(0, tau^2); Gaussian noise of the calibrated sigma_g). Inclined perturber, free a, e <= 0.3. Truth = Neptune's 1846-09-23 geocentric ecliptic-of-date longitude. ln Z errors x err_inflation.",
+ "pass_rule": "truth inside the 68 % interval in 5-8 of 10 seeds (pre-registered)",
+ "error_model": {
+  "groups": [
+   "ancient:ra",
+   "ancient:dec",
+   "greenwich:ra",
+   "greenwich:dec",
+   "paris_1801_1827:ra",
+   "paris_1801_1827:dec",
+   "paris_1835_1845:ra",
+   "paris_1835_1845:dec"
+  ],
+  "sigma_arcsec": {
+   "ancient:ra": 4.66,
+   "ancient:dec": 5.08,
+   "greenwich:ra": 1.91,
+   "greenwich:dec": 2.41,
+   "paris_1801_1827:ra": 2.88,
+   "paris_1801_1827:dec": 2.6,
+   "paris_1835_1845:ra": 1.44,
+   "paris_1835_1845:dec": 1.16
+  },
+  "offset_prior_arcsec": {
+   "ancient:ra": 5.0,
+   "ancient:dec": 5.0,
+   "greenwich:ra": 2.0,
+   "greenwich:dec": 2.0,
+   "paris_1801_1827:ra": 2.0,
+   "paris_1801_1827:dec": 2.0,
+   "paris_1835_1845:ra": 2.0,
+   "paris_1835_1845:dec": 2.0
+  },
+  "basis": "sigma: O - JPL calibration (fork.data.calibration), MAD sigma per group; tau: pre-registered 2 arcsec modern, 5 arcsec ancient"
+ },
+ "sampler": {
+  "bound": "multi",
+  "sample": "rslice",
+  "dlogz": 0.1,
+  "nlive_default": 1000,
+  "nlive_cells": {
+   "0": 2000
+  },
+  "err_inflation": 1.8,
+  "cells": [
+   {
+    "a_au": [
+     20.0,
+     25.0
+    ],
+    "e": null
+   },
+   {
+    "a_au": [
+     25.0,
+     28.0
+    ],
+    "e": null
+   },
+   {
+    "a_au": [
+     28.0,
+     60.0
+    ],
+    "e": [
+     0.0,
+     0.12
+    ]
+   },
+   {
+    "a_au": [
+     28.0,
+     60.0
+    ],
+    "e": [
+     0.12,
+     0.3
+    ]
+   }
+  ]
+ },
+ "priors": {
+  "log10_m_earth": [
+   0.0,
+   2.0
+  ],
+  "a_au_log_uniform": [
+   20.0,
+   60.0
+  ],
+  "e_uniform_max": 0.3,
+  "inc_rel_uranus_deg_max": 10.0,
+  "inc": "uniform in cos i",
+  "angles": "uniform",
+  "uranus": "box ±50 scaled σ around the Uranus-only RA/Dec fit"
+ },
+ "truth": {
+  "mass_earth": 17.1513,
+  "a_au": 30.2234,
+  "e": 0.00388,
+  "galle_lon_ecl_of_date_deg": 325.873,
+  "inc_rel_uranus_deg": 1.5071
+ },
+ "seeds": [
+  {
+   "seed": 0,
+   "n_samples": 238720,
+   "n_derived": 6000,
+   "drawn_offsets_arcsec": [
+    1.298,
+    8.107,
+    0.713,
+    1.943,
+    1.472,
+    1.491,
+    -2.834,
+    2.433
+   ],
+   "evidence": {
+    "logz": -286.485,
+    "logzerr": 0.366,
+    "logzerr_inflation": 1.8,
+    "cells": [
+     {
+      "a_au": [
+       20.0,
+       25.0
+      ],
+      "e": null,
+      "nlive": 2000,
+      "share": 0.00049,
+      "share_err": 0.00024,
+      "logz_k": -292.5077,
+      "niter": 96970,
+      "ncall": 7037260,
+      "wall_min": 206.0,
+      "chi2_min": 492.64
+     },
+     {
+      "a_au": [
+       25.0,
+       28.0
+      ],
+      "e": null,
+      "nlive": 1000,
+      "share": 0.00017,
+      "share_err": 9e-05,
+      "logz_k": -292.9228,
+      "niter": 47122,
+      "ncall": 3412508,
+      "wall_min": 95.6,
+      "chi2_min": 496.217
+     },
+     {
+      "a_au": [
+       28.0,
+       60.0
+      ],
+      "e": [
+       0.0,
+       0.12
+      ],
+      "nlive": 1000,
+      "share": 0.8602,
+      "share_err": 0.07133,
+      "logz_k": -285.3536,
+      "niter": 43899,
+      "ncall": 3186046,
+      "wall_min": 89.1,
+      "chi2_min": 487.531
+     },
+     {
+      "a_au": [
+       28.0,
+       60.0
+      ],
+      "e": [
+       0.12,
+       0.3
+      ],
+      "nlive": 1000,
+      "share": 0.13914,
+      "share_err": 0.07119,
+      "logz_k": -287.5808,
+      "niter": 45729,
+      "ncall": 3381146,
+      "wall_min": 98.6,
+      "chi2_min": 488.32
+     }
+    ]
+   },
+   "galle_lon_ecl_of_date_deg": {
+    "median": 323.874,
+    "lo68": 320.183,
+    "hi68": 325.947,
+    "minus": 3.691,
+    "plus": 2.073,
+    "width68": 5.763,
+    "truth": 325.873,
+    "median_minus_truth": -1.999,
+    "truth_in_68": true
+   },
+   "mass_earth": {
+    "median": 17.534,
+    "lo68": 16.388,
+    "hi68": 19.021,
+    "minus": 1.146,
+    "plus": 1.488,
+    "truth": 17.151,
+    "truth_in_68": true
+   },
+   "a_au": {
+    "median": 30.574,
+    "lo68": 30.007,
+    "hi68": 31.992,
+    "minus": 0.567,
+    "plus": 1.418,
+    "truth": 30.223,
+    "truth_in_68": true
+   },
+   "e": {
+    "median": 0.016,
+    "lo68": 0.0052,
+    "hi68": 0.0668,
+    "minus": 0.0108,
+    "plus": 0.0509,
+    "truth": 0.0039,
+    "truth_in_68": false,
+    "upper68_one_sided": 0.0298,
+    "upper95_one_sided": 0.1737,
+    "prior_median": 0.15,
+    "truth_below_upper68": true,
+    "truth_below_upper95": true
+   },
+   "inc_rel_uranus_deg": {
+    "median": 3.042,
+    "lo68": 2.113,
+    "hi68": 4.211,
+    "minus": 0.93,
+    "plus": 1.169,
+    "truth": 1.507,
+    "truth_in_68": false
+   }
+  },
+  {
+   "seed": 1,
+   "n_samples": 236786,
+   "n_derived": 6000,
+   "drawn_offsets_arcsec": [
+    -3.626,
+    3.062,
+    -1.764,
+    -2.167,
+    3.768,
+    2.273,
+    -0.901,
+    -0.853
+   ],
+   "evidence": {
+    "logz": -293.1988,
+    "logzerr": 0.3966,
+    "logzerr_inflation": 1.8,
+    "cells": [
+     {
+      "a_au": [
+       20.0,
+       25.0
+      ],
+      "e": null,
+      "nlive": 2000,
+      "share": 0.00357,
+      "share_err": 0.0018,
+      "logz_k": -297.2393,
+      "niter": 97093,
+      "ncall": 7050374,
+      "wall_min": 204.3,
+      "chi2_min": 501.979
+     },
+     {
+      "a_au": [
+       25.0,
+       28.0
+      ],
+      "e": null,
+      "nlive": 1000,
+      "share": 0.00207,
+      "share_err": 0.0012,
+      "logz_k": -297.1054,
+      "niter": 46727,
+      "ncall": 3426398,
+      "wall_min": 96.6,
+      "chi2_min": 505.371
+     },
+     {
+      "a_au": [
+       28.0,
+       60.0
+      ],
+      "e": [
+       0.0,
+       0.12
+      ],
+      "nlive": 1000,
+      "share": 0.96976,
+      "share_err": 0.01563,
+      "logz_k": -291.9475,
+      "niter": 43090,
+      "ncall": 3139649,
+      "wall_min": 88.1,
+      "chi2_min": 502.332
+     },
+     {
+      "a_au": [
+       28.0,
+       60.0
+      ],
+      "e": [
+       0.12,
+       0.3
+      ],
+      "nlive": 1000,
+      "share": 0.02459,
+      "share_err": 0.01396,
+      "logz_k": -296.0276,
+      "niter": 44876,
+      "ncall": 3255720,
+      "wall_min": 92.2,
+      "chi2_min": 506.917
+     }
+    ]
+   },
+   "galle_lon_ecl_of_date_deg": {
+    "median": 326.085,
+    "lo68": 324.54,
+    "hi68": 327.607,
+    "minus": 1.546,
+    "plus": 1.521,
+    "width68": 3.067,
+    "truth": 325.873,
+    "median_minus_truth": 0.212,
+    "truth_in_68": true
+   },
+   "mass_earth": {
+    "median": 16.776,
+    "lo68": 15.832,
+    "hi68": 17.703,
+    "minus": 0.944,
+    "plus": 0.927,
+    "truth": 17.151,
+    "truth_in_68": true
+   },
+   "a_au": {
+    "median": 30.497,
+    "lo68": 29.907,
+    "hi68": 31.135,
+    "minus": 0.59,
+    "plus": 0.637,
+    "truth": 30.223,
+    "truth_in_68": true
+   },
+   "e": {
+    "median": 0.0112,
+    "lo68": 0.0029,
+    "hi68": 0.0474,
+    "minus": 0.0083,
+    "plus": 0.0362,
+    "truth": 0.0039,
+    "truth_in_68": true,
+    "upper68_one_sided": 0.0231,
+    "upper95_one_sided": 0.0822,
+    "prior_median": 0.15,
+    "truth_below_upper68": true,
+    "truth_below_upper95": true
+   },
+   "inc_rel_uranus_deg": {
+    "median": 1.93,
+    "lo68": 1.273,
+    "hi68": 2.812,
+    "minus": 0.657,
+    "plus": 0.882,
+    "truth": 1.507,
+    "truth_in_68": true
+   }
+  },
+  {
+   "seed": 2,
+   "n_samples": 237219,
+   "n_derived": 6000,
+   "drawn_offsets_arcsec": [
+    -3.534,
+    -4.419,
+    -2.001,
+    0.334,
+    -4.118,
+    -2.171,
+    1.854,
+    -0.678
+   ],
+   "evidence": {
+    "logz": -278.5212,
+    "logzerr": 0.3794,
+    "logzerr_inflation": 1.8,
+    "cells": [
+     {
+      "a_au": [
+       20.0,
+       25.0
+      ],
+      "e": null,
+      "nlive": 2000,
+      "share": 0.00208,
+      "share_err": 0.00102,
+      "logz_k": -283.1026,
+      "niter": 95600,
+      "ncall": 6940396,
+      "wall_min": 201.4,
+      "chi2_min": 475.196
+     },
+     {
+      "a_au": [
+       25.0,
+       28.0
+      ],
+      "e": null,
+      "nlive": 1000,
+      "share": 6e-05,
+      "share_err": 4e-05,
+      "logz_k": -285.9619,
+      "niter": 46916,
+      "ncall": 3394760,
+      "wall_min": 94.0,
+      "chi2_min": 482.724
+     },
+     {
+      "a_au": [
+       28.0,
+       60.0
+      ],
+      "e": [
+       0.0,
+       0.12
+      ],
+      "nlive": 1000,
+      "share": 0.93576,
+      "share_err": 0.03455,
+      "logz_k": -277.3056,
+      "niter": 43382,
+      "ncall": 3135842,
+      "wall_min": 87.0,
+      "chi2_min": 472.459
+     },
+     {
+      "a_au": [
+       28.0,
+       60.0
+      ],
+      "e": [
+       0.12,
+       0.3
+      ],
+      "nlive": 1000,
+      "share": 0.0621,
+      "share_err": 0.03402,
+      "logz_k": -280.4237,
+      "niter": 46321,
+      "ncall": 3386654,
+      "wall_min": 96.6,
+      "chi2_min": 472.821
+     }
+    ]
+   },
+   "galle_lon_ecl_of_date_deg": {
+    "median": 325.701,
+    "lo68": 323.768,
+    "hi68": 327.327,
+    "minus": 1.934,
+    "plus": 1.626,
+    "width68": 3.559,
+    "truth": 325.873,
+    "median_minus_truth": -0.172,
+    "truth_in_68": true
+   },
+   "mass_earth": {
+    "median": 17.236,
+    "lo68": 16.232,
+    "hi68": 18.487,
+    "minus": 1.004,
+    "plus": 1.252,
+    "truth": 17.151,
+    "truth_in_68": true
+   },
+   "a_au": {
+    "median": 30.121,
+    "lo68": 29.632,
+    "hi68": 30.63,
+    "minus": 0.489,
+    "plus": 0.509,
+    "truth": 30.223,
+    "truth_in_68": true
+   },
+   "e": {
+    "median": 0.0149,
+    "lo68": 0.0066,
+    "hi68": 0.0319,
+    "minus": 0.0083,
+    "plus": 0.0171,
+    "truth": 0.0039,
+    "truth_in_68": false,
+    "upper68_one_sided": 0.0222,
+    "upper95_one_sided": 0.1384,
+    "prior_median": 0.15,
+    "truth_below_upper68": true,
+    "truth_below_upper95": true
+   },
+   "inc_rel_uranus_deg": {
+    "median": 3.285,
+    "lo68": 1.879,
+    "hi68": 4.808,
+    "minus": 1.406,
+    "plus": 1.523,
+    "truth": 1.507,
+    "truth_in_68": false
+   }
+  },
+  {
+   "seed": 3,
+   "n_samples": 239422,
+   "n_derived": 6000,
+   "drawn_offsets_arcsec": [
+    1.748,
+    3.882,
+    -0.82,
+    -5.334,
+    4.502,
+    -1.891,
+    -1.682,
+    -0.136
+   ],
+   "evidence": {
+    "logz": -296.23,
+    "logzerr": 0.3114,
+    "logzerr_inflation": 1.8,
+    "cells": [
+     {
+      "a_au": [
+       20.0,
+       25.0
+      ],
+      "e": null,
+      "nlive": 2000,
+      "share": 2e-05,
+      "share_err": 1e-05,
+      "logz_k": -305.4944,
+      "niter": 98829,
+      "ncall": 7180855,
+      "wall_min": 205.6,
+      "chi2_min": 516.751
+     },
+     {
+      "a_au": [
+       25.0,
+       28.0
+      ],
+      "e": null,
+      "nlive": 1000,
+      "share": 0.0,
+      "share_err": 0.0,
+      "logz_k": -306.8406,
+      "niter": 48491,
+      "ncall": 3562956,
+      "wall_min": 99.9,
+      "chi2_min": 521.314
+     },
+     {
+      "a_au": [
+       28.0,
+       60.0
+      ],
+      "e": [
+       0.0,
+       0.12
+      ],
+      "nlive": 1000,
+      "share": 0.68463,
+      "share_err": 0.12686,
+      "logz_k": -295.3269,
+      "niter": 42828,
+      "ncall": 3103300,
+      "wall_min": 86.0,
+      "chi2_min": 509.618
+     },
+     {
+      "a_au": [
+       28.0,
+       60.0
+      ],
+      "e": [
+       0.12,
+       0.3
+      ],
+      "nlive": 1000,
+      "share": 0.31534,
+      "share_err": 0.12686,
+      "logz_k": -296.5076,
+      "niter": 44274,
+      "ncall": 3189797,
+      "wall_min": 89.8,
+      "chi2_min": 509.091
+     }
+    ]
+   },
+   "galle_lon_ecl_of_date_deg": {
+    "median": 323.923,
+    "lo68": 316.815,
+    "hi68": 326.156,
+    "minus": 7.108,
+    "plus": 2.234,
+    "width68": 9.341,
+    "truth": 325.873,
+    "median_minus_truth": -1.95,
+    "truth_in_68": true
+   },
+   "mass_earth": {
+    "median": 17.973,
+    "lo68": 16.612,
+    "hi68": 20.618,
+    "minus": 1.361,
+    "plus": 2.646,
+    "truth": 17.151,
+    "truth_in_68": true
+   },
+   "a_au": {
+    "median": 30.788,
+    "lo68": 30.192,
+    "hi68": 35.992,
+    "minus": 0.596,
+    "plus": 5.204,
+    "truth": 30.223,
+    "truth_in_68": true
+   },
+   "e": {
+    "median": 0.0178,
+    "lo68": 0.0039,
+    "hi68": 0.1734,
+    "minus": 0.014,
+    "plus": 0.1555,
+    "truth": 0.0039,
+    "truth_in_68": true,
+    "upper68_one_sided": 0.0408,
+    "upper95_one_sided": 0.2429,
+    "prior_median": 0.15,
+    "truth_below_upper68": true,
+    "truth_below_upper95": true
+   },
+   "inc_rel_uranus_deg": {
+    "median": 2.284,
+    "lo68": 1.429,
+    "hi68": 3.555,
+    "minus": 0.855,
+    "plus": 1.271,
+    "truth": 1.507,
+    "truth_in_68": true
+   }
+  },
+  {
+   "seed": 4,
+   "n_samples": 240215,
+   "n_derived": 6000,
+   "drawn_offsets_arcsec": [
+    -2.451,
+    5.627,
+    -2.079,
+    -2.071,
+    -3.489,
+    -1.208,
+    -0.645,
+    -0.316
+   ],
+   "evidence": {
+    "logz": -318.4128,
+    "logzerr": 0.3796,
+    "logzerr_inflation": 1.8,
+    "cells": [
+     {
+      "a_au": [
+       20.0,
+       25.0
+      ],
+      "e": null,
+      "nlive": 2000,
+      "share": 2e-05,
+      "share_err": 1e-05,
+      "logz_k": -327.793,
+      "niter": 100222,
+      "ncall": 7418409,
+      "wall_min": 220.1,
+      "chi2_min": 559.949
+     },
+     {
+      "a_au": [
+       25.0,
+       28.0
+      ],
+      "e": null,
+      "nlive": 1000,
+      "share": 4e-05,
+      "share_err": 2e-05,
+      "logz_k": -326.2497,
+      "niter": 46883,
+      "ncall": 3436143,
+      "wall_min": 97.5,
+      "chi2_min": 563.355
+     },
+     {
+      "a_au": [
+       28.0,
+       60.0
+      ],
+      "e": [
+       0.0,
+       0.12
+      ],
+      "nlive": 1000,
+      "share": 0.93453,
+      "share_err": 0.03553,
+      "logz_k": -317.1985,
+      "niter": 42594,
+      "ncall": 3124630,
+      "wall_min": 87.7,
+      "chi2_min": 553.822
+     },
+     {
+      "a_au": [
+       28.0,
+       60.0
+      ],
+      "e": [
+       0.12,
+       0.3
+      ],
+      "nlive": 1000,
+      "share": 0.06541,
+      "share_err": 0.03551,
+      "logz_k": -320.2633,
+      "niter": 45516,
+      "ncall": 3276708,
+      "wall_min": 92.0,
+      "chi2_min": 554.108
+     }
+    ]
+   },
+   "galle_lon_ecl_of_date_deg": {
+    "median": 325.602,
+    "lo68": 323.207,
+    "hi68": 327.381,
+    "minus": 2.394,
+    "plus": 1.779,
+    "width68": 4.174,
+    "truth": 325.873,
+    "median_minus_truth": -0.271,
+    "truth_in_68": true
+   },
+   "mass_earth": {
+    "median": 15.991,
+    "lo68": 14.988,
+    "hi68": 17.208,
+    "minus": 1.003,
+    "plus": 1.216,
+    "truth": 17.151,
+    "truth_in_68": true
+   },
+   "a_au": {
+    "median": 30.216,
+    "lo68": 29.743,
+    "hi68": 31.308,
+    "minus": 0.473,
+    "plus": 1.092,
+    "truth": 30.223,
+    "truth_in_68": true
+   },
+   "e": {
+    "median": 0.012,
+    "lo68": 0.003,
+    "hi68": 0.0585,
+    "minus": 0.009,
+    "plus": 0.0465,
+    "truth": 0.0039,
+    "truth_in_68": true,
+    "upper68_one_sided": 0.0272,
+    "upper95_one_sided": 0.1394,
+    "prior_median": 0.15,
+    "truth_below_upper68": true,
+    "truth_below_upper95": true
+   },
+   "inc_rel_uranus_deg": {
+    "median": 3.629,
+    "lo68": 2.308,
+    "hi68": 5.053,
+    "minus": 1.322,
+    "plus": 1.424,
+    "truth": 1.507,
+    "truth_in_68": false
+   }
+  },
+  {
+   "seed": 5,
+   "n_samples": 241236,
+   "n_derived": 6000,
+   "drawn_offsets_arcsec": [
+    1.466,
+    1.075,
+    1.11,
+    3.227,
+    4.164,
+    -5.597,
+    -1.25,
+    -1.359
+   ],
+   "evidence": {
+    "logz": -311.2475,
+    "logzerr": 0.4011,
+    "logzerr_inflation": 1.8,
+    "cells": [
+     {
+      "a_au": [
+       20.0,
+       25.0
+      ],
+      "e": null,
+      "nlive": 2000,
+      "share": 0.00098,
+      "share_err": 0.0005,
+      "logz_k": -316.5803,
+      "niter": 98524,
+      "ncall": 7229641,
+      "wall_min": 210.5,
+      "chi2_min": 539.236
+     },
+     {
+      "a_au": [
+       25.0,
+       28.0
+      ],
+      "e": null,
+      "nlive": 1000,
+      "share": 0.00098,
+      "share_err": 0.00058,
+      "logz_k": -315.9024,
+      "niter": 47677,
+      "ncall": 3458344,
+      "wall_min": 95.5,
+      "chi2_min": 541.075
+     },
+     {
+      "a_au": [
+       28.0,
+       60.0
+      ],
+      "e": [
+       0.0,
+       0.12
+      ],
+      "nlive": 1000,
+      "share": 0.99466,
+      "share_err": 0.00262,
+      "logz_k": -309.9709,
+      "niter": 43367,
+      "ncall": 3162901,
+      "wall_min": 88.6,
+      "chi2_min": 537.82
+     },
+     {
+      "a_au": [
+       28.0,
+       60.0
+      ],
+      "e": [
+       0.12,
+       0.3
+      ],
+      "nlive": 1000,
+      "share": 0.00338,
+      "share_err": 0.00196,
+      "logz_k": -316.0605,
+      "niter": 46668,
+      "ncall": 3368067,
+      "wall_min": 94.7,
+      "chi2_min": 543.394
+     }
+    ]
+   },
+   "galle_lon_ecl_of_date_deg": {
+    "median": 326.003,
+    "lo68": 323.958,
+    "hi68": 327.772,
+    "minus": 2.045,
+    "plus": 1.768,
+    "width68": 3.814,
+    "truth": 325.873,
+    "median_minus_truth": 0.13,
+    "truth_in_68": true
+   },
+   "mass_earth": {
+    "median": 17.146,
+    "lo68": 16.119,
+    "hi68": 18.193,
+    "minus": 1.027,
+    "plus": 1.047,
+    "truth": 17.151,
+    "truth_in_68": true
+   },
+   "a_au": {
+    "median": 30.193,
+    "lo68": 29.655,
+    "hi68": 30.723,
+    "minus": 0.538,
+    "plus": 0.53,
+    "truth": 30.223,
+    "truth_in_68": true
+   },
+   "e": {
+    "median": 0.0102,
+    "lo68": 0.0022,
+    "hi68": 0.0499,
+    "minus": 0.0081,
+    "plus": 0.0397,
+    "truth": 0.0039,
+    "truth_in_68": true,
+    "upper68_one_sided": 0.0206,
+    "upper95_one_sided": 0.0792,
+    "prior_median": 0.15,
+    "truth_below_upper68": true,
+    "truth_below_upper95": true
+   },
+   "inc_rel_uranus_deg": {
+    "median": 1.78,
+    "lo68": 1.094,
+    "hi68": 2.688,
+    "minus": 0.686,
+    "plus": 0.908,
+    "truth": 1.507,
+    "truth_in_68": true
+   }
+  },
+  {
+   "seed": 6,
+   "n_samples": 243936,
+   "n_derived": 6000,
+   "drawn_offsets_arcsec": [
+    2.003,
+    -4.381,
+    -0.358,
+    -0.882,
+    -2.909,
+    -0.838,
+    1.143,
+    -2.768
+   ],
+   "evidence": {
+    "logz": -313.612,
+    "logzerr": 0.2742,
+    "logzerr_inflation": 1.8,
+    "cells": [
+     {
+      "a_au": [
+       20.0,
+       25.0
+      ],
+      "e": null,
+      "nlive": 2000,
+      "share": 0.01033,
+      "share_err": 0.00437,
+      "logz_k": -316.5906,
+      "niter": 99910,
+      "ncall": 7310698,
+      "wall_min": 210.9,
+      "chi2_min": 537.873
+     },
+     {
+      "a_au": [
+       25.0,
+       28.0
+      ],
+      "e": null,
+      "nlive": 1000,
+      "share": 0.22721,
+      "share_err": 0.09489,
+      "logz_k": -312.8224,
+      "niter": 46241,
+      "ncall": 3329029,
+      "wall_min": 92.3,
+      "chi2_min": 537.786
+     },
+     {
+      "a_au": [
+       28.0,
+       60.0
+      ],
+      "e": [
+       0.0,
+       0.12
+      ],
+      "nlive": 1000,
+      "share": 0.19867,
+      "share_err": 0.08344,
+      "logz_k": -313.9462,
+      "niter": 46371,
+      "ncall": 3397997,
+      "wall_min": 97.8,
+      "chi2_min": 539.744
+     },
+     {
+      "a_au": [
+       28.0,
+       60.0
+      ],
+      "e": [
+       0.12,
+       0.3
+      ],
+      "nlive": 1000,
+      "share": 0.56379,
+      "share_err": 0.12789,
+      "logz_k": -313.3086,
+      "niter": 46414,
+      "ncall": 3485786,
+      "wall_min": 104.0,
+      "chi2_min": 538.416
+     }
+    ]
+   },
+   "galle_lon_ecl_of_date_deg": {
+    "median": 333.404,
+    "lo68": 329.414,
+    "hi68": 335.647,
+    "minus": 3.99,
+    "plus": 2.243,
+    "width68": 6.233,
+    "truth": 325.873,
+    "median_minus_truth": 7.531,
+    "truth_in_68": false
+   },
+   "mass_earth": {
+    "median": 16.959,
+    "lo68": 16.048,
+    "hi68": 17.918,
+    "minus": 0.912,
+    "plus": 0.959,
+    "truth": 17.151,
+    "truth_in_68": true
+   },
+   "a_au": {
+    "median": 28.133,
+    "lo68": 27.688,
+    "hi68": 29.215,
+    "minus": 0.444,
+    "plus": 1.083,
+    "truth": 30.223,
+    "truth_in_68": false
+   },
+   "e": {
+    "median": 0.1303,
+    "lo68": 0.0593,
+    "hi68": 0.1565,
+    "minus": 0.0709,
+    "plus": 0.0262,
+    "truth": 0.0039,
+    "truth_in_68": false,
+    "upper68_one_sided": 0.1383,
+    "upper95_one_sided": 0.1984,
+    "prior_median": 0.15,
+    "truth_below_upper68": true,
+    "truth_below_upper95": true
+   },
+   "inc_rel_uranus_deg": {
+    "median": 1.654,
+    "lo68": 0.998,
+    "hi68": 2.652,
+    "minus": 0.657,
+    "plus": 0.997,
+    "truth": 1.507,
+    "truth_in_68": true
+   }
+  },
+  {
+   "seed": 7,
+   "n_samples": 237899,
+   "n_derived": 6000,
+   "drawn_offsets_arcsec": [
+    3.47,
+    1.31,
+    -1.024,
+    -2.6,
+    -1.654,
+    0.253,
+    0.706,
+    -1.723
+   ],
+   "evidence": {
+    "logz": -300.2387,
+    "logzerr": 0.3999,
+    "logzerr_inflation": 1.8,
+    "cells": [
+     {
+      "a_au": [
+       20.0,
+       25.0
+      ],
+      "e": null,
+      "nlive": 2000,
+      "share": 0.00245,
+      "share_err": 0.00125,
+      "logz_k": -304.6564,
+      "niter": 98102,
+      "ncall": 7139387,
+      "wall_min": 203.5,
+      "chi2_min": 515.808
+     },
+     {
+      "a_au": [
+       25.0,
+       28.0
+      ],
+      "e": null,
+      "nlive": 1000,
+      "share": 0.00879,
+      "share_err": 0.00512,
+      "logz_k": -302.7014,
+      "niter": 46020,
+      "ncall": 3316742,
+      "wall_min": 92.8,
+      "chi2_min": 517.984
+     },
+     {
+      "a_au": [
+       28.0,
+       60.0
+      ],
+      "e": [
+       0.0,
+       0.12
+      ],
+      "nlive": 1000,
+      "share": 0.98082,
+      "share_err": 0.00914,
+      "logz_k": -298.9761,
+      "niter": 43381,
+      "ncall": 3162488,
+      "wall_min": 91.4,
+      "chi2_min": 515.805
+     },
+     {
+      "a_au": [
+       28.0,
+       60.0
+      ],
+      "e": [
+       0.12,
+       0.3
+      ],
+      "nlive": 1000,
+      "share": 0.00794,
+      "share_err": 0.00456,
+      "logz_k": -304.1985,
+      "niter": 45396,
+      "ncall": 3365187,
+      "wall_min": 102.7,
+      "chi2_min": 522.213
+     }
+    ]
+   },
+   "galle_lon_ecl_of_date_deg": {
+    "median": 325.063,
+    "lo68": 323.128,
+    "hi68": 327.519,
+    "minus": 1.934,
+    "plus": 2.457,
+    "width68": 4.391,
+    "truth": 325.873,
+    "median_minus_truth": -0.81,
+    "truth_in_68": true
+   },
+   "mass_earth": {
+    "median": 17.608,
+    "lo68": 16.728,
+    "hi68": 18.567,
+    "minus": 0.879,
+    "plus": 0.96,
+    "truth": 17.151,
+    "truth_in_68": true
+   },
+   "a_au": {
+    "median": 30.029,
+    "lo68": 29.13,
+    "hi68": 30.588,
+    "minus": 0.899,
+    "plus": 0.559,
+    "truth": 30.223,
+    "truth_in_68": true
+   },
+   "e": {
+    "median": 0.0206,
+    "lo68": 0.0095,
+    "hi68": 0.0623,
+    "minus": 0.011,
+    "plus": 0.0418,
+    "truth": 0.0039,
+    "truth_in_68": false,
+    "upper68_one_sided": 0.0356,
+    "upper95_one_sided": 0.0709,
+    "prior_median": 0.15,
+    "truth_below_upper68": true,
+    "truth_below_upper95": true
+   },
+   "inc_rel_uranus_deg": {
+    "median": 1.697,
+    "lo68": 0.885,
+    "hi68": 2.786,
+    "minus": 0.812,
+    "plus": 1.089,
+    "truth": 1.507,
+    "truth_in_68": true
+   }
+  },
+  {
+   "seed": 8,
+   "n_samples": 243078,
+   "n_derived": 6000,
+   "drawn_offsets_arcsec": [
+    -8.641,
+    7.078,
+    2.406,
+    1.019,
+    1.129,
+    0.943,
+    -1.986,
+    -0.282
+   ],
+   "evidence": {
+    "logz": -297.5564,
+    "logzerr": 0.3096,
+    "logzerr_inflation": 1.8,
+    "cells": [
+     {
+      "a_au": [
+       20.0,
+       25.0
+      ],
+      "e": null,
+      "nlive": 2000,
+      "share": 0.0,
+      "share_err": 0.0,
+      "logz_k": -310.0682,
+      "niter": 100378,
+      "ncall": 7325478,
+      "wall_min": 210.1,
+      "chi2_min": 524.347
+     },
+     {
+      "a_au": [
+       25.0,
+       28.0
+      ],
+      "e": null,
+      "nlive": 1000,
+      "share": 0.0,
+      "share_err": 0.0,
+      "logz_k": -307.9539,
+      "niter": 47328,
+      "ncall": 3444869,
+      "wall_min": 102.1,
+      "chi2_min": 525.866
+     },
+     {
+      "a_au": [
+       28.0,
+       60.0
+      ],
+      "e": [
+       0.0,
+       0.12
+      ],
+      "nlive": 1000,
+      "share": 0.6776,
+      "share_err": 0.12995,
+      "logz_k": -296.6637,
+      "niter": 44583,
+      "ncall": 3286474,
+      "wall_min": 101.5,
+      "chi2_min": 508.767
+     },
+     {
+      "a_au": [
+       28.0,
+       60.0
+      ],
+      "e": [
+       0.12,
+       0.3
+      ],
+      "nlive": 1000,
+      "share": 0.3224,
+      "share_err": 0.12995,
+      "logz_k": -297.8119,
+      "niter": 45789,
+      "ncall": 3343342,
+      "wall_min": 110.6,
+      "chi2_min": 508.677
+     }
+    ]
+   },
+   "galle_lon_ecl_of_date_deg": {
+    "median": 322.05,
+    "lo68": 315.961,
+    "hi68": 324.741,
+    "minus": 6.088,
+    "plus": 2.691,
+    "width68": 8.78,
+    "truth": 325.873,
+    "median_minus_truth": -3.823,
+    "truth_in_68": false
+   },
+   "mass_earth": {
+    "median": 18.796,
+    "lo68": 17.268,
+    "hi68": 21.325,
+    "minus": 1.528,
+    "plus": 2.529,
+    "truth": 17.151,
+    "truth_in_68": false
+   },
+   "a_au": {
+    "median": 31.509,
+    "lo68": 30.525,
+    "hi68": 36.67,
+    "minus": 0.984,
+    "plus": 5.16,
+    "truth": 30.223,
+    "truth_in_68": false
+   },
+   "e": {
+    "median": 0.0413,
+    "lo68": 0.0058,
+    "hi68": 0.1917,
+    "minus": 0.0356,
+    "plus": 0.1504,
+    "truth": 0.0039,
+    "truth_in_68": false,
+    "upper68_one_sided": 0.1212,
+    "upper95_one_sided": 0.2551,
+    "prior_median": 0.15,
+    "truth_below_upper68": true,
+    "truth_below_upper95": true
+   },
+   "inc_rel_uranus_deg": {
+    "median": 3.501,
+    "lo68": 1.884,
+    "hi68": 5.579,
+    "minus": 1.617,
+    "plus": 2.078,
+    "truth": 1.507,
+    "truth_in_68": false
+   }
+  },
+  {
+   "seed": 9,
+   "n_samples": 240063,
+   "n_derived": 6000,
+   "drawn_offsets_arcsec": [
+    10.967,
+    -13.792,
+    1.241,
+    -1.495,
+    -0.986,
+    0.33,
+    0.028,
+    0.022
+   ],
+   "evidence": {
+    "logz": -343.5173,
+    "logzerr": 0.4083,
+    "logzerr_inflation": 1.8,
+    "cells": [
+     {
+      "a_au": [
+       20.0,
+       25.0
+      ],
+      "e": null,
+      "nlive": 2000,
+      "share": 0.00058,
+      "share_err": 0.0003,
+      "logz_k": -349.3824,
+      "niter": 97510,
+      "ncall": 7131917,
+      "wall_min": 204.4,
+      "chi2_min": 605.849
+     },
+     {
+      "a_au": [
+       25.0,
+       28.0
+      ],
+      "e": null,
+      "nlive": 1000,
+      "share": 0.00104,
+      "share_err": 0.00062,
+      "logz_k": -348.1122,
+      "niter": 47253,
+      "ncall": 3423471,
+      "wall_min": 109.5,
+      "chi2_min": 606.341
+     },
+     {
+      "a_au": [
+       28.0,
+       60.0
+      ],
+      "e": [
+       0.0,
+       0.12
+      ],
+      "nlive": 1000,
+      "share": 0.99247,
+      "share_err": 0.00402,
+      "logz_k": -342.2429,
+      "niter": 43324,
+      "ncall": 3183735,
+      "wall_min": 101.7,
+      "chi2_min": 602.456
+     },
+     {
+      "a_au": [
+       28.0,
+       60.0
+      ],
+      "e": [
+       0.12,
+       0.3
+      ],
+      "nlive": 1000,
+      "share": 0.00591,
+      "share_err": 0.00351,
+      "logz_k": -347.7711,
+      "niter": 46976,
+      "ncall": 3399726,
+      "wall_min": 93.5,
+      "chi2_min": 606.211
+     }
+    ]
+   },
+   "galle_lon_ecl_of_date_deg": {
+    "median": 326.885,
+    "lo68": 323.462,
+    "hi68": 329.774,
+    "minus": 3.423,
+    "plus": 2.89,
+    "width68": 6.313,
+    "truth": 325.873,
+    "median_minus_truth": 1.012,
+    "truth_in_68": true
+   },
+   "mass_earth": {
+    "median": 15.81,
+    "lo68": 15.04,
+    "hi68": 16.887,
+    "minus": 0.77,
+    "plus": 1.077,
+    "truth": 17.151,
+    "truth_in_68": false
+   },
+   "a_au": {
+    "median": 29.737,
+    "lo68": 28.927,
+    "hi68": 30.924,
+    "minus": 0.81,
+    "plus": 1.187,
+    "truth": 30.223,
+    "truth_in_68": true
+   },
+   "e": {
+    "median": 0.0484,
+    "lo68": 0.0124,
+    "hi68": 0.0661,
+    "minus": 0.0361,
+    "plus": 0.0176,
+    "truth": 0.0039,
+    "truth_in_68": false,
+    "upper68_one_sided": 0.0581,
+    "upper95_one_sided": 0.0808,
+    "prior_median": 0.15,
+    "truth_below_upper68": true,
+    "truth_below_upper95": true
+   },
+   "inc_rel_uranus_deg": {
+    "median": 2.142,
+    "lo68": 1.277,
+    "hi68": 3.327,
+    "minus": 0.865,
+    "plus": 1.185,
+    "truth": 1.507,
+    "truth_in_68": true
+   }
+  }
+ ],
+ "missing_seeds": [],
+ "a6c_coverage": {
+  "n_seeds": 10,
+  "n_truth_in_68": 8,
+  "pass_5_to_8_of_10": true,
+  "binomial": {
+   "p_true": 0.68,
+   "pmf_k": 0.2107,
+   "p_value_two_sided": 0.5179,
+   "spec_range_counts": [
+    5,
+    8
+   ],
+   "p_calibrated_in_spec_range": 0.8157
+  },
+  "per_seed": [
+   {
+    "seed": 0,
+    "truth_in_68": true,
+    "median_deg": 323.874,
+    "width68_deg": 5.763,
+    "median_minus_truth_deg": -1.999,
+    "offset_sigma": -0.964
+   },
+   {
+    "seed": 1,
+    "truth_in_68": true,
+    "median_deg": 326.085,
+    "width68_deg": 3.067,
+    "median_minus_truth_deg": 0.212,
+    "offset_sigma": 0.137
+   },
+   {
+    "seed": 2,
+    "truth_in_68": true,
+    "median_deg": 325.701,
+    "width68_deg": 3.559,
+    "median_minus_truth_deg": -0.172,
+    "offset_sigma": -0.106
+   },
+   {
+    "seed": 3,
+    "truth_in_68": true,
+    "median_deg": 323.923,
+    "width68_deg": 9.341,
+    "median_minus_truth_deg": -1.95,
+    "offset_sigma": -0.873
+   },
+   {
+    "seed": 4,
+    "truth_in_68": true,
+    "median_deg": 325.602,
+    "width68_deg": 4.174,
+    "median_minus_truth_deg": -0.271,
+    "offset_sigma": -0.152
+   },
+   {
+    "seed": 5,
+    "truth_in_68": true,
+    "median_deg": 326.003,
+    "width68_deg": 3.814,
+    "median_minus_truth_deg": 0.13,
+    "offset_sigma": 0.064
+   },
+   {
+    "seed": 6,
+    "truth_in_68": false,
+    "median_deg": 333.404,
+    "width68_deg": 6.233,
+    "median_minus_truth_deg": 7.531,
+    "offset_sigma": 1.887
+   },
+   {
+    "seed": 7,
+    "truth_in_68": true,
+    "median_deg": 325.063,
+    "width68_deg": 4.391,
+    "median_minus_truth_deg": -0.81,
+    "offset_sigma": -0.33
+   },
+   {
+    "seed": 8,
+    "truth_in_68": false,
+    "median_deg": 322.05,
+    "width68_deg": 8.78,
+    "median_minus_truth_deg": -3.823,
+    "offset_sigma": -1.421
+   },
+   {
+    "seed": 9,
+    "truth_in_68": true,
+    "median_deg": 326.885,
+    "width68_deg": 6.313,
+    "median_minus_truth_deg": 1.012,
+    "offset_sigma": 0.296
+   }
+  ],
+  "offset_sigma_rms": 0.867
+ }
+}
