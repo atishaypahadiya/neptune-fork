@@ -1,0 +1,1005 @@
+{
+  "profile": "data-package",
+  "name": "leverrier-1846-table77",
+  "title": "Le Verrier (1846), Table n° 77: 279 observations of Uranus, 1690–1845, transcribed and reconciled",
+  "description": "Transcription of Table n° 77 of U. J. Le Verrier, 'Recherches sur les mouvements de la planète Herschel (dite Uranus)', Connaissance des Temps pour 1849, Additions, pp. 129–136 (Paris, 1846): the observed apparent right ascensions and declinations of Uranus that Le Verrier compared with theory before predicting Neptune, with his computed values and residuals. Transcribed, reconciled and spot-checked by an AI model; a human spot check is pending. See README.md.",
+  "version": "1.0.0",
+  "homepage": "https://github.com/atishaypahadiya/neptune-fork",
+  "licenses": [
+    {
+      "name": "CC-BY-4.0",
+      "path": "https://creativecommons.org/licenses/by/4.0/",
+      "title": "Creative Commons Attribution 4.0 International"
+    }
+  ],
+  "contributors": [
+    {
+      "title": "Atishay Pahadiya",
+      "role": "author"
+    }
+  ],
+  "keywords": [
+    "Le Verrier",
+    "Uranus",
+    "Neptune",
+    "history of astronomy",
+    "astrometry",
+    "historical observations",
+    "meridian observations",
+    "Connaissance des Temps",
+    "transcription",
+    "celestial mechanics"
+  ],
+  "sources": [
+    {
+      "title": "Le Verrier 1846 offprint (Bachelier), archive.org scan",
+      "path": "https://archive.org/details/bub_gb_HMi0NyDVkhQC"
+    },
+    {
+      "title": "Le Verrier 1846 offprint, Université de Lille scan",
+      "path": "http://hdl.handle.net/1908/3096"
+    },
+    {
+      "title": "Connaissance des Temps pour 1849, Additions, BnF Gallica scan",
+      "path": "https://gallica.bnf.fr/ark:/12148/bpt6k6505616w"
+    }
+  ],
+  "resources": [
+    {
+      "name": "table77",
+      "path": "leverrier_1846_table77.csv",
+      "title": "Table n° 77, reconciled",
+      "description": "All 279 rows of Table n° 77 (pp. 129–136) exactly as printed, reconciled from two independent passes and a third witness. Misprints are kept as printed.",
+      "profile": "tabular-data-resource",
+      "format": "csv",
+      "mediatype": "text/csv",
+      "encoding": "utf-8",
+      "schema": {
+        "fields": [
+          {
+            "name": "page",
+            "type": "integer",
+            "description": "Printed page of the memoir (129–136).",
+            "constraints": {
+              "required": true,
+              "minimum": 129,
+              "maximum": 136
+            }
+          },
+          {
+            "name": "line",
+            "type": "integer",
+            "description": "Data row on that page, from 1.",
+            "constraints": {
+              "required": true,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "year",
+            "type": "integer",
+            "description": "Year as printed; blank = same as the row above.",
+            "constraints": {
+              "minimum": 1690,
+              "maximum": 1845
+            }
+          },
+          {
+            "name": "month",
+            "type": "string",
+            "description": "Month as printed (French abbreviation); blank = same as above.",
+            "constraints": {
+              "enum": [
+                "Janv.",
+                "Fév.",
+                "Mars",
+                "Avril",
+                "Mai",
+                "Juin",
+                "Juin.",
+                "Juill.",
+                "Juill",
+                "Août",
+                "Sept.",
+                "Oct.",
+                "Nov.",
+                "Déc."
+              ]
+            }
+          },
+          {
+            "name": "day",
+            "type": "integer",
+            "description": "Day of the month (astronomical day, begins at mean noon).",
+            "constraints": {
+              "required": true,
+              "minimum": 1,
+              "maximum": 31
+            }
+          },
+          {
+            "name": "mean_time",
+            "type": "string",
+            "description": "Temps moyen, h m s (Paris mean time, astronomical reckoning).",
+            "constraints": {
+              "required": true,
+              "pattern": "\\d{1,2} \\d{1,2} \\d{1,2}"
+            }
+          },
+          {
+            "name": "ra_obs",
+            "type": "string",
+            "description": "Observed apparent RA: arc (° ′ ″) before 1781, time (h m s) after.",
+            "constraints": {
+              "required": true,
+              "pattern": "\\d{1,3} \\d{1,2} \\d{1,2}\\.\\d{1,2}"
+            }
+          },
+          {
+            "name": "ra_calc_sec",
+            "type": "string",
+            "description": "Seconds of Le Verrier's computed RA (″ before 1781, s after).",
+            "constraints": {
+              "required": true,
+              "pattern": "\\d{1,2}\\.\\d{1,2}"
+            }
+          },
+          {
+            "name": "ra_c_minus_o",
+            "type": "string",
+            "description": "Printed RA computed − observed (″ before 1781, s after).",
+            "constraints": {
+              "required": true,
+              "pattern": "[+-]\\d{1,3}\\.\\d{1,2}"
+            }
+          },
+          {
+            "name": "dec_obs",
+            "type": "string",
+            "description": "Observed apparent Dec, ± ° ′ ″; » = no Dec observed.",
+            "constraints": {
+              "required": true,
+              "pattern": "[+-]\\d{1,2} \\d{1,2} \\d{1,2}\\.\\d|»"
+            }
+          },
+          {
+            "name": "dec_calc_sec",
+            "type": "string",
+            "description": "Seconds of the computed Dec, ″ (sign as printed); » = none.",
+            "constraints": {
+              "required": true,
+              "pattern": "[+-]?\\d{1,2}\\.\\d|»"
+            }
+          },
+          {
+            "name": "dec_c_minus_o",
+            "type": "string",
+            "description": "Printed Dec computed − observed, ″; » = none.",
+            "constraints": {
+              "required": true,
+              "pattern": "[+-]\\d{1,3}\\.\\d|»"
+            }
+          },
+          {
+            "name": "lon_c_minus_o",
+            "type": "string",
+            "description": "Printed geocentric longitude computed − observed, ″.",
+            "constraints": {
+              "required": true,
+              "pattern": "[+-]\\d{1,3}\\.\\d"
+            }
+          },
+          {
+            "name": "lat_c_minus_o",
+            "type": "string",
+            "description": "Printed geocentric latitude computed − observed, ″; » = none.",
+            "constraints": {
+              "required": true,
+              "pattern": "[+-]\\d{1,3}\\.\\d|»"
+            }
+          },
+          {
+            "name": "notes",
+            "type": "string",
+            "description": "Transcribers' notes, prefixed p1: / p2: by pass."
+          }
+        ],
+        "primaryKey": [
+          "page",
+          "line"
+        ],
+        "missingValues": [
+          ""
+        ]
+      },
+      "bytes": 31734,
+      "hash": "sha256:897f3cde1564998ac1aa1036c8665d91b24dda142d686e2fdf1ec5902e419127"
+    },
+    {
+      "name": "misprints",
+      "path": "leverrier_1846_misprints.csv",
+      "title": "Misprints in the source",
+      "description": "Cells that are wrong in the print itself (all three editions), each with an argument and an action.",
+      "profile": "tabular-data-resource",
+      "format": "csv",
+      "mediatype": "text/csv",
+      "encoding": "utf-8",
+      "schema": {
+        "fields": [
+          {
+            "name": "page",
+            "type": "integer",
+            "description": "Printed page of the memoir (129–136).",
+            "constraints": {
+              "required": true,
+              "minimum": 129,
+              "maximum": 136
+            }
+          },
+          {
+            "name": "line",
+            "type": "integer",
+            "description": "Data row on that page, from 1.",
+            "constraints": {
+              "required": true,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "field",
+            "type": "string",
+            "description": "Table 77 column of the misprinted cell.",
+            "constraints": {
+              "required": true,
+              "enum": [
+                "year",
+                "month",
+                "day",
+                "mean_time",
+                "ra_obs",
+                "ra_calc_sec",
+                "ra_c_minus_o",
+                "dec_obs",
+                "dec_calc_sec",
+                "dec_c_minus_o",
+                "lon_c_minus_o",
+                "lat_c_minus_o"
+              ]
+            }
+          },
+          {
+            "name": "printed",
+            "type": "string",
+            "description": "The cell as printed (equals table77).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "corrected",
+            "type": "string",
+            "description": "Corrected value; blank for log_only."
+          },
+          {
+            "name": "action",
+            "type": "string",
+            "description": "apply: corrected in the derived file; log_only: recorded only.",
+            "constraints": {
+              "required": true,
+              "enum": [
+                "apply",
+                "log_only"
+              ]
+            }
+          },
+          {
+            "name": "reason",
+            "type": "string",
+            "description": "The argument for the misprint, from the table itself.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "uses_ephemeris",
+            "type": "string",
+            "description": "Whether the argument relies on a modern ephemeris.",
+            "constraints": {
+              "required": true,
+              "enum": [
+                "yes",
+                "no"
+              ]
+            }
+          }
+        ],
+        "primaryKey": [
+          "page",
+          "line",
+          "field"
+        ],
+        "missingValues": [
+          ""
+        ],
+        "foreignKeys": [
+          {
+            "fields": [
+              "page",
+              "line"
+            ],
+            "reference": {
+              "resource": "table77",
+              "fields": [
+                "page",
+                "line"
+              ]
+            }
+          }
+        ]
+      },
+      "bytes": 3664,
+      "hash": "sha256:ae497c5dea98431bbfe40f954e3739d4242c063b37ff2d2b653d53bc146d3ed8"
+    },
+    {
+      "name": "resolution_log",
+      "path": "leverrier_1846_resolution_log.csv",
+      "title": "Resolution log",
+      "description": "Every cell where pass 1 and pass 2 disagreed, resolved from the third witness.",
+      "profile": "tabular-data-resource",
+      "format": "csv",
+      "mediatype": "text/csv",
+      "encoding": "utf-8",
+      "schema": {
+        "fields": [
+          {
+            "name": "page",
+            "type": "integer",
+            "description": "Printed page of the memoir (129–136).",
+            "constraints": {
+              "required": true,
+              "minimum": 129,
+              "maximum": 136
+            }
+          },
+          {
+            "name": "line",
+            "type": "integer",
+            "description": "Data row on that page, from 1.",
+            "constraints": {
+              "required": true,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "field",
+            "type": "string",
+            "description": "Table 77 column where the passes disagree.",
+            "constraints": {
+              "required": true,
+              "enum": [
+                "year",
+                "month",
+                "day",
+                "mean_time",
+                "ra_obs",
+                "ra_calc_sec",
+                "ra_c_minus_o",
+                "dec_obs",
+                "dec_calc_sec",
+                "dec_c_minus_o",
+                "lon_c_minus_o",
+                "lat_c_minus_o"
+              ]
+            }
+          },
+          {
+            "name": "pass1",
+            "type": "string",
+            "description": "Pass 1 reading (archive.org offprint); ? = unreadable digit.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "pass2",
+            "type": "string",
+            "description": "Pass 2 reading (Lille offprint); ? = unreadable digit.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "resolved",
+            "type": "string",
+            "description": "Value adopted in table77.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "witness",
+            "type": "string",
+            "description": "Third witness consulted: file and PDF page.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "reason",
+            "type": "string",
+            "description": "Why the resolved value was adopted.",
+            "constraints": {
+              "required": true
+            }
+          }
+        ],
+        "primaryKey": [
+          "page",
+          "line",
+          "field"
+        ],
+        "missingValues": [
+          ""
+        ],
+        "foreignKeys": [
+          {
+            "fields": [
+              "page",
+              "line"
+            ],
+            "reference": {
+              "resource": "table77",
+              "fields": [
+                "page",
+                "line"
+              ]
+            }
+          }
+        ]
+      },
+      "bytes": 2592,
+      "hash": "sha256:8625acc2739784c7a478121603fed5077bbb30895a062dcfd022d98d606043b8"
+    },
+    {
+      "name": "pass1",
+      "path": "leverrier_1846_pass1.csv",
+      "title": "Transcription pass 1 (archive.org offprint)",
+      "description": "Independent transcription from the archive.org scan, before reconciliation.",
+      "profile": "tabular-data-resource",
+      "format": "csv",
+      "mediatype": "text/csv",
+      "encoding": "utf-8",
+      "schema": {
+        "fields": [
+          {
+            "name": "page",
+            "type": "integer",
+            "description": "Printed page of the memoir (129–136).",
+            "constraints": {
+              "required": true,
+              "minimum": 129,
+              "maximum": 136
+            }
+          },
+          {
+            "name": "line",
+            "type": "integer",
+            "description": "Data row on that page, from 1.",
+            "constraints": {
+              "required": true,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "year",
+            "type": "string",
+            "description": "Year as printed; blank = same as the row above."
+          },
+          {
+            "name": "month",
+            "type": "string",
+            "description": "Month as printed (French abbreviation); blank = same as above."
+          },
+          {
+            "name": "day",
+            "type": "string",
+            "description": "Day of the month (astronomical day, begins at mean noon)."
+          },
+          {
+            "name": "mean_time",
+            "type": "string",
+            "description": "Temps moyen, h m s (Paris mean time, astronomical reckoning)."
+          },
+          {
+            "name": "ra_obs",
+            "type": "string",
+            "description": "Observed apparent RA: arc (° ′ ″) before 1781, time (h m s) after."
+          },
+          {
+            "name": "ra_calc_sec",
+            "type": "string",
+            "description": "Seconds of Le Verrier's computed RA (″ before 1781, s after)."
+          },
+          {
+            "name": "ra_c_minus_o",
+            "type": "string",
+            "description": "Printed RA computed − observed (″ before 1781, s after)."
+          },
+          {
+            "name": "dec_obs",
+            "type": "string",
+            "description": "Observed apparent Dec, ± ° ′ ″; » = no Dec observed."
+          },
+          {
+            "name": "dec_calc_sec",
+            "type": "string",
+            "description": "Seconds of the computed Dec, ″ (sign as printed); » = none."
+          },
+          {
+            "name": "dec_c_minus_o",
+            "type": "string",
+            "description": "Printed Dec computed − observed, ″; » = none."
+          },
+          {
+            "name": "lon_c_minus_o",
+            "type": "string",
+            "description": "Printed geocentric longitude computed − observed, ″."
+          },
+          {
+            "name": "lat_c_minus_o",
+            "type": "string",
+            "description": "Printed geocentric latitude computed − observed, ″; » = none."
+          },
+          {
+            "name": "notes",
+            "type": "string",
+            "description": "Transcribers' notes, prefixed p1: / p2: by pass."
+          }
+        ],
+        "primaryKey": [
+          "page",
+          "line"
+        ],
+        "missingValues": [
+          ""
+        ]
+      },
+      "bytes": 28902,
+      "hash": "sha256:74ed1fd28c3147ea1ad77292bd0bfc0c804b0d6d699e56c837489259db28b571"
+    },
+    {
+      "name": "pass2",
+      "path": "leverrier_1846_pass2.csv",
+      "title": "Transcription pass 2 (Lille offprint)",
+      "description": "Independent transcription from the Lille scan, before reconciliation.",
+      "profile": "tabular-data-resource",
+      "format": "csv",
+      "mediatype": "text/csv",
+      "encoding": "utf-8",
+      "schema": {
+        "fields": [
+          {
+            "name": "page",
+            "type": "integer",
+            "description": "Printed page of the memoir (129–136).",
+            "constraints": {
+              "required": true,
+              "minimum": 129,
+              "maximum": 136
+            }
+          },
+          {
+            "name": "line",
+            "type": "integer",
+            "description": "Data row on that page, from 1.",
+            "constraints": {
+              "required": true,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "year",
+            "type": "string",
+            "description": "Year as printed; blank = same as the row above."
+          },
+          {
+            "name": "month",
+            "type": "string",
+            "description": "Month as printed (French abbreviation); blank = same as above."
+          },
+          {
+            "name": "day",
+            "type": "string",
+            "description": "Day of the month (astronomical day, begins at mean noon)."
+          },
+          {
+            "name": "mean_time",
+            "type": "string",
+            "description": "Temps moyen, h m s (Paris mean time, astronomical reckoning)."
+          },
+          {
+            "name": "ra_obs",
+            "type": "string",
+            "description": "Observed apparent RA: arc (° ′ ″) before 1781, time (h m s) after."
+          },
+          {
+            "name": "ra_calc_sec",
+            "type": "string",
+            "description": "Seconds of Le Verrier's computed RA (″ before 1781, s after)."
+          },
+          {
+            "name": "ra_c_minus_o",
+            "type": "string",
+            "description": "Printed RA computed − observed (″ before 1781, s after)."
+          },
+          {
+            "name": "dec_obs",
+            "type": "string",
+            "description": "Observed apparent Dec, ± ° ′ ″; » = no Dec observed."
+          },
+          {
+            "name": "dec_calc_sec",
+            "type": "string",
+            "description": "Seconds of the computed Dec, ″ (sign as printed); » = none."
+          },
+          {
+            "name": "dec_c_minus_o",
+            "type": "string",
+            "description": "Printed Dec computed − observed, ″; » = none."
+          },
+          {
+            "name": "lon_c_minus_o",
+            "type": "string",
+            "description": "Printed geocentric longitude computed − observed, ″."
+          },
+          {
+            "name": "lat_c_minus_o",
+            "type": "string",
+            "description": "Printed geocentric latitude computed − observed, ″; » = none."
+          },
+          {
+            "name": "notes",
+            "type": "string",
+            "description": "Transcribers' notes, prefixed p1: / p2: by pass."
+          }
+        ],
+        "primaryKey": [
+          "page",
+          "line"
+        ],
+        "missingValues": [
+          ""
+        ]
+      },
+      "bytes": 24378,
+      "hash": "sha256:bb2147aa2c6dffc30081b9cbd0dee3d2a30aa0e7fe17e4c9dbfbd8700a25e4c7"
+    },
+    {
+      "name": "spotcheck_rows",
+      "path": "spotcheck_rows.csv",
+      "title": "Spot-check sample",
+      "description": "The 28 rows checked cell by cell against the Gallica scan.",
+      "profile": "tabular-data-resource",
+      "format": "csv",
+      "mediatype": "text/csv",
+      "encoding": "utf-8",
+      "schema": {
+        "fields": [
+          {
+            "name": "page",
+            "type": "integer",
+            "description": "Printed page of the memoir (129–136).",
+            "constraints": {
+              "required": true,
+              "minimum": 129,
+              "maximum": 136
+            }
+          },
+          {
+            "name": "line",
+            "type": "integer",
+            "description": "Data row on that page, from 1.",
+            "constraints": {
+              "required": true,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "reason",
+            "type": "string",
+            "description": "Why the row is in the sample (log, misprint, ancient, page, random).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "seed",
+            "type": "integer",
+            "description": "Sampling seed.",
+            "constraints": {
+              "required": true
+            }
+          }
+        ],
+        "primaryKey": [
+          "page",
+          "line"
+        ],
+        "missingValues": [
+          ""
+        ],
+        "foreignKeys": [
+          {
+            "fields": [
+              "page",
+              "line"
+            ],
+            "reference": {
+              "resource": "table77",
+              "fields": [
+                "page",
+                "line"
+              ]
+            }
+          }
+        ]
+      },
+      "bytes": 1018,
+      "hash": "sha256:fe2cee020706bd5e8adaa71dae2f5ddfd2b81d5f066472fe4b10e273895c67ee"
+    },
+    {
+      "name": "spotcheck_results",
+      "path": "spotcheck_results.json",
+      "title": "Spot-check results",
+      "description": "Per-cell result of the spot check (336 cells), with the reviewer and the SHA-256 of the table checked.",
+      "format": "json",
+      "mediatype": "application/json",
+      "encoding": "utf-8",
+      "bytes": 38576,
+      "hash": "sha256:da90486b7905a8a2bf1796bca966f8a5bb9a5bad0c1c5a61e5d041e96a104ef9"
+    },
+    {
+      "name": "observations",
+      "path": "leverrier_1846.csv",
+      "title": "Derived: one row per measured quantity",
+      "description": "Convenience file derived from table77 and the apply misprints: 279 RA and 250 Dec measurements in degrees, with epochs (JD), observatories and Le Verrier's O − C. Contains inferences; see DATA_DICTIONARY.md.",
+      "profile": "tabular-data-resource",
+      "format": "csv",
+      "mediatype": "text/csv",
+      "encoding": "utf-8",
+      "schema": {
+        "fields": [
+          {
+            "name": "id",
+            "type": "string",
+            "description": "One measured quantity: <obs_id>-ra or <obs_id>-dec.",
+            "constraints": {
+              "required": true,
+              "unique": true
+            }
+          },
+          {
+            "name": "obs_id",
+            "type": "string",
+            "description": "One Table 77 row: LV1846-T77-p<page>-l<line>.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "epoch",
+            "type": "string",
+            "description": "Date and mean time as printed, with the year and month filled in."
+          },
+          {
+            "name": "epoch_tt_jd",
+            "type": "number",
+            "description": "Epoch, Julian Date (TT).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "epoch_ut_jd",
+            "type": "number",
+            "description": "Epoch, Julian Date (UT).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "time_meridian",
+            "type": "string",
+            "description": "Meridian of the printed mean time.",
+            "constraints": {
+              "enum": [
+                "Paris"
+              ]
+            }
+          },
+          {
+            "name": "time_reckoning",
+            "type": "string",
+            "description": "Day convention of the printed time."
+          },
+          {
+            "name": "observer",
+            "type": "string",
+            "description": "Observer, from the memoir's text (ancient rows only)."
+          },
+          {
+            "name": "observatory",
+            "type": "string",
+            "description": "Observatory, from the memoir's text (1828 inferred).",
+            "constraints": {
+              "enum": [
+                "Greenwich",
+                "Paris",
+                "Göttingen"
+              ]
+            }
+          },
+          {
+            "name": "observatory_basis",
+            "type": "string",
+            "description": "'stated', or how the observatory was inferred."
+          },
+          {
+            "name": "instrument",
+            "type": "string",
+            "description": "Not stated in the memoir; always blank."
+          },
+          {
+            "name": "quantity",
+            "type": "string",
+            "description": "Measured coordinate.",
+            "constraints": {
+              "required": true,
+              "enum": [
+                "ra",
+                "dec"
+              ]
+            }
+          },
+          {
+            "name": "value",
+            "type": "number",
+            "description": "Observed value in degrees, after applied misprint corrections.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "unit",
+            "type": "string",
+            "description": "Unit of value.",
+            "constraints": {
+              "enum": [
+                "deg"
+              ]
+            }
+          },
+          {
+            "name": "value_as_printed",
+            "type": "string",
+            "description": "The observed cell as printed (before any correction)."
+          },
+          {
+            "name": "unit_as_printed",
+            "type": "string",
+            "description": "Units of the printed cell."
+          },
+          {
+            "name": "frame_as_printed",
+            "type": "string",
+            "description": "Reference frame of the printed places."
+          },
+          {
+            "name": "equinox_ref",
+            "type": "string",
+            "description": "Equinox convention.",
+            "constraints": {
+              "enum": [
+                "of_date"
+              ]
+            }
+          },
+          {
+            "name": "equinox_epoch",
+            "type": "string",
+            "description": "Epoch of a fixed equinox; blank for of_date."
+          },
+          {
+            "name": "equinox_citation",
+            "type": "string",
+            "description": "Where the memoir states the frame."
+          },
+          {
+            "name": "precession_constant_arcsec_per_yr",
+            "type": "string",
+            "description": "Precession constant; not_stated here."
+          },
+          {
+            "name": "precession_rate_arcsec_per_yr2",
+            "type": "string",
+            "description": "Precession rate; blank here."
+          },
+          {
+            "name": "precession_citation",
+            "type": "string",
+            "description": "Citation for the precession fields."
+          },
+          {
+            "name": "lv_residual",
+            "type": "number",
+            "description": "Le Verrier's O − C (sign flipped from the print), ″."
+          },
+          {
+            "name": "lv_residual_unit",
+            "type": "string",
+            "description": "Unit and sign convention of lv_residual."
+          },
+          {
+            "name": "lv_c_minus_o_as_printed",
+            "type": "string",
+            "description": "The printed C − O cell (s or ″)."
+          },
+          {
+            "name": "lv_weight",
+            "type": "string",
+            "description": "Not printed per observation; always blank."
+          },
+          {
+            "name": "lv_dlon_c_minus_o_as_printed",
+            "type": "string",
+            "description": "Printed longitude C − O, ″."
+          },
+          {
+            "name": "lv_dlat_c_minus_o_as_printed",
+            "type": "string",
+            "description": "Printed latitude C − O, ″; » = none."
+          },
+          {
+            "name": "transit_resid_s",
+            "type": "number",
+            "description": "Local apparent sidereal time − observed RA, s."
+          },
+          {
+            "name": "era",
+            "type": "string",
+            "description": "ancient (1690–1771) or modern (1781–1845).",
+            "constraints": {
+              "enum": [
+                "ancient",
+                "modern"
+              ]
+            }
+          },
+          {
+            "name": "source_ref",
+            "type": "string",
+            "description": "Page, row and text citations."
+          },
+          {
+            "name": "misprints_applied",
+            "type": "string",
+            "description": "Corrections applied to this row: field: printed -> corrected."
+          },
+          {
+            "name": "notes",
+            "type": "string",
+            "description": "Attribution notes, log-only misprints, 1828 transit evidence."
+          }
+        ],
+        "primaryKey": [
+          "id"
+        ],
+        "missingValues": [
+          ""
+        ]
+      },
+      "bytes": 342062,
+      "hash": "sha256:2f546b9979f613c62d9c2dc77cd92b8269a9dbea4d3f87eecf39d2145509ebc4"
+    }
+  ]
+}

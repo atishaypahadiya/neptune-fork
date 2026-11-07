@@ -1,0 +1,29 @@
+page,line,reason,seed
+129,4,resolution log: lat_c_minus_o,20261106
+129,10,misprint table: dec_c_minus_o,20261106
+129,18,random,20261106
+129,30,resolution log: ra_obs,20261106
+129,31,resolution log: lat_c_minus_o,20261106
+130,18,resolution log: year,20261106
+130,36,resolution log: day,20261106
+131,2,random,20261106
+131,8,stratum: page 131,20261106
+132,4,stratum: page 132,20261106
+132,10,random,20261106
+133,10,random,20261106
+133,13,resolution log: day,20261106
+133,22,resolution log: lat_c_minus_o,20261106
+133,27,resolution log: ra_obs,20261106
+133,29,random,20261106
+133,33,resolution log: dec_c_minus_o,20261106
+133,35,random,20261106
+133,36,resolution log: dec_obs,20261106
+134,13,stratum: page 134,20261106
+135,1,resolution log: mean_time,20261106
+135,3,misprint table: dec_obs; misprint table: ra_calc_sec,20261106
+135,4,resolution log: year,20261106
+135,5,random,20261106
+135,9,random,20261106
+135,19,resolution log: lon_c_minus_o,20261106
+135,38,random,20261106
+136,11,resolution log: dec_calc_sec,20261106

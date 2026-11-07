@@ -1,0 +1,15 @@
+page,line,field,pass1,pass2,resolved,witness,reason
+129,4,lat_c_minus_o,+12.?,+12.5,+12.5,cdt_1849_additions.pdf p.131,"Gallica prints +12,5 clearly"
+129,30,ra_obs,6 51 40.38,6 51 4?.38,6 51 40.38,cdt_1849_additions.pdf p.131,"Gallica prints 6.51.40,38 clearly (stain in Lille)"
+129,31,lat_c_minus_o,+?.6,+2.6,+2.6,cdt_1849_additions.pdf p.131,"Gallica prints +2,6 clearly"
+130,18,year,1780,1789,1789,cdt_1849_additions.pdf p.132,Gallica prints 1789 clearly; pass 1 read a worn 9 in the archive.org copy as 0
+130,36,day,11,1?,12,cdt_1849_additions.pdf p.132,Gallica prints 12 clearly (next row 14); neither pass had it
+133,13,day,2?,22,22,cdt_1849_additions.pdf p.135,Gallica prints 22 clearly
+133,22,lat_c_minus_o,+?.5,+1.5,+1.5,cdt_1849_additions.pdf p.135,"Gallica prints +1,5 clearly"
+133,27,ra_obs,16 ?0 26.56,16 30 26.56,16 30 26.56,cdt_1849_additions.pdf p.135,"Gallica prints 16.30.26,56 clearly"
+133,33,dec_c_minus_o,+1.?,+1.3,+1.3,cdt_1849_additions.pdf p.135,"Gallica prints +1,3 clearly"
+133,36,dec_obs,-23 22 22.1,-23 33 22.1,-23 22 22.1,cdt_1849_additions.pdf p.135,"Gallica prints -23.22.22,1 clearly; the Lille copy does print 33 (checked at high zoom: a copy variant or damaged type); 33' would be an 11' jump from the next day's -23 22 17.0"
+135,1,mean_time,5 37 6,5 37 5,5 37 5,cdt_1849_additions.pdf p.137,Gallica prints 5.37. 5 clearly
+135,4,year,1835,1833,1835,cdt_1849_additions.pdf p.137,Glyph alone undecidable: bold 3 and 5 near-identical in all three scans. Resolved 1835 by two arguments from the table itself. (1) Page block order: p.135 runs 1830 (l.1) / 183? (l.4) / 1836 (l.17) and the table is chronological so the year is 1831-1835; with the last glyph 3 or 5 that leaves 1833 or 1835. (2) RA progression: the Aug-Sep opposition-season rows step by about one year of motion each (1836 Aug 29 22h18m36s / 1837 Aug 23 22h35m11s / 1838 Aug 31 22h49m31s / 1839 Sep 7 23h03m53s: steps of 14-17 min); this block's Juill. 20 22h08m37s and Août 10 22h05m45s sit one such step before 1836 Aug 29 and Nov. 22 21h56m54s one step before 1836 Nov 15 22h11m50s. 1833 would need three years (about 45 min) in one step. Also consistent (context): p.127 gives a Paris series 1835-1845 and no source for 1831-1834; and the row matches Uranus on 1835 Jul 20 (astropy builtin 22h08m43s -12 17 02) not 1833 Jul 20 (21h36m35s -15 03 04). Confirmed by the user on the Gallica image.
+135,19,lon_c_minus_o,+3?.3,+37.3,+37.3,cdt_1849_additions.pdf p.137,"Gallica prints +37,3 clearly"
+136,11,dec_calc_sec,-43.7,-4?.7,-43.7,cdt_1849_additions.pdf p.138,"Gallica prints -43,7 clearly"
