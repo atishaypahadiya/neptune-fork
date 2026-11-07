@@ -7,6 +7,14 @@ per cell, a notes field and an export button. Row images go to ``docs/review/cro
 and this generator are committed.
 
     uv run --with pymupdf python -I -m fork.data.spotcheck [--overlay DIR]
+    uv run --with pymupdf python -I -m fork.data.spotcheck --human     # page for a human review
+    uv run python -I -m fork.data.spotcheck [--human] --check RESULTS.json
+
+``--human`` writes ``docs/review/spotcheck_human.html`` for the same reviewed sample. Its ticks
+are stored separately from the first review's (so nothing is pre-ticked), export asks for the
+reviewer's name, and it downloads ``spotcheck_human_results.json`` marked ``reviewer: human``.
+``--check`` validates an exported results file against the table and the sample and lists the
+cells marked as not matching (exit status 1 if there are any).
 
 Sample (``select_rows``): every row touched by the resolution log or the misprint table, then
 at least ``MIN_ANCIENT`` rows before 1781 and at least one row per printed page, then random
@@ -47,6 +55,9 @@ GALLICA_VIEW_OFFSET = 467  # Gallica view f468 is PDF page 1 (views 468-725 = PD
 
 REVIEW_DIR = tr.ROOT / "docs" / "review"
 HTML_FILE = REVIEW_DIR / "spotcheck.html"
+HUMAN_HTML_FILE = REVIEW_DIR / "spotcheck_human.html"
+RESULTS_FILE = REVIEW_DIR / "spotcheck_results.json"  # the automated review (2026-11-06)
+HUMAN_RESULTS_FILE = REVIEW_DIR / "spotcheck_human_results.json"
 SELECTION_FILE = REVIEW_DIR / "spotcheck_rows.csv"
 CROP_DIR = REVIEW_DIR / "crops"
 
@@ -345,7 +356,8 @@ button { font: inherit; }
 """
 
 SCRIPT = """
-const KEY = "spotcheck:" + document.body.dataset.sha;
+const REVIEWER = document.body.dataset.reviewer || "";
+const KEY = "spotcheck:" + (REVIEWER ? REVIEWER + ":" : "") + document.body.dataset.sha;
 const saved = JSON.parse(localStorage.getItem(KEY) || "{}");
 document.querySelectorAll("input[type=checkbox], textarea").forEach(el => {
   if (el.id in saved) {
@@ -374,6 +386,8 @@ document.querySelectorAll("button.all").forEach(b => b.addEventListener("click",
   save();
 }));
 document.getElementById("export").addEventListener("click", () => {
+  const nameEl = document.getElementById("reviewer-name");
+  if (REVIEWER && !nameEl.value.trim()) { alert("Enter your name before exporting."); return; }
   const rows = [...document.querySelectorAll("section")].map(sec => {
     const cells = {};
     sec.querySelectorAll("input[type=checkbox]").forEach(c => {
@@ -388,10 +402,11 @@ document.getElementById("export").addEventListener("click", () => {
                 exported: new Date().toISOString(),
                 all_match_rows: rows.filter(r => r.used_all_match).map(r => r.page + "/" + r.line),
                 rows };
+  if (REVIEWER) { out.reviewer = REVIEWER; out.reviewer_name = nameEl.value.trim(); }
   const a = document.createElement("a");
   const blob = new Blob([JSON.stringify(out, null, 2)], { type: "application/json" });
   a.href = URL.createObjectURL(blob);
-  a.download = "spotcheck_results.json";
+  a.download = document.body.dataset.export || "spotcheck_results.json";
   a.click();
 });
 """
@@ -413,17 +428,24 @@ def _context(table: list[dict[str, str]]) -> dict[tuple[str, str], str]:
     return out
 
 
-def render_html(table: list[dict[str, str]], picks: list[Pick], links: dict, sha: str) -> str:
+def render_html(
+    table: list[dict[str, str]], picks: list[Pick], links: dict, sha: str, human: bool = False
+) -> str:
+    """The review page. ``human=True``: the page for a human reviewer (separate storage,
+    reviewer name required, exports ``spotcheck_human_results.json`` marked as human)."""
     rows = {(r["page"], r["line"]): r for r in table}
     ctx = _context(table)
     e = html.escape
+    body = f'data-seed="{SPOTCHECK_SEED}" data-sha="{sha}"'
+    if human:
+        body += f' data-reviewer="human" data-export="{HUMAN_RESULTS_FILE.name}"'
     parts = [
         "<!DOCTYPE html>",
         '<html lang="en"><head><meta charset="utf-8">',
-        "<title>Table n° 77 spot check</title>",
+        f"<title>Table n° 77 {'human ' if human else ''}spot check</title>",
         f"<style>{STYLE}</style></head>",
-        f'<body data-seed="{SPOTCHECK_SEED}" data-sha="{sha}">',
-        "<h1>Le Verrier 1846, Table n° 77: spot check</h1>",
+        f"<body {body}>",
+        f"<h1>Le Verrier 1846, Table n° 77: {'human ' if human else ''}spot check</h1>",
         f"<p>{len(picks)} rows, seed {SPOTCHECK_SEED}, from "
         f"<code>data/historical/leverrier_1846_table77.csv</code> (sha256 {sha[:12]}…). "
         "Each image is the row from the Gallica CdT 1849 scan. Tick a cell when the value "
@@ -431,8 +453,18 @@ def render_html(table: list[dict[str, str]], picks: list[Pick], links: dict, sha
         "Headings give the date with year and month carried down from earlier rows; the year "
         "and month cells are blank where nothing is printed on the row. Ticks and notes are "
         "kept in this browser until you export.</p>",
-        '<p><button id="export">Export results</button></p>',
     ]
+    if human:
+        parts += [
+            "<p><strong>Human review.</strong> Judge each cell from the image (or the "
+            "full-resolution Gallica link), not from memory of the earlier review. Don't open "
+            f"<code>{RESULTS_FILE.name}</code> or the transcription notes until you have "
+            "exported: this check is meant to be independent of the automated one. Export saves "
+            f"<code>{HUMAN_RESULTS_FILE.name}</code>.</p>",
+            '<p><label>Your name <input id="reviewer-name" type="text" '
+            'autocomplete="name"></label></p>',
+        ]
+    parts += ['<p><button id="export">Export results</button></p>']
     for p in picks:
         r = rows[(p.page, p.line)]
         sid = f"p{p.page}l{p.line}"
@@ -471,10 +503,42 @@ def render_html(table: list[dict[str, str]], picks: list[Pick], links: dict, sha
     return "\n".join(parts)
 
 
-def main(argv: list[str] | None = None) -> None:
-    import pymupdf
-    from PIL import Image
+def check_results(
+    rec: dict, table: list[dict[str, str]], picks: list[Pick], sha: str, human: bool
+) -> list[str]:
+    """Validate an exported results record against the table (by SHA-256 and by every cell
+    value) and the sample. Raises ValueError if it is not a complete record of this sample,
+    or (``human=True``) not marked ``reviewer: human`` with a name. Returns the cells marked
+    as not matching the print, as ``"p<page> l<line> <field>: <value>"``."""
+    if rec.get("table77_sha256") != sha:
+        raise ValueError(f"results are for table77 sha256 {rec.get('table77_sha256')!r}, "
+                         f"not the current {sha}")  # fmt: skip
+    if rec.get("seed") != SPOTCHECK_SEED:
+        raise ValueError(f"seed {rec.get('seed')!r} is not {SPOTCHECK_SEED}")
+    if human and (rec.get("reviewer") != "human" or not str(rec.get("reviewer_name", "")).strip()):
+        raise ValueError("not marked reviewer = human with a reviewer_name")
+    got = [(r.get("page"), r.get("line")) for r in rec.get("rows", [])]
+    if got != [(p.page, p.line) for p in picks]:
+        raise ValueError("the rows are not the reviewed sample, in order")
+    cells = {(r["page"], r["line"]): r for r in table}
+    bad = []
+    for r, p in zip(rec["rows"], picks, strict=True):
+        if set(r["cells"]) != set(tr.DATA_FIELDS):
+            raise ValueError(f"p{p.page} l{p.line}: cells {sorted(r['cells'])}")
+        if r["used_all_match"] and is_flagged(p):
+            raise ValueError(f"p{p.page} l{p.line}: 'all match' used on a logged row")
+        for f, c in r["cells"].items():
+            if c["value"] != cells[(p.page, p.line)][f]:
+                raise ValueError(f"p{p.page} l{p.line} {f}: checked {c['value']!r}, table has "
+                                 f"{cells[(p.page, p.line)][f]!r}")  # fmt: skip
+            if not isinstance(c["matches"], bool):
+                raise ValueError(f"p{p.page} l{p.line} {f}: matches is not true/false")
+            if not c["matches"]:
+                bad.append(f"p{p.page} l{p.line} {f}: {c['value']!r}")
+    return bad
 
+
+def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--overlay", type=Path, help="also write per-page row overlays here")
     ap.add_argument(
@@ -482,9 +546,29 @@ def main(argv: list[str] | None = None) -> None:
         action="store_true",
         help="draw a new sample from the current logs (replaces the reviewed one)",
     )
+    ap.add_argument("--human", action="store_true", help="the page or check for a human review")
+    ap.add_argument("--check", type=Path, help="validate an exported results file and exit")
     args = ap.parse_args(argv)
 
     table = tr.read_pass(tr.RECONCILED_FILE)
+    sha = hashlib.sha256(tr.RECONCILED_FILE.read_bytes()).hexdigest()
+    if args.check:
+        rec = json.loads(args.check.read_text(encoding="utf-8"))
+        picks = read_selection(SELECTION_FILE)
+        bad = check_results(rec, table, picks, sha, human=args.human)
+        n_cells = sum(len(r["cells"]) for r in rec["rows"])
+        print(f"{args.check.name}: reviewer {rec.get('reviewer')!r} "
+              f"({rec.get('reviewer_name', '')}); {len(picks)} rows, {n_cells} cells, "
+              f"{len(bad)} marked as not matching")  # fmt: skip
+        for b in bad:
+            print("  " + b)
+        raise SystemExit(1 if bad else 0)
+    if args.human and args.reselect:
+        ap.error("--human reviews the committed sample; --reselect would replace it")
+
+    import pymupdf
+    from PIL import Image
+
     if SELECTION_FILE.exists() and not args.reselect:
         picks = read_selection(SELECTION_FILE)  # the reviewed sample stays fixed
     else:
@@ -511,9 +595,9 @@ def main(argv: list[str] | None = None) -> None:
             strip = strip.resize((strip.width * SCALE, strip.height * SCALE), Image.LANCZOS)
             strip.save(CROP_DIR / f"p{p.page}l{p.line}.png")
             links[(p.page, p.line)] = _iiif_link(pg, line, img.shape)
-    sha = hashlib.sha256(tr.RECONCILED_FILE.read_bytes()).hexdigest()
-    HTML_FILE.write_text(render_html(table, picks, links, sha), encoding="utf-8")
-    print(f"{len(picks)} rows -> {HTML_FILE.relative_to(tr.ROOT)}; crops in "
+    out = HUMAN_HTML_FILE if args.human else HTML_FILE
+    out.write_text(render_html(table, picks, links, sha, human=args.human), encoding="utf-8")
+    print(f"{len(picks)} rows -> {out.relative_to(tr.ROOT)}; crops in "
           f"{CROP_DIR.relative_to(tr.ROOT)}/")  # fmt: skip
     print(json.dumps({p.page + "/" + p.line: p.reason for p in picks}, indent=0))
 

@@ -50,6 +50,31 @@ def test_arithmetic_check_on_printed_rows():
     assert tr.arithmetic_check(bad)["ra"] == pytest.approx(0.5, abs=1e-6)
 
 
+def test_arithmetic_tolerance_is_half_the_last_printed_digit():
+    """0.05 where one decimal is printed, 0.005 where two: a one-unit misread in the last
+    digit of a modern RA (0.01 s) now fails; the old flat 0.051 let it through."""
+    no_dec = dict.fromkeys(("dec_obs", "dec_calc_sec", "dec_c_minus_o"), "»")
+    r1781 = _row("129", "20", "25", "18 0 15", ra_obs="6 12 26.63", ra_calc_sec="25.39",
+                 ra_c_minus_o="-1.24", **no_dec)  # fmt: skip
+    assert tr.arithmetic_tolerance(r1781, "ra") == pytest.approx(0.005)
+    assert tr.arithmetic_failures(r1781) == {}
+    slip = {**r1781, "ra_c_minus_o": "-1.23"}
+    assert tr.arithmetic_failures(slip) == {"ra": pytest.approx(0.01, abs=1e-9)}
+    r1690 = _row("129", "1", "23", "9 41 25", ra_obs="55 49 19.7", ra_calc_sec="12.8",
+                 ra_c_minus_o="-66.9", dec_obs="+19 35 14.4", dec_calc_sec="54.1",
+                 dec_c_minus_o="-20.3")  # fmt: skip
+    assert tr.arithmetic_tolerance(r1690, "ra") == tr.arithmetic_tolerance(r1690, "dec") == 0.05
+    assert tr.arithmetic_failures({**r1690, "dec_c_minus_o": "-20.4"}) == {
+        "dec": pytest.approx(-0.1, abs=1e-9)
+    }
+
+
+def test_every_row_closes_except_the_logged_1764_dec_misprint():
+    rows = tr.read_pass(tr.RECONCILED_FILE)
+    fails = {(r["page"], r["line"]): tr.arithmetic_failures(r) for r in rows}
+    assert {k: v for k, v in fails.items() if v} == {("129", "10"): {"dec": pytest.approx(5.6)}}
+
+
 def _res(page, line, field, p1, p2, resolved):
     return {(page, line, field): dict(page=page, line=line, field=field, pass1=p1, pass2=p2,
                                       resolved=resolved, witness="w", reason="r")}  # fmt: skip
@@ -99,3 +124,65 @@ def test_resolution_log_and_misprint_table_parse_strictly():
         ("135", "3", "ra_calc_sec", "log_only"),
     }
     assert all(x["uses_ephemeris"] == "no" for x in m)
+
+
+def _digit_positions(cell: str) -> list[tuple[int, str]]:
+    """(index, part) for each digit of a cell: part is top/min (leading sexagesimal parts) or
+    sec_tens/sec_units/frac (the last part: seconds, or a seconds-only / C − O value)."""
+    out, off = [], len(cell) - len(cell.lstrip("+-"))
+    parts = cell.lstrip("+-").split()
+    for pi, p in enumerate(parts):
+        whole = p.partition(".")[0]
+        for j, ch in enumerate(p):
+            if ch.isdigit():
+                if pi < len(parts) - 1:
+                    part = "top" if pi == 0 else "min"
+                elif j >= len(whole):
+                    part = "frac"
+                else:
+                    part = "sec_tens" if len(whole) == 2 and j == 0 else "sec_units"
+                out.append((off + j, part))
+        off += len(p) + 1
+    return out
+
+
+def test_arithmetic_check_reach_on_every_single_digit_misread():
+    """Pins the release README's statement: in every checkable row the printed C − O closes
+    exactly; of all single-digit substitutions in the digits the check reads (seconds and
+    decimals of the observed RA/Dec, the computed seconds, the C − O), the check as used
+    (``arithmetic_failures``, tolerance half the last printed digit) detects 98.5 %, and every
+    miss is a tens-of-seconds digit off by exactly 6 (a change of 60 that the unprinted
+    computed minute absorbs)."""
+    rows = tr.read_pass(tr.RECONCILED_FILE)
+    misprint = ("129", "10", "dec")  # 1764 Jan 15, in the misprint table
+    fields = ("ra_obs", "ra_calc_sec", "ra_c_minus_o", "dec_obs", "dec_calc_sec", "dec_c_minus_o")
+    n_checked = {"ra": 0, "dec": 0}
+    total = caught = 0
+    misses = set()
+    for r in rows:
+        base = tr.arithmetic_check(r)
+        for coord, v in base.items():
+            if v is not None:
+                n_checked[coord] += 1
+                if (r["page"], r["line"], coord) != misprint:
+                    assert abs(v) < 1e-6, (r["page"], r["line"], coord, v)
+        for f in fields:
+            coord = f.split("_")[0]
+            if base[coord] is None or (r["page"], r["line"], coord) == misprint:
+                continue
+            cell = r[f]
+            for i, part in _digit_positions(cell):
+                if f.endswith("_obs") and part in ("top", "min"):
+                    continue  # degrees/hours/minutes: not read by the check, by design
+                for d in "0123456789":
+                    if d == cell[i]:
+                        continue
+                    m = {**r, f: cell[:i] + d + cell[i + 1 :]}
+                    total += 1
+                    if coord in tr.arithmetic_failures(m):
+                        caught += 1
+                    else:
+                        misses.add((part, abs(int(d) - int(cell[i]))))
+    assert n_checked == {"ra": 279, "dec": 250}
+    assert misses == {("sec_tens", 6)}
+    assert caught / total == pytest.approx(0.985, abs=0.0005)

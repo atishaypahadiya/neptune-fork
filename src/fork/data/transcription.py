@@ -117,6 +117,29 @@ def arithmetic_check(r: dict[str, str]) -> dict[str, float | None]:
     return out
 
 
+def arithmetic_tolerance(r: dict[str, str], name: str) -> float:
+    """Half the last printed digit of the cells the check compares for ``name`` ("ra"/"dec"):
+    0.05 where one decimal is printed (Dec; ancient RA, in ″), 0.005 where two (modern RA, in
+    s). A misread of one unit in the last digit then always fails. If the three cells were
+    printed to different precision the coarsest would govern, since the C − O was rounded to
+    it; in Table 77 they never differ."""
+    units = []
+    for f in (f"{name}_obs", f"{name}_calc_sec", f"{name}_c_minus_o"):
+        _, dot, frac = r[f].rpartition(".")
+        units.append(10.0 ** -len(frac) if dot else 1.0)
+    return 0.5 * max(units)
+
+
+def arithmetic_failures(r: dict[str, str]) -> dict[str, float]:
+    """The checks a row fails: ``arithmetic_check`` residuals larger than
+    ``arithmetic_tolerance``, by name. Empty when the row closes (or has nothing to check)."""
+    return {
+        k: v
+        for k, v in arithmetic_check(r).items()
+        if v is not None and abs(v) > arithmetic_tolerance(r, k)
+    }
+
+
 def read_resolutions(path: Path) -> dict[tuple[str, str, str], dict[str, str]]:
     """Resolution log rows keyed by (page, line, field)."""
     with path.open(newline="", encoding="utf-8") as fh:
@@ -220,8 +243,7 @@ def main() -> None:
     write_rows(RECONCILED_FILE, rows)
     print(f"reconciled: {len(rows)} rows -> {RECONCILED_FILE.relative_to(ROOT)}")
     for r in rows:
-        c = arithmetic_check(r)
-        bad = {k: v for k, v in c.items() if v is not None and abs(v) > 0.051}
+        bad = arithmetic_failures(r)
         if bad:
             print(f"  arithmetic check fails p{r['page']} l{r['line']}: {bad}")
 

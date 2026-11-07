@@ -1,0 +1,57 @@
+# Before release: set `date-released` to the Zenodo publication date.
+# See release/CHECKLIST_leverrier-table77.md.
+cff-version: 1.2.0
+message: >-
+  If you use this dataset, please cite it as below, and cite Le Verrier (1846) for the
+  observations themselves.
+type: dataset
+title: "Le Verrier (1846), Table n° 77: 279 observations of Uranus, 1690–1845, transcribed and reconciled"
+version: 1.0.0
+doi: 10.5281/zenodo.24044792
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.24044792
+    description: "Zenodo record of this dataset, version 1.0.0"
+# date-released: 2026-MM-DD
+authors:
+  - family-names: Pahadiya
+    given-names: Atishay
+    orcid: "https://orcid.org/0009-0004-1264-1662"
+license: CC0-1.0
+repository-code: "https://github.com/atishaypahadiya/neptune-fork"
+abstract: >-
+  Transcription of Table n° 77 of U. J. Le Verrier's memoir on the motion of Uranus
+  (Connaissance des Temps pour 1849, Additions, pp. 129–136, Paris 1846): 279 observed
+  apparent right ascensions and declinations of Uranus, 1690–1845, with Le Verrier's computed
+  values and his computed-minus-observed residuals in RA, Dec, longitude and latitude. Every
+  cell is kept exactly as printed. The package also contains the two independent
+  transcription passes, the resolution log for their 14 disagreements (resolved against a
+  third printing), a table of 7 misprints in the source with the argument for each, a
+  28-row spot-check records, and a derived file of 529 measurements in degrees with Julian
+  Dates. The transcription and reconciliation were done by an AI model,
+  not by an independent human. The dataset was then spot-checked by a human against the Gallica scan (28 rows, 336 cells, 0 discrepancies), by the dataset author.
+keywords:
+  - Le Verrier
+  - Uranus
+  - Neptune
+  - history of astronomy
+  - astrometry
+  - historical observations
+  - meridian observations
+  - Connaissance des Temps
+  - transcription
+  - celestial mechanics
+references:
+  - type: article
+    title: "Recherches sur les mouvements de la planète Herschel (dite Uranus)"
+    authors:
+      - family-names: Le Verrier
+        given-names: Urbain Jean Joseph
+    journal: "Connaissance des Temps pour l'an 1849, Additions"
+    year: 1846
+    start: 3
+    end: 254
+    publisher:
+      name: Bachelier
+    location:
+      name: Paris

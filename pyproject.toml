@@ -21,6 +21,7 @@ dev = [
     "hypothesis>=6",
     "rebound>=4",
     "ruff>=0.6",
+    "frictionless>=5",
 ]
 
 [build-system]
