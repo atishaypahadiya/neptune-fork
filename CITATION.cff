@@ -1,0 +1,95 @@
+# Version follows semver; it becomes 1.0.0 (with date-released and the Zenodo DOI) when
+# M6 is complete and v1.0.0 is tagged. See docs/release_checklist.md.
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "neptune-fork: Le Verrier's 1846 prediction of Neptune, rebuilt as a calibrated Bayesian inference"
+abstract: >-
+  Rebuilds Le Verrier's 1846 inference of Neptune from Uranus's motion from first principles:
+  an own Wisdom-Holman N-body integrator validated against REBOUND, Uranus's orbit always
+  fitted jointly with an unseen perturber, partitioned nested sampling for multimodal
+  posteriors and evidence, and coverage tests on synthetic data. Includes a double-entry
+  transcription of Le Verrier's 1846 Table n. 77 (279 observations) and an apparent-place
+  observation model with per-observer error calibration. So far, synthetic-data results
+  only. Code is MIT; the data in data/historical/ are dedicated to the public domain under
+  CC0 1.0.
+authors:
+  - family-names: Pahadiya
+    given-names: Atishay
+    orcid: "https://orcid.org/0009-0004-1264-1662"
+repository-code: "https://github.com/atishaypahadiya/neptune-fork"
+# MIT for the code; CC0 1.0 for everything in data/historical/ (see LICENSE).
+license:
+  - MIT
+  - CC0-1.0
+version: "0.9.0"
+keywords:
+  - celestial mechanics
+  - Neptune
+  - Uranus
+  - Le Verrier
+  - symplectic integrator
+  - nested sampling
+  - Bayesian inference
+  - history of astronomy
+references:
+  - type: article
+    authors:
+      - family-names: Le Verrier
+        given-names: Urbain Jean Joseph
+    title: "Recherches sur les mouvements de la planète Herschel (dite Uranus)"
+    journal: "Connaissance des Temps pour 1849, Additions"
+    year: 1846
+    start: 3
+    end: 254
+  - type: article
+    authors:
+      - family-names: Wisdom
+        given-names: Jack
+      - family-names: Holman
+        given-names: Matthew
+    title: "Symplectic maps for the n-body problem"
+    journal: "The Astronomical Journal"
+    volume: 102
+    start: 1528
+    year: 1991
+  - type: article
+    authors:
+      - family-names: Duncan
+        given-names: Martin J.
+      - family-names: Levison
+        given-names: Harold F.
+      - family-names: Lee
+        given-names: Man Hoi
+    title: "A multiple time step symplectic algorithm for integrating close encounters"
+    journal: "The Astronomical Journal"
+    volume: 116
+    start: 2067
+    year: 1998
+  - type: article
+    authors:
+      - family-names: Speagle
+        given-names: Joshua S.
+    title: "dynesty: a dynamic nested sampling package for estimating Bayesian posteriors and evidences"
+    journal: "Monthly Notices of the Royal Astronomical Society"
+    volume: 493
+    start: 3132
+    year: 2020
+  - type: article
+    authors:
+      - family-names: Rein
+        given-names: Hanno
+      - family-names: Tamayo
+        given-names: Daniel
+    title: "WHFast: a fast and unbiased implementation of a symplectic Wisdom-Holman integrator for long-term gravitational simulations"
+    journal: "Monthly Notices of the Royal Astronomical Society"
+    volume: 452
+    start: 376
+    year: 2015
+  - type: software
+    authors:
+      - family-names: Whitmore
+        given-names: Jonathan
+    title: "discoverneptune"
+    url: "https://jbwhit.github.io/discoverneptune/"
+    year: 2026
