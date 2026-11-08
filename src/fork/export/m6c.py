@@ -79,8 +79,12 @@ FROZEN = {
 }  # fmt: skip
 # Inputs of the sensitivity variants, frozen at their pre-registration (2026-11-07).
 FROZEN_VARIANT = {
-    "s2_sigma_data": {"s2_error_model": (
-        S2_ERROR_MODEL, "79c8ddc69a61ba36ab44f0c790f166e25df8fee9a53f339e7dadc1aec490fa2d")},
+    "s2_sigma_data": {
+        "s2_error_model": (
+            S2_ERROR_MODEL,
+            "79c8ddc69a61ba36ab44f0c790f166e25df8fee9a53f339e7dadc1aec490fa2d",
+        )
+    },
 }
 TAU_ARCSEC = {"ancient": 5.0, "modern": 2.0}
 
@@ -451,7 +455,8 @@ def summarize_variant(variant: str) -> dict | None:
     out["config"] = {k: v for k, v in cfg.items()} | {
         "cells": [{"a_au": list(a), "e": None if e is None else list(e)} for a, e in cells],
         "sigma_arcsec": dict(zip(GROUPS, (float(v) for v in obs.sigma_arcsec), strict=True)),
-        "minus2_lnl_normalised": cfg["likelihood"] == "student_t"}
+        "minus2_lnl_normalised": cfg["likelihood"] == "student_t",
+    }
     if cfg["likelihood"] == "student_t":
         out["config"]["t_scale_arcsec"] = t_scales_arcsec()
     out["p_e_above_0p3"] = round(float(np.mean(thetas[:, 8] > 0.3)), 4)
@@ -482,8 +487,10 @@ def vs_headline(variant: str, fit: dict, head: dict) -> dict:
     if variant == "s2_sigma_data":
         zv -= 0.5 * gaussian_norm_m2lnl_for(variant)
         zh -= 0.5 * gaussian_norm_m2lnl_for("headline")
-        note = ("sigma_g estimated from these data (and the Uranus box rescaled with them): ln B "
-                "favours S2 by construction; not a model comparison")
+        note = (
+            "sigma_g estimated from these data (and the Uranus box rescaled with them): ln B "
+            "favours S2 by construction; not a model comparison"
+        )
     elif lik == "student_t":
         zh -= 0.5 * gaussian_norm_m2lnl_for("headline")
         note = "normalised Student-t (nu 4) against normalised Gaussian; same data, prior, box"

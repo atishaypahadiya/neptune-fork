@@ -43,7 +43,7 @@ def test_large_nu_reproduces_the_gaussian_marginal():
     sig = rng.uniform(1.0, 5.0, ng)
     tau = np.where(np.arange(ng) < 2, 5.0, 2.0)
     r = rng.normal(0.0, sig[g]) + rng.normal(0.0, tau)[g]
-    b = (np.bincount(g, weights=r / sig[g] ** 2) / (25 / sig**2 + 1 / tau**2))
+    b = np.bincount(g, weights=r / sig[g] ** 2) / (25 / sig**2 + 1 / tau**2)
     chi2 = np.sum(((r - b[g]) / sig[g]) ** 2) + np.sum((b / tau) ** 2)
     const = np.sum(np.log(2 * math.pi * sig[g] ** 2)) + np.sum(np.log1p(25 * tau**2 / sig**2))
     got = st.t_marginal_m2lnl(r, g, sig, tau, 1e7)
