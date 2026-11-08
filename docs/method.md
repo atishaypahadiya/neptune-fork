@@ -1,9 +1,9 @@
 # Method
 
 This is the short version of the milestone notes (`docs/notes/M0.md` to `M6.md`). It covers
-Phase 1 up to M5b, plus the M6 data and observation model. No fit to real observations has been
-run yet, so this page reports no real-data results. Every number here is from synthetic data
-or from a validation against JPL Horizons or REBOUND. Each section names the note it condenses.
+Phase 1 up to M5b, plus the M6 data and observation model. It reports no real-data results:
+the M6c headline fit on Table 77 is in `docs/notes/M6.md`. Every number here is from synthetic
+data or from a validation against JPL Horizons or REBOUND. Each section names the note it condenses.
 
 Units are AU, days and solar masses, with G = k² and k = 0.01720209895 (Gaussian). Angles are
 radians inside the code and arcseconds only at input, output and in plots.

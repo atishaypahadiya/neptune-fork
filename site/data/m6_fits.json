@@ -1,0 +1,336 @@
+{
+ "description": "M6c: partitioned nested-sampling posteriors on Le Verrier's Table 77 (279 observations, 529 measurements), M6 observation model (apparent RA/Dec of date), calibrated sigma_g, group offsets marginalised (tau 2\" modern, 5\" ancient), inclined perturber, free a, e <= 0.3. Pre-registered in docs/notes/M6.md. ln Z errors x err_inflation.",
+ "frozen_inputs": {
+  "table77_csv": {
+   "path": "data/historical/leverrier_1846.csv",
+   "sha256": "2f546b9979f613c62d9c2dc77cd92b8269a9dbea4d3f87eecf39d2145509ebc4"
+  },
+  "error_model": {
+   "path": "data/historical/m6_error_model.json",
+   "sha256": "0856fa30d1675bf926d3921580de919b45fb72474e2f41ba58a5d153a6bec277"
+  }
+ },
+ "error_model": {
+  "groups": [
+   "ancient:ra",
+   "ancient:dec",
+   "greenwich:ra",
+   "greenwich:dec",
+   "paris_1801_1827:ra",
+   "paris_1801_1827:dec",
+   "paris_1835_1845:ra",
+   "paris_1835_1845:dec"
+  ],
+  "sigma_arcsec": {
+   "ancient:ra": 4.66,
+   "ancient:dec": 5.08,
+   "greenwich:ra": 1.91,
+   "greenwich:dec": 2.41,
+   "paris_1801_1827:ra": 2.88,
+   "paris_1801_1827:dec": 2.6,
+   "paris_1835_1845:ra": 1.44,
+   "paris_1835_1845:dec": 1.16
+  },
+  "offset_prior_arcsec": {
+   "ancient:ra": 5.0,
+   "ancient:dec": 5.0,
+   "greenwich:ra": 2.0,
+   "greenwich:dec": 2.0,
+   "paris_1801_1827:ra": 2.0,
+   "paris_1801_1827:dec": 2.0,
+   "paris_1835_1845:ra": 2.0,
+   "paris_1835_1845:dec": 2.0
+  },
+  "basis": "sigma: O - JPL calibration (fork.data.calibration), MAD sigma per group; tau: pre-registered 2 arcsec modern, 5 arcsec ancient"
+ },
+ "sampler": {
+  "bound": "multi",
+  "sample": "rslice",
+  "dlogz": 0.1,
+  "nlive_default": 1000,
+  "nlive_cells": {
+   "0": 2000
+  },
+  "err_inflation": 1.8,
+  "rng": {
+   "headline/c0": [
+    2026,
+    6,
+    1846,
+    0,
+    1
+   ],
+   "headline/c1": [
+    2026,
+    6,
+    1846,
+    0,
+    2
+   ],
+   "headline/c2": [
+    2026,
+    6,
+    1846,
+    0,
+    3
+   ],
+   "headline/c3": [
+    2026,
+    6,
+    1846,
+    0,
+    4
+   ]
+  },
+  "cells": [
+   {
+    "a_au": [
+     20.0,
+     25.0
+    ],
+    "e": null
+   },
+   {
+    "a_au": [
+     25.0,
+     28.0
+    ],
+    "e": null
+   },
+   {
+    "a_au": [
+     28.0,
+     60.0
+    ],
+    "e": [
+     0.0,
+     0.12
+    ]
+   },
+   {
+    "a_au": [
+     28.0,
+     60.0
+    ],
+    "e": [
+     0.12,
+     0.3
+    ]
+   }
+  ]
+ },
+ "priors": {
+  "log10_m_earth": [
+   0.0,
+   2.0
+  ],
+  "a_au_log_uniform": [
+   20.0,
+   60.0
+  ],
+  "e_uniform_max": 0.3,
+  "inc_rel_uranus_deg_max": 10.0,
+  "inc": "uniform in cos i",
+  "angles": "uniform",
+  "uranus": "box ±50 scaled σ around the Uranus-only RA/Dec fit"
+ },
+ "comparison_targets": {
+  "jpl": {
+   "galle_lon_ecl_of_date_deg": 325.873,
+   "helio_lon_ecl_of_date_1847_deg": 327.561,
+   "source": "JPL Horizons (constants; tests/test_m6c.py recomputes them)"
+  },
+  "le_verrier": {
+   "helio_lon_ecl_of_date_1847_deg": 326.5333,
+   "galle_lon_ecl_of_date_deg_derived": 324.9731,
+   "sources": [
+    "Krajnović 2016, A&G 57, 5.28 (arXiv:1610.06424), Table 2, after Grosser 1962",
+    "Encyclopædia Britannica 1911, 'Neptune (planet)', table of elements"
+   ],
+   "note": "Galle-night longitude derived from the published elements (Kepler orbit, equinox 1847.0 assumed); not printed in a source in the repo"
+  }
+ },
+ "fits": {
+  "headline": {
+   "variant": "headline",
+   "n_samples": 242640,
+   "n_derived": 6000,
+   "evidence": {
+    "logz": -361.0354,
+    "logzerr": 0.4029,
+    "logzerr_inflation": 1.8,
+    "cells": [
+     {
+      "a_au": [
+       20.0,
+       25.0
+      ],
+      "e": null,
+      "nlive": 2000,
+      "share": 0.00438,
+      "share_err": 0.00227,
+      "logz_k": -364.8722,
+      "niter": 100532,
+      "ncall": 7288339,
+      "wall_min": 152.0,
+      "chi2_min": 633.814
+     },
+     {
+      "a_au": [
+       25.0,
+       28.0
+      ],
+      "e": null,
+      "nlive": 1000,
+      "share": 0.00163,
+      "share_err": 0.00094,
+      "logz_k": -365.1843,
+      "niter": 47176,
+      "ncall": 3442160,
+      "wall_min": 186.5,
+      "chi2_min": 640.618
+     },
+     {
+      "a_au": [
+       28.0,
+       60.0
+      ],
+      "e": [
+       0.0,
+       0.12
+      ],
+      "nlive": 1000,
+      "share": 0.98501,
+      "share_err": 0.00733,
+      "logz_k": -359.7686,
+      "niter": 43537,
+      "ncall": 3226478,
+      "wall_min": 177.5,
+      "chi2_min": 637.08
+     },
+     {
+      "a_au": [
+       28.0,
+       60.0
+      ],
+      "e": [
+       0.12,
+       0.3
+      ],
+      "nlive": 1000,
+      "share": 0.00898,
+      "share_err": 0.00531,
+      "logz_k": -364.8719,
+      "niter": 46395,
+      "ncall": 3388198,
+      "wall_min": 186.7,
+      "chi2_min": 641.581
+     }
+    ]
+   },
+   "galle_lon_ecl_of_date_deg": {
+    "median": 325.813,
+    "lo68": 323.91,
+    "hi68": 327.386,
+    "lo95": 321.985,
+    "hi95": 328.547,
+    "width68": 3.476,
+    "width95": 6.561,
+    "vs": {
+     "jpl": {
+      "target": 325.873,
+      "median_minus_target_deg": -0.06,
+      "offset_sigma": -0.038,
+      "in_68": true,
+      "in_95": true
+     },
+     "le_verrier_derived": {
+      "target": 324.9731,
+      "median_minus_target_deg": 0.84,
+      "offset_sigma": 0.441,
+      "in_68": true,
+      "in_95": true
+     }
+    }
+   },
+   "helio_lon_ecl_of_date_1847_deg": {
+    "median": 327.495,
+    "lo68": 325.585,
+    "hi68": 329.104,
+    "lo95": 323.662,
+    "hi95": 330.264,
+    "width68": 3.519,
+    "width95": 6.602,
+    "vs": {
+     "jpl": {
+      "target": 327.561,
+      "median_minus_target_deg": -0.066,
+      "offset_sigma": -0.041,
+      "in_68": true,
+      "in_95": true
+     },
+     "le_verrier": {
+      "target": 326.5333,
+      "median_minus_target_deg": 0.962,
+      "offset_sigma": 0.503,
+      "in_68": true,
+      "in_95": true
+     }
+    }
+   },
+   "peirce_p_within_0p87_deg_of_jpl": 0.3768,
+   "mass_earth": {
+    "median": 17.468,
+    "lo68": 16.513,
+    "hi68": 18.372,
+    "lo95": 15.463,
+    "hi95": 19.53
+   },
+   "a_au": {
+    "median": 30.18,
+    "lo68": 29.55,
+    "hi68": 30.813,
+    "lo95": 29.13,
+    "hi95": 31.784
+   },
+   "e": {
+    "median": 0.0162,
+    "lo68": 0.0049,
+    "hi68": 0.0459,
+    "minus": 0.0113,
+    "plus": 0.0298,
+    "upper68_one_sided": 0.0302,
+    "upper95_one_sided": 0.0548,
+    "prior_median": 0.15
+   },
+   "inc_rel_uranus_deg": {
+    "median": 2.479,
+    "lo68": 1.608,
+    "hi68": 3.643,
+    "lo95": 0.982,
+    "hi95": 5.038,
+    "prior_16_50_84": [
+     3.996,
+     7.067,
+     9.163
+    ],
+    "note": "prior-dominated: compare with the prior quantiles"
+   },
+   "best_fit": {
+    "chi2_augmented": 633.814,
+    "n_measurements": 529,
+    "group_offsets_arcsec": {
+     "ancient:ra": 0.922,
+     "ancient:dec": -1.204,
+     "greenwich:ra": 0.567,
+     "greenwich:dec": 0.75,
+     "paris_1801_1827:ra": 0.013,
+     "paris_1801_1827:dec": 1.517,
+     "paris_1835_1845:ra": 2.181,
+     "paris_1835_1845:dec": 0.774
+    }
+   }
+  }
+ },
+ "missing_variants": []
+}

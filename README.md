@@ -42,7 +42,13 @@ and the apparent-place observation model and error calibration are built. The A6
 on synthetic data passed: the truth is inside the 68 % interval for 8 of 10 seeds (two-sided
 binomial p = 0.52), with an rms offset of 0.87σ and a median 68 % width of 5.1°. That is
 narrower than M5b's 9.1°, mostly because Table 77 has more measurements and smaller calibrated
-errors than M5b assumed ([M6 notes](docs/notes/M6.md)). The real-data fit (M6c) is next.
+errors than M5b assumed ([M6 notes](docs/notes/M6.md)).
+
+The pre-registered real-data fit (M6c) on Table 77 puts the planet at **325.8°** on the night
+Galle found Neptune, with a 68 % interval of 323.9°–327.4°. JPL's Neptune is at 325.87°, 0.04
+half-widths from the median. Le Verrier's prediction, propagated from his published elements
+to that night (324.97°), is also inside the interval. The fitted mass is 17.5 M⊕ (Neptune: 17.15) and the semi-major axis 30.2 AU. Sensitivity
+runs on the error model come next ([M6 notes](docs/notes/M6.md)).
 
 Data: [Le Verrier Table 77, Zenodo, doi:10.5281/zenodo.24044792](https://doi.org/10.5281/zenodo.24044792)
 
@@ -97,10 +103,10 @@ site/           static site (GitHub Pages) and its data
 
 ## Compute
 
-The ledger (`site/data/ledger.json`) records **713 CPU-hours** to date: 631 timed live, plus 82
-estimated from logs. That covers 428 million likelihood evaluations, each one N-body
+The ledger (`site/data/ledger.json`) records **741 CPU-hours** to date: 659 timed live, plus 82
+estimated from logs. That covers 445 million likelihood evaluations, each one N-body
 integration over 1690–1846. Nested sampling accounts for nearly all of it: M5b, and A6c with
-277 CPU-hours.
+277 CPU-hours. The M6c headline fit took 28.5.
 
 ## Prior art
 
