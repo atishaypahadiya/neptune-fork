@@ -114,7 +114,7 @@ def summary(run, obs, ctx, nep_rad: float, with_1847: bool = False) -> dict:
 
 
 # λ₀ starts per fit. A fit is raised to 48 only when its 24-start best got worse than the
-# committed M5a_diagnostics.json by > 0.05 in χ² (rule set at the 6c8bc82 box change; the
+# committed M5a_diagnostics.json by > 0.05 in χ² (rule set at the 017c67e box change; the
 # 48-start grid contains the 24-start one). Keys "dataset/fit", e.g. "seed_2/free_a".
 N_LAM0_STARTS = 24
 N_LAM0_STARTS_RAISED: dict[str, int] = {}

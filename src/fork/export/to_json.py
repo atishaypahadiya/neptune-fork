@@ -118,7 +118,7 @@ def _dlon_deg(a_rad: float, b_rad: float) -> float:
 
 
 # λ₀ starts per mode. A mode is raised to 48 only when the 24-start best got worse than a
-# previous export by > 0.05 in χ² (rule set at the 6c8bc82 box change); the 48-start grid
+# previous export by > 0.05 in χ² (rule set at the 017c67e box change); the 48-start grid
 # contains the 24-start one, so its best is never worse.
 M5A_N_LAM0_STARTS = {"le_verrier": 24, "free_a": 24}
 
