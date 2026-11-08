@@ -151,12 +151,14 @@ def run_nested(
     checkpoint_file: Path | None = None,
     checkpoint_every_s: float = 300.0,
     label: str = "nested",
+    slices: int | None = None,
 ) -> NestedResult:
     """Static nested sampling over ``space``'s prior (which must carry a Uranus box).
 
     With ``checkpoint_file`` set, the sampler state is saved every ``checkpoint_every_s`` and a
     run whose checkpoint exists resumes from it (same settings assumed; ``rng`` is then ignored,
-    the checkpoint carries its own generator state). ``wall_s`` counts this call only."""
+    the checkpoint carries its own generator state). ``slices``: rslice slices per proposal;
+    None keeps dynesty's default (3 + ndim). ``wall_s`` counts this call only."""
     from contextlib import nullcontext
     from multiprocessing import get_context
 
@@ -166,6 +168,8 @@ def run_nested(
     _init_worker(space, obs, context)
     kw = dict(nlive=nlive, bound=BOUND, sample=SAMPLE, periodic=space.periodic_unit_dims,
               rstate=rng)  # fmt: skip
+    if slices is not None:
+        kw["slices"] = int(slices)
     log = None if progress_log is None else _ProgressLog(progress_log, progress_every_s, label)
     ckpt = None if checkpoint_file is None else Path(checkpoint_file)
     if ckpt is not None:
@@ -187,7 +191,8 @@ def run_nested(
             sampler.run_nested(resume=True, **run_kw)
         else:
             if log is not None:
-                log.line(f"start: ndim {space.ndim}, nlive {nlive}, {BOUND}/{SAMPLE}, "
+                sl = "" if slices is None else f", {slices} slices"
+                log.line(f"start: ndim {space.ndim}, nlive {nlive}, {BOUND}/{SAMPLE}{sl}, "
                          f"dlogz {dlogz}, {n_workers} workers")  # fmt: skip
             sampler = dynesty.NestedSampler(_log_likelihood, _prior_transform, space.ndim,
                                             **pool_kw, **kw)  # fmt: skip

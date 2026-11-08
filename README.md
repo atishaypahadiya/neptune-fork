@@ -47,8 +47,16 @@ errors than M5b assumed ([M6 notes](docs/notes/M6.md)).
 The pre-registered real-data fit (M6c) on Table 77 puts the planet at **325.8°** on the night
 Galle found Neptune, with a 68 % interval of 323.9°–327.4°. JPL's Neptune is at 325.87°, 0.04
 half-widths from the median. Le Verrier's prediction, propagated from his published elements
-to that night (324.97°), is also inside the interval. The fitted mass is 17.5 M⊕ (Neptune: 17.15) and the semi-major axis 30.2 AU. Sensitivity
-runs on the error model come next ([M6 notes](docs/notes/M6.md)).
+to that night (324.97°), is also inside the interval. The fitted mass is 17.5 M⊕ (Neptune: 17.15) and the semi-major axis 30.2 AU.
+
+The direction is robust. JPL's Neptune is inside the 68 % interval in the headline fit and in
+all three pre-registered sensitivity runs (e ≤ 0.5, error levels estimated from the data alone,
+Student-t errors). The medians agree to within 0.4 headline half-widths. The evidence strongly
+prefers the Student-t errors (ln B = +13.7). **The interval's width is under review:** repeated
+runs of the same sampling cell disagree by far more than the sampler's own error estimate, so
+the widths are uncertain to about a factor of 2
+([M6 notes](docs/notes/M6.md#cell-2-does-not-reproduce-between-runs)). A pre-registered
+repeatability study is next.
 
 Data: [Le Verrier Table 77, Zenodo, doi:10.5281/zenodo.24044792](https://doi.org/10.5281/zenodo.24044792)
 

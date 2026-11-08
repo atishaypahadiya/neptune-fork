@@ -95,3 +95,29 @@ def test_nested_checkpoint_resume_and_progress_log(offline_horizons, tmp_path, m
     assert res.niter > it_saved
     text = log.read_text()
     assert "start:" in text and "resumed from" in text and "iter " in text and "done:" in text
+
+
+def test_run_nested_passes_slices_to_dynesty(offline_horizons, monkeypatch):
+    """``slices`` reaches dynesty's sampler; None leaves dynesty's default (no keyword)."""
+    import dynesty
+
+    seen = []
+
+    class _Stop(Exception):
+        pass
+
+    def fake(*args, **kw):
+        seen.append(kw)
+        raise _Stop
+
+    monkeypatch.setattr(dynesty, "NestedSampler", fake)
+    ctx = ForwardContext.from_horizons(EPOCH)
+    inc_raan = uranus_inc_raan_at_epoch(EPOCH)
+    obs, _ = make_synthetic_observations(np.random.default_rng(0))
+    box = UranusBox.from_uranus_only_fit(obs, ctx, inc_raan)
+    pq = tuple(uranus_theta_to_x(np.array([19.2, 0.0, *inc_raan, 0.0, 0.0]))[4:])
+    space = free_a_space(pq, 0.3, box)
+    for slices in (None, 28):
+        with pytest.raises(_Stop):
+            run_nested(obs, ctx, space, np.random.default_rng(1), nlive=12, slices=slices)
+    assert "slices" not in seen[0] and seen[1]["slices"] == 28
