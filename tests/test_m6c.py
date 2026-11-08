@@ -10,12 +10,70 @@ from fork.export import m6c
 
 
 def test_headline_jobs_and_worker_budget():
-    jobs = m6c.all_jobs()
+    jobs = m6c.all_jobs(("headline",))
     assert [j.id for j in jobs] == ["headline/c0", "headline/c1", "headline/c2", "headline/c3"]
     assert [j.nlive for j in jobs] == [2000, 1000, 1000, 1000]
     assert sum(j.workers for j in jobs) == 12
     assert all(m6c.Job.from_id(j.id) == j for j in jobs)
-    assert len({tuple(j.rng_seed()) for j in jobs}) == 4
+    assert [j.rng_seed() for j in jobs] == [[2026, 6, 1846, 0, k + 1] for k in range(4)]
+
+
+def test_sensitivity_variants_change_one_thing_each():
+    """S1–S3 (pre-registered): same cells, nlive, workers as the headline; distinct seeds; S1's
+    cells partition its wider e prior; S2's error model is frozen; S3 keeps the headline's
+    error model and Uranus box and swaps the likelihood."""
+    from fork.inference.nested import cell_space
+    from fork.inference.priors import free_a_space
+
+    assert m6c.VARIANTS == ("headline", "s1_e05", "s2_sigma_data", "s3_t4")
+    jobs = m6c.all_jobs()
+    assert len(jobs) == 16 and len({tuple(j.rng_seed()) for j in jobs}) == 16
+    for v in m6c.VARIANTS[1:]:
+        vj = m6c.all_jobs((v,))
+        assert [j.nlive for j in vj] == [2000, 1000, 1000, 1000]
+        assert sum(j.workers for j in vj) == 12
+        m6c.check_frozen(v)
+    cfg = m6c.VARIANT_CONFIG
+    head = cfg["headline"]
+
+    def drop(d, *keys):
+        return {k: v for k, v in d.items() if k not in keys}
+
+    assert drop(cfg["s1_e05"], "e_max") == drop(head, "e_max")
+    assert cfg["s1_e05"]["e_max"] == 0.5
+    assert m6c.variant_cells("s1_e05")[3] == ((28.0, 60.0), (0.12, 0.5))
+    w = sum(cell_space(free_a_space((0.0, 0.0), 0.5), c).slice_weight
+            for c in m6c.variant_cells("s1_e05"))  # fmt: skip
+    assert w == pytest.approx(1.0, abs=1e-12)
+    assert drop(cfg["s2_sigma_data"], "error_model") == drop(head, "error_model")
+    assert drop(cfg["s3_t4"], "likelihood", "nu") == drop(head, "likelihood")
+    assert cfg["s3_t4"]["likelihood"] == "student_t" and cfg["s3_t4"]["nu"] == 4.0
+
+
+def test_s2_error_model_is_data_only_with_the_headline_tau():
+    import json
+
+    from fork.model.observation import ErrorModel
+
+    d = json.loads((m6c.ROOT / m6c.S2_ERROR_MODEL).read_text(encoding="utf-8"))
+    assert "no JPL Uranus" in d["basis"] and d["source_point"]["run"] == "m6c headline"
+    em, head = ErrorModel.load(m6c.ROOT / m6c.S2_ERROR_MODEL), ErrorModel.load()
+    assert em.offset_prior_arcsec == head.offset_prior_arcsec
+    for g, s in em.sigma_arcsec.items():
+        assert s == pytest.approx(d["sigma_unrounded_arcsec"][g], abs=0.005)
+
+
+def test_s3_dataset_is_student_t_on_the_headline_box():
+    from fork.model.student_t import StudentTObservations
+
+    *_, box_h = m6c.dataset()
+    obs, *_, box = m6c.dataset(variant="s3_t4")
+    assert isinstance(obs, StudentTObservations) and obs.nu == 4.0
+    np.testing.assert_allclose(obs.t_scale_arcsec,
+                               [m6c.t_scales_arcsec()[g] for g in m6c.t_scales_arcsec()],
+                               rtol=0, atol=1e-12)  # fmt: skip
+    np.testing.assert_allclose(box.centre, box_h.centre, rtol=0, atol=1e-12)
+    np.testing.assert_allclose(box.half_width, box_h.half_width, rtol=0, atol=1e-12)
 
 
 def test_frozen_inputs_are_checked(monkeypatch):

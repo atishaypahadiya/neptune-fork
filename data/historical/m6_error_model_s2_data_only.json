@@ -1,0 +1,54 @@
+{
+ "basis": "sigma: MAD sigma per group of the Table 77 residuals at the headline M6c run's highest-likelihood sample (no JPL Uranus); tau: pre-registered 2 arcsec modern, 5 arcsec ancient",
+ "sigma_arcsec": {
+  "ancient:ra": 4.48,
+  "ancient:dec": 4.75,
+  "greenwich:ra": 1.93,
+  "greenwich:dec": 2.46,
+  "paris_1801_1827:ra": 2.83,
+  "paris_1801_1827:dec": 2.64,
+  "paris_1835_1845:ra": 1.37,
+  "paris_1835_1845:dec": 1.09
+ },
+ "offset_prior_arcsec": {
+  "ancient:ra": 5.0,
+  "ancient:dec": 5.0,
+  "greenwich:ra": 2.0,
+  "greenwich:dec": 2.0,
+  "paris_1801_1827:ra": 2.0,
+  "paris_1801_1827:dec": 2.0,
+  "paris_1835_1845:ra": 2.0,
+  "paris_1835_1845:dec": 2.0
+ },
+ "sigma_unrounded_arcsec": {
+  "ancient:ra": 4.483206484657764,
+  "ancient:dec": 4.75223346312402,
+  "greenwich:ra": 1.9340546242982897,
+  "greenwich:dec": 2.456006876984858,
+  "paris_1801_1827:ra": 2.825457980835725,
+  "paris_1801_1827:dec": 2.6438469538123246,
+  "paris_1835_1845:ra": 1.366330891785286,
+  "paris_1835_1845:dec": 1.086683232442294
+ },
+ "source_point": {
+  "run": "m6c headline",
+  "cell": 0,
+  "minus2_lnl": 633.8142,
+  "theta": [
+   19.137602896828557,
+   0.04738930556366223,
+   0.013569359491170645,
+   1.2883441705549772,
+   3.0232833744979404,
+   1.673236185771316,
+   1.2472267428820558,
+   23.34395727053708,
+   0.29927706328165815,
+   1.6295623228570009,
+   2.5416804420210175,
+   0.05665291271257244,
+   4.322388085415072
+  ]
+ },
+ "note": "M6c sensitivity S2 (docs/notes/M6.md). One iteration, no refit of sigma."
+}

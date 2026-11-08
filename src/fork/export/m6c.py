@@ -44,8 +44,25 @@ CACHE = ROOT / "data" / "cache" / "nested" / "m6c"
 PROGRESS_LOG = CACHE / "progress.log"
 DRIVER_LOG = CACHE / "driver.log"
 OUT_NAME = "m6_fits.json"
-VARIANTS = ("headline",)  # sensitivity variants are added only after the M8 decision
+# Sensitivity variants S1–S3 are pre-registered in docs/notes/M6.md ("M6c sensitivity runs
+# S1–S3: pre-registration"). Each changes one thing against the headline; the order fixes the
+# rng seeds, so it never changes.
+VARIANTS = ("headline", "s1_e05", "s2_sigma_data", "s3_t4")
 E_MAX = 0.3
+S2_ERROR_MODEL = "data/historical/m6_error_model_s2_data_only.json"
+VARIANT_CONFIG = {
+    "headline": {"e_max": E_MAX, "error_model": "data/historical/m6_error_model.json",
+                 "likelihood": "gaussian"},
+    "s1_e05": {"e_max": 0.5, "error_model": "data/historical/m6_error_model.json",
+               "likelihood": "gaussian"},
+    "s2_sigma_data": {"e_max": E_MAX, "error_model": S2_ERROR_MODEL, "likelihood": "gaussian"},
+    "s3_t4": {"e_max": E_MAX, "error_model": "data/historical/m6_error_model.json",
+              "likelihood": "student_t", "nu": 4.0},
+}  # fmt: skip
+# S1: M5b's four cells with the last one's e range widened to the new bound, so the cells
+# still partition the prior (``cells_for`` would clip it at 0.3).
+S1_CELLS = (((20.0, 25.0), None), ((25.0, 28.0), None), ((28.0, 60.0), (0.0, 0.12)),
+            ((28.0, 60.0), (0.12, 0.5)))  # fmt: skip
 NLIVE_DEFAULT = 1000
 NLIVE_CELL = {0: 2000}  # cell [20, 25] AU, as in M5b and A6c
 WORKERS_DEFAULT = 2
@@ -60,6 +77,11 @@ FROZEN = {
     "error_model": ("data/historical/m6_error_model.json",
                     "0856fa30d1675bf926d3921580de919b45fb72474e2f41ba58a5d153a6bec277"),
 }  # fmt: skip
+# Inputs of the sensitivity variants, frozen at their pre-registration (2026-11-07).
+FROZEN_VARIANT = {
+    "s2_sigma_data": {"s2_error_model": (
+        S2_ERROR_MODEL, "79c8ddc69a61ba36ab44f0c790f166e25df8fee9a53f339e7dadc1aec490fa2d")},
+}
 TAU_ARCSEC = {"ancient": 5.0, "modern": 2.0}
 
 # Comparison targets (reporting only; never enter a fit).
@@ -80,16 +102,17 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def check_frozen() -> None:
-    """Refuse to run on inputs other than the pre-registered ones."""
+def check_frozen(variant: str = "headline") -> None:
+    """Refuse to run on inputs other than the pre-registered ones (the headline's, plus the
+    variant's own)."""
     from fork.inference.nested import DLOGZ
     from fork.inference.priors import INC_PRIOR_MAX_DEG as INC
     from fork.model.observation import ErrorModel
 
-    for name, (rel, digest) in FROZEN.items():
+    for name, (rel, digest) in (FROZEN | FROZEN_VARIANT.get(variant, {})).items():
         if sha256(ROOT / rel) != digest:
             raise RuntimeError(f"{name} ({rel}) differs from the pre-registered file")
-    em = ErrorModel.load()
+    em = ErrorModel.load(ROOT / VARIANT_CONFIG[variant]["error_model"])
     for g, t in em.offset_prior_arcsec.items():
         if abs(t - TAU_ARCSEC["ancient" if g.startswith("ancient") else "modern"]) > 1e-12:
             raise RuntimeError(f"tau for {g} is {t}, not the pre-registered value")
@@ -129,47 +152,65 @@ class Job:
         return np.random.default_rng(self.rng_seed())
 
 
-def all_jobs() -> list[Job]:
+def variant_cells(variant: str) -> tuple:
     from fork.inference.nested import cells_for
 
-    return [Job(v, k) for v in VARIANTS for k in range(len(cells_for(E_MAX)))]
+    return S1_CELLS if variant == "s1_e05" else cells_for(VARIANT_CONFIG[variant]["e_max"])
 
 
-def dataset(rows: list[dict[str, str]] | None = None):
+def all_jobs(variants: tuple[str, ...] = VARIANTS) -> list[Job]:
+    return [Job(v, k) for v in variants for k in range(len(variant_cells(v)))]
+
+
+def t_scales_arcsec() -> dict[str, float]:
+    """S3's Student-t scales: the ν = 4 ML scales of O − JPL per group, recorded in the frozen
+    headline error model's table by the M6b calibration (``sigma_t4``)."""
+    d = json.loads((ROOT / FROZEN["error_model"][0]).read_text(encoding="utf-8"))
+    return {row["group"]: float(row["sigma_t4"]) for row in d["table"]}
+
+
+def dataset(rows: list[dict[str, str]] | None = None, variant: str = "headline"):
     """(observations, context, Uranus (i, Ω), (p, q), Uranus box): Table 77's measured values
-    with the frozen error model. Reads no Neptune state."""
+    with the variant's frozen error model. The box follows the M5 rule on the variant's
+    Gaussian error model (S3's is the headline's). Reads no Neptune state."""
     from fork.data.calibration import real_observations
     from fork.inference.fit import uranus_theta_to_x
     from fork.inference.fit_radec import uranus_box_radec
     from fork.model import observation as om
     from fork.model.forward import ForwardContext, uranus_inc_raan_at_epoch
 
-    obs = real_observations(om.read_rows() if rows is None else rows, om.ErrorModel.load())
+    cfg = VARIANT_CONFIG[variant]
+    em = om.ErrorModel.load(ROOT / cfg["error_model"])
+    obs = real_observations(om.read_rows() if rows is None else rows, em)
     ctx = ForwardContext.from_horizons(A1_EPOCH_JD_TDB)
     inc_raan = uranus_inc_raan_at_epoch(A1_EPOCH_JD_TDB)
     box = uranus_box_radec(obs, ctx, inc_raan)
     pq = tuple(uranus_theta_to_x(np.array([19.2, 0.0, *inc_raan, 0.0, 0.0]))[4:])
+    if cfg["likelihood"] == "student_t":
+        from fork.model.student_t import StudentTObservations
+
+        obs = StudentTObservations.from_gaussian(obs, cfg["nu"], t_scales_arcsec())
     return obs, ctx, inc_raan, pq, box
 
 
 def job_space(job: Job, pq, box):
-    from fork.inference.nested import cell_space, cells_for
+    from fork.inference.nested import cell_space
     from fork.inference.priors import free_a_space
 
-    space = free_a_space(pq, E_MAX, box, inclined=True)
-    return cell_space(space, cells_for(E_MAX)[job.cell])
+    space = free_a_space(pq, VARIANT_CONFIG[job.variant]["e_max"], box, inclined=True)
+    return cell_space(space, variant_cells(job.variant)[job.cell])
 
 
 def do_job(job: Job, n_workers: int, maxiter: int | None = None) -> None:
     from fork import ledger
     from fork.inference.nested import NestedResult, run_nested
 
-    check_frozen()
+    check_frozen(job.variant)
     out = job.path(".pkl")
     if out.exists():
         print(f"{job.id}: cached")
         return
-    obs, ctx, _, pq, box = dataset()
+    obs, ctx, _, pq, box = dataset(variant=job.variant)
     space = job_space(job, pq, box)
     resumed = job.path(".ckpt").exists()
     t0, c0 = time.time(), ledger.cpu_now()
@@ -199,13 +240,14 @@ def _log(msg: str) -> None:
     print(line, flush=True)
 
 
-def run_all(n_workers: int) -> None:
+def run_all(n_workers: int, variants: tuple[str, ...] = VARIANTS) -> None:
     """Scheduler: each job a subprocess with ``job.workers`` workers, within a budget of
     ``n_workers``; longest first; one retry per failed job (it resumes from its checkpoint)."""
-    check_frozen()
-    pending = sorted([j for j in all_jobs() if not j.path(".pkl").exists()],
+    for v in variants:
+        check_frozen(v)
+    pending = sorted([j for j in all_jobs(variants) if not j.path(".pkl").exists()],
                      key=lambda j: (-j.nlive, j.variant, j.cell))  # fmt: skip
-    _log(f"run: {len(pending)} jobs pending, budget {n_workers} workers")
+    _log(f"run {','.join(variants)}: {len(pending)} jobs pending, budget {n_workers} workers")
     running: dict[str, tuple[subprocess.Popen, float, int]] = {}
     failures: dict[str, int] = {}
     while pending or running:
@@ -345,19 +387,20 @@ def inc_prior_quantiles_deg(q=(16.0, 50.0, 84.0)) -> list[float]:
 
 def summarize_variant(variant: str) -> dict | None:
     from fork.export.m5b import _e_summary, _heliocentric_lon_of_date_deg
-    from fork.inference.nested import ERR_INFLATION, NestedResult, PartitionedResult, cells_for
+    from fork.inference.nested import ERR_INFLATION, NestedResult, PartitionedResult
     from fork.inference.profile import GalleGeometry, galle_lon_of_date_rad
     from fork.model.hidden_mass import JD_1847_JAN1_TDB
     from fork.model.observation import GROUPS
 
-    jobs = [Job(variant, k) for k in range(len(cells_for(E_MAX)))]
+    jobs = [Job(variant, k) for k in range(len(variant_cells(variant)))]
     if not all(j.path(".pkl").exists() for j in jobs):
         return None
     res = [NestedResult.load(j.path(".pkl")) for j in jobs]
     p = PartitionedResult(tuple(res), err_scale=ERR_INFLATION)
     rng = np.random.default_rng([*SUMMARY_RNG, VARIANTS.index(variant)])
     eq = p.equal_weight(rng)
-    obs, ctx, *_ = dataset()
+    obs, ctx, *_ = dataset(variant=variant)
+    cfg = VARIANT_CONFIG[variant]
     geo = GalleGeometry.from_horizons()
     space = res[0].space
     idx = rng.choice(len(eq), size=min(DERIVED_MAX_SAMPLES, len(eq)), replace=False)
@@ -371,8 +414,8 @@ def summarize_variant(variant: str) -> dict | None:
     th_best = space.theta(best.samples[int(np.argmax(best.results["logl"]))])
     resid = obs.residuals_arcsec(*obs.predict(th_best, ctx))
 
-    cells = cells_for(E_MAX)
-    return {
+    cells = variant_cells(variant)
+    out = {
         "variant": variant, "n_samples": len(eq), "n_derived": len(galle),
         "evidence": {"logz": round(p.logz, 4), "logzerr": round(p.logzerr, 4),
                      "logzerr_inflation": ERR_INFLATION,
@@ -394,7 +437,7 @@ def summarize_variant(variant: str) -> dict | None:
             np.abs((galle - JPL_GALLE_LON_DEG + 180.0) % 360.0 - 180.0) <= 0.87)), 4),
         "mass_earth": _quantiles(10.0 ** thetas[:, 6], 3),
         "a_au": _quantiles(thetas[:, 7], 3),
-        "e": _e_summary(thetas[:, 8], None, E_MAX),
+        "e": _e_summary(thetas[:, 8], None, cfg["e_max"]),
         "inc_rel_uranus_deg": _quantiles(np.degrees(thetas[:, 11]), 3)
         | {"prior_16_50_84": inc_prior_quantiles_deg(),
            "note": "prior-dominated: compare with the prior quantiles"},
@@ -403,6 +446,52 @@ def summarize_variant(variant: str) -> dict | None:
                      "group_offsets_arcsec": dict(zip(GROUPS, (round(float(v), 3) for v in
                                                   obs.best_offsets_arcsec(resid)), strict=True))},
     }  # fmt: skip
+    if variant == "headline":  # its record stays exactly as first published
+        return out
+    out["config"] = {k: v for k, v in cfg.items()} | {
+        "cells": [{"a_au": list(a), "e": None if e is None else list(e)} for a, e in cells],
+        "sigma_arcsec": dict(zip(GROUPS, (float(v) for v in obs.sigma_arcsec), strict=True)),
+        "minus2_lnl_normalised": cfg["likelihood"] == "student_t"}
+    if cfg["likelihood"] == "student_t":
+        out["config"]["t_scale_arcsec"] = t_scales_arcsec()
+    out["p_e_above_0p3"] = round(float(np.mean(thetas[:, 8] > 0.3)), 4)
+    out["p_a_below_25_au"] = round(float(np.mean(thetas[:, 7] < 25.0)), 4)
+    return out
+
+
+def gaussian_norm_m2lnl_for(variant: str) -> float:
+    """The constant the Gaussian likelihood drops, for the variant's error model."""
+    from fork.data.calibration import real_observations
+    from fork.model import observation as om
+    from fork.model.student_t import gaussian_norm_m2lnl
+
+    em = om.ErrorModel.load(ROOT / VARIANT_CONFIG[variant]["error_model"])
+    return gaussian_norm_m2lnl(real_observations(om.read_rows(), em))
+
+
+def vs_headline(variant: str, fit: dict, head: dict) -> dict:
+    """Shift of the Galle-night median against the headline, and ln B against it (errors ×
+    ERR_INFLATION, added in quadrature). ln Z of a Gaussian fit is normalised by adding back
+    its dropped constant whenever the two likelihoods differ."""
+    g, h = fit["galle_lon_ecl_of_date_deg"], head["galle_lon_ecl_of_date_deg"]
+    shift = (g["median"] - h["median"] + 180.0) % 360.0 - 180.0
+    zv, zh = fit["evidence"]["logz"], head["evidence"]["logz"]
+    err = math.hypot(fit["evidence"]["logzerr"], head["evidence"]["logzerr"])
+    lik = VARIANT_CONFIG[variant]["likelihood"]
+    note = "same likelihood; the priors differ (e bound)"
+    if variant == "s2_sigma_data":
+        zv -= 0.5 * gaussian_norm_m2lnl_for(variant)
+        zh -= 0.5 * gaussian_norm_m2lnl_for("headline")
+        note = ("sigma_g estimated from these data (and the Uranus box rescaled with them): ln B "
+                "favours S2 by construction; not a model comparison")
+    elif lik == "student_t":
+        zh -= 0.5 * gaussian_norm_m2lnl_for("headline")
+        note = "normalised Student-t (nu 4) against normalised Gaussian; same data, prior, box"
+    return {"galle_median_shift_deg": round(shift, 3),
+            "galle_median_shift_headline_half_widths": round(
+                shift / (0.5 * h["width68"]), 3),
+            "width68_ratio": round(g["width68"] / h["width68"], 3),
+            "ln_b": round(zv - zh, 3), "ln_b_err": round(err, 3), "note": note}  # fmt: skip
 
 
 def summarize() -> None:
@@ -412,7 +501,15 @@ def summarize() -> None:
 
     check_frozen()
     t0, c0 = time.time(), ledger.cpu_now()
-    fits = {v: d for v in VARIANTS if (d := summarize_variant(v)) is not None}
+    fits = {}
+    for v in VARIANTS:
+        if all(j.path(".pkl").exists() for j in all_jobs((v,))):
+            check_frozen(v)
+            fits[v] = summarize_variant(v)
+    if "headline" in fits:
+        for v, d in fits.items():
+            if v != "headline":
+                d["vs_headline"] = vs_headline(v, d, fits["headline"])
     em = ErrorModel.load()
     payload = {
         "description": "M6c: partitioned nested-sampling posteriors on Le Verrier's Table 77 "
@@ -447,24 +544,74 @@ def summarize() -> None:
                   note="derived longitudes: Galle's night and 1847.0, per sample")  # fmt: skip
 
 
+def make_s2_error_model() -> None:
+    """S2's data-only σ_g (pre-registered procedure; run once, before any S2 sampling):
+    the highest-likelihood sample of the headline run (all four cells), its Table 77 residuals,
+    and per group the MAD σ (``robust_sigma``: 1.4826 · median |r − median r|, so a group
+    offset drops out), rounded to 0.01″ as the headline's are. τ is unchanged. No JPL Uranus
+    enters σ_g; the point itself was found under the headline's (JPL-calibrated) weights."""
+    from fork.data.calibration import robust_sigma
+    from fork.inference.nested import NestedResult
+    from fork.model.observation import GROUPS, ErrorModel
+
+    check_frozen()
+    obs, ctx, *_ = dataset()
+    res = [NestedResult.load(Job("headline", k).path(".pkl"))
+           for k in range(len(variant_cells("headline")))]  # fmt: skip
+    k = max(range(len(res)), key=lambda i: res[i].max_logl)
+    i = int(np.argmax(res[k].results["logl"]))
+    theta = res[k].space.theta(res[k].samples[i])
+    resid = obs.residuals_arcsec(*obs.predict(theta, ctx))
+    raw = {g: robust_sigma(resid[obs.group_index == j]) for j, g in enumerate(GROUPS)}
+    head = ErrorModel.load()
+    payload = {
+        "basis": "sigma: MAD sigma per group of the Table 77 residuals at the headline M6c "
+                 "run's highest-likelihood sample (no JPL Uranus); tau: pre-registered 2 arcsec "
+                 "modern, 5 arcsec ancient",
+        "sigma_arcsec": {g: round(v, 2) for g, v in raw.items()},
+        "offset_prior_arcsec": head.offset_prior_arcsec,
+        "sigma_unrounded_arcsec": raw,
+        "source_point": {"run": "m6c headline", "cell": k,
+                         "minus2_lnl": round(-2.0 * res[k].max_logl, 4),
+                         "theta": [float(v) for v in theta]},
+        "note": "M6c sensitivity S2 (docs/notes/M6.md). One iteration, no refit of sigma.",
+    }  # fmt: skip
+    out = ROOT / S2_ERROR_MODEL
+    tmp = out.with_suffix(".json.tmp")
+    tmp.write_text(json.dumps(payload, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    tmp.replace(out)
+    print(json.dumps(payload["sigma_arcsec"], indent=1))
+    print(f"wrote {out}\nsha256 {sha256(out)}")
+
+
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("plan")
     p_run = sub.add_parser("run")
     p_run.add_argument("--n-workers", type=int, default=min(12, os.cpu_count() or 1))
+    p_run.add_argument("--variant", action="append", choices=VARIANTS,
+                       help="repeatable; variants run one after another, in the order given "
+                            "(default: all, together)")  # fmt: skip
     p_job = sub.add_parser("job")
     p_job.add_argument("job_id")
     p_job.add_argument("--n-workers", type=int, default=4)
     p_job.add_argument("--maxiter", type=int, default=None, help="smoke run: not saved")
     sub.add_parser("summarize")
+    sub.add_parser("make-s2-sigma", help="write S2's data-only error model (before sampling)")
     args = ap.parse_args(argv)
     if args.cmd == "plan":
         plan()
     elif args.cmd == "run":
-        run_all(args.n_workers)
+        if args.variant:
+            for v in args.variant:
+                run_all(args.n_workers, (v,))
+        else:
+            run_all(args.n_workers)
     elif args.cmd == "job":
         do_job(Job.from_id(args.job_id), args.n_workers, args.maxiter)
+    elif args.cmd == "make-s2-sigma":
+        make_s2_error_model()
     else:
         summarize()
 
