@@ -103,10 +103,10 @@ site/           static site (GitHub Pages) and its data
 
 ## Compute
 
-The ledger (`site/data/ledger.json`) records **741 CPU-hours** to date: 659 timed live, plus 82
-estimated from logs. That covers 445 million likelihood evaluations, each one N-body
+The ledger (`site/data/ledger.json`) records **830 CPU-hours** to date: 748 timed live, plus 82
+estimated from logs. That covers 498 million likelihood evaluations, each one N-body
 integration over 1690–1846. Nested sampling accounts for nearly all of it: M5b, and A6c with
-277 CPU-hours. The M6c headline fit took 28.5.
+277 CPU-hours. The M6c headline fit took 28.5, and its sensitivity runs S1–S3 89.
 
 ## Prior art
 
