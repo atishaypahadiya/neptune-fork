@@ -199,8 +199,8 @@ def test_reserved_doi_is_recorded_consistently_and_never_fetched():
     """The reserved Zenodo DOI (it resolves only after publication, so nothing here fetches
     it) is the same in CITATION.cff (doi + identifiers), the README's How to cite section and
     the Data Package id. It is NOT in .zenodo.json: Zenodo assigns it to the draft itself.
-    There is no placeholder left, and no DOI badge before publication (it would point at a
-    404; the checklist removes this guard after publishing)."""
+    There is no placeholder left. No file of the release package carries a badge: the package
+    is frozen with the published record (the project README, outside the package, has one)."""
     doi = "10.5281/zenodo.24044792"
     assert rel.DOI == doi
     cff = yaml.safe_load((rel.RELEASE / "CITATION.cff").read_text(encoding="utf-8"))
@@ -212,9 +212,46 @@ def test_reserved_doi_is_recorded_consistently_and_never_fetched():
     readme = (rel.RELEASE / "README.md").read_text(encoding="utf-8")
     how = readme.split("## How to cite", 1)[1].split("\n## ", 1)[0]
     assert f"https://doi.org/{doi}" in how and f"doi       = {{{doi}}}" in how
-    assert "badge" not in readme.lower()
+    for p in rel.RELEASE.iterdir():
+        if p.suffix in ("", ".md", ".cff", ".json"):
+            assert "badge" not in p.read_text(encoding="utf-8").lower(), p.name
     zen = (rel.RELEASE / ".zenodo.json").read_text(encoding="utf-8")
     assert "doi" not in json.loads(zen) and "24044792" not in zen
     for p in rel.RELEASE.iterdir():
         if p.suffix in ("", ".md", ".cff", ".json"):
             assert "XXXXXXX" not in p.read_text(encoding="utf-8"), p.name
+
+
+# MD5 of every file in Zenodo record 24044792 (version 1.0.0, published 2026-11-07), as the
+# record lists them. The package is frozen: a change to any of these files needs a new Zenodo
+# version (and new values here), never an edit in place.
+PUBLISHED_MD5 = {
+    ".zenodo.json": "836e27b107ad346a7b2e249ef434eae0",
+    "CITATION.cff": "2779f2beeab3038ebc8f874fa1894f69",
+    "DATA_DICTIONARY.md": "4cd05d9bd6263877eaf0989f9f4fb64d",
+    "datapackage.json": "b5ce212a53caee858c31aab1934e427b",
+    "leverrier_1846.csv": "39532d973859330c1818097d20054958",
+    "leverrier_1846_misprints.csv": "712fc6c34df3cbb463bc908433fc2ea5",
+    "leverrier_1846_pass1.csv": "45a261923cb0eaac392f4dc02cf568a2",
+    "leverrier_1846_pass2.csv": "107b337807c9b55a3fbfeeef1cb5a03f",
+    "leverrier_1846_resolution_log.csv": "b5104ab9f6e8b8d439f1f82191259ef1",
+    "leverrier_1846_table77.csv": "a35258c41b7444e26e35daec711ada51",
+    "LICENSE": "968a9a067b63eb6e76f8d076c00f31be",
+    "MANIFEST.md": "9801fda02cc122f5787d0be814919fa9",
+    "README.md": "5f0c143e7627c7adcc66d448aebfd885",
+    "spotcheck_human_results.json": "ddc60e3b7e3897244b329b10d7a925a8",
+    "spotcheck_results.json": "81b9048f8f9b91f957cf08b2fe80cb73",
+    "spotcheck_rows.csv": "70e9f2c07a09796d7bda4b666955c9bc",
+}
+
+
+def test_release_files_match_the_published_zenodo_record():
+    """Offline: every file in release/leverrier-table77/ is byte-identical to the published
+    record, and no file has been added or removed."""
+    import hashlib
+
+    files = {p.name: p for p in rel.RELEASE.iterdir()}
+    assert set(files) == set(PUBLISHED_MD5)
+    changed = [n for n, p in files.items()
+               if hashlib.md5(p.read_bytes()).hexdigest() != PUBLISHED_MD5[n]]  # fmt: skip
+    assert not changed, f"published files changed (publish a new Zenodo version): {changed}"

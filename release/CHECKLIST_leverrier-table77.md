@@ -76,7 +76,7 @@ not matching`. The record's SHA-256 is in `leverrier-table77/MANIFEST.md`.
 - [x] Create an account at https://zenodo.org. Sign in with GitHub or ORCID.
 - [ ] Optional dry run on https://sandbox.zenodo.org. It needs a separate account and issues
   no real DOIs.
-- [ ] Choose **New upload**. Add every visible file in `release/leverrier-table77/`, flat (no
+- [x] Choose **New upload**. Add every visible file in `release/leverrier-table77/`, flat (no
   zip). `.zenodo.json` is not read by the web form: use it as the text to paste.
 - [x] Under "Do you already have a DOI?" choose **No**, then **Get a DOI now**, which reserves
   the DOI. **Reserved: 10.5281/zenodo.24044792** (https://doi.org/10.5281/zenodo.24044792), 2026-11-07. It does not resolve until the record
@@ -87,26 +87,31 @@ not matching`. The record's SHA-256 is in `leverrier-table77/MANIFEST.md`.
   - [x] DOI as the Data Package `id` in `datapackage.json` (set by `fork.export.release`).
   - [x] `.zenodo.json` left without a DOI: Zenodo assigns the reserved DOI to the draft
     itself.
-  - [ ] Upload, or replace in the draft if already uploaded, `README.md`, `CITATION.cff` and
+  - [x] Upload, or replace in the draft if already uploaded, `README.md`, `CITATION.cff` and
     `datapackage.json`. The last one changed too, because it now carries the `id`.
-  - [ ] At publication: set `date-released` in `CITATION.cff` to the publication date.
+  - [x] At publication: set `date-released` in `CITATION.cff` to the publication date
+    (2026-11-07).
     Changing the README or CITATION.cff after that needs a new version.
-- [ ] Fill in the form from `.zenodo.json`:
+- [x] Fill in the form from `.zenodo.json`:
   - resource type Dataset, the title, and the creator with ORCID 0009-0004-1264-1662;
   - paste the description;
   - licence **CC0 1.0 Universal**, the keywords, version 1.0.0, language English;
   - related works: "is supplement to" the GitHub repository, and "is derived from" each of the
     three scan URLs;
   - the Le Verrier reference.
-- [ ] **Publish.** Files are frozen after this, and any change becomes a new version.
+- [x] **Publish.** Files are frozen after this, and any change becomes a new version.
+  **Published 2026-11-07: https://zenodo.org/records/24044792.** Version DOI
+  10.5281/zenodo.24044792; concept DOI (all versions) 10.5281/zenodo.24044791. All 16 files
+  match the published record by MD5, and `tests/test_release.py` pins those MD5s.
 
 ## 4. Afterwards
 
-- [ ] Push and merge `data-release`. Add the DOI badge for 10.5281/zenodo.24044792 to the dataset and project
-  READMEs, only after publication, since before that it points at a 404. Then remove the
-  no-badge guard in `tests/test_release.py`.
-- [ ] Zenodo also mints a concept DOI (all versions) at publication. Consider adding it to
-  `CITATION.cff` `identifiers` in the next version.
+- [x] Push and merge `data-release`. The project README carries the concept-DOI badge
+  (10.5281/zenodo.24044791) and a data link to the version DOI. The dataset README stays
+  without a badge: it is frozen with the published record, and the no-badge guard in
+  `tests/test_release.py` now applies to the release package only.
+- [ ] Concept DOI 10.5281/zenodo.24044791 was minted at publication. Add it to
+  `CITATION.cff` `identifiers` in the next version (not before: the files are frozen).
 - [ ] A later change to any file in `data/historical/` or `docs/review/` that the package
   copies fails `tests/test_release.py`. Then rebuild, and publish a new Zenodo version under
   the same concept DOI.

@@ -2,6 +2,7 @@
 
 [![test](https://github.com/atishaypahadiya/neptune-fork/actions/workflows/test.yml/badge.svg)](https://github.com/atishaypahadiya/neptune-fork/actions/workflows/test.yml)
 [![pages](https://github.com/atishaypahadiya/neptune-fork/actions/workflows/pages.yml/badge.svg)](https://github.com/atishaypahadiya/neptune-fork/actions/workflows/pages.yml)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24044791.svg)](https://doi.org/10.5281/zenodo.24044791)
 
 This project rebuilds Le Verrier's 1846 prediction of Neptune from Uranus's observed motion, from
 first principles: its own symplectic N-body integrator, and calibrated Bayesian posteriors for
@@ -42,6 +43,8 @@ on synthetic data passed: the truth is inside the 68 % interval for 8 of 10 seed
 binomial p = 0.52), with an rms offset of 0.87σ and a median 68 % width of 5.1°. That is
 narrower than M5b's 9.1°, mostly because Table 77 has more measurements and smaller calibrated
 errors than M5b assumed ([M6 notes](docs/notes/M6.md)). The real-data fit (M6c) is next.
+
+Data: [Le Verrier Table 77, Zenodo, doi:10.5281/zenodo.24044792](https://doi.org/10.5281/zenodo.24044792)
 
 ## Quickstart
 
