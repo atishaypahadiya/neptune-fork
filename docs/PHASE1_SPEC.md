@@ -382,6 +382,103 @@ The earlier M6 numeric targets (A4: residual RMS ≲ 3″, 1846 longitude within
 **A5 (acceptance):** Pages deploy succeeds from CI; all five panels render with no console errors;
 total `site/data` under 5 MB.
 
+## M8: Fast linearized likelihood
+
+### Motivation
+
+The M6c cell-2 repeatability study (docs/notes/M6.md, 2026-11-08) showed an exploration
+problem:
+- Four runs of the same cell at the headline settings (nlive 1000) gave 68 % widths of
+  3.2°–4.6°, about 10 × dynesty's own error. Their ln Z scattered by 0.76, 3.3 × logzerr.
+- Only runs at nlive 4000 with 2 × slices agreed with each other, at 42 CPU-h per run for one
+  cell. Their medians still differed by 15 × the resample error.
+- Every other number in M6c (cells 0, 1 and 3, S1–S3, the 95 % bounds) comes from single runs
+  at nlive 1000.
+
+Repeated-seed runs of every cell are needed before any M6c width, 95 % bound or ln B is quoted
+without a caveat. At 6.5 ms per likelihood call and 11 dimensions, that costs about 115 CPU-h
+per variant at 4 seeds, and 4 × that at R2's settings.
+
+Most of that cost is the 4 Uranus coordinates (a, k, h, λ₀):
+- The ±50 σ box leaves them about 10⁸ times narrower in the posterior than in the prior,
+  about 18 nats of compression.
+- They are strongly correlated with the perturber.
+- The data constrain them almost linearly.
+
+M8 removes them from the sampler by marginalizing them analytically, as the group offsets
+already are.
+
+### Method
+
+- θ = (u, φ). u is Uranus's 4 coordinates, with (i, Ω) fixed as in M6c. φ is the perturber's
+  7 parameters.
+- For fixed φ, linearize the whitened residual vector in u about a reference u_ref:
+  r(u, φ) ≈ r(u_ref, φ) − J (u − u_ref).
+- The augmented system also includes the group offsets b_g, which are marginalized jointly
+  with u. The marginal likelihood is then Gaussian in (u, b):
+  −2 ln L(φ) = χ²_min(φ) + ln det(JᵀJ + Σ_prior⁻¹) + const.
+- u's prior is uniform in the M6c box. Record the largest |u*(φ) − centre| in box-σ units over
+  the posterior; it must stay below 40, or the truncation is not negligible.
+- **Two modes; the acceptance test chooses between them.**
+  - (a) J fixed at the Uranus-only fit: one integration per call.
+  - (b) One Gauss–Newton refinement with J re-evaluated at u*(φ): about 2 integrations per
+    call, or 6 with finite-difference J.
+- **Derived quantities** (Galle-night longitude, 1847 longitude, mass, a, e): draw u | φ from
+  its conditional Gaussian N(u*, (JᵀJ)⁻¹).
+- Data, error model, priors on φ, cells, nlive, dlogz and ERR_INFLATION are those of M6c,
+  unchanged. Only the likelihood evaluation and the sampled dimension (11 → 7) change.
+
+### Acceptance tests (stated before implementation)
+
+References and the noise each carries:
+- **R2:** the merged R2 cell 2, the best-converged reference. Median 325.86°, 68 % width
+  4.06°, ln Z −360.21 ± 0.09. Run-to-run std of the median: 0.18° per run, 0.13° on the merge.
+- **Headline (replacement):** the reported M6c interval. Median 325.82°, 68 % 323.57–327.79°.
+- **S1–S3:** single nlive-1000 runs. Their run-to-run std, measured on cell 2 by R1, is 0.66°
+  in the median, 0.67° in the 68 % width and 0.76 in ln Z.
+
+Every M8 posterior below is the merge of 4 seeds per cell.
+
+| Test | Pass condition |
+|---|---|
+| A8a likelihood | On 2000 posterior draws each from R2 and from S1–S3 (within Δ ln L = 30 of the maximum), the profile χ²_min(φ) matches the full likelihood minimised over u to \|Δχ²\| < 0.1, and the marginal −2 ln L matches a Laplace evaluation with the exact Hessian to < 0.2. Report the distribution, not only the maximum |
+| A8b R2 | Cell 2: median within 0.35° of R2's, 68 % width within 10 %, ln Z_k within 0.5 |
+| A8c headline | Cells 0, 1 and 3, combined with M8's cell 2 as in M6c: median within 0.35° and each 68 % bound within 0.4° of the replacement interval. Each ln Z_k within 1.5 of the published run's. 95 % bounds reported, not tested (provisional in M6c) |
+| A8d S1–S3 | Per variant: median and 68 % width each within 1.3° (2 × R1's std); ln B against the headline within 2.2 (2 × √2 × 0.76); JPL in or out of the 68 % interval, and each reading-rule verdict in M6.md, the same as published |
+| A8e speed | One 4-cell headline fit at M6c's nlive costs at most 1/10 of the full-likelihood fit's 28.5 CPU-h. Report the actual factor |
+| A8f seeds | Each cell's 4 seeds pass the R2 rule of the repeatability study: 68 % widths within 10 % of their mean |
+
+- **If A8d fails** for a variant, the published reference is a single run whose own spread is
+  in question. The arbiter is a full-likelihood repeat of the failing cell at R2's settings,
+  2 seeds, compared with M8 under A8b's tolerances. Both numbers are reported. This rule is
+  fixed now, not after a failure.
+- **If A8a fails in mode (a), try mode (b).** If (b) also fails, M8 stops and reports the
+  linearization error where it is largest. The tolerances are not loosened.
+- A failed test is reported with its number and the suspected cause (docs/RULES.md).
+
+### Outputs
+
+- `src/fork/model/linearized.py`, plus a `likelihood="linearized"` option in the M6c runner
+  that is off by default.
+- `tests/test_linearized.py`:
+  - The fast part runs A8a on a synthetic seed with small N.
+  - The slow part runs A8a on the real posteriors.
+- `docs/notes/M8.md`: A8a–A8f with numbers, the mode chosen, and the cost per fit.
+- `site/data/m8_validation.json`.
+
+### Then, pre-registered separately before it runs
+
+Repeated-seed runs (≥ 4 seeds) of every cell of the headline and S1–S3, reported with the
+spread machinery of `fork.export.m6c_repeat`. These would replace the single-run cells 0, 1
+and 3 behind the provisional 95 % bounds. The deferred sweep (M6.md, "M6c sensitivity list")
+and S4 also run on M8.
+
+### Out of scope for M8
+
+- Any change to the data, error model, priors, cells or the M6c pre-registered numbers. M8
+  results are reported beside them.
+- Linearizing the perturber's parameters.
+
 ---
 
 ## Out of scope for Phase 1
