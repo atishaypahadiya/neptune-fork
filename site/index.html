@@ -33,7 +33,7 @@
       <div class="labels" aria-hidden="true">
         <div class="anno" data-anchor="neptune"><p class="t"></p><p class="s"></p></div>
         <div class="anno" data-anchor="median"><p class="t"></p><p class="s"></p></div>
-        <div class="anno hoverable" data-anchor="lv"><p class="t"></p><p class="s"></p></div>
+        <div class="anno hoverable has-short" data-anchor="lv"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
         <div class="anno" data-anchor="planet"><p class="t"></p><p class="s s1"></p><p class="s s2"></p></div>
         <div class="ticks"></div>
         <p class="tip" hidden></p>
@@ -61,8 +61,8 @@
       <div class="labels" aria-hidden="true">
         <div class="anno right" data-anchor="conj"><p class="t"></p><p class="s"></p></div>
         <div class="anno" data-anchor="galle"><p class="t"></p><p class="s"></p></div>
-        <div class="anno" data-anchor="inner"><p class="t"></p><p class="s"></p></div>
-        <div class="anno right" data-anchor="outer"><p class="t"></p><p class="s"></p></div>
+        <div class="anno has-short" data-anchor="inner"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
+        <div class="anno right has-short" data-anchor="outer"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
         <div class="anno" data-anchor="lv"><p class="t"></p><p class="s"></p></div>
         <div class="anno right" data-anchor="nep"><p class="t"></p><p class="s"></p></div>
         <div class="anno quiet" data-anchor="ribbon"><p class="t"></p></div>
@@ -75,17 +75,52 @@
       <p class="alt sr-only"></p>
       <p class="error" hidden></p>
     </section>
+
+    <section class="scene" id="window" aria-labelledby="window-title">
+      <canvas aria-hidden="true"></canvas>
+      <svg class="leaders" aria-hidden="true"></svg>
+
+      <div class="copy">
+        <p class="chapter">The lucky window</p>
+        <h2 id="window-title">Le Verrier's planet</h2>
+        <p class="body">Loading the results…</p>
+        <p class="note"></p>
+      </div>
+
+      <div class="labels" aria-hidden="true">
+        <div class="anno right has-short" data-anchor="s1836"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
+        <div class="anno right has-short" data-anchor="zero"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
+        <div class="anno has-short" data-anchor="galle"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
+        <div class="anno has-short" data-anchor="s1856"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
+        <div class="anno has-short" data-anchor="lvp"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
+        <div class="anno has-short" data-anchor="nep"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
+        <div class="anno quiet" data-anchor="b68"><p class="t"></p></div>
+        <div class="anno quiet" data-anchor="b95"><p class="t"></p></div>
+        <div class="anno has-short" data-anchor="window"><p class="t"></p><p class="ts"></p></div>
+        <div class="anno quiet" data-anchor="ahead"><p class="t"></p></div>
+        <div class="anno quiet" data-anchor="behind"><p class="t"></p></div>
+        <div class="ticks"></div>
+        <p class="tip" hidden></p>
+      </div>
+
+      <p class="equation" aria-label="Le Verrier's offset changes at the difference of the two mean motions times the time elapsed; the mean motion is the square root of G M over a cubed">Δλ(<i>t</i>) ≈ (<i>n</i><sub>LV</sub> − <i>n</i>)(<i>t</i> − <i>t</i><sub>0</sub>),  <i>n</i> = √(<i>GM</i> / <i>a</i><sup>3</sup>)</p>
+
+      <p class="alt sr-only"></p>
+      <p class="error" hidden></p>
+    </section>
   </main>
   <div class="grain" aria-hidden="true"></div>
 
   <script type="module">
-    import { loadConjunction, loadHeadline } from "./js/data.js";
+    import { loadConjunction, loadHeadline, loadWindow } from "./js/data.js";
     import { fillHeadline, mountHeadline } from "./js/scene-headline.js";
     import { fillConjunction, mountConjunction } from "./js/scene-conjunction.js";
+    import { fillWindow, mountWindow } from "./js/scene-window.js";
     // Each panel loads its own data and fails on its own, with a visible message.
     const panels = [
       ["headline", loadHeadline, fillHeadline, mountHeadline],
       ["conjunction", loadConjunction, fillConjunction, mountConjunction],
+      ["window", loadWindow, fillWindow, mountWindow],
     ];
     await Promise.all(panels.map(async ([id, load, fill, mount]) => {
       const root = document.getElementById(id);

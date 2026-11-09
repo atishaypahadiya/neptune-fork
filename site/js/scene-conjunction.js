@@ -184,8 +184,8 @@ export function mountConjunction(root, d) {
       galle: phone ? { point: pt(-W, CARD_H, Z.galle), offset: [0, -16], marker: "none", leader: false }
         : { point: pt(W, CARD_H * 0.25, Z.galle), offset: [30, 0], marker: "none" },
       // On a phone the branch labels are hidden (CSS), so their markers go too.
-      inner: { point: peaks["galle-inner"], offset: [40, -40], marker: phone ? "none" : "dot" },
-      outer: { point: peaks["galle-outer"], offset: [-40, -40], marker: phone ? "none" : "dot" },
+      inner: { point: peaks["galle-inner"], offset: phone ? [22, -28] : [40, -40] },
+      outer: { point: peaks["galle-outer"], offset: phone ? [-22, -28] : [-40, -40] },
       lv: { point: pt(rel(d.conj, d.conj.lv.value), CARD_H * 0.92, Z.conj), offset: [46, -30] },
       nep: { point: pt(rel(d.conj, d.conj.jpl.value), 0, Z.conj), offset: [-80, 62], marker: "diamond" },
       nepG: { point: pt(rel(d.galle, d.galle.jpl.value), 0, Z.galle), offset: [0, 0], marker: "diamond", leader: false },
@@ -234,10 +234,11 @@ export function mountConjunction(root, d) {
 
 function cardText(d, c) {
   const date = c === d.conj ? d.conjDate.text : d.galleDate.text;
+  const helio = c === d.galle ? ` Seen from the Sun the 68 % width is ${fmt(d.galleHelio.width68, 2)}°.` : "";
   return `${date}, ${c.frame}: median ${fmt(c.all.median, 2)}°, 68 % ${range(c.all.lo68, c.all.hi68, 2)}° ` +
     `(width ${fmt(c.all.width68, 2)}°), 95 % ${range(c.all.lo95, c.all.hi95, 2)}°. ` +
     `Neptune (JPL) ${signed(c.jpl.minus_median_deg, 2)}°; Le Verrier's orbit ` +
-    `${signed(c.lv.minus_median_deg, 2)}°, ${whereIn(c.lv)} (our calculation).`;
+    `${signed(c.lv.minus_median_deg, 2)}°, ${whereIn(c.lv)} (our calculation).${helio}`;
 }
 
 // "inner branch (a ≈ 28.8 AU)" → title "Inner branch", detail "a ≈ 28.8 AU" (kept lowercase:
@@ -257,9 +258,7 @@ export function fillConjunction(root, d) {
     `Uranus overtook the unseen planet around ${d.conjDate.text}, when the pull between them ` +
     `was strongest. There the posterior fixes the planet's longitude to a 68 % width of ` +
     `${fmt(c.all.width68, 2)}°. Carried ${yrs} years forward to Galle's night, it spreads to ` +
-    `${fmt(g.all.width68, 2)}° (${fmt(d.galleHelio.width68, 2)}° seen from the Sun, so the ` +
-    `change of viewpoint is not the reason): a small spread in distance becomes a spread in ` +
-    `speed. The two eccentric branches are ${fmt(d.split.conj)}° apart at the conjunction and ` +
+    `${fmt(g.all.width68, 2)}°: a small spread in distance becomes a spread in speed. The two eccentric branches are ${fmt(d.split.conj)}° apart at the conjunction and ` +
     `${fmt(d.split.galle)}° apart by ${d.galleDate.year}.`);
   set(".note", `${d.note}.`);
   set("[data-anchor=conj] .t", `${d.conjDate.text} · conjunction`);
@@ -270,6 +269,7 @@ export function fillConjunction(root, d) {
     const n = branchName(d.groupNames[b]);
     set(`[data-anchor=${b}] .t`, n.title);
     set(`[data-anchor=${b}] .s`, `${n.detail} · ${fmt(100 * c.groups[b].share)} % of the posterior`);
+    set(`[data-anchor=${b}] .ts`, n.title.split(" ")[0]);
   }
   set("[data-anchor=lv] .t", `Le Verrier's orbit · ${signed(c.lv.minus_median_deg)}°`);
   set("[data-anchor=lv] .s", `${whereIn(c.lv)[0].toUpperCase()}${whereIn(c.lv).slice(1)} · our calculation`);
@@ -282,7 +282,9 @@ export function fillConjunction(root, d) {
     `each group scaled to unit area) for the core of the posterior and its two eccentric ` +
     `branches, centred on that epoch's median (${fmt(c.all.median, 2)}° heliocentric; ` +
     `${fmt(g.all.median, 2)}° geocentric). A ribbon on the floor joins the 68 % ranges, ` +
-    `${fmt(c.all.width68, 2)}° wide in front and ${fmt(g.all.width68, 2)}° behind. The branch ` +
+    `${fmt(c.all.width68, 2)}° wide in front and ${fmt(g.all.width68, 2)}° behind (` +
+    `${fmt(d.galleHelio.width68, 2)}° seen from the Sun on Galle's night, so the change of ` +
+    `viewpoint is not the reason). The branch ` +
     `medians are ${fmt(d.split.conj, 2)}° apart in ${d.conjDate.year} and ` +
     `${fmt(d.split.galle, 2)}° in ${d.galleDate.year}. Neptune (JPL) is ` +
     `${signed(c.jpl.minus_median_deg, 2)}° and ${signed(g.jpl.minus_median_deg, 2)}° from the ` +

@@ -65,6 +65,11 @@ h1, h2 {
   text-align: right;
 }
 .anno.quiet .t { color: var(--ink-3); font-size: 12px; }
+/* A short title, shown instead of the full label on a phone. */
+.anno .ts {
+  display: none; font-weight: 500; font-size: 12px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: #fff; line-height: 18px;
+}
 .tick {
   position: absolute; left: 0; top: 0; font-size: 12px; letter-spacing: 0.08em;
   color: var(--ink-3); font-variant-numeric: tabular-nums;
@@ -111,9 +116,11 @@ h1, h2 {
   .copy { top: 24px; right: 16px; }
   .body { font-size: 16px; }
   .equation, .axis-title, .anno .s { display: none; }
-  #headline .anno[data-anchor="lv"], #headline .anno[data-anchor="median"] { display: none; }
-  #conjunction .anno[data-anchor="ribbon"], #conjunction .anno[data-anchor="nep"],
-  #conjunction .anno[data-anchor="inner"], #conjunction .anno[data-anchor="outer"] { display: none; }
+  #headline .anno[data-anchor="median"] { display: none; }
+  #conjunction .anno[data-anchor="ribbon"], #conjunction .anno[data-anchor="nep"] { display: none; }
+  #window .anno.quiet { display: none; }
+  .anno.has-short .t, .anno.has-short .s { display: none; }
+  .anno.has-short .ts { display: block; }
   #conjunction .anno.right { text-align: left; }
   .anno .t { font-size: 12px; }
   /* Mass and distance leave the scene and sit, unanchored, at the bottom. */

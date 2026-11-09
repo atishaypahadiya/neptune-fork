@@ -162,3 +162,44 @@ export function whereIn(v) {
     : "outside the 95 %";
 }
 export const signed = (x, n = 1) => `${x < 0 ? "−" : "+"}${Math.abs(x).toFixed(n)}`;
+
+/** Everything panel 3 (the lucky window, 1800–1870) shows: m6c_offset_track.json. */
+export async function loadWindow() {
+  const t = await loadJSON("m6c_offset_track.json");
+  const s = t.series;
+  const n = s.year.length;
+  for (const k of Object.keys(s)) {
+    if (s[k].length !== n) throw new Error(`m6c_offset_track series ${k}: length ${s[k].length} ≠ ${n}`);
+  }
+  // Runs of samples where Le Verrier's planet lies inside a band (quarter-year resolution).
+  const runs = (lo, hi) => {
+    const out = [];
+    let start = null;
+    for (let i = 0; i <= n; i++) {
+      const inside = i < n && s[lo][i] <= s.le_verrier_minus_median_deg[i]
+        && s.le_verrier_minus_median_deg[i] <= s[hi][i];
+      if (inside && start === null) start = i;
+      if (!inside && start !== null) { out.push([s.year[start], s.year[i - 1]]); start = null; }
+    }
+    return out;
+  };
+  const mark = (m) => ({ ...m, date: jdToDate(m.jd_tdb) });
+  return {
+    series: s,
+    step: (s.year.at(-1) - s.year[0]) / (n - 1),
+    frame: t.frame,
+    zero: t.le_verrier_zero_crossings_year,
+    marks: Object.fromEntries(Object.entries(t.marks).map(([k, m]) => [k, mark(m)])),
+    in68: runs("lo68_rel_deg", "hi68_rel_deg"),
+    in95: runs("lo95_rel_deg", "hi95_rel_deg"),
+    sources: t.le_verrier_sources,
+    note: t.description.split(":")[0],
+  };
+}
+
+/** Where an offset sits against [lo68, hi68] and [lo95, hi95], in words. */
+export function whereInBand(v, b68, b95) {
+  if (b68[0] <= v && v <= b68[1]) return "inside the 68 %";
+  if (b95[0] <= v && v <= b95[1]) return "inside the 95 %, outside the 68 %";
+  return "outside the 95 %";
+}

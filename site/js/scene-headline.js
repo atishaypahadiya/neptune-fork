@@ -283,7 +283,7 @@ export function mountHeadline(root, d) {
   const OFFSETS = {
     neptune: [70, -150], median: [-150, 46], lv: [-150, -40], planet: [48, -10],
   };
-  const OFFSETS_PHONE = { ...OFFSETS, neptune: [36, -64] };
+  const OFFSETS_PHONE = { ...OFFSETS, neptune: [36, -64], lv: [-34, -46] };
   const drawOverlay = () => {
     let s = "";
     for (const [k, v] of Object.entries(anchors)) {
@@ -349,7 +349,7 @@ const lvTipText = (d) =>
 function sentence95(i) {
   const r = `${range(i.lo, i.hi)}°`;
   if (i.state === "final") return `The 95 % range is ${r}${i.source === "M6c" ? "" : ` (${i.source})`}.`;
-  if (i.state === "pending") return `The 95 % range, ${r}, is provisional until the M8b reruns report.`;
+  if (i.state === "pending") return `The 95 % range, ${r}, is provisional; a final check is still running.`;
   return `The 95 % range, ${r}, stays provisional: M8b did not meet the replacement rule.`;
 }
 
@@ -371,6 +371,7 @@ export function fillHeadline(root, d) {
     `Posterior median · the cone lands on its 68 %, ${range(d.lo68, d.hi68)}°`);
   set("[data-anchor=lv] .t", `Le Verrier's own orbit · ${fmt(d.leVerrier)}°`);
   set("[data-anchor=lv] .s", "His published elements, carried to that night (our calculation)");
+  set("[data-anchor=lv] .ts", "Le Verrier");
   set("[data-anchor=planet] .t", "The unseen planet");
   set("[data-anchor=planet] .s1",
     `${fmt(m.median)} M⊕ · 68 % ${range(m.lo68, m.hi68)} · Neptune ${fmt(d.neptune.mass, 2)}`);
