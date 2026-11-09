@@ -1,6 +1,7 @@
 """M8 A8b–A8f: the pre-registered runs (docs/notes/M8.md, "Pre-registration: A8b–A8f").
 
     uv run python -m fork.export.m8_runs laplace-check [--n-workers 12]  # pre-launch check
+    uv run python -m fork.export.m8_runs laplace-check --points s1_cell0  # A8d(S1) follow-up
     uv run python -m fork.export.m8_runs plan
     uv run python -m fork.export.m8_runs run [--n-workers 12]   # the 48 sampling jobs
     uv run python -m fork.export.m8_runs job JOB_ID [--maxiter N --cache DIR]
@@ -93,12 +94,14 @@ def laplace_points() -> list[dict]:
             + pick([r for r in a8a if r["source"] == "s2"], 2, "s2"))  # fmt: skip
 
 
-def _laplace_one(args: tuple[int, dict]) -> dict:
-    """Importance-sampling integral over u at one point, checkpointed per batch."""
+def _laplace_one(args: tuple) -> dict:
+    """Importance-sampling integral over u at one point, checkpointed per batch.
+    args: (k, point) or (k, point, checkpoint subdirectory); rng [*LAPLACE_RNG, k]."""
     os.environ.setdefault("OMP_NUM_THREADS", "1")
     from scipy.stats import multivariate_normal
 
-    k, p = args
+    k, p = args[:2]
+    subdir = args[2] if len(args) > 2 else "laplace"
     _, _, space, lp = m8.problem(p["variant"])
     phi = np.array(p["q"])[4:]
     t0 = time.process_time()
@@ -108,7 +111,7 @@ def _laplace_one(args: tuple[int, dict]) -> dict:
     cov = PROPOSAL_SCALE**2 * b.cov_u
     prop = multivariate_normal(b.u_star, cov)
     rng = np.random.default_rng([*LAPLACE_RNG, k])
-    ckpt = CACHE / "laplace" / f"point_{k:02d}.npz"
+    ckpt = CACHE / subdir / f"point_{k:02d}.npz"
     ckpt.parent.mkdir(parents=True, exist_ok=True)
     log_w = np.load(ckpt)["log_w"] if ckpt.exists() else np.empty(0)
     if log_w.size:  # advance the generator past the batches already done
@@ -147,19 +150,43 @@ def _laplace_one(args: tuple[int, dict]) -> dict:
             "cpu_s_this_session": time.process_time() - t0}  # fmt: skip
 
 
-def laplace_check(n_workers: int) -> dict:
+# The S1 cell-0 repeat (decided after A8d's S1 result; docs/notes/M8.md): 6 points drawn from
+# M8's S1 cell-0 posterior (4-seed merge, its 6000 reweighted draws), rng [*LAPLACE_RNG, 100].
+# Point k uses rng [*LAPLACE_RNG, 100 + k], distinct from the first check's.
+S1C0_N_POINTS = 6
+S1C0_K0 = 100
+
+
+def s1_cell0_points() -> list[dict]:
+    d = load_reweighted("s1_e05", 0, MERGED)
+    rng = np.random.default_rng([*LAPLACE_RNG, S1C0_K0])
+    idx = sorted(rng.choice(len(d["phi"]), S1C0_N_POINTS, replace=False).tolist())
+    pert = _perturber(m8.problem("s1_e05")[2], d["phi"][idx])
+    u0 = m8.problem("s1_e05")[2].uranus_box.centre
+    return [{"tag": "s1_cell0", "source": f"m8 s1_e05 c0 merged draw {i}", "variant": "s1_e05",
+             "q": np.concatenate([u0, d["phi"][i]]).tolist(), "a_au": float(pert[j, 1]),
+             "e": float(pert[j, 2]), "m2lnl_laplace": None, "draw": int(i),
+             "lnl_fast": float(d["lnl_fast"][i]), "lnl_b": float(d["lnl_b"][i])}
+            for j, i in enumerate(idx)]  # fmt: skip
+
+
+def laplace_check(n_workers: int, which: str = "pre_launch") -> dict:
+    """The Laplace importance-sampling check: ``pre_launch`` (12 points) or ``s1_cell0``."""
     from concurrent.futures import ProcessPoolExecutor
 
     from fork import ledger
 
-    pts = laplace_points()
-    _log(f"laplace-check: {len(pts)} points, proposal N(u*, {PROPOSAL_SCALE}² Σ_b), "
+    if which == "s1_cell0":
+        pts, k0, subdir, out_name = s1_cell0_points(), S1C0_K0, "laplace_s1c0", "laplace_check_s1c0"
+    else:
+        pts, k0, subdir, out_name = laplace_points(), 0, "laplace", "laplace_check"
+    _log(f"{out_name}: {len(pts)} points, proposal N(u*, {PROPOSAL_SCALE}² Σ_b), "
          f"≥{LAPLACE_MIN_DRAWS} draws until MC err < {LAPLACE_TARGET_ERR}, "
          f"{n_workers} workers")  # fmt: skip
     t0, c0 = time.time(), ledger.cpu_now()
     out = []
     with ProcessPoolExecutor(min(n_workers, len(pts))) as ex:
-        for r in ex.map(_laplace_one, list(enumerate(pts))):
+        for r in ex.map(_laplace_one, [(k0 + i, p, subdir) for i, p in enumerate(pts)]):
             out.append(r)
             _log(f"laplace-check {r['k']:2d} {r['tag']:15s} IS − b = {r['diff_is_minus_b']:+.4f} "
                  f"± {r['mc_err']:.4f}, N {r['n_draws']}, ESS/N {r['ess_frac']:.3f}")  # fmt: skip
@@ -170,9 +197,9 @@ def laplace_check(n_workers: int) -> dict:
                         "batch": LAPLACE_BATCH, "min_draws": LAPLACE_MIN_DRAWS,
                         "max_draws": LAPLACE_MAX_DRAWS,
                         "target_err": LAPLACE_TARGET_ERR}}  # fmt: skip
-    (CACHE / "laplace_check.json").write_text(json.dumps(res, indent=1))
+    (CACHE / f"{out_name}.json").write_text(json.dumps(res, indent=1))
     n = sum(r["n_draws"] for r in out)
-    ledger.append("m8/laplace_check", "diagnostic", n_likelihood_calls=n, n_integrations=n,
+    ledger.append(f"m8/{out_name}", "diagnostic", n_likelihood_calls=n, n_integrations=n,
                   sim_years=None, wall_s=time.time() - t0, cpu_s=ledger.cpu_now() - c0,
                   n_workers=n_workers, n_points=len(out))  # fmt: skip
     _log(f"laplace-check: max |IS − b| = {worst:.4f}, gate {LAPLACE_GATE}: "
@@ -930,12 +957,14 @@ def main(argv: list[str] | None = None) -> None:
             p.add_argument("--max-draws", type=int, default=None, help="smoke runs only")
         if name == "job":
             p.add_argument("job_id")
+        if name == "laplace-check":
+            p.add_argument("--points", choices=("pre_launch", "s1_cell0"), default="pre_launch")
     a = ap.parse_args(argv)
     cache = a.cache.resolve()
     if getattr(a, "max_draws", None) and cache == CACHE:
         raise SystemExit("--max-draws is for smoke runs in a scratch --cache")
     if a.cmd == "laplace-check":
-        laplace_check(a.n_workers)
+        laplace_check(a.n_workers, a.points)
     elif a.cmd == "plan":
         plan(cache)
     elif a.cmd == "run":
