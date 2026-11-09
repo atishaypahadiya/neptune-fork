@@ -13,12 +13,12 @@
  ],
  "totals": {
   "all": {
-   "n_rows": 162,
-   "n_likelihood_calls": 498343676,
-   "n_integrations": 499323676,
-   "sim_years": 77324095569.6,
-   "wall_s": 961990.7,
-   "cpu_s": 2989303.6,
+   "n_rows": 169,
+   "n_likelihood_calls": 561815448,
+   "n_integrations": 563388292,
+   "sim_years": 87185490753.0,
+   "wall_s": 1052862.2,
+   "cpu_s": 3362338.0,
    "n_rows_missing": {
     "n_likelihood_calls": 7,
     "n_integrations": 7,
@@ -26,15 +26,15 @@
     "wall_s": 3,
     "cpu_s": 9
    },
-   "cpu_hours": 830.36
+   "cpu_hours": 933.98
   },
   "measured": {
-   "n_rows": 133,
-   "n_likelihood_calls": 462210820,
-   "n_integrations": 462210820,
-   "sim_years": 71582327864.2,
-   "wall_s": 860705.0,
-   "cpu_s": 2693993.3,
+   "n_rows": 139,
+   "n_likelihood_calls": 525682592,
+   "n_integrations": 525682592,
+   "sim_years": 81404873980.3,
+   "wall_s": 947936.7,
+   "cpu_s": 3063406.7,
    "n_rows_missing": {
     "n_likelihood_calls": 0,
     "n_integrations": 0,
@@ -42,15 +42,15 @@
     "wall_s": 0,
     "cpu_s": 0
    },
-   "cpu_hours": 748.33
+   "cpu_hours": 850.95
   },
   "estimated": {
-   "n_rows": 29,
+   "n_rows": 30,
    "n_likelihood_calls": 36132856,
-   "n_integrations": 37112856,
-   "sim_years": 5741767705.4,
-   "wall_s": 101285.7,
-   "cpu_s": 295310.3,
+   "n_integrations": 37705700,
+   "sim_years": 5780616772.7,
+   "wall_s": 104925.5,
+   "cpu_s": 298931.3,
    "n_rows_missing": {
     "n_likelihood_calls": 7,
     "n_integrations": 7,
@@ -58,7 +58,7 @@
     "wall_s": 3,
     "cpu_s": 9
    },
-   "cpu_hours": 82.03
+   "cpu_hours": 83.04
   },
   "by_kind": {
    "emcee": {
@@ -77,12 +77,12 @@
     }
    },
    "nested": {
-    "n_rows": 146,
-    "n_likelihood_calls": 495327163,
-    "n_integrations": 495327163,
-    "sim_years": 76715361029.2,
-    "wall_s": 940665.1,
-    "cpu_s": 2979839.9,
+    "n_rows": 152,
+    "n_likelihood_calls": 558798935,
+    "n_integrations": 558798935,
+    "sim_years": 86537907145.3,
+    "wall_s": 1027896.8,
+    "cpu_s": 3349253.3,
     "n_rows_missing": {
      "n_likelihood_calls": 0,
      "n_integrations": 0,
@@ -90,7 +90,7 @@
      "wall_s": 0,
      "cpu_s": 0
     },
-    "cpu_hours": 827.73
+    "cpu_hours": 930.35
    },
    "point_fits": {
     "n_rows": 4,
@@ -123,12 +123,12 @@
     }
    },
    "summarize": {
-    "n_rows": 7,
+    "n_rows": 8,
     "n_likelihood_calls": 136513,
-    "n_integrations": 1116513,
-    "sim_years": 162334540.4,
-    "wall_s": 4892.8,
-    "cpu_s": 9463.7,
+    "n_integrations": 1709357,
+    "sim_years": 201183607.7,
+    "wall_s": 8532.6,
+    "cpu_s": 13084.7,
     "n_rows_missing": {
      "n_likelihood_calls": 0,
      "n_integrations": 0,
@@ -136,7 +136,7 @@
      "wall_s": 0,
      "cpu_s": 0
     },
-    "cpu_hours": 2.63
+    "cpu_hours": 3.63
    },
    "tests": {
     "n_rows": 1,
@@ -2561,6 +2561,109 @@
    "estimated": true,
    "recorded": "2026-11-08T06:06:39",
    "note": "derived longitudes: Galle's night and 1847.0, per sample"
+  },
+  {
+   "job": "m6c_repeat/r2_1",
+   "kind": "nested",
+   "n_likelihood_calls": 25360682,
+   "n_integrations": 25360682,
+   "sim_years": 3924681171.4,
+   "wall_s": 29303.2,
+   "cpu_s": 147449.7,
+   "n_workers": 6,
+   "estimated": false,
+   "recorded": "2026-11-08T15:58:49",
+   "resumed": false,
+   "nlive": 4000,
+   "niter": 175680
+  },
+  {
+   "job": "m6c_repeat/r2_2",
+   "kind": "nested",
+   "n_likelihood_calls": 25249415,
+   "n_integrations": 25249415,
+   "sim_years": 3907462095.8,
+   "wall_s": 29359.8,
+   "cpu_s": 147830.5,
+   "n_workers": 6,
+   "estimated": false,
+   "recorded": "2026-11-08T15:59:46",
+   "resumed": false,
+   "nlive": 4000,
+   "niter": 175338
+  },
+  {
+   "job": "m6c_repeat/r1_1",
+   "kind": "nested",
+   "n_likelihood_calls": 3188663,
+   "n_integrations": 3188663,
+   "sim_years": 493460137.9,
+   "wall_s": 7090.0,
+   "cpu_s": 18440.8,
+   "n_workers": 3,
+   "estimated": false,
+   "recorded": "2026-11-08T17:57:11",
+   "resumed": false,
+   "nlive": 1000,
+   "niter": 43542
+  },
+  {
+   "job": "m6c_repeat/r1_4",
+   "kind": "nested",
+   "n_likelihood_calls": 3148592,
+   "n_integrations": 3148592,
+   "sim_years": 487258968.0,
+   "wall_s": 7032.2,
+   "cpu_s": 18185.0,
+   "n_workers": 3,
+   "estimated": false,
+   "recorded": "2026-11-08T17:57:13",
+   "resumed": false,
+   "nlive": 1000,
+   "niter": 42662
+  },
+  {
+   "job": "m6c_repeat/r1_2",
+   "kind": "nested",
+   "n_likelihood_calls": 3217314,
+   "n_integrations": 3217314,
+   "sim_years": 497894010.8,
+   "wall_s": 7129.3,
+   "cpu_s": 18507.1,
+   "n_workers": 3,
+   "estimated": false,
+   "recorded": "2026-11-08T17:57:50",
+   "resumed": false,
+   "nlive": 1000,
+   "niter": 43853
+  },
+  {
+   "job": "m6c_repeat/r1_3",
+   "kind": "nested",
+   "n_likelihood_calls": 3307106,
+   "n_integrations": 3307106,
+   "sim_years": 511789732.2,
+   "wall_s": 7317.2,
+   "cpu_s": 19000.3,
+   "n_workers": 3,
+   "estimated": false,
+   "recorded": "2026-11-08T18:01:58",
+   "resumed": false,
+   "nlive": 1000,
+   "niter": 44778
+  },
+  {
+   "job": "m6c_repeat/summarize",
+   "kind": "summarize",
+   "n_likelihood_calls": 0,
+   "n_integrations": 592844,
+   "sim_years": 38849067.3,
+   "wall_s": 3639.8,
+   "cpu_s": 3621.0,
+   "n_workers": 1,
+   "estimated": true,
+   "recorded": "2026-11-08T19:13:01",
+   "note": "Galle-night longitude per weighted sample"
   }
  ]
 }

@@ -45,18 +45,20 @@ narrower than M5b's 9.1°, mostly because Table 77 has more measurements and sma
 errors than M5b assumed ([M6 notes](docs/notes/M6.md)).
 
 The pre-registered real-data fit (M6c) on Table 77 puts the planet at **325.8°** on the night
-Galle found Neptune, with a 68 % interval of 323.9°–327.4°. JPL's Neptune is at 325.87°, 0.04
+Galle found Neptune, with a 68 % interval of 323.6°–327.8°. JPL's Neptune is at 325.87°, 0.03
 half-widths from the median. Le Verrier's prediction, propagated from his published elements
-to that night (324.97°), is also inside the interval. The fitted mass is 17.5 M⊕ (Neptune: 17.15) and the semi-major axis 30.2 AU.
+to that night (324.97°), is also inside the interval. The first published fit gives a mass of 17.5 M⊕ (Neptune: 17.15) and a semi-major axis of 30.2 AU.
 
 The direction is robust. JPL's Neptune is inside the 68 % interval in the headline fit and in
 all three pre-registered sensitivity runs (e ≤ 0.5, error levels estimated from the data alone,
 Student-t errors). The medians agree to within 0.4 headline half-widths. The evidence strongly
-prefers the Student-t errors (ln B = +13.7). **The interval's width is under review:** repeated
-runs of the same sampling cell disagree by far more than the sampler's own error estimate, so
-the widths are uncertain to about a factor of 2
-([M6 notes](docs/notes/M6.md#cell-2-does-not-reproduce-between-runs)). A pre-registered
-repeatability study is next.
+prefers the Student-t errors (ln B = +13.7). Repeated runs of the main sampling cell
+disagreed on the width by far more than the sampler's own error estimate. A pre-registered
+repeatability study settled it: two runs with 4× the live points agree on the width, and under
+the pre-registered rule their merge replaces that cell. This widened the first published
+interval (323.9°–327.4°) by about 20 %, to the one above
+([M6 notes](docs/notes/M6.md#m6c-cell-2-repeatability-results-2026-11-08)). The 95 % interval
+widened more, from 6.6° to 10.2°, because it depends on the small weights of the other cells.
 
 Data: [Le Verrier Table 77, Zenodo, doi:10.5281/zenodo.24044792](https://doi.org/10.5281/zenodo.24044792)
 
@@ -111,10 +113,11 @@ site/           static site (GitHub Pages) and its data
 
 ## Compute
 
-The ledger (`site/data/ledger.json`) records **830 CPU-hours** to date: 748 timed live, plus 82
-estimated from logs. That covers 498 million likelihood evaluations, each one N-body
+The ledger (`site/data/ledger.json`) records **934 CPU-hours** to date: 851 timed live, plus 83
+estimated from logs. That covers 562 million likelihood evaluations, each one N-body
 integration over 1690–1846. Nested sampling accounts for nearly all of it: M5b, and A6c with
-277 CPU-hours. The M6c headline fit took 28.5, and its sensitivity runs S1–S3 89.
+277 CPU-hours. The M6c headline fit took 28.5, its sensitivity runs S1–S3 89, and the cell-2
+repeatability study 104.
 
 ## Prior art
 
