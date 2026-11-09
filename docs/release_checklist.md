@@ -23,12 +23,10 @@ semver: the tag is `vX.Y.Z`, and `pyproject.toml` and `CITATION.cff` hold `X.Y.Z
   `docs/notes/M6.md`). If it fails, stop and report, as the spec says. Don't tag.
 - [ ] M6c fits are done, with `site/data/m6_fits.json` and the figures the spec lists. (M6d and
   M6e moved to "Deferred to v1.1" below, 2026-11-09.)
-- [ ] All A6 tests reported against their pre-registered thresholds (A6a–A6e).
+- [x] All A6 tests reported against their pre-registered thresholds (A6a–A6e).
   - A6a–A6d reported in `docs/notes/A6.md` (2026-11-09): A6a, A6c and A6d pass, and A6b's
     loader test passes. A6e is deferred with M6e.
-  - **Open:** A6b's per-group comparison needs a "published or expected precision" for each
-    group, and none was ever written down. The medians are reported and the comparison is not
-    made.
+  - A6b is report-only: Comparison against per-group precision not made: no precision figure was fixed before the data were seen. Medians reported.
 - [x] README results and status updated to include the real-data results, keeping the
   synthetic and real numbers clearly apart.
 

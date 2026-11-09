@@ -31,8 +31,9 @@ Status below.
 
 ## Status
 
-Phase 1. The pre-registered real-data fit (M6c) is done and reported below; the rest of M6
-(the M6d–M6e items and the A6 report) is open, M8 (a faster likelihood that decides the
+Phase 1. The pre-registered real-data fit (M6c) is done and reported below, and the A6
+acceptance tests are reported ([A6 report](docs/notes/A6.md)); M6d and M6e are deferred to
+v1.1, M8 (a faster likelihood that decides the
 provisional 95 % interval) is running, and M7 (the public site) is being built. Milestones
 M0–M5b are complete:
 
@@ -78,6 +79,10 @@ Data: Le Verrier Table 77, on Zenodo.
   above): all versions; cite this for the dataset in general.
 - Version DOI [10.5281/zenodo.24044792](https://doi.org/10.5281/zenodo.24044792): v1.0.0; cite
   this for exact reproducibility.
+
+## Limitations
+
+- A6b (the reduction check against JPL): Comparison against per-group precision not made: no precision figure was fixed before the data were seen. Medians reported. Details in the [A6 report](docs/notes/A6.md).
 
 ## Quickstart
 
