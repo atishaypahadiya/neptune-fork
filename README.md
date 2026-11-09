@@ -45,9 +45,13 @@ narrower than M5b's 9.1°, mostly because Table 77 has more measurements and sma
 errors than M5b assumed ([M6 notes](docs/notes/M6.md)).
 
 The pre-registered real-data fit (M6c) on Table 77 puts the planet at **325.8°** on the night
-Galle found Neptune, with a 68 % interval of 323.6°–327.8°. JPL's Neptune is at 325.87°, 0.03
-half-widths from the median. Le Verrier's prediction, propagated from his published elements
-to that night (324.97°), is also inside the interval. The first published fit gives a mass of 17.5 M⊕ (Neptune: 17.15) and a semi-major axis of 30.2 AU.
+Galle found Neptune, with a 68 % interval of 323.6°–327.8° and a sampler systematic of ±0.13°
+on the median. JPL's Neptune is at 325.87°, 0.03 half-widths from the median. Le Verrier's
+prediction, propagated from his published elements to that night (324.97°), is also inside the
+interval. The same posterior gives a mass of 17.3 M⊕ (68 %: 16.3–18.4; Neptune: 17.15), a
+semi-major axis of 30.2 AU (29.6–30.9) and e below 0.028 (68 %, one-sided). It puts 37 % of its
+probability within Le Verrier's 52′ miss of the true position (the Peirce probability). These
+are derived after the fact from the pre-registered replacement posterior described below.
 
 The direction is robust. JPL's Neptune is inside the 68 % interval in the headline fit and in
 all three pre-registered sensitivity runs (e ≤ 0.5, error levels estimated from the data alone,
@@ -57,8 +61,11 @@ disagreed on the width by far more than the sampler's own error estimate. A pre-
 repeatability study settled it: two runs with 4× the live points agree on the width, and under
 the pre-registered rule their merge replaces that cell. This widened the first published
 interval (323.9°–327.4°) by about 20 %, to the one above
-([M6 notes](docs/notes/M6.md#m6c-cell-2-repeatability-results-2026-11-08)). The 95 % interval
-widened more, from 6.6° to 10.2°, because it depends on the small weights of the other cells.
+([M6 notes](docs/notes/M6.md#m6c-cell-2-repeatability-results-2026-11-08)). The 68 % interval is
+the headline. The 95 % interval (320.2°–330.4°) is provisional: it widened from 6.6° to 10.2°
+because it depends on the small weights of three cells that are still single runs. A faster
+likelihood that makes repeated runs of every cell affordable is specified as M8 in the
+[Phase 1 spec](docs/PHASE1_SPEC.md#m8-fast-linearized-likelihood).
 
 Data: [Le Verrier Table 77, Zenodo, doi:10.5281/zenodo.24044792](https://doi.org/10.5281/zenodo.24044792)
 

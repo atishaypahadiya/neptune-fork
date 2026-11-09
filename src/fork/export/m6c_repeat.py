@@ -4,6 +4,7 @@
     uv run python -m fork.export.m6c_repeat run [--n-workers 12]
     uv run python -m fork.export.m6c_repeat job JOB_ID [--n-workers 6]
     uv run python -m fork.export.m6c_repeat summarize
+    uv run python -m fork.export.m6c_repeat derived   # after the fact, outcome replace only
 
 **Pre-registered** in docs/notes/M6.md ("M6c cell-2 repeatability: pre-registration"),
 committed before any of its sampling. Nothing below is retuned after a result is seen.
@@ -400,6 +401,65 @@ def summarize() -> None:
                   note="Galle-night longitude per weighted sample")  # fmt: skip
 
 
+DERIVED_OUT_NAME = "m6c_replacement.json"
+
+
+def replacement_cells() -> list:
+    """The pre-registered replacement posterior's cells: the headline's cells 0, 1 and 3, and
+    the merge of R2's runs as cell 2."""
+    from fork.inference.nested import NestedResult
+
+    res = [NestedResult.load(m6c.Job("headline", k).path(".pkl")) for k in range(4)]
+    res[HEADLINE_CELL] = merged_cell2([NestedResult.load(j.path(".pkl"))
+                                       for j in JOBS if j.group == "r2"])  # fmt: skip
+    return res
+
+
+def derived() -> None:
+    """Mass, a, e, i, Peirce probability and the rest of the headline's summary record, from
+    the replacement posterior (after the fact: the pre-registration fixed only its Galle-night
+    interval). Same code as the headline record (``m6c.summarize_results``) with the rng of
+    ``interval_with_cell2``, so the Galle-night numbers equal the reported interval."""
+    from fork import ledger
+
+    rep = json.loads((SITE_DATA / OUT_NAME).read_text())
+    if rep["decision"]["outcome"] != "replace":
+        raise SystemExit(f"outcome is {rep['decision']['outcome']}, not replace")
+    m6c.check_frozen("headline")
+    t0, c0 = time.time(), ledger.cpu_now()
+    out = m6c.summarize_results("headline", replacement_cells(),
+                                np.random.default_rng(list(REPORT_RNG)))  # fmt: skip
+    reported = {k: v for k, v in rep["reported"].items() if k != "source"}
+    if out["galle_lon_ecl_of_date_deg"] != reported:
+        raise RuntimeError("Galle-night summary differs from the reported interval")
+    r2 = rep["spread"]["r2"]["median"]
+    payload = {
+        "description": "M6c reported posterior after the pre-registered cell-2 repeatability "
+        "study (outcome replace): the headline's cells 0, 1, 3 and the merged R2 cell 2. Every "
+        "quantity other than the Galle-night 68 % interval is derived after the fact from this "
+        "posterior with the headline's summary code; the 95 % bounds are provisional (they rest "
+        "on the cell shares, and cells 0, 1, 3 are single runs).",
+        "source": "headline cells 0, 1, 3 + merged R2 cell 2 (site/data/m6c_repeat.json)",
+        "sampler_systematic": {
+            "galle_median_deg": round(r2["std"] / math.sqrt(r2["n"]), 3),
+            "basis": "R2 run-to-run std of the cell-2 Galle median (ddof 1) / sqrt(2 runs "
+                     "merged); not folded into the interval",
+            "r2_run_to_run_std_deg": round(r2["std"], 3),
+        },
+        "provisional": ["lo95", "hi95", "width95"],
+        **out,
+    }  # fmt: skip
+    write_json(DERIVED_OUT_NAME, payload)
+    keys = ("sampler_systematic", "galle_lon_ecl_of_date_deg", "peirce_p_within_0p87_deg_of_jpl",
+            "mass_earth", "a_au", "e")  # fmt: skip
+    print(json.dumps({k: payload[k] for k in keys}, indent=1))
+    n = 2 * out["n_derived"]
+    ledger.append("m6c_repeat/derived", "summarize", n_likelihood_calls=1, n_integrations=n,
+                  sim_years=n * (1846.73 - 1781.2), wall_s=time.time() - t0,
+                  cpu_s=ledger.cpu_now() - c0, n_workers=1, estimated=True,
+                  note="replacement posterior: Galle, 1847 longitudes")  # fmt: skip
+
+
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(prog="fork.export.m6c_repeat")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -411,6 +471,7 @@ def main(argv: list[str] | None = None) -> None:
     p_job.add_argument("--n-workers", type=int, default=None)
     p_job.add_argument("--maxiter", type=int, default=None)
     sub.add_parser("summarize")
+    sub.add_parser("derived")
     a = ap.parse_args(argv)
     if a.cmd == "plan":
         plan()
@@ -419,6 +480,8 @@ def main(argv: list[str] | None = None) -> None:
     elif a.cmd == "job":
         job = RepeatJob.from_id(a.job_id)
         do_job(job, a.n_workers or job.workers, a.maxiter)
+    elif a.cmd == "derived":
+        derived()
     else:
         summarize()
 

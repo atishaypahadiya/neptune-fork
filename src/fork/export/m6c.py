@@ -390,18 +390,26 @@ def inc_prior_quantiles_deg(q=(16.0, 50.0, 84.0)) -> list[float]:
 
 
 def summarize_variant(variant: str) -> dict | None:
-    from fork.export.m5b import _e_summary, _heliocentric_lon_of_date_deg
-    from fork.inference.nested import ERR_INFLATION, NestedResult, PartitionedResult
-    from fork.inference.profile import GalleGeometry, galle_lon_of_date_rad
-    from fork.model.hidden_mass import JD_1847_JAN1_TDB
-    from fork.model.observation import GROUPS
+    from fork.inference.nested import NestedResult
 
     jobs = [Job(variant, k) for k in range(len(variant_cells(variant)))]
     if not all(j.path(".pkl").exists() for j in jobs):
         return None
     res = [NestedResult.load(j.path(".pkl")) for j in jobs]
-    p = PartitionedResult(tuple(res), err_scale=ERR_INFLATION)
     rng = np.random.default_rng([*SUMMARY_RNG, VARIANTS.index(variant)])
+    return summarize_results(variant, res, rng)
+
+
+def summarize_results(variant: str, res: list, rng: np.random.Generator) -> dict:
+    """The summary record of one variant's partitioned posterior, from its per-cell results.
+    ``rng`` draws the equal-weight samples and then the derived-quantity subsample."""
+    from fork.export.m5b import _e_summary, _heliocentric_lon_of_date_deg
+    from fork.inference.nested import ERR_INFLATION, PartitionedResult
+    from fork.inference.profile import GalleGeometry, galle_lon_of_date_rad
+    from fork.model.hidden_mass import JD_1847_JAN1_TDB
+    from fork.model.observation import GROUPS
+
+    p = PartitionedResult(tuple(res), err_scale=ERR_INFLATION)
     eq = p.equal_weight(rng)
     obs, ctx, *_ = dataset(variant=variant)
     cfg = VARIANT_CONFIG[variant]

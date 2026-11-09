@@ -1,0 +1,278 @@
+{
+ "description": "After-the-fact diagnostic (not pre-registered): the e \u2248 0.06\u20130.12 ridge in the R2 runs.",
+ "n_equal_weight": 359018,
+ "parts": {
+  "ridge_e_ge_0p06": {
+   "share": 0.1321,
+   "n_derived": 3000,
+   "a_au_16_50_84": [
+    28.747,
+    31.691,
+    32.483
+   ],
+   "e_16_50_84": [
+    0.0655,
+    0.0781,
+    0.0975
+   ],
+   "mass_earth_16_50_84": [
+    16.59,
+    17.83,
+    19.09
+   ],
+   "helio_lon_1847_deg_16_50_84": [
+    322.42,
+    324.27,
+    331.87
+   ],
+   "varpi_1847_deg_16_50_84": [
+    30.44,
+    196.57,
+    202.5
+   ],
+   "galle_lon_deg_16_50_84": [
+    320.83,
+    322.66,
+    330.1
+   ],
+   "galle_lon_deg_2p5_97p5": [
+    319.55,
+    332.41
+   ]
+  },
+  "core_e_lt_0p06": {
+   "share": 0.8679,
+   "n_derived": 3000,
+   "a_au_16_50_84": [
+    29.693,
+    30.191,
+    30.639
+   ],
+   "e_16_50_84": [
+    0.0033,
+    0.0109,
+    0.0317
+   ],
+   "mass_earth_16_50_84": [
+    16.3,
+    17.26,
+    18.25
+   ],
+   "helio_lon_1847_deg_16_50_84": [
+    326.07,
+    327.63,
+    329.25
+   ],
+   "varpi_1847_deg_16_50_84": [
+    25.75,
+    43.59,
+    177.49
+   ],
+   "galle_lon_deg_16_50_84": [
+    324.38,
+    325.94,
+    327.57
+   ],
+   "galle_lon_deg_2p5_97p5": [
+    322.65,
+    329.41
+   ]
+  },
+  "ridge_a_lt_30p5": {
+   "share": 0.0473,
+   "n_derived": 3000,
+   "a_au_16_50_84": [
+    28.514,
+    28.78,
+    29.015
+   ],
+   "e_16_50_84": [
+    0.0632,
+    0.0713,
+    0.0863
+   ],
+   "mass_earth_16_50_84": [
+    15.89,
+    16.87,
+    17.82
+   ],
+   "helio_lon_1847_deg_16_50_84": [
+    330.47,
+    331.66,
+    333.34
+   ],
+   "varpi_1847_deg_16_50_84": [
+    28.79,
+    30.66,
+    32.53
+   ],
+   "galle_lon_deg_16_50_84": [
+    328.69,
+    329.9,
+    331.6
+   ],
+   "galle_lon_deg_2p5_97p5": [
+    327.52,
+    333.43
+   ]
+  },
+  "ridge_a_ge_30p5": {
+   "share": 0.0848,
+   "n_derived": 3000,
+   "a_au_16_50_84": [
+    31.573,
+    32.114,
+    32.693
+   ],
+   "e_16_50_84": [
+    0.0682,
+    0.0836,
+    0.1009
+   ],
+   "mass_earth_16_50_84": [
+    17.28,
+    18.27,
+    19.4
+   ],
+   "helio_lon_1847_deg_16_50_84": [
+    321.96,
+    323.3,
+    324.52
+   ],
+   "varpi_1847_deg_16_50_84": [
+    195.55,
+    199.82,
+    204.26
+   ],
+   "galle_lon_deg_16_50_84": [
+    320.37,
+    321.71,
+    322.93
+   ],
+   "galle_lon_deg_2p5_97p5": [
+    319.29,
+    324.01
+   ]
+  }
+ },
+ "cell2_min_m2lnl": 637.18,
+ "ridge_by_a": [
+  {
+   "a_lo": 28,
+   "a_hi": 29,
+   "posterior_mass": 0.03894,
+   "min_m2lnl": 638.55,
+   "n_samples": 11694
+  },
+  {
+   "a_lo": 29,
+   "a_hi": 30,
+   "posterior_mass": 0.00841,
+   "min_m2lnl": 638.85,
+   "n_samples": 8163
+  },
+  {
+   "a_lo": 30,
+   "a_hi": 31,
+   "posterior_mass": 0.00081,
+   "min_m2lnl": 642.46,
+   "n_samples": 7709
+  },
+  {
+   "a_lo": 31,
+   "a_hi": 32,
+   "posterior_mass": 0.03418,
+   "min_m2lnl": 638.66,
+   "n_samples": 11795
+  },
+  {
+   "a_lo": 32,
+   "a_hi": 33,
+   "posterior_mass": 0.04622,
+   "min_m2lnl": 639.57,
+   "n_samples": 12019
+  },
+  {
+   "a_lo": 33,
+   "a_hi": 34,
+   "posterior_mass": 0.00336,
+   "min_m2lnl": 640.85,
+   "n_samples": 6934
+  },
+  {
+   "a_lo": 34,
+   "a_hi": 35,
+   "posterior_mass": 4e-05,
+   "min_m2lnl": 654.93,
+   "n_samples": 5259
+  },
+  {
+   "a_lo": 35,
+   "a_hi": 36,
+   "posterior_mass": 0.0,
+   "min_m2lnl": 676.57,
+   "n_samples": 4535
+  },
+  {
+   "a_lo": 36,
+   "a_hi": 37,
+   "posterior_mass": 0.0,
+   "min_m2lnl": 715.15,
+   "n_samples": 3785
+  },
+  {
+   "a_lo": 37,
+   "a_hi": 38,
+   "posterior_mass": 0.0,
+   "min_m2lnl": 811.59,
+   "n_samples": 3569
+  },
+  {
+   "a_lo": 38,
+   "a_hi": 40,
+   "posterior_mass": 0.0,
+   "min_m2lnl": 796.1,
+   "n_samples": 6491
+  },
+  {
+   "a_lo": 40,
+   "a_hi": 45,
+   "posterior_mass": 0.0,
+   "min_m2lnl": 961.8,
+   "n_samples": 12659
+  },
+  {
+   "a_lo": 45,
+   "a_hi": 60,
+   "posterior_mass": 0.0,
+   "min_m2lnl": 998.13,
+   "n_samples": 17881
+  }
+ ],
+ "le_verrier_box": {
+  "a_au": [
+   34.0,
+   38.0
+  ],
+  "e": [
+   0.08,
+   0.12
+  ],
+  "posterior_mass": 4.4e-05,
+  "min_m2lnl": 654.93,
+  "n_samples": 11946
+ },
+ "le_verrier": {
+  "a_au": 36.15,
+  "e": 0.10761,
+  "mass_earth": 36.6,
+  "mass_earth_1_over_9300": 35.8,
+  "varpi_1847_deg": 284.75,
+  "helio_lon_1847_deg": 326.533,
+  "galle_lon_deg_derived": 324.973,
+  "sources": [
+   "Krajnovi\u0107 2016, A&G 57, 5.28 (arXiv:1610.06424), Table 2, after Grosser 1962",
+   "Encyclop\u00e6dia Britannica 1911, 'Neptune (planet)', table of elements"
+  ]
+ }
+}

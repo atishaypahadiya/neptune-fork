@@ -13,12 +13,12 @@
  ],
  "totals": {
   "all": {
-   "n_rows": 169,
-   "n_likelihood_calls": 561815448,
-   "n_integrations": 563388292,
-   "sim_years": 87185490753.0,
-   "wall_s": 1052862.2,
-   "cpu_s": 3362338.0,
+   "n_rows": 170,
+   "n_likelihood_calls": 561815449,
+   "n_integrations": 563400292,
+   "sim_years": 87186277113.0,
+   "wall_s": 1052916.7,
+   "cpu_s": 3362392.3,
    "n_rows_missing": {
     "n_likelihood_calls": 7,
     "n_integrations": 7,
@@ -26,7 +26,7 @@
     "wall_s": 3,
     "cpu_s": 9
    },
-   "cpu_hours": 933.98
+   "cpu_hours": 934.0
   },
   "measured": {
    "n_rows": 139,
@@ -45,12 +45,12 @@
    "cpu_hours": 850.95
   },
   "estimated": {
-   "n_rows": 30,
-   "n_likelihood_calls": 36132856,
-   "n_integrations": 37705700,
-   "sim_years": 5780616772.7,
-   "wall_s": 104925.5,
-   "cpu_s": 298931.3,
+   "n_rows": 31,
+   "n_likelihood_calls": 36132857,
+   "n_integrations": 37717700,
+   "sim_years": 5781403132.7,
+   "wall_s": 104980.0,
+   "cpu_s": 298985.6,
    "n_rows_missing": {
     "n_likelihood_calls": 7,
     "n_integrations": 7,
@@ -58,7 +58,7 @@
     "wall_s": 3,
     "cpu_s": 9
    },
-   "cpu_hours": 83.04
+   "cpu_hours": 83.05
   },
   "by_kind": {
    "emcee": {
@@ -123,12 +123,12 @@
     }
    },
    "summarize": {
-    "n_rows": 8,
-    "n_likelihood_calls": 136513,
-    "n_integrations": 1709357,
-    "sim_years": 201183607.7,
-    "wall_s": 8532.6,
-    "cpu_s": 13084.7,
+    "n_rows": 9,
+    "n_likelihood_calls": 136514,
+    "n_integrations": 1721357,
+    "sim_years": 201969967.7,
+    "wall_s": 8587.1,
+    "cpu_s": 13139.0,
     "n_rows_missing": {
      "n_likelihood_calls": 0,
      "n_integrations": 0,
@@ -136,7 +136,7 @@
      "wall_s": 0,
      "cpu_s": 0
     },
-    "cpu_hours": 3.63
+    "cpu_hours": 3.65
    },
    "tests": {
     "n_rows": 1,
@@ -2664,6 +2664,19 @@
    "estimated": true,
    "recorded": "2026-11-08T19:13:01",
    "note": "Galle-night longitude per weighted sample"
+  },
+  {
+   "job": "m6c_repeat/derived",
+   "kind": "summarize",
+   "n_likelihood_calls": 1,
+   "n_integrations": 12000,
+   "sim_years": 786360.0,
+   "wall_s": 54.5,
+   "cpu_s": 54.3,
+   "n_workers": 1,
+   "estimated": true,
+   "recorded": "2026-11-08T19:21:18",
+   "note": "replacement posterior: Galle and 1847 longitudes per derived sample"
   }
  ]
 }

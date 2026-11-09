@@ -1,5 +1,5 @@
 """M6c cell-2 repeatability study (pre-registered in docs/notes/M6.md): jobs, seeds, the cell-2
-space, and the decision rule."""
+space, the decision rule, and the guard on the derived quantities."""
 
 import numpy as np
 import pytest
@@ -55,3 +55,15 @@ def test_decision_rule():
     for r1 in (big, calm):
         d = rp.decide(r1, [0.05] * 4, [4.0, 4.5])
         assert not d["r2_consistent"] and d["outcome"] == "systematic_only"
+
+
+@pytest.mark.parametrize("outcome", ["cross_check", "systematic_only"])
+def test_derived_runs_only_on_a_replace_outcome(tmp_path, monkeypatch, outcome):
+    """The after-the-fact derived quantities describe the replacement posterior, so they are
+    refused unless the pre-registered rule chose it."""
+    import json
+
+    (tmp_path / rp.OUT_NAME).write_text(json.dumps({"decision": {"outcome": outcome}}))
+    monkeypatch.setattr(rp, "SITE_DATA", tmp_path)
+    with pytest.raises(SystemExit, match=outcome):
+        rp.derived()
