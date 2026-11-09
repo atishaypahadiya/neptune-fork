@@ -13,36 +13,36 @@
  ],
  "totals": {
   "all": {
-   "n_rows": 170,
+   "n_rows": 171,
    "n_likelihood_calls": 561815449,
-   "n_integrations": 563400292,
+   "n_integrations": 563509735,
    "sim_years": 87186277113.0,
-   "wall_s": 1052916.7,
-   "cpu_s": 3362392.3,
+   "wall_s": 1053004.8,
+   "cpu_s": 3363077.3,
    "n_rows_missing": {
-    "n_likelihood_calls": 7,
+    "n_likelihood_calls": 8,
     "n_integrations": 7,
-    "sim_years": 7,
+    "sim_years": 8,
     "wall_s": 3,
     "cpu_s": 9
    },
-   "cpu_hours": 934.0
+   "cpu_hours": 934.19
   },
   "measured": {
-   "n_rows": 139,
+   "n_rows": 140,
    "n_likelihood_calls": 525682592,
-   "n_integrations": 525682592,
+   "n_integrations": 525792035,
    "sim_years": 81404873980.3,
-   "wall_s": 947936.7,
-   "cpu_s": 3063406.7,
+   "wall_s": 948024.8,
+   "cpu_s": 3064091.7,
    "n_rows_missing": {
-    "n_likelihood_calls": 0,
+    "n_likelihood_calls": 1,
     "n_integrations": 0,
-    "sim_years": 0,
+    "sim_years": 1,
     "wall_s": 0,
     "cpu_s": 0
    },
-   "cpu_hours": 850.95
+   "cpu_hours": 851.14
   },
   "estimated": {
    "n_rows": 31,
@@ -61,6 +61,22 @@
    "cpu_hours": 83.05
   },
   "by_kind": {
+   "diagnostic": {
+    "n_rows": 1,
+    "n_likelihood_calls": null,
+    "n_integrations": 109443,
+    "sim_years": null,
+    "wall_s": 88.1,
+    "cpu_s": 685.0,
+    "n_rows_missing": {
+     "n_likelihood_calls": 1,
+     "n_integrations": 0,
+     "sim_years": 1,
+     "wall_s": 0,
+     "cpu_s": 0
+    },
+    "cpu_hours": 0.19
+   },
    "emcee": {
     "n_rows": 3,
     "n_likelihood_calls": 2880000,
@@ -2677,6 +2693,19 @@
    "estimated": true,
    "recorded": "2026-11-08T19:21:18",
    "note": "replacement posterior: Galle and 1847 longitudes per derived sample"
+  },
+  {
+   "job": "m8/a8a",
+   "kind": "diagnostic",
+   "n_likelihood_calls": null,
+   "n_integrations": 109443,
+   "sim_years": null,
+   "wall_s": 88.1,
+   "cpu_s": 685.0,
+   "n_workers": 8,
+   "estimated": false,
+   "recorded": "2026-11-08T23:19:37",
+   "n_points": 1200
   }
  ]
 }

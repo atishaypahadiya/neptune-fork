@@ -1,0 +1,497 @@
+{
+ "description": "M8 Stage 2 validation: A8a (linearized vs full likelihood) and the per-call part of A8e; no sampling. docs/notes/M8.md",
+ "a8a": {
+  "best_m2lnl": 633.814,
+  "n_points": 1200,
+  "points_by_source": {
+   "r2": 600,
+   "s1": 300,
+   "prior": 150,
+   "prior_ridge_region": 150
+  },
+  "tolerances": {
+   "abs_d_chi2": 0.1,
+   "abs_d_m2lnl": 0.2,
+   "domain_delta_lnl": 30.0
+  },
+  "groups": {
+   "core": {
+    "n": 551,
+    "n_in_domain": 551,
+    "laplace_nan": 0,
+    "a_in_domain": {
+     "d_chi2": {
+      "n": 551,
+      "abs_q50": 0.07312,
+      "abs_q90": 0.175,
+      "abs_q99": 0.27802,
+      "abs_max": 0.39476,
+      "signed_median": -0.05489
+     },
+     "d_m2lnl": {
+      "n": 551,
+      "abs_q50": 0.07317,
+      "abs_q90": 0.17495,
+      "abs_q99": 0.27797,
+      "abs_max": 0.39475,
+      "signed_median": -0.05483
+     },
+     "n_over_chi2_tol": 197,
+     "n_over_m2lnl_tol": 32,
+     "max_abs_u_star_box_sigma": [
+      39.49,
+      43.14,
+      5.61,
+      18.38
+     ],
+     "max_truncation_log10_bound": -165.9
+    },
+    "a_all": {
+     "d_chi2": {
+      "n": 551,
+      "abs_q50": 0.07312,
+      "abs_q90": 0.175,
+      "abs_q99": 0.27802,
+      "abs_max": 0.39476,
+      "signed_median": -0.05489
+     },
+     "d_m2lnl": {
+      "n": 551,
+      "abs_q50": 0.07317,
+      "abs_q90": 0.17495,
+      "abs_q99": 0.27797,
+      "abs_max": 0.39475,
+      "signed_median": -0.05483
+     },
+     "n_over_chi2_tol": 197,
+     "n_over_m2lnl_tol": 32,
+     "max_abs_u_star_box_sigma": [
+      39.49,
+      43.14,
+      5.61,
+      18.38
+     ],
+     "max_truncation_log10_bound": -165.9
+    },
+    "b_in_domain": {
+     "d_chi2": {
+      "n": 551,
+      "abs_q50": 0.0,
+      "abs_q90": 0.0,
+      "abs_q99": 0.0,
+      "abs_max": 0.0,
+      "signed_median": 0.0
+     },
+     "d_m2lnl": {
+      "n": 551,
+      "abs_q50": 0.0,
+      "abs_q90": 1e-05,
+      "abs_q99": 1e-05,
+      "abs_max": 2e-05,
+      "signed_median": -0.0
+     },
+     "n_over_chi2_tol": 0,
+     "n_over_m2lnl_tol": 0,
+     "max_abs_u_star_box_sigma": [
+      39.48,
+      43.14,
+      5.61,
+      18.38
+     ],
+     "max_truncation_log10_bound": -165.6
+    },
+    "b_all": {
+     "d_chi2": {
+      "n": 551,
+      "abs_q50": 0.0,
+      "abs_q90": 0.0,
+      "abs_q99": 0.0,
+      "abs_max": 0.0,
+      "signed_median": 0.0
+     },
+     "d_m2lnl": {
+      "n": 551,
+      "abs_q50": 0.0,
+      "abs_q90": 1e-05,
+      "abs_q99": 1e-05,
+      "abs_max": 2e-05,
+      "signed_median": -0.0
+     },
+     "n_over_chi2_tol": 0,
+     "n_over_m2lnl_tol": 0,
+     "max_abs_u_star_box_sigma": [
+      39.48,
+      43.14,
+      5.61,
+      18.38
+     ],
+     "max_truncation_log10_bound": -165.6
+    }
+   },
+   "ridge": {
+    "n": 344,
+    "n_in_domain": 344,
+    "laplace_nan": 0,
+    "a_in_domain": {
+     "d_chi2": {
+      "n": 344,
+      "abs_q50": 0.05839,
+      "abs_q90": 0.16454,
+      "abs_q99": 0.26588,
+      "abs_max": 0.34749,
+      "signed_median": -0.03615
+     },
+     "d_m2lnl": {
+      "n": 344,
+      "abs_q50": 0.05856,
+      "abs_q90": 0.16446,
+      "abs_q99": 0.26594,
+      "abs_max": 0.3473,
+      "signed_median": -0.03589
+     },
+     "n_over_chi2_tol": 90,
+     "n_over_m2lnl_tol": 15,
+     "max_abs_u_star_box_sigma": [
+      39.7,
+      43.75,
+      5.71,
+      18.72
+     ],
+     "max_truncation_log10_bound": -137.7
+    },
+    "a_all": {
+     "d_chi2": {
+      "n": 344,
+      "abs_q50": 0.05839,
+      "abs_q90": 0.16454,
+      "abs_q99": 0.26588,
+      "abs_max": 0.34749,
+      "signed_median": -0.03615
+     },
+     "d_m2lnl": {
+      "n": 344,
+      "abs_q50": 0.05856,
+      "abs_q90": 0.16446,
+      "abs_q99": 0.26594,
+      "abs_max": 0.3473,
+      "signed_median": -0.03589
+     },
+     "n_over_chi2_tol": 90,
+     "n_over_m2lnl_tol": 15,
+     "max_abs_u_star_box_sigma": [
+      39.7,
+      43.75,
+      5.71,
+      18.72
+     ],
+     "max_truncation_log10_bound": -137.7
+    },
+    "b_in_domain": {
+     "d_chi2": {
+      "n": 344,
+      "abs_q50": 0.0,
+      "abs_q90": 0.0,
+      "abs_q99": 0.0,
+      "abs_max": 0.0,
+      "signed_median": 0.0
+     },
+     "d_m2lnl": {
+      "n": 344,
+      "abs_q50": 0.0,
+      "abs_q90": 1e-05,
+      "abs_q99": 1e-05,
+      "abs_max": 2e-05,
+      "signed_median": 0.0
+     },
+     "n_over_chi2_tol": 0,
+     "n_over_m2lnl_tol": 0,
+     "max_abs_u_star_box_sigma": [
+      39.7,
+      43.76,
+      5.71,
+      18.73
+     ],
+     "max_truncation_log10_bound": -137.3
+    },
+    "b_all": {
+     "d_chi2": {
+      "n": 344,
+      "abs_q50": 0.0,
+      "abs_q90": 0.0,
+      "abs_q99": 0.0,
+      "abs_max": 0.0,
+      "signed_median": 0.0
+     },
+     "d_m2lnl": {
+      "n": 344,
+      "abs_q50": 0.0,
+      "abs_q90": 1e-05,
+      "abs_q99": 1e-05,
+      "abs_max": 2e-05,
+      "signed_median": 0.0
+     },
+     "n_over_chi2_tol": 0,
+     "n_over_m2lnl_tol": 0,
+     "max_abs_u_star_box_sigma": [
+      39.7,
+      43.76,
+      5.71,
+      18.73
+     ],
+     "max_truncation_log10_bound": -137.3
+    }
+   },
+   "other_cells": {
+    "n": 5,
+    "n_in_domain": 5,
+    "laplace_nan": 0,
+    "a_in_domain": {
+     "d_chi2": {
+      "n": 5,
+      "abs_q50": 0.10759,
+      "abs_q90": 0.17362,
+      "abs_q99": 0.18773,
+      "abs_max": 0.1893,
+      "signed_median": -0.10759
+     },
+     "d_m2lnl": {
+      "n": 5,
+      "abs_q50": 0.10719,
+      "abs_q90": 0.17211,
+      "abs_q99": 0.18561,
+      "abs_max": 0.18711,
+      "signed_median": -0.10719
+     },
+     "n_over_chi2_tol": 3,
+     "n_over_m2lnl_tol": 0,
+     "max_abs_u_star_box_sigma": [
+      37.56,
+      42.72,
+      9.99,
+      18.16
+     ],
+     "max_truncation_log10_bound": -186.5
+    },
+    "a_all": {
+     "d_chi2": {
+      "n": 5,
+      "abs_q50": 0.10759,
+      "abs_q90": 0.17362,
+      "abs_q99": 0.18773,
+      "abs_max": 0.1893,
+      "signed_median": -0.10759
+     },
+     "d_m2lnl": {
+      "n": 5,
+      "abs_q50": 0.10719,
+      "abs_q90": 0.17211,
+      "abs_q99": 0.18561,
+      "abs_max": 0.18711,
+      "signed_median": -0.10719
+     },
+     "n_over_chi2_tol": 3,
+     "n_over_m2lnl_tol": 0,
+     "max_abs_u_star_box_sigma": [
+      37.56,
+      42.72,
+      9.99,
+      18.16
+     ],
+     "max_truncation_log10_bound": -186.5
+    },
+    "b_in_domain": {
+     "d_chi2": {
+      "n": 5,
+      "abs_q50": 0.0,
+      "abs_q90": 0.0,
+      "abs_q99": 0.0,
+      "abs_max": 0.0,
+      "signed_median": 0.0
+     },
+     "d_m2lnl": {
+      "n": 5,
+      "abs_q50": 1e-05,
+      "abs_q90": 1e-05,
+      "abs_q99": 1e-05,
+      "abs_max": 1e-05,
+      "signed_median": 1e-05
+     },
+     "n_over_chi2_tol": 0,
+     "n_over_m2lnl_tol": 0,
+     "max_abs_u_star_box_sigma": [
+      37.57,
+      42.73,
+      10.0,
+      18.16
+     ],
+     "max_truncation_log10_bound": -185.9
+    },
+    "b_all": {
+     "d_chi2": {
+      "n": 5,
+      "abs_q50": 0.0,
+      "abs_q90": 0.0,
+      "abs_q99": 0.0,
+      "abs_max": 0.0,
+      "signed_median": 0.0
+     },
+     "d_m2lnl": {
+      "n": 5,
+      "abs_q50": 1e-05,
+      "abs_q90": 1e-05,
+      "abs_q99": 1e-05,
+      "abs_max": 1e-05,
+      "signed_median": 1e-05
+     },
+     "n_over_chi2_tol": 0,
+     "n_over_m2lnl_tol": 0,
+     "max_abs_u_star_box_sigma": [
+      37.57,
+      42.73,
+      10.0,
+      18.16
+     ],
+     "max_truncation_log10_bound": -185.9
+    }
+   },
+   "prior_tail": {
+    "n": 300,
+    "n_in_domain": 0,
+    "laplace_nan": 0,
+    "a_in_domain": {
+     "d_chi2": {
+      "n": 0,
+      "abs_q50": null,
+      "abs_q90": null,
+      "abs_q99": null,
+      "abs_max": null,
+      "signed_median": null
+     },
+     "d_m2lnl": {
+      "n": 0,
+      "abs_q50": null,
+      "abs_q90": null,
+      "abs_q99": null,
+      "abs_max": null,
+      "signed_median": null
+     },
+     "n_over_chi2_tol": 0,
+     "n_over_m2lnl_tol": 0,
+     "max_abs_u_star_box_sigma": null,
+     "max_truncation_log10_bound": null
+    },
+    "a_all": {
+     "d_chi2": {
+      "n": 300,
+      "abs_q50": 0.30737,
+      "abs_q90": 141.55784,
+      "abs_q99": 80797.12881,
+      "abs_max": 2544441.63634,
+      "signed_median": 5e-05
+     },
+     "d_m2lnl": {
+      "n": 300,
+      "abs_q50": 0.30693,
+      "abs_q90": 141.56235,
+      "abs_q99": 80797.09181,
+      "abs_max": 2544441.40145,
+      "signed_median": -0.00013
+     },
+     "n_over_chi2_tol": 188,
+     "n_over_m2lnl_tol": 168,
+     "max_abs_u_star_box_sigma": [
+      987.49,
+      2198.37,
+      952.95,
+      1216.88
+     ],
+     "max_truncation_log10_bound": 0.6
+    },
+    "b_in_domain": {
+     "d_chi2": {
+      "n": 0,
+      "abs_q50": null,
+      "abs_q90": null,
+      "abs_q99": null,
+      "abs_max": null,
+      "signed_median": null
+     },
+     "d_m2lnl": {
+      "n": 0,
+      "abs_q50": null,
+      "abs_q90": null,
+      "abs_q99": null,
+      "abs_max": null,
+      "signed_median": null
+     },
+     "n_over_chi2_tol": 0,
+     "n_over_m2lnl_tol": 0,
+     "max_abs_u_star_box_sigma": null,
+     "max_truncation_log10_bound": null
+    },
+    "b_all": {
+     "d_chi2": {
+      "n": 300,
+      "abs_q50": 0.0,
+      "abs_q90": 0.00014,
+      "abs_q99": 4.65657,
+      "abs_max": 16508.98701,
+      "signed_median": 0.0
+     },
+     "d_m2lnl": {
+      "n": 300,
+      "abs_q50": 0.0002,
+      "abs_q90": 0.00066,
+      "abs_q99": 4.66135,
+      "abs_max": 16509.02284,
+      "signed_median": -0.00019
+     },
+     "n_over_chi2_tol": 7,
+     "n_over_m2lnl_tol": 4,
+     "max_abs_u_star_box_sigma": [
+      981.45,
+      2172.54,
+      942.75,
+      1097.97
+     ],
+     "max_truncation_log10_bound": 0.6
+    }
+   }
+  },
+  "modes": {
+   "a": {
+    "n_spec_points": 900,
+    "max_abs_d_chi2": 0.39476,
+    "max_abs_d_m2lnl": 0.39475,
+    "pass": false
+   },
+   "b": {
+    "n_spec_points": 900,
+    "max_abs_d_chi2": 0.0,
+    "max_abs_d_m2lnl": 2e-05,
+    "pass": true
+   }
+  },
+  "mode_chosen": "b"
+ },
+ "a8e": {
+  "n_phi": 100,
+  "repeats": 3,
+  "ms_per_call": {
+   "full": 5.516,
+   "a": 5.576,
+   "b": 32.947
+  },
+  "ratio_to_full": {
+   "full": 1.0,
+   "a": 1.01,
+   "b": 5.97
+  },
+  "integrations_per_call": {
+   "full": 1,
+   "a": 1,
+   "b": 6
+  },
+  "fit_level": "not measured in Stage 2: A8e's pass condition is per fit (<= 1/10 of 28.5 CPU-h) and needs sampling"
+ }
+}

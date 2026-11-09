@@ -1,0 +1,168 @@
+{
+ "description": "After-the-fact diagnostic (not a spec mode): mode (b) with J\u2080 reused, on the A8a points.",
+ "best_m2lnl": 633.814,
+ "tolerances": {
+  "abs_d_chi2": 0.1,
+  "abs_d_m2lnl": 0.2
+ },
+ "groups": {
+  "core_in_domain": {
+   "n": 551,
+   "d_chi2": {
+    "n": 551,
+    "abs_q50": 2e-05,
+    "abs_q90": 4e-05,
+    "abs_q99": 7e-05,
+    "abs_max": 0.0001,
+    "signed_median": -1e-05
+   },
+   "d_m2lnl": {
+    "n": 551,
+    "abs_q50": 5e-05,
+    "abs_q90": 0.00012,
+    "abs_q99": 0.0002,
+    "abs_max": 0.00023,
+    "signed_median": 3e-05
+   },
+   "n_over_chi2_tol": 0,
+   "n_over_m2lnl_tol": 0
+  },
+  "core_all": {
+   "n": 551,
+   "d_chi2": {
+    "n": 551,
+    "abs_q50": 2e-05,
+    "abs_q90": 4e-05,
+    "abs_q99": 7e-05,
+    "abs_max": 0.0001,
+    "signed_median": -1e-05
+   },
+   "d_m2lnl": {
+    "n": 551,
+    "abs_q50": 5e-05,
+    "abs_q90": 0.00012,
+    "abs_q99": 0.0002,
+    "abs_max": 0.00023,
+    "signed_median": 3e-05
+   },
+   "n_over_chi2_tol": 0,
+   "n_over_m2lnl_tol": 0
+  },
+  "ridge_in_domain": {
+   "n": 344,
+   "d_chi2": {
+    "n": 344,
+    "abs_q50": 2e-05,
+    "abs_q90": 6e-05,
+    "abs_q99": 9e-05,
+    "abs_max": 0.00012,
+    "signed_median": -2e-05
+   },
+   "d_m2lnl": {
+    "n": 344,
+    "abs_q50": 0.0002,
+    "abs_q90": 0.00027,
+    "abs_q99": 0.00035,
+    "abs_max": 0.00041,
+    "signed_median": 0.00019
+   },
+   "n_over_chi2_tol": 0,
+   "n_over_m2lnl_tol": 0
+  },
+  "ridge_all": {
+   "n": 344,
+   "d_chi2": {
+    "n": 344,
+    "abs_q50": 2e-05,
+    "abs_q90": 6e-05,
+    "abs_q99": 9e-05,
+    "abs_max": 0.00012,
+    "signed_median": -2e-05
+   },
+   "d_m2lnl": {
+    "n": 344,
+    "abs_q50": 0.0002,
+    "abs_q90": 0.00027,
+    "abs_q99": 0.00035,
+    "abs_max": 0.00041,
+    "signed_median": 0.00019
+   },
+   "n_over_chi2_tol": 0,
+   "n_over_m2lnl_tol": 0
+  },
+  "other_cells_in_domain": {
+   "n": 5,
+   "d_chi2": {
+    "n": 5,
+    "abs_q50": 2e-05,
+    "abs_q90": 0.00016,
+    "abs_q99": 0.00023,
+    "abs_max": 0.00023,
+    "signed_median": -2e-05
+   },
+   "d_m2lnl": {
+    "n": 5,
+    "abs_q50": 0.00043,
+    "abs_q90": 0.00137,
+    "abs_q99": 0.0019,
+    "abs_max": 0.00196,
+    "signed_median": 0.00043
+   },
+   "n_over_chi2_tol": 0,
+   "n_over_m2lnl_tol": 0
+  },
+  "other_cells_all": {
+   "n": 5,
+   "d_chi2": {
+    "n": 5,
+    "abs_q50": 2e-05,
+    "abs_q90": 0.00016,
+    "abs_q99": 0.00023,
+    "abs_max": 0.00023,
+    "signed_median": -2e-05
+   },
+   "d_m2lnl": {
+    "n": 5,
+    "abs_q50": 0.00043,
+    "abs_q90": 0.00137,
+    "abs_q99": 0.0019,
+    "abs_max": 0.00196,
+    "signed_median": 0.00043
+   },
+   "n_over_chi2_tol": 0,
+   "n_over_m2lnl_tol": 0
+  },
+  "prior_tail_in_domain": {
+   "n": 0
+  },
+  "prior_tail_all": {
+   "n": 300,
+   "d_chi2": {
+    "n": 300,
+    "abs_q50": 0.00014,
+    "abs_q90": 0.09667,
+    "abs_q99": 633.70166,
+    "abs_max": 195132.00946,
+    "signed_median": 6e-05
+   },
+   "d_m2lnl": {
+    "n": 300,
+    "abs_q50": 0.0003,
+    "abs_q90": 0.09614,
+    "abs_q99": 633.65939,
+    "abs_max": 195131.77457,
+    "signed_median": -0.00011
+   },
+   "n_over_chi2_tol": 30,
+   "n_over_m2lnl_tol": 27
+  }
+ },
+ "spec_points": {
+  "n": 900,
+  "max_abs_d_chi2": 0.000234,
+  "max_abs_d_m2lnl": 0.001957,
+  "would_pass": true
+ },
+ "ms_per_call": 10.992,
+ "integrations_per_call": 2
+}
