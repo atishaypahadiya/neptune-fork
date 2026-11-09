@@ -2,8 +2,8 @@
 
 **No tag before M6 is complete.** The current version is `0.9.0`, covering M0–M5b plus the M6
 data and observation model. `v1.0.0` is tagged only when M6 is complete. Versions follow
-semver: the tag is `vX.Y.Z`, and `pyproject.toml`, `CITATION.cff` and `.zenodo.json` hold
-`X.Y.Z`.
+semver: the tag is `vX.Y.Z`, and `pyproject.toml` and `CITATION.cff` hold `X.Y.Z`.
+`.zenodo.json` has no `version`: Zenodo takes it from the release tag (decided 2026-11-09).
 
 ## Decided (2026-11-07)
 
@@ -11,8 +11,8 @@ semver: the tag is `vX.Y.Z`, and `pyproject.toml`, `CITATION.cff` and `.zenodo.j
 - `0.9.0` until then, with semver everywhere and no "-phase1" suffix.
 - Licenses: MIT for the code, and CC0 1.0 for `data/historical/`. The split is stated in
   `LICENSE`, `README.md`, `CITATION.cff` (`license: [MIT, CC0-1.0]`) and `.zenodo.json`.
-  Zenodo's `license` field takes one value, so it says MIT, and the CC0 dedication is in the
-  description and notes.
+  Zenodo's `license` field takes one value, so it says MIT, and the CC0 dedication is in
+  `notes` (since 2026-11-09 the description covers only the method and the result).
 - ORCID: 0009-0004-1264-1662 (https://orcid.org/0009-0004-1264-1662), filled in 2026-11-07: the URL in `CITATION.cff`, the bare iD
   in `.zenodo.json`.
 

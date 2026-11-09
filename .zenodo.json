@@ -1,30 +1,38 @@
 {
-  "title": "neptune-fork: Le Verrier's 1846 prediction of Neptune, rebuilt as a calibrated Bayesian inference",
   "upload_type": "software",
-  "version": "0.9.0",
-  "description": "<p>Rebuilds Le Verrier's 1846 inference of Neptune from Uranus's motion from first principles: an own Wisdom–Holman N-body integrator validated against REBOUND, Uranus's orbit always fitted jointly with an unseen perturber, partitioned nested sampling (dynesty) for multimodal posteriors and evidence, and coverage tests on synthetic data.</p><p>Includes a double-entry transcription of Le Verrier's 1846 Table n° 77 (279 observations) with a resolution log and misprint table, and an apparent-place observation model with per-observer error calibration.</p><p>So far, synthetic-data results only.</p><p>Licenses: the code is MIT. Everything in <code>data/historical/</code> is dedicated to the public domain under CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/). See LICENSE.</p>",
-  "notes": "Two licenses: MIT for the code; CC0 1.0 for data/historical/. The license field below covers the code; the data dedication is stated in LICENSE and in this description.",
+  "title": "neptune-fork: rebuilding Le Verrier's 1846 Neptune prediction as a Bayesian inference",
   "creators": [
     {
       "name": "Pahadiya, Atishay",
-      "orcid": "0009-0004-1264-1662"
+      "orcid": "0009-0004-1264-1662",
+      "affiliation": "San José State University"
     }
   ],
+  "description": "<p>neptune-fork rebuilds Le Verrier's 1846 prediction of Neptune from Uranus's observed motion, from first principles: its own Wisdom–Holman symplectic N-body integrator (validated against REBOUND), a forward model that fits Uranus's orbit jointly with an unseen perturber, and partitioned nested sampling (dynesty) for multimodal posteriors and Bayesian evidence, checked by coverage tests on synthetic data. It fits the 279 observations of Le Verrier's own 1846 Table 77 with an apparent-place observation model and per-observer error calibration. The pre-registered fit puts the unseen planet at 325.8° on the night Galle found Neptune, with a 68 % interval of 323.6°–327.8°, against Neptune's true 325.87°. The transcribed Table 77 is published as a separate dataset (concept DOI 10.5281/zenodo.24044791).</p>",
+  "notes": "Two licenses: MIT for the code; CC0 1.0 for data/historical/. The license field covers the code; the data dedication is stated in LICENSE.",
   "license": "MIT",
   "keywords": [
-    "celestial mechanics",
-    "Neptune",
-    "Uranus",
-    "Le Verrier",
-    "symplectic integrator",
-    "nested sampling",
+    "astronomy",
     "Bayesian inference",
-    "history of astronomy"
+    "celestial mechanics",
+    "history of science",
+    "inverse problems",
+    "N-body",
+    "Neptune",
+    "nested sampling",
+    "Uranus"
   ],
   "related_identifiers": [
     {
+      "identifier": "10.5281/zenodo.24044791",
+      "relation": "isSupplementedBy",
+      "scheme": "doi",
+      "resource_type": "dataset"
+    },
+    {
       "identifier": "https://jbwhit.github.io/discoverneptune/",
       "relation": "references",
+      "scheme": "url",
       "resource_type": "software"
     }
   ]
