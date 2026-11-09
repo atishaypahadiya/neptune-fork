@@ -58,20 +58,36 @@ def fetch_from_horizons(horizons_id: str, jd_tdb: np.ndarray) -> np.ndarray:
         obj = Horizons(id=horizons_id, location=HORIZONS_CENTER, epochs=chunk.tolist())
         tab = obj.vectors(refplane=HORIZONS_REFPLANE, aberrations="geometric", cache=False)
         got_jd = np.asarray(tab["datetime_jd"], dtype=np.float64)
-        # Horizons may reorder a TLIST; align rows to the request explicitly.
-        order = np.argsort(got_jd)
-        got_jd = got_jd[order]
-        idx = np.searchsorted(got_jd, chunk)
-        idx = np.clip(idx, 0, got_jd.size - 1)
-        if got_jd.size != chunk.size or np.any(np.abs(got_jd[idx] - chunk) > _JD_MATCH_TOL_DAYS):
-            raise RuntimeError(
-                f"Horizons returned epochs that do not match the request for id={horizons_id}"
-            )
+        try:
+            rows = _match_rows(chunk, got_jd)
+        except RuntimeError as err:
+            raise RuntimeError(f"{err} for id={horizons_id}") from None
         cols = np.column_stack(
             [np.asarray(tab[c], dtype=np.float64) for c in ("x", "y", "z", "vx", "vy", "vz")]
         )
-        out[start : start + chunk.size] = cols[order][idx]
+        out[start : start + chunk.size] = cols[rows]
     return out
+
+
+def _match_rows(requested_jd: np.ndarray, got_jd: np.ndarray) -> np.ndarray:
+    """Row of ``got_jd`` for each requested epoch, by nearest echoed JD.
+
+    Horizons may reorder a TLIST, and it echoes a JD that is not exactly representable a few
+    1e-10 d either side of the request, so the match is to the nearest echo, within
+    ``_JD_MATCH_TOL_DAYS``. Raises if any epoch is missing, extra or unmatched.
+    """
+    req = np.asarray(requested_jd, dtype=np.float64)
+    got = np.asarray(got_jd, dtype=np.float64)
+    if got.size != req.size:
+        raise RuntimeError("Horizons returned epochs that do not match the request")
+    order = np.argsort(got)
+    srt = got[order]
+    hi = np.clip(np.searchsorted(srt, req), 0, srt.size - 1)
+    lo = np.clip(hi - 1, 0, srt.size - 1)
+    near = np.where(np.abs(srt[lo] - req) < np.abs(srt[hi] - req), lo, hi)
+    if np.any(np.abs(srt[near] - req) > _JD_MATCH_TOL_DAYS) or np.unique(near).size != req.size:
+        raise RuntimeError("Horizons returned epochs that do not match the request")
+    return order[near]
 
 
 def _load_cache(path: Path) -> tuple[np.ndarray, np.ndarray]:

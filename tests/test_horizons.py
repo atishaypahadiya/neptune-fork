@@ -169,3 +169,20 @@ def test_inner_barycenter_is_mass_weighted_inner_planets(tmp_path):
         "uranus", [5.0], directory=tmp_path, fetcher=fake
     )
     assert rel[0, 0] == pytest.approx(7.0 - want_x, rel=1e-14)
+
+
+def test_match_rows_tolerates_echo_just_below_request():
+    """Horizons can echo a non-round JD ~5e-10 d below the request; each requested epoch must
+    still map to its own row, not the next one (seen with a linspace grid, 2026-11-08)."""
+    req = np.array([2379044.364285714, 2379135.675, 2379226.9857142857])
+    got = np.array([req[2], req[0] - 4.7e-10, req[1] + 4.7e-10])  # reordered, rounded
+    idx = horizons._match_rows(req, got)
+    np.testing.assert_array_equal(idx, [1, 2, 0])
+
+
+def test_match_rows_rejects_missing_or_extra_epochs():
+    req = np.array([2400000.5, 2400010.5])
+    with pytest.raises(RuntimeError, match="do not match"):
+        horizons._match_rows(req, np.array([2400000.5, 2400011.5]))
+    with pytest.raises(RuntimeError, match="do not match"):
+        horizons._match_rows(req, np.array([2400000.5]))
