@@ -2,7 +2,7 @@
 
 [![test](https://github.com/atishaypahadiya/neptune-fork/actions/workflows/test.yml/badge.svg)](https://github.com/atishaypahadiya/neptune-fork/actions/workflows/test.yml)
 [![pages](https://github.com/atishaypahadiya/neptune-fork/actions/workflows/pages.yml/badge.svg)](https://github.com/atishaypahadiya/neptune-fork/actions/workflows/pages.yml)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24044791.svg)](https://doi.org/10.5281/zenodo.24044791)
+[![DOI, all versions](https://zenodo.org/badge/DOI/10.5281/zenodo.24044791.svg)](https://doi.org/10.5281/zenodo.24044791)
 
 This project rebuilds Le Verrier's 1846 prediction of Neptune from Uranus's observed motion, from
 first principles: its own symplectic N-body integrator, and calibrated Bayesian posteriors for
@@ -67,7 +67,11 @@ because it depends on the small weights of three cells that are still single run
 likelihood that makes repeated runs of every cell affordable is specified as M8 in the
 [Phase 1 spec](docs/PHASE1_SPEC.md#m8-fast-linearized-likelihood).
 
-Data: [Le Verrier Table 77, Zenodo, doi:10.5281/zenodo.24044792](https://doi.org/10.5281/zenodo.24044792)
+Data: Le Verrier Table 77, on Zenodo.
+- Concept DOI [10.5281/zenodo.24044791](https://doi.org/10.5281/zenodo.24044791) (the badge
+  above): all versions; cite this for the dataset in general.
+- Version DOI [10.5281/zenodo.24044792](https://doi.org/10.5281/zenodo.24044792): v1.0.0; cite
+  this for exact reproducibility.
 
 ## Quickstart
 
