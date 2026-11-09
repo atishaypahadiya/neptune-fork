@@ -588,7 +588,7 @@ Each term is measured at the same (u, φ) as the full model, at the Stage 2 poin
 - the prior tail, including the ridge-branch region.
 
 Each term is reported separately for the core, ridge and prior-tail points, as distributions.
-Only the total carries a pass condition.
+No term carries a pass condition (*amended 2026-11-08*). The gate is reweighting, below.
 
 | term | how it is isolated | rough expected size (to be replaced by the measurement) |
 |---|---|---|
@@ -596,12 +596,16 @@ Only the total carries a pass condition.
 | E_K, Keplerian perturber | the perturbative likelihood with the perturber's trajectory from the full integrator (tabulated at the nodes), against the Keplerian one | Uranus's pull on the perturber is of a similar size, about 0.1″, plus the non-Keplerian part of Jupiter's and Saturn's pull |
 | E_Δs, grid quadrature | Δs against Δs/4 | small: the forcing varies on the 170-year synodic time scale |
 | E_ref, the reference offset | u_ref shifted by 1 posterior std in each coordinate (the cross terms in m·Δu) | small, by Stage 2's mode (b), which linearizes at u₁ |
-| total | the perturbative likelihood against the full one: the full likelihood minimized over u for χ², and the exact-Hessian Laplace for the marginal | must meet A8a |
+| total | the perturbative likelihood against the full one: the full likelihood minimized over u for χ², and the exact-Hessian Laplace for the marginal | reported against A8a's tolerances, as a diagnostic |
 
-- **The pass condition is A8a's, unchanged:** |Δχ²| < 0.1 and |Δ(−2 ln L)| < 0.2 within
-  Δ ln L = 30 of the best, with the truncation bound below 10⁻⁶ in −2 ln L.
-- **Fallbacks, fixed now and applied only to a term that fails.** The total is re-measured
-  after each. The tolerances are not loosened.
+- **Pointwise A8a is a diagnostic here, not the gate** (*amended 2026-11-08*, see "Why
+  pointwise A8a is at risk" and "Acceptance" below).
+  - Every term and the total are still measured and reported against |Δχ²| < 0.1 and
+    |Δ(−2 ln L)| < 0.2 within Δ ln L = 30 of the best, as the error budget.
+  - The truncation bound must stay below 10⁻⁶ in −2 ln L. This is still a gate.
+- **Fallbacks, fixed now.** They apply when the reweighting gate fails, to the error-budget
+  term that is largest where the weights are worst. The gate is re-measured after each one,
+  and its thresholds are not loosened.
   - E₂: one second-order pass. The forcing is recomputed along x_ref + δx and the quadrature
     repeated, which about doubles the per-call cost.
   - E_K: integrate the perturber as a test particle in the tabulated field of the Sun,
@@ -609,8 +613,113 @@ Only the total carries a pass condition.
     1/4 of a full call.
   - E_Δs: a finer Δs.
   - E_ref: re-centre u_ref on the perturbative posterior's median and recompute.
-- If the total still fails after the fallbacks, M8 stops and reports the largest term and
-  where it is largest.
+- If the gate still fails after the fallbacks, M8 stops and reports the ESS where it is
+  lowest, together with the error-budget term that dominates there.
+
+#### Why pointwise A8a is at risk
+
+Suppose the fast likelihood makes a coherent model error δ (same sign) across the N = 529
+measurements, each with σ ≈ 2″. Each whitened residual then shifts by δ/σ, and
+
+    Δχ² = −2(δ/σ) Σ z_i + N (δ/σ)²,   so |Δχ²| ≈ 2(δ/σ)√N + N(δ/σ)²
+
+with the cross term at its 1σ size, because Σ z_i ~ ±√N.
+
+| δ | cross term (±) | quadratic term | \|Δχ²\| |
+|---|---|---|---|
+| 0.05″ | 1.15 | 0.33 | about 0.3–1.5 |
+| 0.1″ | 2.3 | 1.32 | about 1–4 |
+
+- The error-budget table estimates E₂ and E_K at about 0.1″ each. So |Δχ²| of order 1–3
+  is expected, ten or more times A8a's pointwise tolerance of 0.1.
+- **Pointwise A8a is therefore at risk.** These numbers are upper-end estimates:
+  - Profiling u and the offsets absorbs the part of δ that looks like a shift in Uranus's
+    orbit or a group offset.
+  - Sampling φ absorbs more.
+  - What is left is known only once A8a measures it.
+- **A constant offset in Δχ² does not bias the posterior;** only its variation across the
+  posterior does. That is what the reweighting gate measures.
+
+#### Fast then reweight
+
+The published M8 results are the reweighted ones. A run has three steps:
+
+1. **Sample with the fast (perturbative) likelihood.** Same cells, nlive, dlogz and seeds rule
+   as M6c, with u and the offsets marginalized. This gives each cell's fast posterior and its
+   ln Z_k,fast.
+2. **Evaluate the full likelihood on the posterior samples.**
+   - The samples: N_k equal-weight samples per cell (N_k = 6000, M6c's derived count).
+   - "Full" means the M6c N-body likelihood with u and the offsets marginalized by Stage 1's
+     mode (b). A8a validated it to 2 × 10⁻⁵ in −2 ln L against the exact-Hessian Laplace
+     marginal. It costs 6 integrations, about 33 ms per sample.
+   - Each sample gets Δ_i = ln L_full(φ_i) − ln L_fast(φ_i).
+3. **Reweight.**
+   - Weights: w_i ∝ exp(Δ_i − max Δ).
+   - Posterior quantiles, derived quantities and cell shares come from the weighted samples.
+   - Each cell's evidence: ln Z_k = ln Z_k,fast + ln[(1/N_k) Σ_i exp(Δ_i)].
+   - The correction's Monte Carlo error is about √((N_k/ESS_k − 1)/N_k). It is added in
+     quadrature to the sampler's ln Z error, and only the sampler's part is inflated by
+     ERR_INFLATION.
+   - The cells are then combined as in M6c (`PartitionedResult`).
+   - Every sample's full likelihood also gets the truncation bound and the outside-box flag.
+
+Precedents:
+- **Relative binning** (Zackay, Dai & Venumadhav 2018, arXiv:1806.08792): a fiducial solution,
+  with the likelihood near it computed from summary data precomputed about that solution. The
+  perturbative likelihood is the same pattern in the time domain: a reference trajectory and
+  its linear response.
+- **Likelihood reweighting in gravitational-wave inference** (Payne, Talbot & Thrane 2019,
+  Phys. Rev. D 100, 123017, arXiv:1905.05477): sample with a cheap waveform, reweight to an
+  expensive one, and correct the evidence by the mean weight.
+
+#### Acceptance (*amended 2026-11-08*; replaces A8a's role as the gate)
+
+- **Gate:** the reweighting's effective sample size,
+  ESS = (Σ w_i)² / Σ w_i², with N the number of samples it is computed over.
+  - ESS / N ≥ 0.5 on each fit's combined posterior (the cells' weighted samples together, for
+    the headline, S1, S2 and each R2-comparison fit).
+  - ESS / N ≥ 0.3 within each ridge branch of cell 2: inner (e ≥ 0.06, a < 30.5 AU) and outer
+    (e ≥ 0.06, a ≥ 30.5 AU), as in M6.md. Weights are restricted to the branch's samples, and
+    the branch's own N is reported beside it.
+  - What the gate allows: if Δ ln L is roughly Gaussian across the posterior with spread s,
+    then ESS / N ≈ exp(−s²). The two thresholds allow s ≈ 0.83 and s ≈ 1.10, that is a
+    spread of about 1.7 and 2.2 in Δχ². A constant offset costs nothing.
+- **The truncation bound** stays below 10⁻⁶ in −2 ln L at every reweighted sample. The number
+  of outside-box flags is reported.
+- **A8a** reports pointwise errors as a diagnostic, for the error budget, with no pass
+  condition.
+- **A8b, A8c, A8d and A8f** apply to the reweighted results with their tolerances unchanged.
+  A8d covers S1 and S2.
+- **A8e** counts the reweighting in a fit's cost: one 4-cell headline fit, fast sampling plus
+  reweighting, costs at most 2.85 CPU-h. The reweighting is about 4 × 6000 × 33 ms ≈ 13 CPU-min.
+
+#### The reweighting blind spot
+
+Reweighting can only correct where the fast posterior has samples.
+- If the fast likelihood is too low in some region, the fast run never visits it, and no
+  weight there is ever computed. A whole mode or branch with non-negligible full-posterior
+  mass could then be missing.
+- **ESS does not show this.** It measures how unequal the weights are among the samples that
+  exist, not whether mass is missing elsewhere.
+- Where the fast likelihood is only somewhat too low, the region is under-sampled with large
+  weights, and the ESS does drop. Only a complete miss stays invisible.
+
+Four checks cover it:
+1. **Pointwise A8a at points the fast run need not visit:** the ridge-branch region and
+   prior-tail points (Stage 2's sets: R2 core and ridge, S1, S2, the whole prior and the
+   ridge-branch region).
+   - Any point within Δ ln L = 30 of the best where the fast ln L is below the full one by
+     more than 3 is reported as a potential blind spot.
+   - The fast posterior is then checked for samples within 1 posterior std of that point.
+2. **The per-branch ESS gate.** It needs both ridge branches present in the fast posterior,
+   and reweighted with adequate efficiency.
+3. **Branch masses:** fast, reweighted and R2's full-likelihood masses of the core and both
+   branches, side by side.
+4. **A8b against R2.** The full-likelihood R2 runs independently cover cell 2, ridge
+   included, so mass the fast run misses there shows up as an A8b failure.
+
+The cells (and the M6c cell edges) are not affected by the blind spot: nested sampling
+explores every cell's prior with the fast likelihood, and checks 1–4 apply cell by cell.
 
 #### Expected cost per call and the A8e target
 
@@ -623,7 +732,7 @@ Only the total carries a pass condition.
 - **Estimate:** 0.1–0.3 ms per call, 20–50 × cheaper than a full call. This is an estimate
   until measured. With the E_K fallback it would be about 1.5 ms (about 4 ×).
 - **A8e target, unchanged:** one 4-cell headline fit at M6c's nlive costs at most 2.85 CPU-h
-  (1/10 of 28.5).
+  (1/10 of 28.5). That includes the reweighting step, about 13 CPU-min (see "Acceptance").
 - **Added per-call target:** at most 0.55 ms (1/10 of the full call) on the A8e benchmark
   points, one thread. That alone meets A8e if the number of calls does not rise. Both
   factors, per call and per fit, are reported.
@@ -638,6 +747,8 @@ Only the total carries a pass condition.
 - Quadrature convergence in Δs.
 - The marginal against Stage 1's on the same (u, φ) when the forcing is switched off.
 - A8a with small N on a synthetic seed (fast), and on the real posteriors (slow).
+- The reweighting on a toy pair of Gaussian likelihoods, where the posterior, the ln Z
+  correction and the ESS are known in closed form.
 
 #### Alternatives considered and rejected for now
 
