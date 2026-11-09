@@ -4,14 +4,33 @@
 
 const DATA = new URL("../data/", import.meta.url);
 
-/** Fetch site/data/<name>. With `optional`, a missing file (404) returns null: a pending result. */
-export async function loadJSON(name, { optional = false } = {}) {
-  const res = await fetch(new URL(name, DATA), { cache: "no-cache" });
-  if (!res.ok) {
-    if (optional && res.status === 404) return null;
-    throw new Error(`site/data/${name}: HTTP ${res.status}`);
+const cache = new Map();
+
+/**
+ * Fetch site/data/<name>, once per page (panels share files). With `optional`, a missing file
+ * (404) returns null: a pending result. A network error (not an HTTP status) is retried twice.
+ */
+export function loadJSON(name, { optional = false } = {}) {
+  if (!cache.has(name)) cache.set(name, fetchJSON(name, optional));
+  return cache.get(name);
+}
+
+async function fetchJSON(name, optional) {
+  for (let attempt = 0; ; attempt++) {
+    let res;
+    try {
+      res = await fetch(new URL(name, DATA), { cache: "no-cache" });
+    } catch (err) {
+      if (attempt >= 2) throw err;
+      await new Promise((r) => setTimeout(r, 300 * (attempt + 1)));
+      continue;
+    }
+    if (!res.ok) {
+      if (optional && res.status === 404) return null;
+      throw new Error(`site/data/${name}: HTTP ${res.status}`);
+    }
+    return res.json();
   }
-  return res.json();
 }
 
 /** Calendar date (proleptic Gregorian) of a Julian Date, e.g. "23 Sep 1846". */
@@ -106,3 +125,40 @@ export const dm = (x) => {
   return `${d}°${String(m).padStart(2, "0")}′`;
 };
 export const range = (lo, hi, n = 1) => `${fmt(lo, n)}–${fmt(hi, n)}`;
+
+/** Everything panel 2 (the 1821 conjunction) shows: m6c_conjunction.json. */
+export async function loadConjunction() {
+  const c = await loadJSON("m6c_conjunction.json");
+  const card = (key) => {
+    const s = c[key], h = c.histograms[key];
+    if (Math.abs(h.centre_deg - s.all.median) > 1e-6) {
+      throw new Error(`m6c_conjunction ${key}: histogram not centred on the median`);
+    }
+    return {
+      key, frame: c.frames[key], all: s.all, groups: s.groups, jpl: s.jpl_neptune,
+      lv: s.le_verrier, hist: { centre: h.centre_deg, edges: h.edges_rel_deg, counts: h.counts },
+    };
+  };
+  const conj = card("conjunction_helio"), galle = card("galle_night_geo");
+  const split = (k) => Math.abs(k.groups.outer.median - k.groups.inner.median);
+  return {
+    conj, galle,
+    galleHelio: c.galle_night_helio.all,
+    conjDate: jdToDate(c.epoch.jd_tdb),
+    galleDate: jdToDate(c.galle_night_jd_tdb),
+    jplConjDate: jdToDate(c.epoch.jpl_uranus_neptune_conjunction_jd_tdb),
+    conjSpreadYears: c.epoch.sample_conjunction_years_68_width,
+    years: (c.galle_night_jd_tdb - c.epoch.jd_tdb) / 365.25,
+    groupNames: c.groups,
+    split: { conj: split(conj), galle: split(galle) },
+    nSamples: c.n_samples,
+    note: c.description.split(":")[0],
+  };
+}
+
+/** Where a value sits against an interval summary, in words. */
+export function whereIn(v) {
+  return v.in_68 ? "inside the 68 %" : v.in_95 ? "inside the 95 %, outside the 68 %"
+    : "outside the 95 %";
+}
+export const signed = (x, n = 1) => `${x < 0 ? "−" : "+"}${Math.abs(x).toFixed(n)}`;

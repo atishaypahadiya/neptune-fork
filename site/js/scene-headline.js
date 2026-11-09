@@ -6,52 +6,14 @@
 // (site/js/data.js), read from site/data/ at load time.
 
 import * as THREE from "three";
-import { Line2 } from "three/addons/lines/Line2.js";
-import { LineMaterial } from "three/addons/lines/LineMaterial.js";
-import { LineGeometry } from "three/addons/lines/LineGeometry.js";
 import { dm, fmt, range } from "./data.js";
+import { PHONE, REDUCED, fatLine, glowTexture, hairlines, watchVisibility } from "./common.js";
 
 const SX = 0.9; // world units per degree of longitude
 const H = 3.4; // height of the posterior's peak
 const SPAN = 9; // degrees shown either side of the histogram centre
 const N_CONE = 17; // cone lines, at evenly spaced quantiles across the 68 % interval
 const SMOOTH_BINS = 2; // display only: Gaussian kernel, σ = 2 bins (0.5°), on the drawn curve
-const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
-const PHONE = matchMedia("(max-width: 720px)");
-
-function fatLine(points, { width = 2, opacity = 1, dashed = false, dash = 0.14 } = {}) {
-  const geo = new LineGeometry();
-  geo.setPositions(points.flatMap((p) => [p.x, p.y, p.z]));
-  const mat = new LineMaterial({
-    color: 0xffffff, linewidth: width, transparent: opacity < 1, opacity,
-    dashed, dashSize: dash, gapSize: dash, worldUnits: false,
-  });
-  const line = new Line2(geo, mat);
-  line.computeLineDistances();
-  return line;
-}
-
-function hairlines(segments, opacity, { fog = true } = {}) {
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute("position", new THREE.Float32BufferAttribute(segments, 3));
-  const mat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity, fog });
-  return new THREE.LineSegments(geo, mat);
-}
-
-function glowTexture() {
-  const c = document.createElement("canvas");
-  c.width = c.height = 256;
-  const g = c.getContext("2d");
-  const grad = g.createRadialGradient(128, 128, 0, 128, 128, 128);
-  grad.addColorStop(0, "rgba(255,255,255,0.62)");
-  grad.addColorStop(0.35, "rgba(255,255,255,0.22)");
-  grad.addColorStop(1, "rgba(255,255,255,0)");
-  g.fillStyle = grad;
-  g.fillRect(0, 0, 256, 256);
-  const tex = new THREE.CanvasTexture(c);
-  tex.colorSpace = THREE.SRGBColorSpace;
-  return tex;
-}
 
 /**
  * Posterior curve from the histogram: bin centres (deg), heights and the CDF. The CDF (cone,
@@ -357,7 +319,10 @@ export function mountHeadline(root, d) {
   const t0 = performance.now();
   const DRAW = REDUCED ? 0 : 1600;
   const segs = curvePts.length - 1;
+  let visible = true;
+  watchVisibility(root, (v) => { visible = v; });
   const frame = (now) => {
+    if (!visible) { requestAnimationFrame(frame); return; }
     // rAF's timestamp can precede t0 on the first frame: clamp to [0, 1].
     const p = DRAW ? Math.min(1, Math.max(0, (now - t0) / DRAW)) : 1;
     const ease = 1 - (1 - p) ** 3;

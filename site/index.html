@@ -46,24 +46,61 @@
       <p class="alt sr-only"></p>
       <p class="error" hidden></p>
     </section>
+
+    <section class="scene" id="conjunction" aria-labelledby="conjunction-title">
+      <canvas aria-hidden="true"></canvas>
+      <svg class="leaders" aria-hidden="true"></svg>
+
+      <div class="copy">
+        <p class="chapter">What the data measured</p>
+        <h2 id="conjunction-title">The data</h2>
+        <p class="body">Loading the results…</p>
+        <p class="note"></p>
+      </div>
+
+      <div class="labels" aria-hidden="true">
+        <div class="anno right" data-anchor="conj"><p class="t"></p><p class="s"></p></div>
+        <div class="anno" data-anchor="galle"><p class="t"></p><p class="s"></p></div>
+        <div class="anno" data-anchor="inner"><p class="t"></p><p class="s"></p></div>
+        <div class="anno right" data-anchor="outer"><p class="t"></p><p class="s"></p></div>
+        <div class="anno" data-anchor="lv"><p class="t"></p><p class="s"></p></div>
+        <div class="anno right" data-anchor="nep"><p class="t"></p><p class="s"></p></div>
+        <div class="anno quiet" data-anchor="ribbon"><p class="t"></p></div>
+        <div class="ticks"></div>
+        <p class="tip" hidden></p>
+      </div>
+
+      <p class="equation" aria-label="The spread in longitude grows with time: minus three halves times the mean motion, times the relative spread in semi-major axis, times the time since the conjunction">δλ(<i>t</i>) ≈ −<sup>3</sup>⁄<sub>2</sub> <i>n</i> (δ<i>a</i> / <i>a</i>) (<i>t</i> − <i>t</i><sub>c</sub>)</p>
+
+      <p class="alt sr-only"></p>
+      <p class="error" hidden></p>
+    </section>
   </main>
   <div class="grain" aria-hidden="true"></div>
 
   <script type="module">
-    import { loadHeadline } from "./js/data.js";
+    import { loadConjunction, loadHeadline } from "./js/data.js";
     import { fillHeadline, mountHeadline } from "./js/scene-headline.js";
-    const root = document.getElementById("headline");
-    try {
-      const d = await loadHeadline();
-      fillHeadline(root, d);
-      mountHeadline(root, d);
-      root.classList.add("ready");
-    } catch (err) {
-      const e = root.querySelector(".error");
-      e.hidden = false;
-      e.textContent = `Could not load the results: ${err.message}`;
-      console.error(err);
-    }
+    import { fillConjunction, mountConjunction } from "./js/scene-conjunction.js";
+    // Each panel loads its own data and fails on its own, with a visible message.
+    const panels = [
+      ["headline", loadHeadline, fillHeadline, mountHeadline],
+      ["conjunction", loadConjunction, fillConjunction, mountConjunction],
+    ];
+    await Promise.all(panels.map(async ([id, load, fill, mount]) => {
+      const root = document.getElementById(id);
+      try {
+        const d = await load();
+        fill(root, d);
+        mount(root, d);
+        root.classList.add("ready");
+      } catch (err) {
+        const e = root.querySelector(".error");
+        e.hidden = false;
+        e.textContent = `Could not load the results: ${err.message}`;
+        console.error(err);
+      }
+    }));
   </script>
 </body>
 </html>

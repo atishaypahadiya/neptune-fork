@@ -12,6 +12,8 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { background: var(--bg); color: var(--ink); font-family: var(--sans); }
+/* One panel per viewport; scrolling snaps from one to the next. */
+html { scroll-snap-type: y mandatory; }
 body { overflow-x: hidden; -webkit-font-smoothing: antialiased; }
 code { font-family: inherit; }
 
@@ -21,6 +23,7 @@ code { font-family: inherit; }
   height: 100svh;
   min-height: 600px;
   overflow: hidden;
+  scroll-snap-align: start;
 }
 .scene canvas {
   position: absolute; inset: 0; width: 100%; height: 100%; display: block;
@@ -38,13 +41,15 @@ code { font-family: inherit; }
   font-weight: 500; font-size: 13px; letter-spacing: 0.2em; text-transform: uppercase;
   color: var(--ink-2);
 }
-h1 {
+h1, h2 {
   font-weight: 300; font-size: clamp(40px, 4.4vw, 64px); line-height: 1.02;
   margin-top: 20px; color: #fff; text-wrap: balance;
 }
 .body {
   font-size: 18px; line-height: 1.45; color: var(--ink-2); max-width: 31rem; margin-top: 18px;
 }
+.note { font-size: 14px; line-height: 1.4; color: var(--ink-3); margin-top: 10px; }
+.note:empty { display: none; }
 
 
 /* Stage annotations: square, leader, caps title, secondary lines */
@@ -56,7 +61,10 @@ h1 {
   color: #fff; line-height: 18px;
 }
 .anno .s { font-size: 13px; line-height: 1.4; color: var(--ink-2); font-variant-numeric: tabular-nums; }
-.anno[data-anchor="median"], .anno[data-anchor="lv"] { text-align: right; }
+#headline .anno[data-anchor="median"], #headline .anno[data-anchor="lv"], .anno.right {
+  text-align: right;
+}
+.anno.quiet .t { color: var(--ink-3); font-size: 12px; }
 .tick {
   position: absolute; left: 0; top: 0; font-size: 12px; letter-spacing: 0.08em;
   color: var(--ink-3); font-variant-numeric: tabular-nums;
@@ -77,6 +85,7 @@ h1 {
   font-family: var(--serif); font-style: italic; font-size: 20px; color: var(--ink-2);
 }
 .equation i { font-style: italic; }
+.equation sup, .equation sub { font-size: 0.65em; }
 
 
 
@@ -102,13 +111,16 @@ h1 {
   .copy { top: 24px; right: 16px; }
   .body { font-size: 16px; }
   .equation, .axis-title, .anno .s { display: none; }
-  .anno[data-anchor="lv"], .anno[data-anchor="median"] { display: none; }
+  #headline .anno[data-anchor="lv"], #headline .anno[data-anchor="median"] { display: none; }
+  #conjunction .anno[data-anchor="ribbon"], #conjunction .anno[data-anchor="nep"],
+  #conjunction .anno[data-anchor="inner"], #conjunction .anno[data-anchor="outer"] { display: none; }
+  #conjunction .anno.right { text-align: left; }
   .anno .t { font-size: 12px; }
   /* Mass and distance leave the scene and sit, unanchored, at the bottom. */
-  .anno[data-anchor="planet"] {
+  #headline .anno[data-anchor="planet"] {
     transform: none !important; left: 16px; top: auto; bottom: 28px; white-space: normal;
   }
-  .anno[data-anchor="planet"] .s { display: block; font-size: 12px; }
+  #headline .anno[data-anchor="planet"] .s { display: block; font-size: 12px; }
 }
 @media (prefers-reduced-motion: reduce) {
   * { scroll-behavior: auto !important; }
