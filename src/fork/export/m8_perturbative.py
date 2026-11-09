@@ -156,13 +156,13 @@ def _e2_chi2(w: dict, phi: np.ndarray, u_start: np.ndarray) -> tuple[float, int]
 
 
 def _evaluate(point: dict) -> dict:
-    variant = VARIANT_OF.get(point["source"], "headline")
+    variant = point.get("variant") or VARIANT_OF.get(point["source"], "headline")
     w = _W[variant]
     space, lp, pr = w["space"], w["lp"], w["pr"]
     q = np.array(point["q"])
     phi = q[4:]
     t0 = time.process_time()
-    rec = {k: point[k] for k in ("source", "class", "q")}
+    rec = {k: point[k] for k in ("source", "class", "q", "cell") if k in point}
     th = space.theta(q)
     rec |= {"variant": variant, "a_au": float(th[7]), "e": float(th[8]),
             "mass_earth": float(10.0 ** th[6])}  # fmt: skip
@@ -203,46 +203,100 @@ def _evaluate(point: dict) -> dict:
     return rec
 
 
-def _chunk_path(k: int) -> Path:
-    return CACHE / "a8a" / f"chunk_{k:03d}.json"
+def _chunk_path(k: int, sub: str = "a8a") -> Path:
+    return CACHE / sub / f"chunk_{k:03d}.json"
 
 
 def _run_chunk(chunk: list[dict]) -> list[dict]:
     return [_evaluate(p) for p in chunk]
 
 
-def run_a8a(n_workers: int) -> None:
+def _run_points(points: list[dict], sub: str, n_workers: int) -> None:
+    """Evaluate ``points`` in resumable chunks under CACHE/``sub``."""
     from fork import ledger
 
     refs = references()
-    points = all_points()
     chunks = [points[i : i + CHUNK] for i in range(0, len(points), CHUNK)]
-    todo = [k for k in range(len(chunks)) if not _chunk_path(k).exists()]
-    _log(f"a8a: {len(points)} points, {len(chunks)} chunks, {len(todo)} to do, "
+    todo = [k for k in range(len(chunks)) if not _chunk_path(k, sub).exists()]
+    _log(f"{sub}: {len(points)} points, {len(chunks)} chunks, {len(todo)} to do, "
          f"{n_workers} workers")  # fmt: skip
-    _chunk_path(0).parent.mkdir(parents=True, exist_ok=True)
+    _chunk_path(0, sub).parent.mkdir(parents=True, exist_ok=True)
     t0, c0 = time.time(), ledger.cpu_now()
     with ProcessPoolExecutor(n_workers, initializer=_init_worker, initargs=(refs,)) as ex:
         futs = {k: ex.submit(_run_chunk, chunks[k]) for k in todo}
         for i, (k, f) in enumerate(futs.items()):
             recs = f.result()
-            tmp = _chunk_path(k).with_suffix(".tmp")
+            tmp = _chunk_path(k, sub).with_suffix(".tmp")
             tmp.write_text(json.dumps(recs))
-            tmp.replace(_chunk_path(k))  # atomic: a resumed run never reads half a chunk
-            _log(f"a8a: chunk {k} done ({i + 1}/{len(todo)})")
+            tmp.replace(_chunk_path(k, sub))  # atomic: a resumed run never reads half a chunk
+            _log(f"{sub}: chunk {k} done ({i + 1}/{len(todo)})")
     if todo:
-        ledger.append("m8/perturbative_a8a", "diagnostic", n_likelihood_calls=None,
+        ledger.append(f"m8/perturbative_{sub}", "diagnostic", n_likelihood_calls=None,
                       n_integrations=None, sim_years=None, wall_s=time.time() - t0,
                       cpu_s=ledger.cpu_now() - c0, n_workers=n_workers,
                       n_points=len(points))  # fmt: skip
 
 
-def load_a8a() -> list[dict]:
-    n = math.ceil(len(all_points()) / CHUNK)
-    missing = [k for k in range(n) if not _chunk_path(k).exists()]
+def _load_points(n_points: int, sub: str) -> list[dict]:
+    n = math.ceil(n_points / CHUNK)
+    missing = [k for k in range(n) if not _chunk_path(k, sub).exists()]
     if missing:
-        raise SystemExit(f"a8a incomplete: chunks {missing} missing")
-    return [r for k in range(n) for r in json.loads(_chunk_path(k).read_text())]
+        raise SystemExit(f"{sub} incomplete: chunks {missing} missing")
+    return [r for k in range(n) for r in json.loads(_chunk_path(k, sub).read_text())]
+
+
+def run_a8a(n_workers: int) -> None:
+    _run_points(all_points(), "a8a", n_workers)
+
+
+def load_a8a() -> list[dict]:
+    return _load_points(len(all_points()), "a8a")
+
+
+# ---------------------------------------------------------------------------- per-cell draws
+
+CELLS_RNG = (8, 1846, 3)
+N_PER_CELL_DRAW = 300
+CELL_TAG = {"headline": "h", "s1_e05": "s1", "s2_sigma_data": "s2"}
+CELLS_DRAWN = (0, 1, 3)  # cell 2 is covered by the R2, S1 and S2 points above
+
+
+def cell_index(variant: str, a_au: float, e: float) -> int:
+    """Which of the variant's M6c cells (a slice × e slice) holds (a, e)."""
+    from fork.export import m6c
+
+    for k, ((a_lo, a_hi), e_rng) in enumerate(m6c.variant_cells(variant)):
+        if a_lo <= a_au < a_hi and (e_rng is None or e_rng[0] <= e < e_rng[1]):
+            return k
+    return -1
+
+
+def cell_points() -> list[dict]:
+    """300 equal-weight draws from each saved M6c run of cells 0, 1 and 3, for the headline,
+    S1 and S2 (full-likelihood posteriors, one cell each)."""
+    from fork.export import m6c
+    from fork.inference.nested import NestedResult
+
+    rng = np.random.default_rng(list(CELLS_RNG))
+    _, _, space, _ = m8.problem("headline")
+    out = []
+    for v in VARIANTS:
+        for k in CELLS_DRAWN:
+            eq = NestedResult.load(m6c.Job(v, k).path(".pkl")).equal_weight(rng)
+            idx = rng.choice(len(eq), N_PER_CELL_DRAW, replace=False)
+            for i in idx:
+                q = eq[i]
+                out.append({"source": f"{CELL_TAG[v]}_c{k}", "variant": v, "cell": k,
+                            "q": q.tolist(), "class": m8.classify(space.theta(q))})  # fmt: skip
+    return out
+
+
+def run_cells(n_workers: int) -> None:
+    _run_points(cell_points(), "cells", n_workers)
+
+
+def load_cells() -> list[dict]:
+    return _load_points(len(VARIANTS) * len(CELLS_DRAWN) * N_PER_CELL_DRAW, "cells")
 
 
 # ---------------------------------------------------------------------------- summaries
@@ -439,6 +493,72 @@ def run_a8e() -> dict:
     return out
 
 
+def summarize_cells(cell_recs: list[dict], a8a_recs: list[dict]) -> dict:
+    """Per cell of the headline, S1 and S2: the error budget and the ESS forecast (the per-cell
+    gate, ESS/N ≥ 0.3), plus the decision 2 switch rule. Cell 2 uses the A8a points: R2's
+    stratified draws (weighted by the ridge mass) for the headline, S1's and S2's own draws
+    that fall in their cell 2."""
+    best = _best_by_variant()
+    f_ridge = _r2_stratum_mass()
+    per: dict = {}
+    for v in VARIANTS:
+        for k in range(4):
+            if k == 2 and v == "headline":
+                rs = [r for r in a8a_recs if r["source"] == "r2"]
+                wts = np.array([(1 - f_ridge) if r["e"] < m8.E_RIDGE else f_ridge for r in rs])
+                n_c = sum(r["e"] < m8.E_RIDGE for r in rs)
+                wts = wts / np.where(np.array([r["e"] < m8.E_RIDGE for r in rs]), n_c,
+                                     len(rs) - n_c)  # fmt: skip
+                src = "R2 merged cell 2 (stratified core/ridge draws, weighted)"
+            elif k == 2:
+                tag = CELL_TAG[v]
+                rs = [r for r in a8a_recs if r["source"] == tag
+                      and cell_index(v, r["a_au"], r["e"]) == 2]  # fmt: skip
+                wts = None
+                src = f"{tag} posterior draws in cell 2"
+            else:
+                rs = [r for r in cell_recs if r.get("variant") == v and r.get("cell") == k]
+                wts = None
+                src = f"M6c {v} cell {k} run"
+            e: dict = {"source": src, "n": len(rs)}
+            dom = [r for r in rs if (r["chi2_full_min"] - best[v]) / 2.0 <= m8.DOMAIN_DLNL]
+            e["n_in_domain"] = len(dom)
+            for tag in ("fo", "so"):
+                d = np.array([-0.5 * (r["m2lnl_b"] - r[tag]["m2lnl"]) for r in rs])
+                t = {"ess_forecast": round(_ess_forecast(d, wts), 4),
+                     "delta_std": round(float(np.std(d)), 4)}  # fmt: skip
+                for term in ("total", "e_k", "e_js"):
+                    t[term] = m8._dist(np.array([r[tag][term][0] for r in rs]))
+                t["rest_after_k_js"] = m8._dist(
+                    np.array(
+                        [r[tag]["total"][0] - r[tag]["e_k"][0] - r[tag]["e_js"][0] for r in rs]
+                    )
+                )
+                t["blind_spot_candidates_in_domain"] = sum(r[tag]["total"][1] > 6.0 for r in dom)
+                t["n_outside_box"] = sum(r[tag]["outside_box"] for r in rs)
+                t["max_truncation_log10_bound"] = round(
+                    max(r[tag]["truncation_log10_bound"] for r in rs), 1)  # fmt: skip
+                e[tag] = t
+            per[f"{v}/c{k}"] = e
+    rule = {"overall_min": 0.9, "branch_min": 0.5,
+            "text": "switch off if the switch-off ESS forecast is >= 0.9 overall and >= 0.5 per "
+                    "ridge branch, else on (decision 2, 2026-11-09)"}  # fmt: skip
+    a8a = summarize_a8a(a8a_recs)["ess_forecast"]["fo"]
+    overall = min(a8a["r2_overall"], a8a["s1_overall"], a8a["s2_overall"])
+    branch = min(a8a["r2_ridge_inner"], a8a["r2_ridge_outer"])
+    rule["applied"] = {"overall_forecast_min": overall, "branch_forecast_min": branch,
+                       "switch": "off" if overall >= 0.9 and branch >= 0.5 else "on"}  # fmt: skip
+    cell_fail_off = [c for c, e in per.items() if e["fo"]["ess_forecast"] < 0.3]
+    rule["per_cell_gate"] = {
+        "threshold": 0.3,
+        "cells_failing_with_switch_off": cell_fail_off,
+        "cells_failing_with_switch_on": [
+            c for c, e in per.items() if e["so"]["ess_forecast"] < 0.3
+        ],
+    }
+    return {"cells": per, "switch_rule": rule}
+
+
 def summarize() -> None:
     from fork.model.perturbative import PerturbativeProblem
 
@@ -458,6 +578,7 @@ def summarize() -> None:
            "spec": "docs/PHASE1_SPEC.md, M8 amendment (5fc089f)",
            "precompute": pre,
            "a8a": summarize_a8a(load_a8a()),
+           "per_cell": summarize_cells(load_cells(), load_a8a()),
            "a8e": json.loads(a8e_path.read_text()) if a8e_path.exists() else None}  # fmt: skip
     write_json(OUT_NAME, out)
     print(json.dumps({k: out[k] for k in ("precompute", "a8e")}, indent=1))
@@ -466,13 +587,16 @@ def summarize() -> None:
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(prog="python -m fork.export.m8_perturbative")
     sub = ap.add_subparsers(dest="cmd", required=True)
-    a = sub.add_parser("a8a")
-    a.add_argument("--n-workers", type=int, default=8)
+    for name in ("a8a", "cells"):
+        a = sub.add_parser(name)
+        a.add_argument("--n-workers", type=int, default=8)
     sub.add_parser("a8e")
     sub.add_parser("summarize")
     args = ap.parse_args(argv)
     if args.cmd == "a8a":
         run_a8a(args.n_workers)
+    elif args.cmd == "cells":
+        run_cells(args.n_workers)
     elif args.cmd == "a8e":
         run_a8e()
     else:

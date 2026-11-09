@@ -684,6 +684,16 @@ Precedents:
   - What the gate allows: if Δ ln L is roughly Gaussian across the posterior with spread s,
     then ESS / N ≈ exp(−s²). The two thresholds allow s ≈ 0.83 and s ≈ 1.10, that is a
     spread of about 1.7 and 2.2 in Δχ². A constant offset costs nothing.
+  - *Added 2026-11-09:* ESS / N ≥ 0.3 within each cell separately, with the weights
+    restricted to that cell's samples. Cells 0, 1 and 3 carry the 95 % interval's tails and
+    have the largest fast-likelihood errors, so the combined ESS could hide a poorly
+    reweighted cell.
+- *Decided 2026-11-09 (docs/notes/M8.md):* the second-order switch is set by a rule. It is
+  off if the switch-off ESS forecast is ≥ 0.9 overall and ≥ 0.5 per ridge branch, and on
+  otherwise. Applied: off. A cell whose per-cell forecast failed with the switch off would
+  have had it on, or the pre-stated fallback. None failed.
+- *Decided 2026-11-09:* the fast model leaves out E_JS (Jupiter's and Saturn's response to
+  the perturber). The reweighting's full likelihood includes it, so reweighting removes it.
 - **The truncation bound** stays below 10⁻⁶ in −2 ln L at every reweighted sample. The number
   of outside-box flags is reported.
 - **A8a** reports pointwise errors as a diagnostic, for the error budget, with no pass
