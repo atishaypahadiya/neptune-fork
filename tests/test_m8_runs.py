@@ -51,3 +51,24 @@ def test_phi_prior_is_the_m6c_cells_restricted_to_phi():
 def test_smoke_runs_cannot_write_to_the_run_cache():
     with pytest.raises(SystemExit, match="scratch"):
         mr.do_job(mr.RunJob("headline", 2, 1), maxiter=10)
+
+
+def test_fit_ess_separates_allocation_cap_from_reweighting():
+    """Gate 1 as amended: with Δ ≡ 0 the reweighting share is 1 whatever the cell shares,
+    while ESS/N as written equals the allocation cap 1 / (K Σ p²)."""
+    from fork.inference.reweight import combine, reweight_cell
+
+    n, lz = 600, [-5.0, -5.0, -1.0, -4.0]
+    cells = [reweight_cell(np.zeros(n), z, 0.1) for z in lz]
+    res = combine(cells, [np.zeros((n, 1))] * 4, [0.0] * 4, 1.8)
+    p = np.exp(np.array(lz) - np.logaddexp.reduce(lz))
+    as_written, at0, share = mr.fit_ess(res)
+    assert as_written == pytest.approx(1 / (4 * np.sum(p**2)), rel=1e-9)
+    assert at0 == pytest.approx(as_written, rel=1e-9)
+    assert share == pytest.approx(1.0, rel=1e-9)
+    # a spread of Δ in one cell lowers only the share
+    rng = np.random.default_rng(1)
+    cells[2] = reweight_cell(rng.normal(0.0, 1.0, n), lz[2], 0.1)
+    res = combine(cells, [np.zeros((n, 1))] * 4, [0.0] * 4, 1.8)
+    _, _, share = mr.fit_ess(res)
+    assert 0.2 < share < 0.6

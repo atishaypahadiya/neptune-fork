@@ -688,6 +688,12 @@ Precedents:
     restricted to that cell's samples. Cells 0, 1 and 3 carry the 95 % interval's tails and
     have the largest fast-likelihood errors, so the combined ESS could hide a poorly
     reweighted cell.
+  - *Amended 2026-11-09, post hoc (docs/notes/M8.md, "Gate 1 amended").* The first bullet as
+    written cannot pass when each cell gets a fixed number of draws. Its ESS/N is capped by
+    the allocation at 1 / (N Σ_k p_k² / N_k), p_k the cell shares, whatever the likelihood.
+    The gate is now the reweighting's share, ESS / ESS(Δ ≡ 0) ≥ 0.5, with the as-written ESS/N
+    reported beside it. The threshold is unchanged. Decided after the gate values were seen and
+    before any A8 result was read.
 - *Decided 2026-11-09 (docs/notes/M8.md):* the second-order switch is set by a rule. It is
   off if the switch-off ESS forecast is ≥ 0.9 overall and ≥ 0.5 per ridge branch, and on
   otherwise. Applied: off. A cell whose per-cell forecast failed with the switch off would

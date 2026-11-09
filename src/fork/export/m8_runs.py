@@ -596,6 +596,25 @@ def _perturber(space, phi: np.ndarray) -> np.ndarray:
     return np.c_[10.0 ** th[:, 6], th[:, 7], th[:, 8]]
 
 
+ESS_GATE_FIT = 0.5
+
+
+def fit_ess(res) -> tuple[float, float, float]:
+    """Gate 1 (amended post hoc, 2026-11-09; docs/notes/M8.md, "Gate 1 amended").
+
+    Returns (ESS/N as written, ESS/N at Δ ≡ 0, reweighting share = their ratio).
+    With N_k draws in cell k and cell shares p_k, ESS = 1 / Σ_k p_k² / ESS_k, so ESS/N is
+    capped by the allocation at 1 / (N Σ_k p_k² / N_k), its value at Δ ≡ 0, whatever the
+    likelihood. The gate is the share, ESS / ESS(Δ ≡ 0) ≥ 0.5; the as-written value is
+    reported beside it."""
+    w = res.normalised_weights()
+    n_k = np.bincount(res.cell_of)
+    p_k = np.bincount(res.cell_of, weights=w)
+    ess0 = 1.0 / float(np.sum(p_k**2 / n_k))
+    n = res.log_w.size
+    return res.ess / n, ess0 / n, res.ess / ess0
+
+
 def _resampled(cells: list, log_c: list[float], rng: np.random.Generator, n: int):
     """Combine reweighted cells (``reweight.combine``) and draw n systematic-resampled indices
     into the stacked draws. Returns (Reweighted, indices)."""
@@ -697,8 +716,12 @@ def summarize(cache: Path = CACHE) -> dict:
                  "mass_earth": _q(pert[:, 0]), "a_au": _q(pert[:, 1]), "e": _q(pert[:, 2]),
                  "p_a_below_25_au": float(np.mean(pert[:, 1] < 25.0))}  # fmt: skip
             fits[f"{v}/{'merged' if s == MERGED else f's{s}'}"] = f
+            as_written, at_delta0, share = fit_ess(res)
             gate1.append({"fit": f"{v}/{'merged' if s == MERGED else f's{s}'}",
-                          "ess_frac": res.ess_frac, "pass": res.ess_frac >= 0.5})  # fmt: skip
+                          "ess_frac_as_written": as_written,
+                          "ess_frac_at_delta0": at_delta0,
+                          "reweighting_share": share, "threshold": ESS_GATE_FIT,
+                          "pass": share >= ESS_GATE_FIT})  # fmt: skip
 
     def gates_ok(v: str) -> bool:
         return all(g["pass"] for g in gate1 if g["fit"].startswith(v + "/")) and all(
