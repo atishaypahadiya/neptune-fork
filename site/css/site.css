@@ -76,6 +76,11 @@ h1, h2 {
   font-weight: 300; font-size: clamp(40px, 4.4vw, 64px); line-height: 1.02;
   margin-top: 20px; color: #fff; text-wrap: balance;
 }
+h3 {
+  font-weight: 300; font-size: clamp(26px, 2.5vw, 36px); line-height: 1.1;
+  margin-top: 14px; color: #fff; text-wrap: balance;
+}
+h2 + h3 { margin-top: 12px; }
 .body {
   font-size: 18px; line-height: 1.45; color: var(--ink-2); max-width: 31rem; margin-top: 18px;
 }

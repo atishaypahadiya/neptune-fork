@@ -50,7 +50,7 @@ export function mountChecks(root, d) {
     lanes, xMin, xMax, ticks, phoneZ: 1.5,
     walls: [{ x: 0, width: 2 }],
     half: (phone, a, span) => (phone ? (span / 2 + 0.6) / a : 8.4),
-    offset: (phone) => (phone ? [0, -0.27] : [-0.104, -0.23]),
+    offset: (phone) => (phone ? [0, -0.19] : [-0.104, -0.17]),
     anchors: ({ V, zBack, WALL_H }) => ({
       jpl: { point: V(0, WALL_H, zBack), offset: [0, -12], marker: "none", leader: false },
     }),
@@ -96,7 +96,7 @@ export function fillChecks(root, d) {
   const inAll = Object.keys(NAMES).every((k) => d.fits[k].galle_lon_ecl_of_date_deg.vs.jpl.in_68)
     && d.reported.vs.jpl.in_68;
   const ratio = rp.r1Spread / rp.r1RunError;
-  set("h2", "What we corrected, and what held");
+  set("h3", "What we corrected, and what held");
   let body =
     `The first published 68 % interval, ${range(d.first.lo68, d.first.hi68, 2)}° ` +
     `(${fmt(d.first.width68, 2)}° wide), rested on one run of the main cell. Four repeats at the ` +

@@ -52,9 +52,9 @@ export function mountTimeline(root, d) {
     lanes, xMin, xMax,
     walls: [{ x: 0 }],
     ticks: TICKS.map(([s, text]) => ({ x: X(s), text, minor: Math.abs(s) > 0 && Math.abs(s) < 3600 })),
-    phoneZ: 1.85,
+    phoneZ: 1.65,
     half: (phone, a, span) => (phone ? (span / 2 + 0.6) / a : 11),
-    offset: (phone) => (phone ? [0, -0.25] : [-0.21, -0.245]),
+    offset: (phone) => (phone ? [0, -0.3] : [-0.21, -0.245]),
     anchors: ({ V, Z, phone, zBack, WALL_H }) => {
       const z = Z(head);
       const a = {
@@ -106,7 +106,7 @@ export function fillTimeline(root, d) {
   const beforeResult = F.filter((f) => f.L && f.dFinish !== null).every((f) => f.pre.every((p) =>
     p.dPush < f.dFinish && (f.dSummary === null || p.dPush < f.dSummary)));
 
-  set("h2", beforeResult ? "Every plan was public before its result" : "When each plan went public");
+  set("h3", beforeResult ? "Every plan was public before its result" : "When each plan went public");
   const hp = h.pre[0];
   const lead = Math.min(...main.map((p) => -p.dPush)), most = Math.max(...main.map((p) => -p.dPush));
   let body =
@@ -115,7 +115,8 @@ export function fillTimeline(root, d) {
     `was first pushed at ${clock(hp.pushed.time)}, ${duration(hp.dPush)} after launch: public ` +
     `${duration(h.dFinish - hp.dPush)} before the run finished (${clock(h.e.finished.time)}) and ` +
     `${duration(h.dSummary - hp.dPush)} before the first summary of its result ` +
-    `(${clock(h.e.first_summary.time)}).`;
+    `(${clock(h.e.first_summary.time)}). The logs cannot rule out that one of its result files ` +
+    `was opened by hand during the run.`;
   if (allMainBefore) {
     body += ` Every later plan was pushed before its runs launched, by ${duration(lead)} to ` +
       `${duration(most)}.`;
