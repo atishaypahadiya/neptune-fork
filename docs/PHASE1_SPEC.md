@@ -419,10 +419,22 @@ already are.
   −2 ln L(φ) = χ²_min(φ) + ln det(JᵀJ + Σ_prior⁻¹) + const.
 - u's prior is uniform in the M6c box. Record the largest |u*(φ) − centre| in box-σ units over
   the posterior; it must stay below 40, or the truncation is not negligible.
+  *Amended (2026-11-08, after Stage 2, docs/notes/M8.md):* the 40 box-σ rule is replaced by the
+  measured truncation bound (`fork.model.linearized.truncation_bound`, a union bound on the
+  mass of N(u*, (JᵀJ)⁻¹) outside the box). It is reported at every A8a point and must keep
+  −2 ln L's error below 10⁻⁶. The old rule measured distance from the centre, not to the edge,
+  and the full-likelihood posterior already broke it (k at 43.8 box-σ, with a truncation bound
+  of at most 10⁻¹³⁷). Solutions with u* outside the box are flagged, and no truncation term is
+  added.
 - **Two modes; the acceptance test chooses between them.**
   - (a) J fixed at the Uranus-only fit: one integration per call.
   - (b) One Gauss–Newton refinement with J re-evaluated at u*(φ): about 2 integrations per
     call, or 6 with finite-difference J.
+  - *Amended (2026-11-08, after Stage 2):* A8a failed mode (a) (largest |Δχ²| 0.395) and passed
+    mode (b) (below 1e-5). Neither is adopted. Linearizing Uranus is accurate, but every call
+    still integrates the perturber: the integration is 5.42 of the 5.5 ms per call, so no mode
+    of this kind can pass A8e. The u marginal carries over to the amendment at the end of
+    this section.
 - **Derived quantities** (Galle-night longitude, 1847 longitude, mass, a, e): draw u | φ from
   its conditional Gaussian N(u*, (JᵀJ)⁻¹).
 - Data, error model, priors on φ, cells, nlive, dlogz and ERR_INFLATION are those of M6c,
@@ -441,10 +453,10 @@ Every M8 posterior below is the merge of 4 seeds per cell.
 
 | Test | Pass condition |
 |---|---|
-| A8a likelihood | On 2000 posterior draws each from R2 and from S1–S3 (within Δ ln L = 30 of the maximum), the profile χ²_min(φ) matches the full likelihood minimised over u to \|Δχ²\| < 0.1, and the marginal −2 ln L matches a Laplace evaluation with the exact Hessian to < 0.2. Report the distribution, not only the maximum |
+| A8a likelihood | On 2000 posterior draws each from R2 and from S1–S2 (S3 amended out, below; within Δ ln L = 30 of the maximum), the profile χ²_min(φ) matches the full likelihood minimised over u to \|Δχ²\| < 0.1, and the marginal −2 ln L matches a Laplace evaluation with the exact Hessian to < 0.2. Report the distribution, not only the maximum |
 | A8b R2 | Cell 2: median within 0.35° of R2's, 68 % width within 10 %, ln Z_k within 0.5 |
 | A8c headline | Cells 0, 1 and 3, combined with M8's cell 2 as in M6c: median within 0.35° and each 68 % bound within 0.4° of the replacement interval. Each ln Z_k within 1.5 of the published run's. 95 % bounds reported, not tested (provisional in M6c) |
-| A8d S1–S3 | Per variant: median and 68 % width each within 1.3° (2 × R1's std); ln B against the headline within 2.2 (2 × √2 × 0.76); JPL in or out of the 68 % interval, and each reading-rule verdict in M6.md, the same as published |
+| A8d S1–S3 | Per variant: median and 68 % width each within 1.3° (2 × R1's std); ln B against the headline within 2.2 (2 × √2 × 0.76); JPL in or out of the 68 % interval, and each reading-rule verdict in M6.md, the same as published. *Amended (2026-11-08):* S3 (Student-t) is out of scope for analytic M8, because its marginal over u is not Gaussian (docs/notes/M8.md, issue 2). A8d covers S1 and S2 |
 | A8e speed | One 4-cell headline fit at M6c's nlive costs at most 1/10 of the full-likelihood fit's 28.5 CPU-h. Report the actual factor |
 | A8f seeds | Each cell's 4 seeds pass the R2 rule of the repeatability study: 68 % widths within 10 % of their mean |
 
@@ -478,6 +490,183 @@ and S4 also run on M8.
 - Any change to the data, error model, priors, cells or the M6c pre-registered numbers. M8
   results are reported beside them.
 - Linearizing the perturber's parameters.
+
+### M8 amendment: first-order perturbative likelihood (draft, 2026-11-08)
+
+Spec text only. Nothing here is implemented or pre-registered yet. Its acceptance numbers are
+to be committed before any code, as for M8.
+
+#### Why
+
+Stage 2 (docs/notes/M8.md) found:
+- Marginalizing Uranus's four coordinates and the group offsets analytically is accurate.
+- It cannot speed up a call. Of the 5.5 ms a full call takes, 5.42 ms is the N-body
+  integration, and the apparent places, residuals and offset marginal take 0.053 ms.
+- So A8e can only pass if the per-call integration goes away.
+
+#### Idea
+
+Split Uranus's motion into two parts:
+- a **reference**: Sun (inner planets folded in, as now), Jupiter, Saturn and Uranus, with no
+  perturber, integrated once;
+- the **first-order response** to the perturber's acceleration, which is linear in that
+  acceleration.
+
+The acceleration comes in closed form from a Keplerian perturber. So a call does no
+integration, and the mass factors out.
+
+#### Precomputed once per data set and error model (reads no Neptune state)
+
+1. **The reference Uranus u_ref, near the posterior.** It must not be the perturber-free box
+   centre:
+   - Stage 2's mode (a) failed A8a by linearizing about the box centre, about 150 raw σ from
+     u*.
+   - Default: the median u of the M6c replacement posterior. That is a data-only quantity.
+   - For a data set with no posterior yet: a full-likelihood point fit over (u, φ).
+   - The box (the prior) is unchanged.
+2. **The reference trajectory.** Integrate it from u_ref with the M6c integrator and step
+   (dt 12 d). Tabulate:
+   - Uranus's heliocentric state at every node (below) and at the 279 observation epochs;
+   - Jupiter's and Saturn's positions at every node.
+3. **Uranus's state-transition matrix Φ(t, t₀)** (6×6) at every node and epoch, where t₀ is
+   the model epoch.
+   - Computed by central finite differences of the reference integration in Uranus's 6
+     initial Cartesian coordinates (12 integrations).
+   - Checked against the symplectic identity ΦᵀWΦ = W, where W is the 6×6 symplectic form.
+   - Impulse response: Φ(t, s) = Φ(t, t₀) Φ(s, t₀)⁻¹, with Φ⁻¹ = −WΦᵀW.
+4. **The node grid s_k.** A regular step Δs over the data span (1690–1846; default 60 d),
+   plus t₀, plus every observation epoch, so that each epoch is a node.
+5. **Per-node and per-epoch matrices.**
+   - Per node: M_k = Φ(s_k, t₀)⁻¹ B (6×3, where B maps an acceleration into the velocity
+     rows).
+   - Per epoch: the position rows P_i of Φ(t_i, t₀) (3×6).
+   - J_u = ∂z/∂u at the reference, by central differences as in Stage 1.
+
+#### Per call (φ: the perturber's 7)
+
+1. **The perturber on a Keplerian orbit.**
+   - Its initial heliocentric state is built from φ exactly as the full model builds it
+     (`fork.model.forward._initial_conditions`).
+   - That state is moved to the barycentre of Sun, Jupiter and Saturn (using the reference J
+     and S at t₀). It is propagated in closed form as a Kepler orbit about that barycentre,
+     with μ = G(M_central + M_J + M_S + m), vectorized over all nodes. It is then moved back
+     to heliocentric with the tabulated barycentre.
+   - **Jupiter and Saturn act on the perturber only through that central mass and
+     barycentre;** they do not otherwise perturb it, and neither does Uranus.
+   - Why the barycentre: at 20–60 AU the Sun, Jupiter and Saturn pull almost as one mass at
+     their barycentre. A heliocentric Kepler orbit would instead carry the Sun's reflex wobble,
+     about 0.005–0.01 AU, as an error.
+2. **The acceleration per unit mass at every node** (vectorized):
+   g_k = G[(x_P − x_U)/|x_P − x_U|³ − x_P/|x_P|³]. This is the direct term and the indirect
+   term, in the integrator's heliocentric (inner-barycentre) frame, with x_U the reference
+   Uranus.
+3. **The first-order response.**
+   - δX(t_i) = m · Φ(t_i, t₀) ∫_{t₀}^{t_i} Φ(s, t₀)⁻¹ B g(s) ds.
+   - The integral is a cumulative quadrature over the nodes (composite Simpson on regular
+     intervals, trapezoid on the rest), taken with its sign for t_i < t₀.
+   - **The mass factors out:** the integral is computed for unit mass and scaled by m.
+4. **The likelihood.**
+   - Uranus's position is x_ref + δx. Its velocity is the reference's, because the velocity
+     change enters only through light time (below 0.01″).
+   - The apparent places are computed exactly as in the full model (`apparent_ra_dec`), not
+     linearized.
+   - The residuals and offset marginal follow, then the Stage 1 u marginal with J_u fixed at
+     the reference. That is valid now because the reference is near the posterior.
+   - m stays sampled, because its prior is log-uniform.
+5. **The flag.** A call whose u* lies outside the box returns a flag (decision 4).
+
+**Derived quantities** (Galle-night and 1847 longitudes) come from the full forward model at
+the posterior samples, with u drawn from N(u*, (JᵀJ)⁻¹). They do not come from the Keplerian
+orbit. That costs one integration per derived sample (6000 × 5.5 ms ≈ 33 s).
+
+#### Error budget, measured in A8a
+
+Each term is measured at the same (u, φ) as the full model, at the Stage 2 point sets:
+- R2 core and ridge;
+- S1;
+- S2, with its own error model, box and precomputation;
+- the prior tail, including the ridge-branch region.
+
+Each term is reported separately for the core, ridge and prior-tail points, as distributions.
+Only the total carries a pass condition.
+
+| term | how it is isolated | rough expected size (to be replaced by the measurement) |
+|---|---|---|
+| E₂, second order in mass | full integrator only: z(m) against the first-order extrapolation z(0) + (m/ε)[z(ε) − z(0)], ε = 10⁻³ m; Δχ² after profiling u and the offsets | the response changes the forcing by about δx/r_UP ≈ 10⁻³, so about 0.1″ on the 130″ signal |
+| E_K, Keplerian perturber | the perturbative likelihood with the perturber's trajectory from the full integrator (tabulated at the nodes), against the Keplerian one | Uranus's pull on the perturber is of a similar size, about 0.1″, plus the non-Keplerian part of Jupiter's and Saturn's pull |
+| E_Δs, grid quadrature | Δs against Δs/4 | small: the forcing varies on the 170-year synodic time scale |
+| E_ref, the reference offset | u_ref shifted by 1 posterior std in each coordinate (the cross terms in m·Δu) | small, by Stage 2's mode (b), which linearizes at u₁ |
+| total | the perturbative likelihood against the full one: the full likelihood minimized over u for χ², and the exact-Hessian Laplace for the marginal | must meet A8a |
+
+- **The pass condition is A8a's, unchanged:** |Δχ²| < 0.1 and |Δ(−2 ln L)| < 0.2 within
+  Δ ln L = 30 of the best, with the truncation bound below 10⁻⁶ in −2 ln L.
+- **Fallbacks, fixed now and applied only to a term that fails.** The total is re-measured
+  after each. The tolerances are not loosened.
+  - E₂: one second-order pass. The forcing is recomputed along x_ref + δx and the quadrature
+    repeated, which about doubles the per-call cost.
+  - E_K: integrate the perturber as a test particle in the tabulated field of the Sun,
+    Jupiter, Saturn and the reference Uranus. That is one body with no back-reaction, about
+    1/4 of a full call.
+  - E_Δs: a finer Δs.
+  - E_ref: re-centre u_ref on the perturbative posterior's median and recompute.
+- If the total still fails after the fallbacks, M8 stops and reports the largest term and
+  where it is largest.
+
+#### Expected cost per call and the A8e target
+
+- **Nodes:** about 57,000 d / 60 d ≈ 950 regular, plus 279 epochs, ≈ 1230.
+- **Work per call:**
+  - a vectorized Kepler solve and the acceleration at the nodes (about 100 flops each);
+  - the 6×3 products and cumulative sum (about 40 each);
+  - the 279 position rows;
+  - the 0.053 ms of apparent places, residuals and marginals measured today.
+- **Estimate:** 0.1–0.3 ms per call, 20–50 × cheaper than a full call. This is an estimate
+  until measured. With the E_K fallback it would be about 1.5 ms (about 4 ×).
+- **A8e target, unchanged:** one 4-cell headline fit at M6c's nlive costs at most 2.85 CPU-h
+  (1/10 of 28.5).
+- **Added per-call target:** at most 0.55 ms (1/10 of the full call) on the A8e benchmark
+  points, one thread. That alone meets A8e if the number of calls does not rise. Both
+  factors, per call and per fit, are reported.
+- **Precomputation:** about 15 integrations per data set, a few seconds.
+
+#### Tests
+
+- Φ's symplecticity.
+- δx against the full integrator at a tiny mass (10⁻³ M⊕), where only the first order
+  survives.
+- The Kepler propagation against the integrator with the planets made massless.
+- Quadrature convergence in Δs.
+- The marginal against Stage 1's on the same (u, φ) when the forcing is switched off.
+- A8a with small N on a synthetic seed (fast), and on the real posteriors (slow).
+
+#### Alternatives considered and rejected for now
+
+- **Linearized Uranus with an integration per call** (modes (b) and (b′), or variational
+  equations): at least one integration per call. They cannot reach 1/10 per call (decision 1,
+  docs/notes/M8.md).
+- **A faster integrator** (a longer step, or compiled optimizations): dt = 12 d is M1's
+  validated accuracy. Without re-validating A1, the gain is at most about 2 ×.
+- **An emulator (Gaussian process or neural network)** of the likelihood or residuals over φ:
+  - |Δχ²| < 0.1 on χ² ≈ 640 is a relative accuracy of 1.5 × 10⁻⁴, over a 7-dimensional space
+    with several modes and a ridge.
+  - An emulator's error is largest where its training is sparsest: in the tails and the ridge
+    branches, which are where the exploration problem lives.
+  - Its error has no physical bound, and it must be retrained for every Phase 2 model and
+    data set.
+- **Simulation-based inference** (neural posterior or likelihood estimation):
+  - It replaces an exact likelihood with a learned one.
+  - It gives no reliable evidence, and ln Z is what Phase 2's model comparison is built on.
+  - It needs simulated noisy data sets, coverage calibration and new dependencies.
+  - It could be reconsidered in Phase 2 if a model's likelihood becomes intractable, for
+    example a mundane-error model with many nuisance parameters.
+- **Linearizing the perturber's parameters:** the posterior in φ has several modes and a
+  ridge. This stays out of scope.
+
+#### Out of scope for the amendment
+
+- S3, as for M8.
+- Second-order terms, unless the E₂ fallback is triggered.
+- Any change to the data, error model, priors, cells or the M6c pre-registered numbers.
 
 ---
 
