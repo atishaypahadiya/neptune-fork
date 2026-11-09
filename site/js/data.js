@@ -54,7 +54,7 @@ export function jdToDate(jd) {
  * replace it and its rule did not hold (`m8_runs.json` rule_95.replace); M8b decides next
  * (`m8b.json`, absent until it reports).
  */
-function interval95(rep, m8, m8b) {
+export function interval95(rep, m8, m8b) {
   const g = rep.galle_lon_ecl_of_date_deg;
   const provisional = (rep.provisional ?? []).some((k) => k.endsWith("95"));
   const base = { lo: g.lo95, hi: g.hi95, source: "M6c" };
@@ -203,3 +203,83 @@ export function whereInBand(v, b68, b95) {
   if (b95[0] <= v && v <= b95[1]) return "inside the 95 %, outside the 68 %";
   return "outside the 95 %";
 }
+
+// Times in m7_timeline.json are ISO strings already in PST ("2026-11-07T15:13:24-08:00");
+// they are shown as written, never converted to the reader's time zone.
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+export const clock = (iso) => iso.slice(11, 19);
+export const dayMonth = (iso) => `${Number(iso.slice(8, 10))} ${MONTHS[Number(iso.slice(5, 7)) - 1]}`;
+export const secondsBetween = (a, b) => (Date.parse(b) - Date.parse(a)) / 1000;
+/** A duration in words: "5 s", "16 min 48 s", "2 h 50 min". */
+export function duration(s) {
+  s = Math.round(Math.abs(s));
+  if (s < 60) return `${s} s`;
+  const m = Math.floor(s / 60);
+  if (m < 60) return s % 60 ? `${m} min ${s % 60} s` : `${m} min`;
+  const h = Math.floor(m / 60);
+  return m % 60 ? `${h} h ${m % 60} min` : `${h} h`;
+}
+
+/** Panel 4a: the pre-registration timeline (m7_timeline.json). */
+export async function loadTimeline() {
+  const t = await loadJSON("m7_timeline.json");
+  return { ...t, entries: t.entries.map((e) => ({ ...e, pre: e.preregistration })) };
+}
+
+/** Panel 4b: the repeatability correction and the sensitivity runs, with their reading rules. */
+export async function loadChecks() {
+  const [fits, rep, repeat, timeline, m8, m8b, arbiter] = await Promise.all([
+    loadJSON("m6_fits.json"),
+    loadJSON("m6c_replacement.json"),
+    loadJSON("m6c_repeat.json"),
+    loadJSON("m7_timeline.json"),
+    loadJSON("m8_runs.json"),
+    loadJSON("m8b.json", { optional: true }),
+    loadJSON("m8_arbiter.json", { optional: true }),
+  ]);
+  const rules = timeline.sensitivity_reading_rules;
+  const g = (f) => f.galle_lon_ecl_of_date_deg;
+  const first = g(fits.fits.headline);
+  // The reported interval's 95 % bounds and status follow panel 1 (pending / provisional / final).
+  const i95 = interval95(rep, m8, m8b);
+  const reported = { ...g(rep), lo95: i95.lo, hi95: i95.hi, i95 };
+  const shift = (k) => fits.fits[k].vs_headline.galle_median_shift_headline_half_widths;
+  const jplIn = (f) => g(f).vs.jpl.in_68;
+
+  // Each verdict is the pre-registered rule applied to the published numbers.
+  const s1p = fits.fits.s1_e05.p_a_below_25_au;
+  const r1 = rules.s1_e05;
+  const s1Word = s1p > r1.moved_above ? "moved" : s1p < r1.not_at_all_below ? "not at all" : "partly";
+  const a8d = m8.tests?.a8d?.s1_e05;
+  const keeps = (k) => jplIn(fits.fits[k]) === jplIn(fits.fits.headline)
+    && Math.abs(shift(k)) < rules[k].max_shift_headline_half_widths;
+  const verdicts = {
+    s1_e05: {
+      word: s1Word, p: s1p, rule: r1.text,
+      // A8d failed for S1, which triggered the arbiter; until it reports the published verdict
+      // stands and is marked pending.
+      pending: !!(a8d && !a8d.pass) && !arbiter,
+      m8p: a8d?.p_a_below_25_au ?? null,
+      arbiter,
+    },
+    s2_sigma_data: { holds: keeps("s2_sigma_data"), rule: rules.s2_sigma_data.text },
+    s3_t4: { holds: keeps("s3_t4"), rule: rules.s3_t4.text },
+  };
+  const r1Runs = ["r1_1", "r1_2", "r1_3", "r1_4"].map((k) => repeat.runs[k].width68);
+  const r2Runs = ["r2_1", "r2_2"].map((k) => repeat.runs[k].width68);
+  return {
+    first, reported, jpl: fits.comparison_targets.jpl.galle_lon_ecl_of_date_deg,
+    fits: fits.fits, verdicts, rulesSource: rules.source,
+    repeat: {
+      r1Runs, r2Runs,
+      r1Spread: repeat.spread.r1.width68.std,
+      r1RunError: repeat.spread.r1.width68.rms_run_error,
+      r2RelDiff: repeat.decision.r2_width_rel_diff,
+      tol: repeat.rule.r2_width_tol_rel,
+      outcome: repeat.decision.outcome,
+    },
+  };
+}
+
+/** Panel 5: the dataset (m7_dataset.json). */
+export const loadDataset = () => loadJSON("m7_dataset.json");

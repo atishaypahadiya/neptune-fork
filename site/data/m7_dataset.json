@@ -1,0 +1,3686 @@
+{
+ "description": "Le Verrier (1846) Table 77 dataset, for the site's dataset panel. Built by docs/notes/scripts/m7_dataset.py from release/leverrier-table77/ and Zenodo's records API.",
+ "title": "Le Verrier (1846), Table n° 77: 279 observations of Uranus, 1690–1845, transcribed and reconciled",
+ "creators": [
+  "Pahadiya, Atishay"
+ ],
+ "zenodo": {
+  "version_doi": "10.5281/zenodo.24044792",
+  "concept_doi": "10.5281/zenodo.24044791",
+  "version": "1.0.0",
+  "publication_date": "2026-11-07",
+  "license": "cc-zero",
+  "record_url": "https://zenodo.org/records/24044792",
+  "concept_url": "https://doi.org/10.5281/zenodo.24044791"
+ },
+ "citation": {
+  "message": "If you use this dataset, please cite it as below, and cite Le Verrier (1846) for the observations themselves.",
+  "source": {
+   "type": "article",
+   "title": "Recherches sur les mouvements de la planète Herschel (dite Uranus)",
+   "authors": [
+    {
+     "family-names": "Le Verrier",
+     "given-names": "Urbain Jean Joseph"
+    }
+   ],
+   "journal": "Connaissance des Temps pour l'an 1849, Additions",
+   "year": 1846,
+   "start": 3,
+   "end": 254,
+   "publisher": {
+    "name": "Bachelier"
+   },
+   "location": {
+    "name": "Paris"
+   }
+  }
+ },
+ "counts": {
+  "rows": 279,
+  "pages": 8,
+  "measurements": 529,
+  "observations_with_measurements": 279,
+  "years": [
+   1690.985,
+   1845.74
+  ],
+  "pass_disagreements": 14,
+  "misprints": 7
+ },
+ "spot_checks": {
+  "automated": {
+   "rows": 28,
+   "cells": 336,
+   "matching": 336,
+   "file": "spotcheck_results.json"
+  },
+  "human": {
+   "rows": 28,
+   "cells": 336,
+   "matching": 336,
+   "reviewer": "the dataset author",
+   "file": "spotcheck_human_results.json"
+  },
+  "same_rows": true
+ },
+ "provenance": "Machine-assisted transcription and reconciliation (an AI model), not done by an independent human; 28 rows then spot-checked by a human against the Gallica scan.",
+ "package_files": [
+  "CITATION.cff",
+  "DATA_DICTIONARY.md",
+  "LICENSE",
+  "MANIFEST.md",
+  "README.md",
+  "datapackage.json",
+  "leverrier_1846.csv",
+  "leverrier_1846_misprints.csv",
+  "leverrier_1846_pass1.csv",
+  "leverrier_1846_pass2.csv",
+  "leverrier_1846_resolution_log.csv",
+  "leverrier_1846_table77.csv",
+  "spotcheck_human_results.json",
+  "spotcheck_results.json",
+  "spotcheck_rows.csv"
+ ],
+ "table_sha256": "897f3cde1564998ac1aa1036c8665d91b24dda142d686e2fdf1ec5902e419127",
+ "observations": [
+  {
+   "id": "LV1846-T77-p129-l01",
+   "year": 1690.985,
+   "observatory": "Greenwich",
+   "observer": "Flamsteed",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p129-l02",
+   "year": 1712.258,
+   "observatory": "Greenwich",
+   "observer": "Flamsteed",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p129-l03",
+   "year": 1715.177,
+   "observatory": "Greenwich",
+   "observer": "Flamsteed",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p129-l04",
+   "year": 1715.194,
+   "observatory": "Greenwich",
+   "observer": "Flamsteed",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": true,
+   "misprints": 0,
+   "resolved": 1
+  },
+  {
+   "id": "LV1846-T77-p129-l05",
+   "year": 1715.33,
+   "observatory": "Greenwich",
+   "observer": "Flamsteed",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p129-l06",
+   "year": 1750.791,
+   "observatory": "Paris",
+   "observer": "Le Monnier",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p129-l07",
+   "year": 1750.927,
+   "observatory": "Paris",
+   "observer": "Le Monnier",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p129-l08",
+   "year": 1753.928,
+   "observatory": "Greenwich",
+   "observer": "Bradley",
+   "quantities": [
+    "ra"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p129-l09",
+   "year": 1756.74,
+   "observatory": "Göttingen",
+   "observer": "Mayer",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p129-l10",
+   "year": 1764.044,
+   "observatory": "Paris",
+   "observer": "Le Monnier",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": true,
+   "misprints": 1,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p129-l11",
+   "year": 1768.995,
+   "observatory": "Paris",
+   "observer": "Le Monnier",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p129-l12",
+   "year": 1769.003,
+   "observatory": "Paris",
+   "observer": "Le Monnier",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 1,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p129-l13",
+   "year": 1769.047,
+   "observatory": "Paris",
+   "observer": "Le Monnier",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p129-l14",
+   "year": 1769.049,
+   "observatory": "Paris",
+   "observer": "Le Monnier",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p129-l15",
+   "year": 1769.06,
+   "observatory": "Paris",
+   "observer": "Le Monnier",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p129-l16",
+   "year": 1769.063,
+   "observatory": "Paris",
+   "observer": "Le Monnier",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p129-l17",
+   "year": 1769.066,
+   "observatory": "Paris",
+   "observer": "Le Monnier",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p129-l18",
+   "year": 1769.068,
+   "observatory": "Paris",
+   "observer": "Le Monnier",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": true,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p129-l19",
+   "year": 1771.968,
+   "observatory": "Paris",
+   "observer": "Le Monnier",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 1,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p129-l20",
+   "year": 1781.741,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p129-l21",
+   "year": 1781.749,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p129-l22",
+   "year": 1782.019,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p129-l23",
+   "year": 1782.025,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p129-l24",
+   "year": 1782.186,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p129-l25",
+   "year": 1782.21,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p129-l26",
+   "year": 1782.754,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p129-l27",
+   "year": 1782.759,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p129-l28",
+   "year": 1782.958,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p129-l29",
+   "year": 1782.997,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p129-l30",
+   "year": 1783.772,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": true,
+   "misprints": 0,
+   "resolved": 1
+  },
+  {
+   "id": "LV1846-T77-p129-l31",
+   "year": 1783.783,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": true,
+   "misprints": 0,
+   "resolved": 1
+  },
+  {
+   "id": "LV1846-T77-p130-l01",
+   "year": 1784.051,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l02",
+   "year": 1784.081,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l03",
+   "year": 1784.212,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l04",
+   "year": 1784.22,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l05",
+   "year": 1784.231,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l06",
+   "year": 1784.766,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l07",
+   "year": 1784.796,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l08",
+   "year": 1785.033,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l09",
+   "year": 1785.066,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l10",
+   "year": 1785.244,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l11",
+   "year": 1785.825,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l12",
+   "year": 1786.041,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l13",
+   "year": 1787.043,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l14",
+   "year": 1788.19,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l15",
+   "year": 1788.193,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l16",
+   "year": 1788.821,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l17",
+   "year": 1788.829,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l18",
+   "year": 1789.055,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra"
+   ],
+   "spot_checked": true,
+   "misprints": 0,
+   "resolved": 1
+  },
+  {
+   "id": "LV1846-T77-p130-l19",
+   "year": 1789.277,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l20",
+   "year": 1789.279,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l21",
+   "year": 1789.285,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l22",
+   "year": 1789.834,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l23",
+   "year": 1789.839,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l24",
+   "year": 1790.06,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l25",
+   "year": 1790.079,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l26",
+   "year": 1790.844,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l27",
+   "year": 1790.847,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l28",
+   "year": 1790.858,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l29",
+   "year": 1791.079,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l30",
+   "year": 1791.082,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l31",
+   "year": 1791.09,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l32",
+   "year": 1791.289,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l33",
+   "year": 1791.86,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l34",
+   "year": 1791.868,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l35",
+   "year": 1792.103,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p130-l36",
+   "year": 1792.873,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": true,
+   "misprints": 0,
+   "resolved": 1
+  },
+  {
+   "id": "LV1846-T77-p130-l37",
+   "year": 1792.878,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l01",
+   "year": 1792.884,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l02",
+   "year": 1793.11,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": true,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l03",
+   "year": 1793.116,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l04",
+   "year": 1793.875,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l05",
+   "year": 1793.899,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l06",
+   "year": 1794.118,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l07",
+   "year": 1794.142,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l08",
+   "year": 1794.888,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": true,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l09",
+   "year": 1794.891,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l10",
+   "year": 1794.893,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l11",
+   "year": 1795.128,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l12",
+   "year": 1795.136,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l13",
+   "year": 1795.925,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l14",
+   "year": 1796.152,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l15",
+   "year": 1796.155,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l16",
+   "year": 1796.933,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l17",
+   "year": 1797.157,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l18",
+   "year": 1797.165,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l19",
+   "year": 1797.168,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l20",
+   "year": 1797.954,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l21",
+   "year": 1798.197,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l22",
+   "year": 1799.199,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l23",
+   "year": 1800.199,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l24",
+   "year": 1800.207,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l25",
+   "year": 1801.209,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l26",
+   "year": 1801.217,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l27",
+   "year": 1801.228,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l28",
+   "year": 1801.233,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l29",
+   "year": 1802.006,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l30",
+   "year": 1802.009,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l31",
+   "year": 1802.235,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l32",
+   "year": 1802.238,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l33",
+   "year": 1802.241,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p131-l34",
+   "year": 1802.246,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l01",
+   "year": 1803.24,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l02",
+   "year": 1803.246,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l03",
+   "year": 1803.248,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l04",
+   "year": 1804.21,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra"
+   ],
+   "spot_checked": true,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l05",
+   "year": 1804.251,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 1,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l06",
+   "year": 1804.27,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l07",
+   "year": 1804.281,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l08",
+   "year": 1805.277,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l09",
+   "year": 1805.28,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l10",
+   "year": 1805.283,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": true,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l11",
+   "year": 1805.285,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l12",
+   "year": 1806.293,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l13",
+   "year": 1806.301,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l14",
+   "year": 1806.304,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l15",
+   "year": 1806.307,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l16",
+   "year": 1807.055,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l17",
+   "year": 1807.298,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l18",
+   "year": 1807.3,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l19",
+   "year": 1807.306,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l20",
+   "year": 1807.314,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l21",
+   "year": 1807.317,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 1,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l22",
+   "year": 1808.073,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l23",
+   "year": 1808.3,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l24",
+   "year": 1808.311,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l25",
+   "year": 1808.324,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l26",
+   "year": 1808.333,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l27",
+   "year": 1808.335,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l28",
+   "year": 1809.081,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l29",
+   "year": 1809.332,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l30",
+   "year": 1809.346,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l31",
+   "year": 1809.348,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l32",
+   "year": 1809.354,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l33",
+   "year": 1810.32,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l34",
+   "year": 1810.323,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l35",
+   "year": 1810.326,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l36",
+   "year": 1810.329,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p132-l37",
+   "year": 1810.331,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l01",
+   "year": 1811.134,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l02",
+   "year": 1811.137,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l03",
+   "year": 1812.122,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l04",
+   "year": 1812.139,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l05",
+   "year": 1812.338,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l06",
+   "year": 1812.346,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l07",
+   "year": 1812.352,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l08",
+   "year": 1812.355,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l09",
+   "year": 1813.146,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l10",
+   "year": 1813.155,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra"
+   ],
+   "spot_checked": true,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l11",
+   "year": 1813.168,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l12",
+   "year": 1813.389,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l13",
+   "year": 1813.392,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": true,
+   "misprints": 0,
+   "resolved": 1
+  },
+  {
+   "id": "LV1846-T77-p133-l14",
+   "year": 1813.403,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l15",
+   "year": 1813.406,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l16",
+   "year": 1814.405,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l17",
+   "year": 1814.411,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l18",
+   "year": 1814.413,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l19",
+   "year": 1815.164,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l20",
+   "year": 1815.167,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l21",
+   "year": 1815.399,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l22",
+   "year": 1815.402,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": true,
+   "misprints": 0,
+   "resolved": 1
+  },
+  {
+   "id": "LV1846-T77-p133-l23",
+   "year": 1816.15,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l24",
+   "year": 1816.164,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l25",
+   "year": 1816.175,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l26",
+   "year": 1816.417,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l27",
+   "year": 1816.42,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": true,
+   "misprints": 0,
+   "resolved": 1
+  },
+  {
+   "id": "LV1846-T77-p133-l28",
+   "year": 1816.423,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l29",
+   "year": 1817.441,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": true,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l30",
+   "year": 1817.444,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l31",
+   "year": 1817.447,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l32",
+   "year": 1818.435,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l33",
+   "year": 1818.438,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": true,
+   "misprints": 0,
+   "resolved": 1
+  },
+  {
+   "id": "LV1846-T77-p133-l34",
+   "year": 1818.441,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l35",
+   "year": 1818.444,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": true,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p133-l36",
+   "year": 1819.47,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": true,
+   "misprints": 0,
+   "resolved": 1
+  },
+  {
+   "id": "LV1846-T77-p133-l37",
+   "year": 1819.473,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l01",
+   "year": 1819.476,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l02",
+   "year": 1819.478,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l03",
+   "year": 1820.478,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l04",
+   "year": 1820.48,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l05",
+   "year": 1820.483,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l06",
+   "year": 1820.486,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l07",
+   "year": 1821.469,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l08",
+   "year": 1821.472,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l09",
+   "year": 1821.477,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l10",
+   "year": 1822.512,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l11",
+   "year": 1822.517,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l12",
+   "year": 1822.526,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l13",
+   "year": 1823.552,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": true,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l14",
+   "year": 1823.558,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l15",
+   "year": 1823.563,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l16",
+   "year": 1824.527,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l17",
+   "year": 1824.53,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l18",
+   "year": 1824.532,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l19",
+   "year": 1824.535,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l20",
+   "year": 1825.518,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l21",
+   "year": 1825.526,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l22",
+   "year": 1826.621,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l23",
+   "year": 1826.624,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l24",
+   "year": 1827.574,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l25",
+   "year": 1827.577,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l26",
+   "year": 1827.58,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l27",
+   "year": 1828.552,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l28",
+   "year": 1828.554,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l29",
+   "year": 1829.57,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l30",
+   "year": 1829.573,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l31",
+   "year": 1829.578,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l32",
+   "year": 1829.8,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l33",
+   "year": 1830.583,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p134-l34",
+   "year": 1830.589,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l01",
+   "year": 1830.856,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": true,
+   "misprints": 0,
+   "resolved": 1
+  },
+  {
+   "id": "LV1846-T77-p135-l02",
+   "year": 1830.859,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l03",
+   "year": 1830.864,
+   "observatory": "Greenwich",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": true,
+   "misprints": 2,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l04",
+   "year": 1835.553,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": true,
+   "misprints": 0,
+   "resolved": 1
+  },
+  {
+   "id": "LV1846-T77-p135-l05",
+   "year": 1835.555,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra"
+   ],
+   "spot_checked": true,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l06",
+   "year": 1835.558,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l07",
+   "year": 1835.561,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l08",
+   "year": 1835.564,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l09",
+   "year": 1835.61,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": true,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l10",
+   "year": 1835.613,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l11",
+   "year": 1835.624,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l12",
+   "year": 1835.626,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l13",
+   "year": 1835.894,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l14",
+   "year": 1835.897,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l15",
+   "year": 1835.899,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l16",
+   "year": 1835.902,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l17",
+   "year": 1836.664,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l18",
+   "year": 1836.667,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l19",
+   "year": 1836.669,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": true,
+   "misprints": 0,
+   "resolved": 1
+  },
+  {
+   "id": "LV1846-T77-p135-l20",
+   "year": 1836.877,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l21",
+   "year": 1836.885,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l22",
+   "year": 1836.888,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l23",
+   "year": 1837.647,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l24",
+   "year": 1837.65,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l25",
+   "year": 1837.652,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l26",
+   "year": 1837.914,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l27",
+   "year": 1837.917,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l28",
+   "year": 1837.92,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l29",
+   "year": 1838.668,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l30",
+   "year": 1838.671,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l31",
+   "year": 1838.676,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l32",
+   "year": 1838.916,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l33",
+   "year": 1838.922,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l34",
+   "year": 1839.686,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l35",
+   "year": 1839.689,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l36",
+   "year": 1839.692,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l37",
+   "year": 1839.932,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l38",
+   "year": 1839.935,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": true,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p135-l39",
+   "year": 1840.697,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p136-l01",
+   "year": 1840.699,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p136-l02",
+   "year": 1840.702,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p136-l03",
+   "year": 1840.839,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p136-l04",
+   "year": 1840.852,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p136-l05",
+   "year": 1841.693,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p136-l06",
+   "year": 1841.696,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p136-l07",
+   "year": 1841.699,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p136-l08",
+   "year": 1841.964,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p136-l09",
+   "year": 1841.972,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p136-l10",
+   "year": 1841.983,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p136-l11",
+   "year": 1842.704,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": true,
+   "misprints": 0,
+   "resolved": 1
+  },
+  {
+   "id": "LV1846-T77-p136-l12",
+   "year": 1842.706,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p136-l13",
+   "year": 1842.709,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p136-l14",
+   "year": 1842.952,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p136-l15",
+   "year": 1842.955,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p136-l16",
+   "year": 1842.958,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p136-l17",
+   "year": 1842.96,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p136-l18",
+   "year": 1843.722,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p136-l19",
+   "year": 1843.725,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p136-l20",
+   "year": 1843.73,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p136-l21",
+   "year": 1844.006,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p136-l22",
+   "year": 1844.009,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p136-l23",
+   "year": 1844.689,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p136-l24",
+   "year": 1844.691,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p136-l25",
+   "year": 1844.694,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p136-l26",
+   "year": 1844.697,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p136-l27",
+   "year": 1844.967,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p136-l28",
+   "year": 1844.992,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p136-l29",
+   "year": 1845.734,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  },
+  {
+   "id": "LV1846-T77-p136-l30",
+   "year": 1845.74,
+   "observatory": "Paris",
+   "observer": "",
+   "quantities": [
+    "ra",
+    "dec"
+   ],
+   "spot_checked": false,
+   "misprints": 0,
+   "resolved": 0
+  }
+ ]
+}

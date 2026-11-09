@@ -108,19 +108,114 @@
       <p class="alt sr-only"></p>
       <p class="error" hidden></p>
     </section>
+
+    <section class="scene" id="timeline" aria-labelledby="timeline-title">
+      <canvas aria-hidden="true"></canvas>
+      <svg class="leaders" aria-hidden="true"></svg>
+      <div class="copy wide">
+        <p class="chapter">How we kept ourselves honest</p>
+        <h2 id="timeline-title">When each plan went public</h2>
+        <p class="body">Loading the results…</p>
+        <p class="note"></p>
+      </div>
+      <div class="labels" aria-hidden="true">
+        <div class="anno lane has-short" data-anchor="lane-m6c_headline"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
+        <div class="anno lane has-short" data-anchor="lane-m6c_sensitivity"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
+        <div class="anno lane has-short" data-anchor="lane-m6c_repeat"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
+        <div class="anno lane has-short" data-anchor="lane-m8_a8"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
+        <div class="anno lane has-short" data-anchor="lane-m8_a8f_rerun"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
+        <div class="anno lane has-short" data-anchor="lane-m8b"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
+        <div class="anno lane has-short" data-anchor="lane-m8_arbiter"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
+        <div class="anno quiet" data-anchor="wall"><p class="t"></p></div>
+        <div class="anno" data-anchor="hCommit"><p class="t"></p></div>
+        <div class="anno" data-anchor="hPush"><p class="t"></p><p class="s"></p></div>
+        <div class="anno" data-anchor="hFinish"><p class="t"></p></div>
+        <div class="anno" data-anchor="hSummary"><p class="t"></p></div>
+        <div class="ticks"></div>
+        <p class="tip" hidden></p>
+      </div>
+      <p class="alt sr-only"></p>
+      <p class="error" hidden></p>
+    </section>
+
+    <section class="scene" id="checks" aria-labelledby="checks-title">
+      <canvas aria-hidden="true"></canvas>
+      <svg class="leaders" aria-hidden="true"></svg>
+      <div class="copy wide">
+        <p class="chapter">How we kept ourselves honest</p>
+        <h2 id="checks-title">What we corrected, and what held</h2>
+        <p class="body">Loading the results…</p>
+        <p class="note"></p>
+      </div>
+      <div class="labels" aria-hidden="true">
+        <div class="anno lane has-short" data-anchor="lane-first"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
+        <div class="anno lane has-short" data-anchor="lane-reported"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
+        <div class="anno lane has-short" data-anchor="lane-s1_e05"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
+        <div class="anno lane has-short" data-anchor="lane-s2_sigma_data"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
+        <div class="anno lane has-short" data-anchor="lane-s3_t4"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
+        <div class="anno" data-anchor="jpl"><p class="t"></p></div>
+        <div class="ticks"></div>
+        <p class="tip" hidden></p>
+      </div>
+      <p class="alt sr-only"></p>
+      <p class="error" hidden></p>
+    </section>
+
+    <section class="scene" id="dataset" aria-labelledby="dataset-title">
+      <div class="copy">
+        <p class="chapter">The dataset</p>
+        <h2 id="dataset-title">The observations, published on their own</h2>
+        <p class="body">Loading the dataset…</p>
+        <p class="note"></p>
+      </div>
+      <div class="cite">
+        <p class="chapter">Cite</p>
+        <p class="doi"><span class="k">All versions</span> <a class="doi-concept"></a><br>
+          <span class="h">Cite this for the dataset in general</span></p>
+        <p class="ref" id="cite-concept"></p>
+        <button type="button" data-copy="cite-concept">Copy</button>
+        <p class="doi"><span class="k ver"></span> <a class="doi-version"></a><br>
+          <span class="h">Cite this for exact reproducibility</span></p>
+        <p class="ref" id="cite-version"></p>
+        <button type="button" data-copy="cite-version">Copy</button>
+        <p class="h">For the observations themselves, cite the source:</p>
+        <p class="ref cite-source"></p>
+        <p class="licence">… <a class="record">Zenodo record</a></p>
+      </div>
+      <div class="stage">
+        <canvas aria-hidden="true"></canvas>
+        <svg class="leaders" aria-hidden="true"></svg>
+        <div class="labels" aria-hidden="true">
+        <div class="anno lane has-short" data-anchor="lane-greenwich"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
+        <div class="anno lane has-short" data-anchor="lane-paris"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
+        <div class="anno lane has-short" data-anchor="lane-gottingen"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
+          <div class="anno" data-anchor="spot"><p class="t"></p><p class="s"></p></div>
+          <div class="ticks"></div>
+          <p class="tip" hidden></p>
+        </div>
+      </div>
+      <p class="alt sr-only"></p>
+      <p class="error" hidden></p>
+    </section>
   </main>
   <div class="grain" aria-hidden="true"></div>
 
   <script type="module">
-    import { loadConjunction, loadHeadline, loadWindow } from "./js/data.js";
+    import { loadChecks, loadConjunction, loadDataset, loadHeadline, loadTimeline, loadWindow } from "./js/data.js";
     import { fillHeadline, mountHeadline } from "./js/scene-headline.js";
     import { fillConjunction, mountConjunction } from "./js/scene-conjunction.js";
     import { fillWindow, mountWindow } from "./js/scene-window.js";
+    import { fillTimeline, mountTimeline } from "./js/scene-timeline.js";
+    import { fillChecks, mountChecks } from "./js/scene-checks.js";
+    import { fillDataset, mountDataset } from "./js/scene-dataset.js";
     // Each panel loads its own data and fails on its own, with a visible message.
     const panels = [
       ["headline", loadHeadline, fillHeadline, mountHeadline],
       ["conjunction", loadConjunction, fillConjunction, mountConjunction],
       ["window", loadWindow, fillWindow, mountWindow],
+      ["timeline", loadTimeline, fillTimeline, mountTimeline],
+      ["checks", loadChecks, fillChecks, mountChecks],
+      ["dataset", loadDataset, fillDataset, mountDataset],
     ];
     await Promise.all(panels.map(async ([id, load, fill, mount]) => {
       const root = document.getElementById(id);

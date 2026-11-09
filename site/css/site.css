@@ -34,6 +34,37 @@ code { font-family: inherit; }
 .leaders line { stroke: var(--line); stroke-width: 0.7; opacity: 0.8; }
 .leaders .dot { fill: var(--line); }
 .leaders .diamond { fill: var(--bg); stroke: var(--line); stroke-width: 1.2; }
+.leaders .hollow { fill: var(--bg); stroke: var(--line); stroke-width: 1.2; }
+.leaders line.faint { opacity: 0.5; }
+
+/* Lanes (panels 4 and 5): the label sits left of its row, right-aligned. */
+.anno.lane { text-align: right; }
+.copy.wide { max-width: 44rem; }
+.copy.wide .body { max-width: 44rem; }
+
+/* Panel 5: copy left, citation right, the observations below. */
+#dataset .stage { position: absolute; left: 0; right: 0; bottom: 0; height: 40%; }
+#dataset .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.cite {
+  position: absolute; left: calc(50% + 24px); right: var(--gutter); top: 40px; max-width: 38rem;
+  font-size: 14px; line-height: 1.45; color: var(--ink-2);
+}
+.cite .doi { margin-top: 14px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.cite .doi .k {
+  font-weight: 500; font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase; color: #fff;
+  margin-right: 6px;
+}
+.cite a { color: #fff; text-underline-offset: 3px; text-decoration-thickness: 0.5px; }
+.cite .h { color: var(--ink-3); font-size: 13px; }
+.cite p.h { margin-top: 14px; }
+.cite .ref { margin-top: 6px; color: var(--ink-2); user-select: all; }
+.cite button {
+  margin-top: 6px; font: inherit; font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: #fff; background: none; border: none; padding: 0; cursor: pointer;
+  text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 0.5px;
+}
+.cite button:focus-visible, .cite a:focus-visible { outline: 1px solid #fff; outline-offset: 3px; }
+.cite .licence { margin-top: 16px; color: var(--ink); }
 
 /* Chapter label, headline, body */
 .copy { position: absolute; left: var(--gutter); top: 40px; max-width: 34rem; pointer-events: none; }
@@ -122,6 +153,16 @@ h1, h2 {
   .anno.has-short .t, .anno.has-short .s { display: none; }
   .anno.has-short .ts { display: block; }
   #conjunction .anno.right { text-align: left; }
+  .anno.lane { text-align: left; }
+  .tick.minor { display: none; }
+  #timeline .anno[data-anchor="hCommit"], #timeline .anno[data-anchor="hFinish"],
+  #timeline .anno[data-anchor="hSummary"], #timeline .anno[data-anchor="wall"] { display: none; }
+  #timeline .anno[data-anchor^="h"], #checks .anno[data-anchor="jpl"] .t { font-size: 11px; }
+  /* Panel 5 on a phone: copy, citation and figure stack and the panel grows past one screen. */
+  #dataset { height: auto; min-height: 100svh; padding: 24px 16px 0; }
+  #dataset .copy, #dataset .cite { position: static; max-width: none; }
+  #dataset .cite { margin-top: 20px; }
+  #dataset .stage { position: relative; height: 300px; margin: 16px -16px 0; }
   .anno .t { font-size: 12px; }
   /* Mass and distance leave the scene and sit, unanchored, at the bottom. */
   #headline .anno[data-anchor="planet"] {

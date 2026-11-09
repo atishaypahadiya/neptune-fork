@@ -1,0 +1,242 @@
+{
+ "description": "Pre-registration timeline: when each pre-registration was committed and first pushed (public), and when its runs launched, finished and were first summarized. Times are PST (UTC-8). Built by docs/notes/scripts/m7_timeline.py from git, GitHub's repository activity API and the run logs.",
+ "generated": "2026-11-09T15:20:27-08:00",
+ "sources": {
+  "committed": "git committer date",
+  "pushed": "GitHub repository activity API: first push whose head is the commit or a descendant",
+  "launched/finished/first_summary": "run driver logs under data/cache/ (named per entry)"
+ },
+ "rewritten": {
+  "2c9ebb3": {
+   "pushed_as": "ed1bf8a",
+   "source": "docs/notes/M6.md, Note on commit hashes"
+  }
+ },
+ "entries": [
+  {
+   "id": "m6c_headline",
+   "title": "M6c headline fit",
+   "notes": "docs/notes/M6.md, M6c pre-registration",
+   "preregistration": [
+    {
+     "sha": "2c9ebb3",
+     "role": "pre-registration",
+     "committed": "2026-11-07T15:13:24-08:00",
+     "pushed": {
+      "time": "2026-11-07T15:30:17-08:00",
+      "head": "ed1bf8a",
+      "as": "ed1bf8a"
+     }
+    }
+   ],
+   "launched": {
+    "time": "2026-11-07T15:13:29-08:00",
+    "source": "data/cache/nested/m6c/driver.log"
+   },
+   "finished": {
+    "time": "2026-11-07T18:20:31-08:00",
+    "source": "data/cache/nested/m6c/driver.log"
+   },
+   "first_summary": {
+    "time": "2026-11-07T18:24:43-08:00",
+    "source": "data/cache/nested/m6c/summarize.log (file time)"
+   },
+   "status": "done"
+  },
+  {
+   "id": "m6c_sensitivity",
+   "title": "M6c sensitivity runs S1–S3",
+   "notes": "docs/notes/M6.md, M6c sensitivity runs S1–S3: pre-registration",
+   "preregistration": [
+    {
+     "sha": "2981aa1",
+     "role": "pre-registration",
+     "committed": "2026-11-07T20:13:37-08:00",
+     "pushed": {
+      "time": "2026-11-07T20:14:25-08:00",
+      "head": "2981aa1",
+      "as": null
+     }
+    }
+   ],
+   "launched": {
+    "time": "2026-11-07T20:14:40-08:00",
+    "source": "data/cache/nested/m6c/driver.log"
+   },
+   "finished": {
+    "time": "2026-11-08T05:59:48-08:00",
+    "source": "data/cache/nested/m6c/driver.log"
+   },
+   "first_summary": null,
+   "status": "done"
+  },
+  {
+   "id": "m6c_repeat",
+   "title": "M6c cell-2 repeatability",
+   "notes": "docs/notes/M6.md, M6c cell-2 repeatability: pre-registration",
+   "preregistration": [
+    {
+     "sha": "328350a",
+     "role": "pre-registration",
+     "committed": "2026-11-08T07:48:01-08:00",
+     "pushed": {
+      "time": "2026-11-08T07:50:00-08:00",
+      "head": "328350a",
+      "as": null
+     }
+    }
+   ],
+   "launched": {
+    "time": "2026-11-08T07:50:25-08:00",
+    "source": "data/cache/nested/m6c/repeat.log"
+   },
+   "finished": {
+    "time": "2026-11-08T18:02:01-08:00",
+    "source": "data/cache/nested/m6c/repeat.log"
+   },
+   "first_summary": null,
+   "smoke": {
+    "time": "2026-11-08T07:24:30-08:00",
+    "source": "data/cache/nested/m6c_repeat/progress.log"
+   },
+   "status": "done"
+  },
+  {
+   "id": "m8_a8",
+   "title": "M8 A8b–A8f (48 runs)",
+   "notes": "docs/notes/M8.md, Pre-registration: A8b–A8f; Before launch",
+   "preregistration": [
+    {
+     "sha": "2d2b1ff",
+     "role": "pre-registration",
+     "committed": "2026-11-09T00:32:00-08:00",
+     "pushed": {
+      "time": "2026-11-09T08:37:02-08:00",
+      "head": "2d2b1ff",
+      "as": null
+     }
+    },
+    {
+     "sha": "01c344c",
+     "role": "the confirmed fallbacks and the choices the plan left open",
+     "committed": "2026-11-09T09:01:47-08:00",
+     "pushed": {
+      "time": "2026-11-09T09:13:03-08:00",
+      "head": "01c344c",
+      "as": null
+     }
+    }
+   ],
+   "launched": {
+    "time": "2026-11-09T09:01:52-08:00",
+    "source": "data/cache/m8/runs/progress.log"
+   },
+   "finished": {
+    "time": "2026-11-09T09:38:13-08:00",
+    "source": "data/cache/m8/runs/progress.log"
+   },
+   "first_summary": {
+    "time": "2026-11-09T10:04:33-08:00",
+    "source": "data/cache/m8/runs/progress.log"
+   },
+   "run_commit": "01c344c",
+   "status": "done"
+  },
+  {
+   "id": "m8_a8f_rerun",
+   "title": "M8 A8f rerun",
+   "notes": "docs/notes/M8.md, Follow-up pre-registration",
+   "preregistration": [
+    {
+     "sha": "049e88f",
+     "role": "pre-registration",
+     "committed": "2026-11-09T12:16:49-08:00",
+     "pushed": {
+      "time": "2026-11-09T12:24:50-08:00",
+      "head": "049e88f",
+      "as": null
+     }
+    }
+   ],
+   "launched": {
+    "time": "2026-11-09T12:25:14-08:00",
+    "source": "data/cache/m8/runs_a8f/progress.log"
+   },
+   "finished": {
+    "time": "2026-11-09T13:27:55-08:00",
+    "source": "data/cache/m8/runs_a8f/progress.log"
+   },
+   "first_summary": {
+    "time": "2026-11-09T13:36:32-08:00",
+    "source": "data/cache/m8/runs_a8f/progress.log"
+   },
+   "run_commit": "049e88f",
+   "status": "done"
+  },
+  {
+   "id": "m8b",
+   "title": "M8b (decides the 95 % interval)",
+   "notes": "docs/notes/M8.md, Follow-up pre-registration",
+   "preregistration": [
+    {
+     "sha": "049e88f",
+     "role": "pre-registration",
+     "committed": "2026-11-09T12:16:49-08:00",
+     "pushed": {
+      "time": "2026-11-09T12:24:50-08:00",
+      "head": "049e88f",
+      "as": null
+     }
+    }
+   ],
+   "launched": {
+    "time": "2026-11-09T13:36:33-08:00",
+    "source": "data/cache/m8/runs_m8b/progress.log"
+   },
+   "finished": null,
+   "first_summary": null,
+   "run_commit": "049e88f",
+   "status": "running"
+  },
+  {
+   "id": "m8_arbiter",
+   "title": "A8d(S1) arbiter (decides the S1 verdict)",
+   "notes": "docs/notes/M8.md, Follow-up pre-registration",
+   "preregistration": [
+    {
+     "sha": "049e88f",
+     "role": "pre-registration",
+     "committed": "2026-11-09T12:16:49-08:00",
+     "pushed": {
+      "time": "2026-11-09T12:24:50-08:00",
+      "head": "049e88f",
+      "as": null
+     }
+    }
+   ],
+   "launched": null,
+   "finished": null,
+   "first_summary": null,
+   "status": "not launched"
+  }
+ ],
+ "sensitivity_reading_rules": {
+  "source": "docs/notes/M6.md, M6c sensitivity runs S1–S3: pre-registration (2981aa1)",
+  "s1_e05": {
+   "quantity": "p_a_below_25_au",
+   "moved_above": 0.5,
+   "not_at_all_below": 0.05,
+   "text": "the evidence has moved to the low-a peak if P(a < 25 AU) > 0.5. It has moved partly if P(a < 25 AU) is 0.05–0.5, and not at all if it is < 0.05."
+  },
+  "s2_sigma_data": {
+   "jpl_keeps": "in_68",
+   "max_shift_headline_half_widths": 0.5,
+   "text": "the result survives if JPL's 325.873° keeps its headline status (inside the 68 % interval) and the Galle-night median moves by < 0.5 headline 68 % half-widths."
+  },
+  "s3_t4": {
+   "jpl_keeps": "in_68",
+   "max_shift_headline_half_widths": 0.5,
+   "text": "heavier tails change the headline if JPL's status in the 68 % interval changes or the median moves by ≥ 0.5 headline half-widths."
+  }
+ }
+}

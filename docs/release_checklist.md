@@ -21,11 +21,19 @@ semver: the tag is `vX.Y.Z`, and `pyproject.toml` and `CITATION.cff` hold `X.Y.Z
 
 - [x] A6c passed and committed (`site/data/a6c_coverage.json`, with a note in
   `docs/notes/M6.md`). If it fails, stop and report, as the spec says. Don't tag.
-- [ ] M6c fits, the M6d Peirce numbers and the M6e held-out predictions are done, with
-  `site/data/m6_fits.json` and the figures the spec lists.
+- [ ] M6c fits are done, with `site/data/m6_fits.json` and the figures the spec lists. (M6d and
+  M6e moved to "Deferred to v1.1" below, 2026-11-09.)
 - [ ] All A6 tests reported against their pre-registered thresholds (A6a–A6e).
-- [ ] README results and status updated to include the real-data results, keeping the
+- [x] README results and status updated to include the real-data results, keeping the
   synthetic and real numbers clearly apart.
+
+## Deferred to v1.1 (decided 2026-11-09)
+
+- **M6d, the Le Verrier shape-model comparison:** the Peirce probability is computed for every
+  M6c fit (0.366 headline), but the ratio against the Le Verrier shape model and the Bayes
+  factor between the two need a new pre-registered real-data nested run (hours of compute).
+- **M6e, the held-out precoveries:** the Lalande 1795 and Galileo 1612–13 positions are not
+  yet sourced or transcribed, and the predictive step is not built; A6e depends on it.
 
 ## Repository state
 
