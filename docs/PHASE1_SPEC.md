@@ -464,6 +464,10 @@ Every M8 posterior below is the merge of 4 seeds per cell.
   in question. The arbiter is a full-likelihood repeat of the failing cell at R2's settings,
   2 seeds, compared with M8 under A8b's tolerances. Both numbers are reported. This rule is
   fixed now, not after a failure.
+  - *Applied 2026-11-09 (docs/notes/M8.md, "Follow-up pre-registration"):* A8d failed for S1
+    on its P(a < 25 AU) verdict, so the arbiter is S1's cell 0 at nlive 4000 and 28 slices.
+    Pre-registered beside it, after A8b's result: M8b, the headline at R2's exploration
+    settings, with A8b, a settings-convergence test and the unchanged 95 % rule.
 - **If A8a fails in mode (a), try mode (b).** If (b) also fails, M8 stops and reports the
   linearization error where it is largest. The tolerances are not loosened.
 - A failed test is reported with its number and the suspected cause (docs/RULES.md).

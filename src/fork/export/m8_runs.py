@@ -38,6 +38,7 @@ import json
 import math
 import os
 import time
+from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
@@ -51,6 +52,34 @@ CACHE = m8.CACHE / "runs"
 U_REF_FILE = ROOT / "docs" / "notes" / "M8_u_ref.json"
 U_REF_SHA256 = "4bf4537c88ab2364c7f46247d87489de7beaa3031b677d8080435887caa4b3c5"
 VARIANTS = ("headline", "s1_e05", "s2_sigma_data")
+
+
+@dataclass(frozen=True)
+class Campaign:
+    """A set of runs with its own settings and cache. ``main`` is the pre-registered 48-run
+    campaign, unchanged; the others are pre-registered in docs/notes/M8.md ("Follow-up
+    pre-registration: the A8f rerun, M8b and the A8d(S1) arbiter")."""
+
+    name: str
+    cells: tuple[tuple[str, int], ...] | None  # (variant, cell); None: every cell of VARIANTS
+    nlive_factor: int  # × M6c's per-cell nlive
+    slices: int | None  # rslice slices; None: dynesty's default (3 + 7 = 10)
+    rng_tag: int | None  # appended to the job rng; None for main
+
+    @property
+    def cache(self) -> Path:
+        return CACHE if self.name == "main" else m8.CACHE / f"runs_{self.name}"
+
+    @property
+    def ledger_prefix(self) -> str:
+        return "m8" if self.name == "main" else f"m8/{self.name}"
+
+
+CAMPAIGNS = {
+    "main": Campaign("main", None, 1, None, None),
+    "a8f": Campaign("a8f", (("s1_e05", 1), ("s1_e05", 3), ("s2_sigma_data", 2)), 4, 20, 2),
+    "m8b": Campaign("m8b", tuple(("headline", k) for k in range(4)), 4, 28, 3),
+}
 
 # ---------------------------------------------------------------------------- Laplace check
 
@@ -262,28 +291,35 @@ def fast_problem(variant: str):
 class RunJob:
     """One nested run: data set × cell × seed."""
 
-    def __init__(self, variant: str, cell: int, seed: int) -> None:
+    def __init__(self, variant: str, cell: int, seed: int, campaign: str = "main") -> None:
         self.variant, self.cell, self.seed = variant, cell, seed
+        self.campaign = CAMPAIGNS[campaign]
 
     @property
     def id(self) -> str:
         return f"{self.variant}/c{self.cell}/s{self.seed}"
 
     @staticmethod
-    def from_id(job_id: str) -> RunJob:
+    def from_id(job_id: str, campaign: str = "main") -> RunJob:
         v, c, s = job_id.split("/")
-        return RunJob(v, int(c.removeprefix("c")), int(s.removeprefix("s")))
+        return RunJob(v, int(c.removeprefix("c")), int(s.removeprefix("s")), campaign)
 
     @property
     def nlive(self) -> int:
         from fork.export import m6c
 
-        return m6c.NLIVE_CELL.get(self.cell, m6c.NLIVE_DEFAULT)
+        base = m6c.NLIVE_CELL.get(self.cell, m6c.NLIVE_DEFAULT)
+        return base * self.campaign.nlive_factor
+
+    @property
+    def slices(self) -> int | None:
+        return self.campaign.slices
 
     def rng_seed(self) -> list[int]:
         from fork.export import m6c
 
-        return [2026, 8, 1846, m6c.VARIANTS.index(self.variant), self.cell + 1, self.seed]
+        seed = [2026, 8, 1846, m6c.VARIANTS.index(self.variant), self.cell + 1, self.seed]
+        return seed if self.campaign.rng_tag is None else [*seed, self.campaign.rng_tag]
 
     def rng(self) -> np.random.Generator:
         return np.random.default_rng(self.rng_seed())
@@ -298,8 +334,13 @@ def n_cells(variant: str) -> int:
     return len(m6c.variant_cells(variant))
 
 
-def all_jobs() -> list[RunJob]:
-    return [RunJob(v, k, s) for v in VARIANTS for k in range(n_cells(v)) for s in SEEDS]
+def campaign_cells(campaign: str = "main") -> list[tuple[str, int]]:
+    c = CAMPAIGNS[campaign].cells
+    return [(v, k) for v in VARIANTS for k in range(n_cells(v))] if c is None else list(c)
+
+
+def all_jobs(campaign: str = "main") -> list[RunJob]:
+    return [RunJob(v, k, s, campaign) for v, k in campaign_cells(campaign) for s in SEEDS]
 
 
 _S: dict = {}
@@ -315,14 +356,16 @@ def _phi_transform(u: np.ndarray) -> np.ndarray:
     return _S["space"].prior_transform(np.concatenate([_U_HALF, u]))[4:]
 
 
-def do_job(job: RunJob, maxiter: int | None = None, cache: Path = CACHE) -> None:
+def do_job(job: RunJob, maxiter: int | None = None, cache: Path | None = None) -> None:
     import dynesty
 
     from fork import ledger
     from fork.export import m6c
     from fork.inference.nested import BOUND, DLOGZ, SAMPLE, NestedResult, _ProgressLog, cell_space
 
-    if maxiter is not None and cache == CACHE:
+    cache = job.campaign.cache if cache is None else cache
+    real = cache in {c.cache for c in CAMPAIGNS.values()}
+    if maxiter is not None and real:
         raise SystemExit("smoke runs (--maxiter) go to a scratch --cache, never the run cache")
     check_frozen(job.variant)
     out = job.path(".pkl", cache)
@@ -337,7 +380,8 @@ def do_job(job: RunJob, maxiter: int | None = None, cache: Path = CACHE) -> None
         raise RuntimeError("unexpected prior layout")
     ckpt = job.path(".ckpt", cache)
     ckpt.parent.mkdir(parents=True, exist_ok=True)
-    log = _ProgressLog(cache / "progress.log", PROGRESS_EVERY_S, f"m8/{job.id}")
+    log = _ProgressLog(cache / "progress.log", PROGRESS_EVERY_S,
+                       f"{job.campaign.ledger_prefix}/{job.id}")  # fmt: skip
     run_kw = dict(dlogz=DLOGZ, maxiter=maxiter, print_progress=True, print_func=log,
                   checkpoint_file=str(ckpt), checkpoint_every=CHECKPOINT_EVERY_S)  # fmt: skip
     resumed = ckpt.exists()
@@ -347,34 +391,40 @@ def do_job(job: RunJob, maxiter: int | None = None, cache: Path = CACHE) -> None
         log.line(f"resumed from {ckpt.name} at iteration {sampler.it}")
         sampler.run_nested(resume=True, **run_kw)
     else:
-        log.line(f"start: ndim {N_PHI}, nlive {job.nlive}, {BOUND}/{SAMPLE} default slices, "
-                 f"dlogz {DLOGZ}, rng {job.rng_seed()}, second_order {SECOND_ORDER}")  # fmt: skip
+        log.line(f"start: ndim {N_PHI}, nlive {job.nlive}, {BOUND}/{SAMPLE} "
+                 f"{job.slices or 'default'} slices, dlogz {DLOGZ}, rng {job.rng_seed()}, "
+                 f"second_order {SECOND_ORDER}")  # fmt: skip
+        kw = {} if job.slices is None else {"slices": job.slices}
         sampler = dynesty.NestedSampler(_fast_logl, _phi_transform, N_PHI, nlive=job.nlive,
                                         bound=BOUND, sample=SAMPLE, periodic=periodic,
-                                        rstate=job.rng())  # fmt: skip
+                                        rstate=job.rng(), **kw)  # fmt: skip
         sampler.run_nested(**run_kw)
     res = NestedResult(cs, sampler.results, job.nlive, DLOGZ, time.time() - t0)
     res.save(out)
     ckpt.unlink(missing_ok=True)
     log.line(f"done: ln Z {res.logz:.3f} ± {res.logzerr:.3f}, {res.niter} it, {res.ncall} calls")
-    if cache == CACHE:
-        ledger.append(f"m8/{job.id}", "nested", n_likelihood_calls=res.ncall, n_integrations=0,
+    if cache == job.campaign.cache:
+        ledger.append(f"{job.campaign.ledger_prefix}/{job.id}", "nested",
+                      n_likelihood_calls=res.ncall, n_integrations=0,
                       sim_years=0.0, wall_s=time.time() - t0, cpu_s=ledger.cpu_now() - c0,
                       n_workers=1, estimated=resumed, resumed=resumed, nlive=job.nlive,
-                      niter=res.niter, likelihood="perturbative, second order off")  # fmt: skip
+                      niter=res.niter, slices=job.slices,
+                      likelihood="perturbative, second order off")  # fmt: skip
     print(f"{job.id}: ln Z {res.logz:.3f} ± {res.logzerr:.3f}, {res.niter} it, "
           f"{res.ncall} calls, {(time.time() - t0) / 60:.1f} min")  # fmt: skip
 
 
-def run_all(n_slots: int, cache: Path = CACHE, maxiter: int | None = None) -> bool:
+def run_all(n_slots: int, cache: Path | None = None, maxiter: int | None = None,
+            campaign: str = "main") -> bool:  # fmt: skip
     """Scheduler: each job a one-process subprocess, at most ``n_slots`` at once; cell 0
     (nlive 2000) first; one retry per failed job (it resumes from its checkpoint)."""
     import subprocess
     import sys
 
+    cache = CAMPAIGNS[campaign].cache if cache is None else cache
     for v in VARIANTS:
         check_frozen(v)
-    pending = sorted([j for j in all_jobs() if not j.path(".pkl", cache).exists()],
+    pending = sorted([j for j in all_jobs(campaign) if not j.path(".pkl", cache).exists()],
                      key=lambda j: (-j.nlive, j.variant, j.cell, j.seed))  # fmt: skip
     _log(f"run: {len(pending)} jobs pending, {n_slots} slots"
          + (f", smoke maxiter {maxiter}" if maxiter else ""), cache)  # fmt: skip
@@ -386,7 +436,7 @@ def run_all(n_slots: int, cache: Path = CACHE, maxiter: int | None = None) -> bo
             if rc is None:
                 continue
             del running[jid]
-            job = RunJob.from_id(jid)
+            job = RunJob.from_id(jid, campaign)
             if rc == 0 and job.path(".pkl", cache).exists():
                 _log(f"done {jid} ({(time.time() - t0) / 60:.1f} min)", cache)
             else:
@@ -399,26 +449,29 @@ def run_all(n_slots: int, cache: Path = CACHE, maxiter: int | None = None) -> bo
             log = job.path(".log", cache)
             log.parent.mkdir(parents=True, exist_ok=True)
             cmd = [sys.executable, "-m", "fork.export.m8_runs", "job", job.id,
-                   "--cache", str(cache)]  # fmt: skip
+                   "--cache", str(cache), "--campaign", campaign]  # fmt: skip
             if maxiter:
                 cmd += ["--maxiter", str(maxiter)]
             with log.open("a") as fh:
                 proc = subprocess.Popen(cmd, stdout=fh, stderr=subprocess.STDOUT, cwd=ROOT,
                                         env=os.environ | {"OMP_NUM_THREADS": "1"})  # fmt: skip
             running[job.id] = (proc, time.time())
-            _log(f"start {job.id} (nlive {job.nlive}, pid {proc.pid})", cache)
+            _log(f"start {job.id} (nlive {job.nlive}, slices {job.slices or 'default'}, "
+                 f"pid {proc.pid})", cache)  # fmt: skip
         time.sleep(5 if maxiter else 20)
-    done = all(j.path(".pkl", cache).exists() for j in all_jobs())
+    done = all(j.path(".pkl", cache).exists() for j in all_jobs(campaign))
     _log(f"run finished; failures: {failures or 'none'}; all done: {done}", cache)
     return done
 
 
-def plan(cache: Path = CACHE) -> None:
-    jobs = all_jobs()
+def plan(cache: Path | None = None, campaign: str = "main") -> None:
+    cache = CAMPAIGNS[campaign].cache if cache is None else cache
+    jobs = all_jobs(campaign)
     for j in jobs:
         state = ("done" if j.path(".pkl", cache).exists() else
                  "resumable" if j.path(".ckpt", cache).exists() else "pending")  # fmt: skip
-        print(f"{j.id:24s} nlive {j.nlive:5d}  rng {j.rng_seed()}  {state}")
+        print(f"{j.id:24s} nlive {j.nlive:5d}  slices {j.slices or 'default'}  "
+              f"rng {j.rng_seed()}  {state}")  # fmt: skip
     print(f"{len(jobs)} jobs, {sum(j.path('.pkl', cache).exists() for j in jobs)} done")
 
 
@@ -427,9 +480,9 @@ def plan(cache: Path = CACHE) -> None:
 MERGED = 0  # the seed index of a cell's 4-seed merge
 
 
-def posteriors() -> list[tuple[str, int, int]]:
+def posteriors(campaign: str = "main") -> list[tuple[str, int, int]]:
     """(variant, cell, seed) of every cell posterior to reweight: seeds 1–4, then the merge."""
-    return [(v, k, s) for v in VARIANTS for k in range(n_cells(v)) for s in (*SEEDS, MERGED)]
+    return [(v, k, s) for v, k in campaign_cells(campaign) for s in (*SEEDS, MERGED)]
 
 
 def pid(v: str, k: int, s: int) -> str:
@@ -455,9 +508,11 @@ def _vi(v: str) -> int:
     return m6c.VARIANTS.index(v)
 
 
-def draws(v: str, k: int, s: int, cache: Path = CACHE, max_draws: int | None = None) -> dict:
+def draws(v: str, k: int, s: int, cache: Path = CACHE, max_draws: int | None = None,
+          campaign: str = "main") -> dict:  # fmt: skip
     """The posterior's equal-weight draws (6000, or all if fewer), cached: φ, ln Z_fast and
-    its sampler error. rng [2026, 8, 1846, v, cell + 1, seed (0: merge), 7]."""
+    its sampler error. rng [2026, 8, 1846, v, cell + 1, seed (0: merge), 7], with the
+    campaign's rng tag appended outside ``main``."""
     from fork.inference.reweight import N_PER_CELL
 
     path = cache / "reweight" / pid(v, k, s) / "draws.npz"
@@ -465,7 +520,9 @@ def draws(v: str, k: int, s: int, cache: Path = CACHE, max_draws: int | None = N
         d = np.load(path)
         return {key: d[key] for key in d.files}
     res = load_posterior(v, k, s, cache)
-    rng = np.random.default_rng([2026, 8, 1846, _vi(v), k + 1, s, 7])
+    tag = CAMPAIGNS[campaign].rng_tag
+    rng = np.random.default_rng([2026, 8, 1846, _vi(v), k + 1, s, 7]
+                                + ([] if tag is None else [tag]))  # fmt: skip
     eq = res.equal_weight(rng)
     n = min(N_PER_CELL if max_draws is None else max_draws, len(eq))
     phi = eq[rng.choice(len(eq), n, replace=False)]
@@ -549,24 +606,26 @@ def _reweight_chunk(task: tuple) -> tuple[str, int, float]:
     return pid(v, k, s), c, float(a["cpu_s"])
 
 
-def reweight(n_workers: int, cache: Path = CACHE, max_draws: int | None = None) -> None:
+def reweight(n_workers: int, cache: Path | None = None, max_draws: int | None = None,
+             campaign: str = "main") -> None:  # fmt: skip
     from concurrent.futures import ProcessPoolExecutor, as_completed
 
     from fork import ledger
 
+    cache = CAMPAIGNS[campaign].cache if cache is None else cache
     for v in VARIANTS:
         check_frozen(v)
-    missing = [j.id for j in all_jobs() if not j.path(".pkl", cache).exists()]
+    missing = [j.id for j in all_jobs(campaign) if not j.path(".pkl", cache).exists()]
     if missing:
         raise SystemExit(f"runs missing: {missing}")
     t0, c0 = time.time(), ledger.cpu_now()
     tasks = []
-    for v, k, s in posteriors():
-        n = len(draws(v, k, s, cache, max_draws)["phi"])
+    for v, k, s in posteriors(campaign):
+        n = len(draws(v, k, s, cache, max_draws, campaign)["phi"])
         for c, lo in enumerate(range(0, n, REWEIGHT_CHUNK)):
             if not (cache / "reweight" / pid(v, k, s) / f"chunk_{c:03d}.npz").exists():
                 tasks.append((v, k, s, c, lo, min(lo + REWEIGHT_CHUNK, n), str(cache)))
-    _log(f"reweight: {len(posteriors())} posteriors, {len(tasks)} chunks to do, "
+    _log(f"reweight: {len(posteriors(campaign))} posteriors, {len(tasks)} chunks to do, "
          f"{n_workers} workers", cache)  # fmt: skip
     cpu_chunks = 0.0
     with ProcessPoolExecutor(n_workers, initializer=_init_reweight) as ex:
@@ -576,15 +635,18 @@ def reweight(n_workers: int, cache: Path = CACHE, max_draws: int | None = None) 
             cpu_chunks += cpu
             if (i + 1) % 24 == 0 or i + 1 == len(futs):
                 _log(f"reweight: {i + 1}/{len(futs)} chunks (last {p} #{c})", cache)
-    if cache == CACHE and tasks:
+    if cache == CAMPAIGNS[campaign].cache and tasks:
         n_draws = sum(t[5] - t[4] for t in tasks)
-        ledger.append("m8/reweight", "reweight", n_likelihood_calls=n_draws, n_integrations=None,
+        ledger.append(f"{CAMPAIGNS[campaign].ledger_prefix}/reweight", "reweight",
+                      n_likelihood_calls=n_draws, n_integrations=None,
                       sim_years=None, wall_s=time.time() - t0, cpu_s=ledger.cpu_now() - c0,
                       n_workers=n_workers, cpu_chunks_s=round(cpu_chunks, 1),
                       note="mode (b) + fast + derived longitudes per draw")  # fmt: skip
 
 
 def load_reweighted(v: str, k: int, s: int, cache: Path = CACHE) -> dict:
+    if not (cache / "reweight" / pid(v, k, s) / "draws.npz").exists():
+        raise FileNotFoundError(f"{pid(v, k, s)}: not reweighted in {cache}")
     d = draws(v, k, s, cache)
     n = len(d["phi"])
     parts = [np.load(cache / "reweight" / pid(v, k, s) / f"chunk_{c:03d}.npz")
@@ -911,6 +973,223 @@ def summarize(cache: Path = CACHE) -> dict:
     return payload
 
 
+# ---------------------------------------------------------------------------- follow-ups
+
+CONV_TOL = {"median": 0.35, "width_rel": 0.10}  # M8b settings-convergence test (A8b's)
+FOLLOWUP_OUT = {"a8f": "m8_a8f_rerun.json", "m8b": "m8b.json"}
+
+
+def summarize_followup(campaign: str, cache: Path | None = None) -> dict:
+    """The A8f rerun (``a8f``) or M8b (``m8b``), as pre-registered in docs/notes/M8.md
+    ("Follow-up pre-registration"). Gates first; per-cell records as in ``summarize``; for
+    ``a8f``, A8f on the reruns beside the first runs; for ``m8b``, the headline fit, gates 1–5,
+    A8b, A8c, A8f, the settings-convergence test against the main runs, the 95 % rule and the
+    cost. ``main``'s output (site/data/m8_runs.json) is not touched."""
+    from fork import ledger
+    from fork.export import m6c
+    from fork.inference.reweight import N_PER_CELL, ess, reweight_cell
+
+    camp = CAMPAIGNS[campaign]
+    if campaign not in FOLLOWUP_OUT:
+        raise ValueError(f"no follow-up summary for {campaign!r}")
+    cache = camp.cache if cache is None else cache
+    real = cache == camp.cache
+    for v in VARIANTS:
+        check_frozen(v)
+    t0, c0 = time.time(), ledger.cpu_now()
+    tg = m6c.comparison_targets()
+    targets = {"jpl": tg["jpl"]["galle_lon_ecl_of_date_deg"],
+               "le_verrier_derived":
+                   tg["le_verrier"]["galle_lon_ecl_of_date_deg_derived"]}  # fmt: skip
+    main = json.loads((ROOT / "site" / "data" / OUT_NAME).read_text())
+    main_cell = {(r["variant"], r["cell"], r["seed"]): r for r in main["cells"]}
+    main_a8f = {(r["variant"], r["cell"]): r for r in main["tests"]["a8f"]}
+    space_of = {v: m8.problem(v)[2] for v in {v for v, _ in campaign_cells(campaign)}}
+
+    post: dict = {}
+    cells_out, gate2, gate3, gate4 = [], [], [], []
+    for v, k, s in posteriors(campaign):
+        d = load_reweighted(v, k, s, cache)
+        cr = reweight_cell(d["lnl_b"] - d["lnl_fast"], float(d["ln_z_fast"]),
+                           float(d["ln_z_fast_err"]))  # fmt: skip
+        d["pert"], d["cr"] = _perturber(space_of[v], d["phi"]), cr
+        post[(v, k, s)] = d
+        rng = np.random.default_rng([2026, 8, 1846, _vi(v), k + 1, s, CELL_RNG_TAG,
+                                     camp.rng_tag])  # fmt: skip
+        _, ix = _resampled([cr], [0.0], rng, cr.n)
+        g = _lon(d["galle_deg"][ix], targets)
+        rec = {"variant": v, "cell": k, "seed": s, "n": cr.n, "ess_frac": cr.ess / cr.n,
+               "ln_z_fast": cr.ln_z_fast, "ln_z_fast_err": cr.ln_z_fast_err,
+               "ln_correction": cr.ln_correction, "ln_correction_err": cr.ln_correction_err,
+               "ln_z": cr.ln_z, "galle_median": g["median"], "galle_width68": g["width68"],
+               "ncall": int(d["ncall"]), "niter": int(d["niter"]),
+               "fast_outside_box": int(d["fast_outside"].sum()),
+               "b_outside_box": int(d["b_outside"].sum()),
+               "b_trunc_m2lnl_max": float(np.nanmax(d["b_trunc_m2lnl"])),
+               "n_b_failed": int(np.sum(~np.isfinite(d["lnl_b"])))}  # fmt: skip
+        cells_out.append(rec)
+        gate2.append({"posterior": pid(v, k, s), "ess_frac": rec["ess_frac"],
+                      "pass": rec["ess_frac"] >= ESS_GATE_CELL})  # fmt: skip
+        gate4.append({"posterior": pid(v, k, s), "max": rec["b_trunc_m2lnl_max"],
+                      "pass": bool(np.all(d["b_trunc_m2lnl"][np.isfinite(d["lnl_b"])]
+                                          < TRUNC_GATE_M2LNL))})  # fmt: skip
+        if k == 2:
+            a, e = d["pert"][:, 1], d["pert"][:, 2]
+            for name, m in (("inner", (e >= E_RIDGE) & (a < INNER_OUTER_A)),
+                            ("outer", (e >= E_RIDGE) & (a >= INNER_OUTER_A))):  # fmt: skip
+                nb = int(m.sum())
+                fr = ess(cr.delta[m]) / nb if nb else math.nan
+                gate3.append({"posterior": pid(v, k, s), "branch": name, "n": nb,
+                              "ess_frac": fr, "pass": bool(nb > 0 and fr >= 0.3)})  # fmt: skip
+    cell = {(r["variant"], r["cell"], r["seed"]): r for r in cells_out}
+
+    def cell_gates_ok(v: str, k: int) -> bool:
+        pre = f"{v}__c{k}__"
+        return all(g["pass"] for g in gate2 + gate3 + gate4 if g["posterior"].startswith(pre))
+
+    a8f = []
+    for v, k in campaign_cells(campaign):
+        wd = np.array([cell[(v, k, s)]["galle_width68"] for s in SEEDS])
+        dev = np.abs(wd / wd.mean() - 1.0)
+        first = main_a8f[(v, k)]
+        a8f.append({"variant": v, "cell": k, "widths": wd.tolist(),
+                    "max_rel_dev": float(dev.max()),
+                    "pass": bool(dev.max() <= TOL["a8f_width_rel"] and cell_gates_ok(v, k)),
+                    "first_run": {"widths": first["widths"],
+                                  "max_rel_dev": first["max_rel_dev"],
+                                  "pass": first["pass"]}})  # fmt: skip
+    payload: dict = {
+        "campaign": campaign,
+        "settings": {"nlive": {f"{v}/c{k}": RunJob(v, k, 1, campaign).nlive
+                               for v, k in campaign_cells(campaign)},
+                     "slices": camp.slices, "rng_tag": camp.rng_tag, "seeds": list(SEEDS),
+                     "second_order": SECOND_ORDER, "step_days": STEP_DAYS,
+                     "quadrature": QUADRATURE, "n_draws": N_PER_CELL,
+                     "u_ref_sha256": U_REF_SHA256, "frozen_code": FROZEN_CODE},
+        "gates": {"2_cell_ess": gate2, "3_ridge_branch_ess": gate3, "4_truncation": gate4},
+        "tests": {"a8f": a8f},
+        "cells": cells_out,
+    }  # fmt: skip
+    if campaign == "a8f":
+        payload["description"] = (
+            "M8 A8f rerun (pre-registered rule): the cells whose 4 seeds failed A8f, rerun with "
+            "the fast likelihood at 4 x nlive and 20 slices, reweighted with mode (b); A8f on "
+            "the reruns beside the first runs."
+        )
+        payload["gates"]["all_pass"] = {f"{v}/c{k}": cell_gates_ok(v, k)
+                                        for v, k in campaign_cells(campaign)}  # fmt: skip
+    else:
+        v = "headline"
+        fits, gate1 = {}, []
+        for s in (MERGED, *SEEDS):
+            cs = [post[(v, k, s)] for k in range(4)]
+            log_c = [math.log(_cell_space(v, k).slice_weight) for k in range(4)]
+            rng = np.random.default_rng([2026, 8, 1846, 0, 0, s, FIT_RNG_TAG, camp.rng_tag])
+            res, ix = _resampled([c["cr"] for c in cs], log_c, rng, N_PER_CELL)
+            galle = np.concatenate([c["galle_deg"] for c in cs])[ix]
+            pert = np.concatenate([c["pert"] for c in cs])[ix]
+            shares = np.exp(np.array(log_c) + np.array([c["cr"].ln_z for c in cs]) - res.ln_z)
+            name = f"{v}/{'merged' if s == MERGED else f's{s}'}"
+            fits[name] = {"ln_z": res.ln_z, "ln_z_err": res.ln_z_err, "shares": shares.tolist(),
+                          "galle_lon_ecl_of_date_deg": _lon(galle, targets),
+                          "mass_earth": _q(pert[:, 0]), "a_au": _q(pert[:, 1]),
+                          "e": _q(pert[:, 2])}  # fmt: skip
+            as_written, at_delta0, share = fit_ess(res)
+            gate1.append({"fit": name, "ess_frac_as_written": as_written,
+                          "ess_frac_at_delta0": at_delta0, "reweighting_share": share,
+                          "threshold": ESS_GATE_FIT, "pass": share >= ESS_GATE_FIT})  # fmt: skip
+        head_ok = all(g["pass"] for g in gate1) and all(cell_gates_ok(v, k) for k in range(4))
+        d2 = post[(v, 2, MERGED)]
+        a, e = d2["pert"][:, 1], d2["pert"][:, 2]
+        masks = {"core": e < E_RIDGE, "inner": (e >= E_RIDGE) & (a < INNER_OUTER_A),
+                 "outer": (e >= E_RIDGE) & (a >= INNER_OUTER_A)}  # fmt: skip
+        w = np.exp(d2["cr"].delta - d2["cr"].delta.max())
+        r2_check3 = main["gates"]["5_blind_spot"]["check3_cell2_masses"]
+        check3 = {nm: {"fast": float(m.mean()), "reweighted": float(w[m].sum() / w.sum()),
+                       "r2": r2_check3[nm]["r2"],
+                       "m8_nlive1000_reweighted": r2_check3[nm]["reweighted"]}
+                  for nm, m in masks.items()}  # fmt: skip
+        c2 = cell[(v, 2, MERGED)]
+        a8b = {"median": c2["galle_median"], "width68": c2["galle_width68"], "ln_z": c2["ln_z"],
+               "d_median": c2["galle_median"] - R2_CELL2["median"],
+               "width_rel": c2["galle_width68"] / R2_CELL2["width68"] - 1.0,
+               "d_ln_z": c2["ln_z"] - R2_CELL2["ln_z"]}  # fmt: skip
+        a8b["criteria"] = bool(abs(a8b["d_median"]) <= TOL["a8b_median"]
+                               and abs(a8b["width_rel"]) <= TOL["a8b_width_rel"]
+                               and abs(a8b["d_ln_z"]) <= TOL["a8b_ln_z"])  # fmt: skip
+        a8b["pass"] = a8b["criteria"] and head_ok
+        hg = fits["headline/merged"]["galle_lon_ecl_of_date_deg"]
+        lnzk = [cell[(v, k, MERGED)]["ln_z"] for k in range(4)]
+        a8c = {"median": hg["median"], "lo68": hg["lo68"], "hi68": hg["hi68"], "ln_z_k": lnzk,
+               "d_median": hg["median"] - REPLACEMENT["median"],
+               "d_lo68": hg["lo68"] - REPLACEMENT["lo68"],
+               "d_hi68": hg["hi68"] - REPLACEMENT["hi68"],
+               "d_ln_z_k": [z - r for z, r in zip(lnzk, REPLACEMENT["ln_z_k"],
+                                                  strict=True)]}  # fmt: skip
+        a8c["criteria"] = bool(abs(a8c["d_median"]) <= TOL["a8c_median"]
+                               and abs(a8c["d_lo68"]) <= TOL["a8c_bound"]
+                               and abs(a8c["d_hi68"]) <= TOL["a8c_bound"]
+                               and all(abs(x) <= TOL["a8c_ln_z_k"]
+                                       for x in a8c["d_ln_z_k"]))  # fmt: skip
+        a8c["pass"] = a8c["criteria"] and head_ok
+        conv = []
+        for k in range(4):
+            m8b_c, m8_c = cell[(v, k, MERGED)], main_cell[(v, k, MERGED)]
+            dm = m8b_c["galle_median"] - m8_c["galle_median"]
+            wr = m8b_c["galle_width68"] / m8_c["galle_width68"] - 1.0
+            conv.append({"cell": k, "m8b_median": m8b_c["galle_median"],
+                         "m8_median": m8_c["galle_median"], "d_median": dm,
+                         "m8b_width68": m8b_c["galle_width68"],
+                         "m8_width68": m8_c["galle_width68"], "width_rel": wr,
+                         "pass": bool(abs(dm) <= CONV_TOL["median"]
+                                      and abs(wr) <= CONV_TOL["width_rel"])})  # fmt: skip
+        single = [fits[f"headline/s{s}"]["galle_lon_ecl_of_date_deg"] for s in SEEDS]
+        std95 = {b: float(np.std([g[b] for g in single], ddof=1)) for b in ("lo95", "hi95")}
+        cond = {"gates_headline_and_single_seed_fits": head_ok,
+                "a8b_a8c": a8b["pass"] and a8c["pass"],
+                "a8f_headline_cells": all(r["pass"] for r in a8f),
+                "std_95_bounds_le_0p4":
+                    all(x <= TOL["rule_95_std"] for x in std95.values())}  # fmt: skip
+        rule95 = {"conditions": cond, "std_95_bounds": std95, "replace": all(cond.values()),
+                  "m8b_95": [hg["lo95"], hg["hi95"]],
+                  "sampler_error_std_over_2": {b: x / 2.0 for b, x in std95.items()}}  # fmt: skip
+        rows = [
+            r
+            for r in ledger.read()
+            if r["job"] in {f"{camp.ledger_prefix}/headline/c{k}/s1" for k in range(4)}
+        ]
+        b_cpu = [(post[key]["cpu_b_s"], len(post[key]["phi"])) for key in post]
+        per_b = sum(c for c, _ in b_cpu) / sum(n for _, n in b_cpu)
+        cost = {"sampling_cpu_h": (sum(r["cpu_s"] for r in rows) / 3600.0
+                                   if len(rows) == 4 else None),
+                "reweight_cpu_h": 4 * N_PER_CELL * per_b / 3600.0,
+                "ncall_seed1": [int(post[(v, k, 1)]["ncall"]) for k in range(4)],
+                "note": "reported, not tested"}  # fmt: skip
+        payload["description"] = (
+            "M8b (pre-registered after A8b's result): the headline's 4 cells x 4 seeds with the "
+            "fast likelihood at R2's exploration settings (nlive 4000, 8000 in cell 0; 28 "
+            "slices), reweighted with mode (b). Gates first; A8b against R2, A8c, A8f, the "
+            "settings-convergence test against the nlive-1000 M8 runs, the 95 % rule."
+        )
+        payload["gates"]["1_fit_ess"] = gate1
+        payload["gates"]["5_blind_spot"] = {"check3_cell2_masses": check3, "check4": "A8b"}
+        payload["gates"]["all_pass"] = {"headline": head_ok}
+        payload["tests"].update({"a8b": a8b, "a8c": a8c, "convergence": conv})
+        payload["rule_95"] = rule95
+        payload["fits"] = fits
+        payload["cost"] = cost
+        payload["tolerances"] = {**TOL, "convergence": CONV_TOL}
+    if real:
+        write_json(FOLLOWUP_OUT[campaign], payload)
+        ledger.append(f"{camp.ledger_prefix}/summarize", "summarize", n_likelihood_calls=0,
+                      n_integrations=0, sim_years=None, wall_s=time.time() - t0,
+                      cpu_s=ledger.cpu_now() - c0, n_workers=1)  # fmt: skip
+    else:
+        (cache / FOLLOWUP_OUT[campaign]).write_text(json.dumps(payload, indent=1, default=float))
+    _log(f"summarize {campaign}: gates {json.dumps(payload['gates']['all_pass'])}", cache)
+    return payload
+
+
 def _cell_space(v: str, k: int):
     from fork.export import m6c
     from fork.inference.nested import cell_space
@@ -925,22 +1204,30 @@ def _q(x: np.ndarray) -> dict:
 
 
 def pipeline(
-    n_workers: int, cache: Path = CACHE, maxiter: int | None = None, max_draws: int | None = None
+    n_workers: int,
+    cache: Path | None = None,
+    maxiter: int | None = None,
+    max_draws: int | None = None,
+    campaign: str = "main",
 ) -> None:
     """run → reweight → summarize; stops if any run is missing after the scheduler."""
+    cache = CAMPAIGNS[campaign].cache if cache is None else cache
     import subprocess
 
     head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True,
                           text=True).stdout.strip()  # fmt: skip
     dirty = subprocess.run(["git", "status", "--porcelain", "src"], cwd=ROOT,
                            capture_output=True, text=True).stdout.strip()  # fmt: skip
-    _log(f"pipeline: commit {head}{' (src modified!)' if dirty else ''}", cache)
-    if not run_all(n_workers, cache, maxiter):
+    _log(f"pipeline {campaign}: commit {head}{' (src modified!)' if dirty else ''}", cache)
+    if not run_all(n_workers, cache, maxiter, campaign):
         _log("pipeline: runs incomplete, stopping before reweighting", cache)
         return
-    reweight(n_workers, cache, max_draws)
-    summarize(cache)
-    _log("pipeline: done", cache)
+    reweight(n_workers, cache, max_draws, campaign)
+    if campaign == "main":
+        summarize(cache)
+    else:
+        summarize_followup(campaign, cache)
+    _log(f"pipeline {campaign}: done", cache)
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -948,7 +1235,8 @@ def main(argv: list[str] | None = None) -> None:
     sub = ap.add_subparsers(dest="cmd", required=True)
     for name in ("laplace-check", "plan", "run", "job", "reweight", "summarize", "pipeline"):
         p = sub.add_parser(name)
-        p.add_argument("--cache", type=Path, default=CACHE)
+        p.add_argument("--cache", type=Path, default=None, help="default: the campaign's")
+        p.add_argument("--campaign", choices=tuple(CAMPAIGNS), default="main")
         if name in ("laplace-check", "run", "reweight", "pipeline"):
             p.add_argument("--n-workers", type=int, default=12)
         if name in ("job", "run", "pipeline"):
@@ -960,23 +1248,24 @@ def main(argv: list[str] | None = None) -> None:
         if name == "laplace-check":
             p.add_argument("--points", choices=("pre_launch", "s1_cell0"), default="pre_launch")
     a = ap.parse_args(argv)
-    cache = a.cache.resolve()
-    if getattr(a, "max_draws", None) and cache == CACHE:
+    camp = CAMPAIGNS[a.campaign]
+    cache = camp.cache if a.cache is None else a.cache.resolve()
+    if getattr(a, "max_draws", None) and cache in {c.cache for c in CAMPAIGNS.values()}:
         raise SystemExit("--max-draws is for smoke runs in a scratch --cache")
     if a.cmd == "laplace-check":
         laplace_check(a.n_workers, a.points)
     elif a.cmd == "plan":
-        plan(cache)
+        plan(cache, a.campaign)
     elif a.cmd == "run":
-        run_all(a.n_workers, cache, a.maxiter)
+        run_all(a.n_workers, cache, a.maxiter, a.campaign)
     elif a.cmd == "job":
-        do_job(RunJob.from_id(a.job_id), a.maxiter, cache)
+        do_job(RunJob.from_id(a.job_id, a.campaign), a.maxiter, cache)
     elif a.cmd == "reweight":
-        reweight(a.n_workers, cache, a.max_draws)
+        reweight(a.n_workers, cache, a.max_draws, a.campaign)
     elif a.cmd == "summarize":
-        summarize(cache)
+        summarize(cache) if a.campaign == "main" else summarize_followup(a.campaign, cache)
     else:
-        pipeline(a.n_workers, cache, a.maxiter, a.max_draws)
+        pipeline(a.n_workers, cache, a.maxiter, a.max_draws, a.campaign)
 
 
 if __name__ == "__main__":

@@ -72,3 +72,34 @@ def test_fit_ess_separates_allocation_cap_from_reweighting():
     res = combine(cells, [np.zeros((n, 1))] * 4, [0.0] * 4, 1.8)
     _, _, share = mr.fit_ess(res)
     assert 0.2 < share < 0.6
+
+
+def test_follow_up_campaigns_are_the_pre_registered_ones():
+    """docs/notes/M8.md, "Follow-up pre-registration": the A8f rerun and M8b; main unchanged."""
+    a8f = mr.all_jobs("a8f")
+    assert len(a8f) == 12
+    assert {(j.variant, j.cell) for j in a8f} == {("s1_e05", 1), ("s1_e05", 3),
+                                                  ("s2_sigma_data", 2)}  # fmt: skip
+    assert all(j.nlive == 4000 and j.slices == 20 for j in a8f)
+    assert mr.RunJob("s1_e05", 1, 4, "a8f").rng_seed() == [2026, 8, 1846, 1, 2, 4, 2]
+    m8b = mr.all_jobs("m8b")
+    assert len(m8b) == 16 and {j.variant for j in m8b} == {"headline"}
+    assert {j.cell: j.nlive for j in m8b} == {0: 8000, 1: 4000, 2: 4000, 3: 4000}
+    assert all(j.slices == 28 for j in m8b)
+    assert mr.RunJob("headline", 0, 2, "m8b").rng_seed() == [2026, 8, 1846, 0, 1, 2, 3]
+    main = mr.all_jobs()
+    assert len(main) == 48 and all(j.slices is None for j in main)
+    assert len(mr.posteriors("a8f")) == 15 and len(mr.posteriors("m8b")) == 20
+    caches = {c.cache for c in mr.CAMPAIGNS.values()}
+    assert len(caches) == 3 and mr.CAMPAIGNS["main"].cache == mr.CACHE
+
+
+def test_arbiter_is_the_pre_registered_one():
+    from fork.export import m8_arbiter as arb
+
+    assert (arb.VARIANT, arb.CELL, arb.NLIVE, arb.SLICES) == ("s1_e05", 0, 4000, 28)
+    assert arb.rng_seed(1) == [2026, 6, 1846, 1, 1, 3, 1]
+    assert arb.A8B_TOL == {"median": 0.35, "width_rel": 0.10, "ln_z": 0.5}
+    # P(a < 25 AU) is cell 0's share: equal ln Z per prior mass gives the prior's share
+    p = arb.implied_p_below_25(-360.0, [-360.0, -360.0, -360.0])
+    assert 0.0 < p < 1.0
