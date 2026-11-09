@@ -10,7 +10,9 @@ semver: the tag is `vX.Y.Z`, and `pyproject.toml` and `CITATION.cff` hold `X.Y.Z
 - No tag yet. Tag `v1.0.0` after M6 is complete.
 - `0.9.0` until then, with semver everywhere and no "-phase1" suffix.
 - Licenses: MIT for the code, and CC0 1.0 for `data/historical/`. The split is stated in
-  `LICENSE`, `README.md`, `CITATION.cff` (`license: [MIT, CC0-1.0]`) and `.zenodo.json`.
+  `LICENSE`, `README.md`, `CITATION.cff` and `.zenodo.json`. Since 2026-11-09 both
+  `CITATION.cff` and `.zenodo.json` have `license: MIT`, and the CC0 dedication is in their
+  text (the abstract; `notes`).
   Zenodo's `license` field takes one value, so it says MIT, and the CC0 dedication is in
   `notes` (since 2026-11-09 the description covers only the method and the result).
 - ORCID: 0009-0004-1264-1662 (https://orcid.org/0009-0004-1264-1662), filled in 2026-11-07: the URL in `CITATION.cff`, the bare iD

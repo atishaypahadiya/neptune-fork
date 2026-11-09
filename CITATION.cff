@@ -3,25 +3,28 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
-title: "neptune-fork: Le Verrier's 1846 prediction of Neptune, rebuilt as a calibrated Bayesian inference"
+title: "neptune-fork: rebuilding Le Verrier's 1846 Neptune prediction as a Bayesian inference"
+# The abstract is .zenodo.json's description, plus the data dedication.
 abstract: >-
-  Rebuilds Le Verrier's 1846 inference of Neptune from Uranus's motion from first principles:
-  an own Wisdom-Holman N-body integrator validated against REBOUND, Uranus's orbit always
-  fitted jointly with an unseen perturber, partitioned nested sampling for multimodal
-  posteriors and evidence, and coverage tests on synthetic data. Includes a double-entry
-  transcription of Le Verrier's 1846 Table n. 77 (279 observations) and an apparent-place
-  observation model with per-observer error calibration. So far, synthetic-data results
-  only. Code is MIT; the data in data/historical/ are dedicated to the public domain under
-  CC0 1.0.
+  neptune-fork rebuilds Le Verrier's 1846 prediction of Neptune from Uranus's observed motion,
+  from first principles: its own Wisdom–Holman symplectic N-body integrator (validated against
+  REBOUND), a forward model that fits Uranus's orbit jointly with an unseen perturber, and
+  partitioned nested sampling (dynesty) for multimodal posteriors and Bayesian evidence,
+  checked by coverage tests on synthetic data. It fits the 279 observations of Le Verrier's own
+  1846 Table 77 with an apparent-place observation model and per-observer error calibration.
+  The pre-registered fit puts the unseen planet at 325.8° on the night Galle found Neptune,
+  with a 68 % interval of 323.6°–327.8°, against Neptune's true 325.87°. The transcribed
+  Table 77 is published as a separate dataset (concept DOI 10.5281/zenodo.24044791). The code
+  is MIT; the data in data/historical/ are dedicated to the public domain under CC0 1.0.
 authors:
   - family-names: Pahadiya
     given-names: Atishay
     orcid: "https://orcid.org/0009-0004-1264-1662"
+    affiliation: "San José State University"
 repository-code: "https://github.com/atishaypahadiya/neptune-fork"
-# MIT for the code; CC0 1.0 for everything in data/historical/ (see LICENSE).
-license:
-  - MIT
-  - CC0-1.0
+# MIT, as in .zenodo.json. The data in data/historical/ are CC0 1.0 (see LICENSE and the
+# abstract); the dataset itself is cited under references.
+license: MIT
 version: "0.9.0"
 keywords:
   - celestial mechanics
@@ -33,6 +36,15 @@ keywords:
   - Bayesian inference
   - history of astronomy
 references:
+  - type: data
+    authors:
+      - family-names: Pahadiya
+        given-names: Atishay
+        orcid: "https://orcid.org/0009-0004-1264-1662"
+        affiliation: "San José State University"
+    title: "Le Verrier 1846 Table 77 (all versions)"
+    doi: "10.5281/zenodo.24044791"
+    notes: "Concept DOI: all versions; cite this for the dataset in general."
   - type: article
     authors:
       - family-names: Le Verrier
