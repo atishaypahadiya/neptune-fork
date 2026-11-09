@@ -9,7 +9,7 @@ import * as THREE from "three";
 import { Line2 } from "three/addons/lines/Line2.js";
 import { LineMaterial } from "three/addons/lines/LineMaterial.js";
 import { LineGeometry } from "three/addons/lines/LineGeometry.js";
-import { fmt, range } from "./data.js";
+import { dm, fmt, range } from "./data.js";
 
 const SX = 0.9; // world units per degree of longitude
 const H = 3.4; // height of the posterior's peak
@@ -252,7 +252,7 @@ export function mountHeadline(root, d) {
     const phone = w / h < 1;
     view.r = phone ? 44 : 22;
     // On a phone the copy takes the top third: shift the image down so the scene sits below it.
-    if (phone) camera.setViewOffset(w, h, 0, -0.1 * h, w, h);
+    if (phone) camera.setViewOffset(w, h, 0, -0.17 * h, w, h);
     else camera.clearViewOffset();
     camera.updateProjectionMatrix();
     fatLines.forEach((l) => l.material.resolution.set(w, h));
@@ -279,6 +279,13 @@ export function mountHeadline(root, d) {
       view.eGoal = Math.min(6, Math.max(3.6, drag.e + (e.clientY - drag.y) * 0.01));
       return;
     }
+    const lvB = project(new THREE.Vector3(X(d.leVerrier), 0, 0));
+    const lvT = project(anchors.lv);
+    if (Math.abs(px - lvB.x) < 8 && py > lvT.y - 8 && py < lvB.y + 8) {
+      probe.visible = false;
+      showLvTip(px, py);
+      return;
+    }
     const a = project(new THREE.Vector3(X(lonMin), 0, 0));
     const b = project(new THREE.Vector3(X(lonMax), 0, 0));
     const top = project(new THREE.Vector3(0, H, 0)).y;
@@ -297,16 +304,29 @@ export function mountHeadline(root, d) {
     tip.style.transform = `translate(${Math.round(q.x + 10)}px, ${Math.round(q.y - 34)}px)`;
   });
   canvas.addEventListener("pointerleave", () => { probe.visible = false; tip.hidden = true; });
+  // Le Verrier's printed prediction, on his line and on his label.
+  function showLvTip(x, y) {
+    tip.hidden = false;
+    tip.textContent = lvTipText(d);
+    tip.style.transform = `translate(${Math.round(Math.min(x + 12, w - 380))}px, ${Math.round(y + 14)}px)`;
+  }
+  const lvLabel = labels.lv;
+  lvLabel.addEventListener("pointerenter", () => {
+    const r = lvLabel.getBoundingClientRect(), o = root.getBoundingClientRect();
+    showLvTip(r.left - o.left, r.bottom - o.top);
+  });
+  lvLabel.addEventListener("pointerleave", () => { tip.hidden = true; });
 
   // Leader lines and stage markers, re-projected each frame.
   const OFFSETS = {
     neptune: [70, -150], median: [-150, 46], lv: [-150, -40], planet: [48, -10],
   };
+  const OFFSETS_PHONE = { ...OFFSETS, neptune: [36, -64] };
   const drawOverlay = () => {
     let s = "";
     for (const [k, v] of Object.entries(anchors)) {
       const p = project(v);
-      const [dx, dy] = OFFSETS[k];
+      const [dx, dy] = (PHONE.matches ? OFFSETS_PHONE : OFFSETS)[k];
       const lx = p.x + dx, ly = p.y + dy;
       const el = labels[k];
       // Hidden labels get no leader; on a phone the planet's label is unanchored (CSS).
@@ -356,29 +376,36 @@ export function mountHeadline(root, d) {
   requestAnimationFrame(frame);
 }
 
-/** The panel's text: headline, body, readout, labels, and the text alternative. */
+const lvTipText = (d) =>
+  `Le Verrier's printed prediction: ${dm(d.leVerrierPrinted.lon)} heliocentric longitude for ` +
+  `1 Jan 1847. Source: ${d.leVerrierPrinted.source}.`;
+
+/** The 95 % range as one sentence, from its status (site/js/data.js, interval95). */
+function sentence95(i) {
+  const r = `${range(i.lo, i.hi)}°`;
+  if (i.state === "final") return `The 95 % range is ${r}${i.source === "M6c" ? "" : ` (${i.source})`}.`;
+  if (i.state === "pending") return `The 95 % range, ${r}, is provisional until the M8b reruns report.`;
+  return `The 95 % range, ${r}, stays provisional: M8b did not meet the replacement rule.`;
+}
+
+/** The panel's text: headline, body, labels, and the text alternative. */
 export function fillHeadline(root, d) {
   const set = (sel, text) => { root.querySelector(sel).textContent = text; };
   const m = d.mass, a = d.a, i95 = d.i95;
   set("h1", `Le Verrier's data point to ${fmt(d.median)}°`);
   set(".body",
-    `We refitted the ${d.nMeasurements} positions of Uranus that Le Verrier published in 1846, ` +
-    `from first principles. On the night Galle looked, ${d.galle.text}, the unseen planet ` +
-    `comes out at ${fmt(d.median)}°, 68 % range ${range(d.lo68, d.hi68)}°. ` +
-    `Neptune was at ${fmt(d.jpl, 2)}°.`);
-  set("[data-r=median]", `Median ${fmt(d.median)}°`);
-  set("[data-r=i68]", `68 % ${range(d.lo68, d.hi68)}°`);
-  set("[data-r=i95]", `95 % ${range(i95.lo, i95.hi)}°`);
-  set("[data-r=i95s]", i95.state === "final" ? i95.note : i95.state === "pending"
-    ? "Provisional · M8b pending" : "Provisional");
-  set("[data-r=jpl]", `Neptune ${fmt(d.jpl, 2)}°`);
+    `We refitted the ${d.nObservations} observations of Uranus (${d.nMeasurements} measured ` +
+    `coordinates) that Le Verrier published in 1846, from first principles. On the night ` +
+    `Galle looked, ${d.galle.text}, the unseen planet comes out at ${fmt(d.median)}°, ` +
+    `68 % range ${range(d.lo68, d.hi68)}°. Neptune was at ${fmt(d.jpl, 2)}°. ` +
+    sentence95(i95));
   set("[data-anchor=neptune] .t", `Neptune, ${d.galle.text}`);
   set("[data-anchor=neptune] .s", `Where Galle found it · ${fmt(d.jpl, 2)}° (JPL)`);
   set("[data-anchor=median] .t", `This rebuild · ${fmt(d.median)}°`);
   set("[data-anchor=median] .s",
     `Posterior median · the cone lands on its 68 %, ${range(d.lo68, d.hi68)}°`);
   set("[data-anchor=lv] .t", `Le Verrier's own orbit · ${fmt(d.leVerrier)}°`);
-  set("[data-anchor=lv] .s", "His published elements, carried to that night");
+  set("[data-anchor=lv] .s", "His published elements, carried to that night (our calculation)");
   set("[data-anchor=planet] .t", "The unseen planet");
   set("[data-anchor=planet] .s1",
     `${fmt(m.median)} M⊕ · 68 % ${range(m.lo68, m.hi68)} · Neptune ${fmt(d.neptune.mass, 2)}`);
@@ -391,8 +418,8 @@ export function fillHeadline(root, d) {
     `(median); its 68 % range, ${range(d.lo68, d.hi68)}°, is the footprint of a cone of lines ` +
     `falling from a shaded sphere that stands for the planet. Neptune's true place, ` +
     `${fmt(d.jpl, 2)}°, is a diamond almost at the peak. Le Verrier's own published orbit ` +
-    `gives ${fmt(d.leVerrier)}°, shown as a dashed line. The 95 % range, ` +
-    `${range(i95.lo, i95.hi)}°, is ${i95.state === "final" ? "final" : i95.note}. Inferred ` +
+    `gives ${fmt(d.leVerrier)}° by our calculation, shown as a dashed line. ${lvTipText(d)} ` +
+    `${sentence95(i95)} Inferred ` +
     `mass ${fmt(m.median)} Earth masses (68 % ${range(m.lo68, m.hi68)}; Neptune ` +
     `${fmt(d.neptune.mass, 2)}); semi-major axis ${fmt(a.median)} AU, osculating in 1781 ` +
     `(68 % ${range(a.lo68, a.hi68)}; Neptune ${fmt(d.neptune.a, 2)}).`);

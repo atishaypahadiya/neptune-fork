@@ -59,10 +59,11 @@ function interval95(rep, m8, m8b) {
 
 /** Everything panel 1 (the headline) shows. */
 export async function loadHeadline() {
-  const [rep, conj, m5a, m8, m8b] = await Promise.all([
+  const [rep, conj, m5a, m6, m8, m8b] = await Promise.all([
     loadJSON("m6c_replacement.json"),
     loadJSON("m6c_conjunction.json"),
     loadJSON("m5a_fits.json"),
+    loadJSON("m6_fits.json"),
     loadJSON("m8_runs.json"),
     loadJSON("m8b.json", { optional: true }),
   ]);
@@ -72,6 +73,13 @@ export async function loadHeadline() {
   if (Math.abs(h.centre_deg - g.median) > 1e-6) {
     throw new Error("m6c_conjunction histogram is not centred on the reported median");
   }
+  // The observation count is only in m6_fits.json's description ("279 observations, 529
+  // measurements"); its measurement count must match the structured one.
+  const nm = /\((\d+) observations, (\d+) measurements\)/.exec(m6.description);
+  if (!nm || Number(nm[2]) !== rep.best_fit.n_measurements) {
+    throw new Error("m6_fits.json: observation count not found or inconsistent");
+  }
+  const lvPub = m6.comparison_targets.le_verrier;
   const counts = h.edges_rel_deg.slice(0, -1).map((_, i) =>
     Object.values(h.counts).reduce((s, arr) => s + arr[i], 0));
   return {
@@ -81,6 +89,9 @@ export async function loadHeadline() {
     mass: rep.mass_earth, a: rep.a_au,
     neptune: { mass: m5a.true_neptune.mass_earth, a: m5a.true_neptune.a_au_osculating_1781 },
     nMeasurements: rep.best_fit.n_measurements,
+    nObservations: Number(nm[1]),
+    // Le Verrier's printed prediction: heliocentric longitude at his elements' epoch, 1847.0.
+    leVerrierPrinted: { lon: lvPub.helio_lon_ecl_of_date_1847_deg, source: lvPub.sources[0] },
     galle: jdToDate(conj.galle_night_jd_tdb),
     hist: { centre: h.centre_deg, edges: h.edges_rel_deg, counts },
     i95: interval95(rep, m8, m8b),
@@ -88,4 +99,10 @@ export async function loadHeadline() {
 }
 
 export const fmt = (x, n = 1) => x.toFixed(n);
+/** Degrees and arcminutes, e.g. 326°32′. */
+export const dm = (x) => {
+  let d = Math.floor(x), m = Math.round((x - d) * 60);
+  if (m === 60) { d += 1; m = 0; }
+  return `${d}°${String(m).padStart(2, "0")}′`;
+};
 export const range = (lo, hi, n = 1) => `${fmt(lo, n)}–${fmt(hi, n)}`;
