@@ -4,11 +4,78 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>neptune-fork</title>
+  <link rel="icon" href="data:,">
+  <meta name="description" content="Le Verrier's 1846 prediction of Neptune, rebuilt from his own data as a calibrated Bayesian inference.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500&family=EB+Garamond:ital@1&display=swap">
+  <link rel="stylesheet" href="css/site.css">
+  <script type="importmap">
+    {"imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+    }}
+  </script>
 </head>
 <body>
   <main>
-    <h1>neptune-fork</h1>
-    <p>Rebuilding Le Verrier's 1846 prediction of Neptune from Uranus's motion. Panels coming in M7.</p>
+    <section class="scene" id="headline" aria-labelledby="headline-title">
+      <canvas aria-hidden="true"></canvas>
+      <svg class="leaders" aria-hidden="true"></svg>
+
+      <div class="copy">
+        <p class="chapter">01 · Where to look</p>
+        <h1 id="headline-title">Le Verrier's data</h1>
+        <p class="body">Loading the results…</p>
+      </div>
+
+      <dl class="readout" aria-label="Galle-night longitude">
+        <dt class="sr-only">Median</dt><dd data-r="median"></dd>
+        <dt class="sr-only">68 % range</dt><dd data-r="i68"></dd>
+        <dt class="sr-only">95 % range</dt><dd><span data-r="i95"></span><span class="status" data-r="i95s"></span></dd>
+        <dt class="sr-only">Neptune</dt><dd class="key" data-r="jpl"></dd>
+      </dl>
+
+      <div class="labels" aria-hidden="true">
+        <div class="anno" data-anchor="neptune"><p class="t"></p><p class="s"></p></div>
+        <div class="anno" data-anchor="median"><p class="t"></p><p class="s"></p></div>
+        <div class="anno" data-anchor="lv"><p class="t"></p><p class="s"></p></div>
+        <div class="anno" data-anchor="planet"><p class="t"></p><p class="s s1"></p><p class="s s2"></p></div>
+        <div class="ticks"></div>
+        <p class="tip" hidden></p>
+      </div>
+
+      <p class="axis-title" aria-hidden="true"></p>
+      <p class="equation" aria-label="Bayes: the posterior for the longitude is proportional to the likelihood times the prior, integrated over the other parameters"><i>p</i>(λ | data) ∝ ∫ <i>L</i>(data | θ) π(θ) dθ</p>
+
+      <ul class="legend" aria-hidden="true">
+        <li><span class="swatch solid"></span>Posterior, this rebuild</li>
+        <li><span class="swatch dashed"></span>Le Verrier's own orbit</li>
+        <li><span class="swatch diamond"></span>Neptune (JPL)</li>
+      </ul>
+
+      <p class="alt sr-only"></p>
+      <p class="error" hidden></p>
+    </section>
   </main>
+  <p class="edge-title" aria-hidden="true">neptune-fork — rediscovering 1846</p>
+  <div class="grain" aria-hidden="true"></div>
+
+  <script type="module">
+    import { loadHeadline } from "./js/data.js";
+    import { fillHeadline, mountHeadline } from "./js/scene-headline.js";
+    const root = document.getElementById("headline");
+    try {
+      const d = await loadHeadline();
+      fillHeadline(root, d);
+      mountHeadline(root, d);
+      root.classList.add("ready");
+    } catch (err) {
+      const e = root.querySelector(".error");
+      e.hidden = false;
+      e.textContent = `Could not load the results: ${err.message}`;
+      console.error(err);
+    }
+  </script>
 </body>
 </html>
