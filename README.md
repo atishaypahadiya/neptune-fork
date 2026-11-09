@@ -83,6 +83,7 @@ Data: Le Verrier Table 77, on Zenodo.
 ## Limitations
 
 - A6b (the reduction check against JPL): Comparison against per-group precision not made: no precision figure was fixed before the data were seen. Medians reported. Details in the [A6 report](docs/notes/A6.md).
+- A6a (the transcription check): 0 of 28 rows in error; 95 % upper bound on the per-row error rate 10.1 % (exact one-sided Clopper–Pearson, 0 of 28); the remaining 251 rows are unchecked.
 
 ## Quickstart
 
