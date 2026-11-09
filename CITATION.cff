@@ -22,9 +22,11 @@ authors:
     orcid: "https://orcid.org/0009-0004-1264-1662"
     affiliation: "San José State University"
 repository-code: "https://github.com/atishaypahadiya/neptune-fork"
-# MIT, as in .zenodo.json. The data in data/historical/ are CC0 1.0 (see LICENSE and the
-# abstract); the dataset itself is cited under references.
-license: MIT
+# MIT for the code; CC0 1.0 for everything in data/historical/ (see LICENSE; also stated in
+# the abstract). .zenodo.json takes one licence (MIT) and states the CC0 part in `notes`.
+license:
+  - MIT
+  - CC0-1.0
 version: "0.9.0"
 keywords:
   - celestial mechanics

@@ -201,7 +201,10 @@ export function mountWindow(root, d) {
       s1836: { point: top("s1836"), offset: phone ? [-14, -22] : [-34, -36] },
       zero: { point: top("zero"), offset: phone ? [-6, -54] : [-26, -104] },
       galle: { point: top("galle"), offset: phone ? [12, -46] : [34, -70] },
-      s1856: { point: top("s1856"), offset: phone ? [16, -12] : [34, -52] },
+      // On a phone the 1856 post is short and its top lands on Neptune's line, so the label
+      // attaches to the post's foot, on Le Verrier's dashed path, and sits below it.
+      s1856: phone ? { point: V(X(stages.s1856.yr), 0, stages.s1856.z), offset: [12, 44] }
+        : { point: top("s1856"), offset: [34, -52] },
       lvp: { point: lvPts[20], offset: phone ? [8, -40] : [16, -46], marker: "none" },
       nep: { point: V(X(s.year[nepAt]), 0, Zo(s.jpl_minus_median_deg[nepAt])), offset: phone ? [10, 46] : [24, 64], marker: "none" },
       b68: { point: V(X(y1), 0, Zo(s.hi68_rel_deg.at(-1))), offset: [14, 0], marker: "none", leader: false },
@@ -257,6 +260,12 @@ export function mountWindow(root, d) {
   requestAnimationFrame(frame);
 }
 
+/** "early 1842", "mid-1842" or "late 1842", from a decimal year. */
+const partOfYear = (y) => {
+  const f = y - Math.floor(y);
+  return `${f < 1 / 3 ? "early " : f < 2 / 3 ? "mid-" : "late "}${Math.floor(y)}`;
+};
+
 /** The panel's text, from the data. */
 export function fillWindow(root, d) {
   const set = (sel, text) => { root.querySelector(sel).textContent = text; };
@@ -271,22 +280,22 @@ export function fillWindow(root, d) {
     : `Le Verrier's planet and the posterior, ${Math.round(d.series.year[0])}–${Math.round(d.series.year.at(-1))}`);
   set(".body",
     `Hold Le Verrier's published orbit fixed and carry it through time. His planet crosses the ` +
-    `posterior's median once, in ${zero}, and stays inside its 68 % band from ${fmt(a, 2)} to ` +
+    `posterior's median once, in ${partOfYear(d.zero[0])}, and stays inside its 68 % band from ${fmt(a, 2)} to ` +
     `${fmt(b, 2)}. On Galle's night it was ${miss("galle_night")} from Neptune. A search in ` +
-    `${m.search_1836.date.year} would have missed by ${miss("search_1836")}; one in ` +
+    `${m.search_1836.date.year} would have been off by ${miss("search_1836")}; one in ` +
     `${m.search_1856.date.year}, by ${miss("search_1856")}.`);
   set(".note", `${d.note}. It does not model the search fields or star charts.`);
   const label = (k, title, short) => {
     set(`[data-anchor=${k}] .t`, title);
     set(`[data-anchor=${k}] .ts`, short);
   };
-  label("s1836", `Search in ${m.search_1836.date.year}`, String(m.search_1836.date.year));
+  label("s1836", `Search on ${m.search_1836.date.text}`, m.search_1836.date.text);
   set("[data-anchor=s1836] .s", `Le Verrier − Neptune ${signed(m.search_1836.le_verrier_minus_jpl_deg)}° · ${lvWhere("search_1836")}`);
   label("zero", `Crosses the median · ${zero}`, zero);
   set("[data-anchor=zero] .s", "His planet passes the posterior's centre");
   label("galle", `Galle's night · ${m.galle_night.date.text}`, "Galle");
   set("[data-anchor=galle] .s", `Le Verrier − Neptune ${signed(m.galle_night.le_verrier_minus_jpl_deg)}° · ${lvWhere("galle_night")}`);
-  label("s1856", `Search in ${m.search_1856.date.year}`, String(m.search_1856.date.year));
+  label("s1856", `Search on ${m.search_1856.date.text}`, m.search_1856.date.text);
   set("[data-anchor=s1856] .s", `Le Verrier − Neptune ${signed(m.search_1856.le_verrier_minus_jpl_deg)}° · ${lvWhere("search_1856")}`);
   label("lvp", "Le Verrier's planet", "Le Verrier");
   set("[data-anchor=lvp] .s", "His published orbit, held fixed (our calculation)");

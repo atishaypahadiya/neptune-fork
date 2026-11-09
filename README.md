@@ -24,11 +24,17 @@ There are two separate noise-free checks:
 - **Posterior (M5b):** wider, with its median at 322.05° against the true 325.87°, a −0.75σ
   offset. The shift runs along the mass–distance degeneracy, where the likelihood is flat.
 
-Every number here comes from synthetic data. No real observations have been fitted yet.
+The figure and the two checks above use synthetic data. The pre-registered fit to Le Verrier's
+real observations (M6c) puts the planet at 325.8° on Galle's night, with a 68 % interval of
+323.6°–327.8°, against JPL's 325.87°; its 95 % interval is provisional. Details are under
+Status below.
 
 ## Status
 
-Phase 1, **M6 in progress**. Milestones M0–M5b are complete:
+Phase 1. The pre-registered real-data fit (M6c) is done and reported below; the rest of M6
+(the M6d–M6e items and the A6 report) is open, M8 (a faster likelihood that decides the
+provisional 95 % interval) is running, and M7 (the public site) is being built. Milestones
+M0–M5b are complete:
 
 - frames;
 - the Kepler solver;
