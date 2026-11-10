@@ -2,7 +2,7 @@
 // from site/data/; axis tick values are derived from the data's range and registered as such.
 
 import * as d3 from "d3";
-import { mount, point, probe } from "./plate.js";
+import { mount, point, probe, stipple } from "./plate.js";
 import { fmt, drv, clock, dayMonth, duration } from "./data.js";
 import { timelineFacts, SENS } from "./copy.js";
 
@@ -285,5 +285,89 @@ export function fig6(fig, D) {
         .on("pointerleave", leave(tip));
     }
     svg.on("pointerdown.away", (e) => { if (!e.target.closest(".hit")) tip.hide(); });
+  });
+}
+
+/* ---------------- Fig. 7: the profile likelihood in a (M9) ---------------- */
+
+export function fig7(fig, D) {
+  const M = D.m9, A = M.datasets.all, B = M.datasets.post1781, S = M.settings;
+  const grid = S.grid_au;
+  const pts = (ds) => ds.points.filter((p) => !p.reference && p.dlnl != null);
+  const at = (ds, a) => ds.points.find((p) => !p.reference && p.a_au === a);
+  const tip = probe(fig);
+  mount(fig, (svg, w, h) => {
+    const phone = w < 600;
+    const mg = { l: 54, r: phone ? 22 : 36, t: 34, b: 38 };
+    const x = d3.scaleLinear().domain([grid[0] - 1, grid.at(-1) + 1]).range([mg.l, w - mg.r]);
+    const low = d3.min([...pts(A), ...pts(B)], (p) => p.dlnl);
+    const y = d3.scaleLinear().domain([Math.min(low, S.reading.dlnl) - 0.5, 0.8]).nice(5).range([h - mg.b, mg.t]);
+    const g = svg.append("g");
+    for (const t of y.ticks(5)) {
+      drv(t, "axis tick");
+      g.append("path").attr("class", "ln ctx yield").attr("d", L([[mg.l, y(t)], [w - mg.r, y(t)]]));
+      g.append("text").attr("class", "tick").attr("x", mg.l - 8).attr("y", y(t) + 4).attr("text-anchor", "end").text(minus(t));
+    }
+    // the reading rule's threshold
+    g.append("path").attr("class", "ln sec yield").attr("d", L([[mg.l, y(S.reading.dlnl)], [w - mg.r, y(S.reading.dlnl)]]));
+    xAxis(g, x, h - mg.b, grid.filter((v) => Number.isInteger(v) && (!phone || v % 4 === 0)));
+    const curve = (ds, cls) => {
+      const P = pts(ds);
+      g.append("path").attr("class", `ln ${cls}`).attr("d", L(P.map((p) => [x(p.a_au), y(p.dlnl)])));
+      g.selectAll(null).data(P).join("circle").attr("class", "dot").attr("cx", (p) => x(p.a_au)).attr("cy", (p) => y(p.dlnl)).attr("r", 2.6);
+    };
+    curve(B, "sec");
+    curve(A, "model");
+    for (const [name, letter, dy] of [["neptune", "N", -13], ["le_verrier", "L", 13]]) {
+      const r = A.reference_points[name];
+      point(g, { id: letter, x: x(r.a_au), y: y(r.dlnl), letter, mark: "open", dx: 9, dy });
+    }
+    svg.on("pointermove pointerdown", (e) => {
+      const [px] = d3.pointer(e);
+      const a = grid[d3.bisector((v) => v).center(grid, x.invert(px))];
+      const pa = at(A, a), pb = at(B, a);
+      tip.show(x(a), y(pa.dlnl), `${a} AU: all observations Δ ln L ${minus(fmt(pa.dlnl, 2))}, ` +
+        `mass ${fmt(pa.mass_earth)} M⊕, longitude ${fmt(pa.galle_lon_deg, 1)}°; from 1781 on ` +
+        `${minus(fmt(pb.dlnl, 2))}, ${fmt(pb.mass_earth)} M⊕, ${fmt(pb.galle_lon_deg, 1)}°`);
+    }).on("pointerleave", leave(tip));
+  });
+}
+
+/* ---------------- Fig. 8: mass against a in the posterior (after the fact) ---------------- */
+
+export function fig8(fig, D) {
+  const Cn = D.m9.corner;
+  const ae = Cn.a_edges_au, me = Cn.mass_edges_earth, nx = ae.length - 1, ny = me.length - 1;
+  const tip = probe(fig);
+  mount(fig, (svg, w, h) => {
+    const phone = w < 600;
+    const mg = { l: 54, r: phone ? 22 : 36, t: 30, b: 38 };
+    const x = d3.scaleLinear().domain([ae[0], ae.at(-1)]).range([mg.l, w - mg.r]);
+    const y = d3.scaleLinear().domain([me[0], me.at(-1)]).range([h - mg.b, mg.t]);
+    const g = svg.append("g");
+    for (const t of y.ticks(5)) {
+      drv(t, "axis tick");
+      g.append("path").attr("class", "ln ctx yield").attr("d", L([[mg.l, y(t)], [w - mg.r, y(t)]]));
+      g.append("text").attr("class", "tick").attr("x", mg.l - 8).attr("y", y(t) + 4).attr("text-anchor", "end").text(String(t));
+    }
+    xAxis(g, x, h - mg.b, x.ticks(phone ? 4 : 6));
+    // the posterior: a seeded subsample as stipple, and the density's 68 % and 95 % contours
+    stipple(g, Cn.samples.map(([a, m]) => [x(a), y(m)]), { r: 1.1, cls: "dot sec" });
+    const values = new Float64Array(nx * ny);
+    for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++) values[j * nx + i] = Cn.density[i][j];
+    const da = ae[1] - ae[0], dm = me[1] - me[0];
+    const path = d3.geoPath(d3.geoTransform({
+      point(px, py) { this.stream.point(x(ae[0] + da * px), y(me[0] + dm * py)); },
+    }));
+    for (const c of d3.contours().size([nx, ny]).thresholds([Cn.levels.p95, Cn.levels.p68])(values)) {
+      g.append("path").attr("class", `ln ${c.value === Cn.levels.p68 ? "model" : "sec"}`).attr("d", path(c));
+    }
+    const mk = Cn.marks;
+    point(g, { id: "N", x: x(mk.neptune.a_au), y: y(mk.neptune.mass_earth), letter: "N", mark: "open", dx: 10, dy: -12 });
+    point(g, { id: "L", x: x(mk.le_verrier.a_au), y: y(mk.le_verrier.mass_earth), letter: "L", mark: "open", dx: 10, dy: -12 });
+    const qa = Cn.a_au, qm = Cn.mass_earth;
+    svg.on("pointermove pointerdown", () => tip.show(x(qa.median), y(qm.median),
+      `Posterior median a ${fmt(qa.median)} AU (68 %: ${fmt(qa.lo68)}–${fmt(qa.hi68)}), ` +
+      `mass ${fmt(qm.median)} M⊕ (${fmt(qm.lo68)}–${fmt(qm.hi68)})`)).on("pointerleave", leave(tip));
   });
 }

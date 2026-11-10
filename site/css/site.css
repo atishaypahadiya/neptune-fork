@@ -134,6 +134,14 @@ figure[data-fig] > figcaption { margin-top: 10px; max-width: var(--measure); }
 .fig-4 .canvas { height: 420px; }
 .fig-5 .canvas { height: 420px; }
 .fig-6 .canvas { height: 400px; }
+/* Figs. 7 and 8 side by side at the figure width; one above the other below 900 px */
+main > section > .pair {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px 32px;
+  width: min(calc(100vw - 2 * var(--gutter)), 1040px); margin: 36px 0 36px 50%;
+  transform: translateX(-50%);
+}
+.pair > figure[data-fig] { margin: 0; min-width: 0; }
+.fig-7 .canvas, .fig-8 .canvas { height: 400px; }
 
 /* ---------- archival quotes (journal layer) ---------- */
 .quote { margin: 8px 0 28px; padding-left: 1.6em; }
@@ -202,6 +210,7 @@ input[type="range"] { flex: 1; min-width: 0; margin: 0; accent-color: var(--prus
 
 /* ---------- stacked plates: tablet and phone ---------- */
 @media (max-width: 899px) {
+  main > section > .pair { grid-template-columns: minmax(0, 1fr); }
   .split { grid-template-columns: minmax(0, 1fr); margin: 64px 0; min-height: 0; }
   .split > .plate { position: relative; height: min(92svh, 96vw); order: 0; }
   .split > .side {
@@ -219,6 +228,7 @@ input[type="range"] { flex: 1; min-width: 0; margin: 0; accent-color: var(--prus
   .fig-2 .canvas { height: 520px; }
   .fig-4 .canvas, .fig-5 .canvas { height: 340px; }
   .fig-6 .canvas { height: 400px; }
+  .fig-7 .canvas, .fig-8 .canvas { height: 360px; }
   .sec { margin-top: 64px; }
   th, td { padding-right: 6px; }
   #table-1 .obs { display: none; }
@@ -251,6 +261,7 @@ input[type="range"] { flex: 1; min-width: 0; margin: 0; accent-color: var(--prus
   .plate > svg.fig, .canvas > svg.fig { position: relative; inset: auto; height: auto; aspect-ratio: var(--ar, 1.6); }
   .canvas { height: auto !important; }
   main > section:not(.split) > figure[data-fig] { width: 100%; margin: 14pt 0; transform: none; }
+  main > section > .pair { grid-template-columns: minmax(0, 1fr); width: 100%; margin: 14pt 0; transform: none; }
   figure[data-fig], .table, .quote { break-inside: avoid; }
   figure[data-fig] > figcaption, .caption { max-width: none; }
   .split { display: flex; flex-direction: column; margin: 18pt 0; min-height: 0; }

@@ -45,6 +45,9 @@ semver: the tag is `vX.Y.Z`, and `pyproject.toml` and `CITATION.cff` hold `X.Y.Z
 - **S1 cell 0 resolution:** new pre-registered plan with a mode-robust sampler. The A8d(S1)
   arbiter (2026-11-10) ended in its third outcome, "fail, agreeing with neither": the published
   verdict ("not at all") stands and the question is unresolved (`docs/notes/M8.md`).
+- **Student-t profile in the semi-major axis:** M9's profile likelihood under S3's Student-t
+  error model (ν = 4), to be pre-registered; the Gaussian profile is reported in
+  `docs/notes/M9.md` (2026-11-10).
 - **Cache-only fetcher for pre-registered runs:** future pre-registered runs use a cache-only
   fetcher that raises on miss. Today a run reads Horizons through the default fetcher, which
   goes live on a cache miss. The A8d(S1) arbiter (launched 2026-11-09) made no network calls,

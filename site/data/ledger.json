@@ -13,12 +13,12 @@
  ],
  "totals": {
   "all": {
-   "n_rows": 263,
-   "n_likelihood_calls": 1139497799,
-   "n_integrations": 623729560,
-   "sim_years": 96028616051.4,
-   "wall_s": 1279283.1,
-   "cpu_s": 3911064.3,
+   "n_rows": 265,
+   "n_likelihood_calls": 1140989595,
+   "n_integrations": 623778089,
+   "sim_years": 96031873751.6,
+   "wall_s": 1279514.4,
+   "cpu_s": 3911626.6,
    "n_rows_missing": {
     "n_likelihood_calls": 10,
     "n_integrations": 12,
@@ -26,15 +26,15 @@
     "wall_s": 3,
     "cpu_s": 9
    },
-   "cpu_hours": 1086.41
+   "cpu_hours": 1086.56
   },
   "measured": {
-   "n_rows": 232,
-   "n_likelihood_calls": 1103364942,
-   "n_integrations": 586011860,
-   "sim_years": 90247212918.7,
-   "wall_s": 1174303.1,
-   "cpu_s": 3612078.7,
+   "n_rows": 234,
+   "n_likelihood_calls": 1104856738,
+   "n_integrations": 586060389,
+   "sim_years": 90250470618.9,
+   "wall_s": 1174534.4,
+   "cpu_s": 3612641.0,
    "n_rows_missing": {
     "n_likelihood_calls": 3,
     "n_integrations": 5,
@@ -42,7 +42,7 @@
     "wall_s": 0,
     "cpu_s": 0
    },
-   "cpu_hours": 1003.36
+   "cpu_hours": 1003.51
   },
   "estimated": {
    "n_rows": 31,
@@ -124,19 +124,20 @@
     }
    },
    "profile": {
-    "n_rows": 1,
-    "n_likelihood_calls": null,
-    "n_integrations": null,
-    "sim_years": null,
-    "wall_s": 12393.0,
-    "cpu_s": null,
+    "n_rows": 3,
+    "n_likelihood_calls": 1491796,
+    "n_integrations": 48529,
+    "sim_years": 3257700.2,
+    "wall_s": 12624.3,
+    "cpu_s": 562.3,
     "n_rows_missing": {
      "n_likelihood_calls": 1,
      "n_integrations": 1,
      "sim_years": 1,
      "wall_s": 0,
      "cpu_s": 1
-    }
+    },
+    "cpu_hours": 0.16
    },
    "reweight": {
     "n_rows": 3,
@@ -4176,6 +4177,34 @@
    "n_workers": 1,
    "estimated": false,
    "recorded": "2026-11-10T03:10:32"
+  },
+  {
+   "job": "m9/profile/all",
+   "kind": "profile",
+   "n_likelihood_calls": 1053784,
+   "n_integrations": 1393,
+   "sim_years": 215573.1,
+   "wall_s": 96.2,
+   "cpu_s": 318.3,
+   "n_workers": 12,
+   "estimated": false,
+   "recorded": "2026-11-10T06:16:16",
+   "n_perturbative": 1052391,
+   "n_exact": 1393
+  },
+  {
+   "job": "m9/profile/post1781",
+   "kind": "profile",
+   "n_likelihood_calls": 438012,
+   "n_integrations": 47136,
+   "sim_years": 3042127.1,
+   "wall_s": 135.1,
+   "cpu_s": 244.0,
+   "n_workers": 12,
+   "estimated": false,
+   "recorded": "2026-11-10T06:18:32",
+   "n_perturbative": 390876,
+   "n_exact": 47136
   }
  ]
 }

@@ -376,3 +376,19 @@ Review of the localhost page (2026-11-09):
    and SVG labels match the JS-rendered page exactly (the JS-only controls left out of both).
    Title = the paper's title, description = the abstract's first sentence, canonical URL,
    Open Graph and Twitter card tags with `plate-i.png` at 1200 × 630.
+
+## Figs. 7 and 8 (2026-11-10)
+
+- **Fig. 7, the profile likelihood in a** (§ 5; beside Fig. 8 at the figure width in a two-column
+  grid with a 32 px gap, one above the other below 900 px and in print): Δ ln L against the held
+  a for all observations (2 px line) and for the observations from 1781 on (1 px line), dots at
+  the grid values, the reading rule's threshold as a 0.6-opacity line among the 0.3 gridlines,
+  *N* and *L* as open marks on the all-observations curve. The key is in the caption; neither
+  curve is dashed, since dashed means provisional here. Tooltip: the nearest grid value's two
+  readings.
+- **Fig. 8, mass against a** (after the fact, and the caption says so): 600 seeded posterior
+  samples as 0.6-opacity stipple, the 68 % and 95 % contours (2 px and 1 px), *N* and *L* as open
+  marks. Tooltip: the marginal medians and 68 % ranges.
+- Both read `site/data/m9_profile.json`; axis ticks are derived values. UI-rule audit: no new
+  pattern. The figure pair is a grid, not bordered containers; no new colour, opacity step,
+  gradient, divider, pill or eyebrow.

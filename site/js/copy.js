@@ -74,8 +74,18 @@ export function abstract(D) {
       `published orbit gives a geocentric longitude of ${deg(h.leVerrier, 2)} that night, inside ` +
       `the 68 % range. In heliocentric longitude (ecliptic of date) his planet lies outside the ` +
       `95 % range at the conjunction of ${yr(w.marks.conjunction.year)} (§ 4.2) and stays within ` +
-      `the 68 % band only from ${fmt(a, 2)} to ${fmt(b, 2)} (§ 4.3).`,
+      `the 68 % band only from ${fmt(a, 2)} to ${fmt(b, 2)} (§ 4.3). ${distanceSentence(D.m9)}`,
   };
+}
+
+/** The abstract's sentence on where the distance comes from (M9, docs/notes/M9.md). */
+export function distanceSentence(M) {
+  const A = M.datasets.all, lv = A.reference_points.le_verrier;
+  const [lo, hi] = A.intervals.dlnl_minus_2, [f0, f1] = M.settings.reading.flat_range_au;
+  return `The distance comes from the pre-1781 observations: with them the data alone place the ` +
+    `planet at ${fmt(lo)}–${fmt(hi)} AU and prefer Neptune's distance over Le Verrier's ` +
+    `${fmt(lv.a_au, 0)} AU by Δ ln {i:L} = ${fmt(Math.abs(lv.dlnl), 2)}; without them any ` +
+    `distance from ${f0} to ${f1} AU fits.`;
 }
 
 export function capPlateI(D) {
@@ -432,6 +442,56 @@ export function robustText(D) {
       `runs. Dot: median; thick line: 68 % range; thin line: 95 % range, dashed where ` +
       `provisional. ${v.s1_e05.unresolved ? "Open dot and dashed lines: the verdict is unresolved. " : ""}` +
       `{N@fig-6} Neptune (JPL Horizons). Reading rules: ${k.rulesSource}.`,
+    ...profileText(D.m9),
+  };
+}
+
+/** § 5's paragraph on the profile likelihood in a (M9) and the captions of Figs. 7 and 8. */
+export function profileText(M) {
+  const A = M.datasets.all, B = M.datasets.post1781, S = M.settings, Cn = M.corner;
+  const grid = S.grid_au, n = drv(grid.length, "grid points");
+  const lv = A.reference_points.le_verrier, nep = A.reference_points.neptune;
+  const [lo2, hi2] = A.intervals.dlnl_minus_2;
+  const post = M.posterior_marginal_a.a_au;
+  const inFlat = (p) => !p.reference && p.a_au >= S.reading.flat_range_au[0] && p.a_au <= S.reading.flat_range_au[1];
+  const bMin = drv(Math.min(...B.points.filter(inFlat).map((p) => p.dlnl)), "lowest Δ ln L of the post-1781 profile from 26 to 44 AU");
+  const withBound = (ds, b) => ds.points.filter((p) => !p.reference && p.active_bounds?.includes(b)).map((p) => p.a_au);
+  const massFloor = withBound(B, "mass_lo"), eBound = withBound(B, "e_max"), eBoundA = withBound(A, "e_max");
+  const read = (ds) => ds.reading.reading;
+  const because = M.interpretation.text.split(". ")[0];
+  return {
+    rob_p3: `A pre-registered profile likelihood asks whether the data fix the planet's distance. ` +
+      `With the semi-major axis held at each of ${n} values from ${grid[0]} to ${grid.at(-1)} AU ` +
+      `and everything else re-fitted, the ${A.n_observations} observations give a maximum at ` +
+      `${fmt(A.a_max.a_au, 0)} AU (a parabola through its neighbours peaks at ${fmt(A.parabola.a_au)}), ` +
+      `fall ${fmt(-S.reading.dlnl, 0)} in ln {i:L} below it at ${fmt(lo2)} and ${fmt(hi2)} AU, and put ` +
+      `Le Verrier's ${fmt(lv.a_au, 2)} AU ${fmt(Math.abs(lv.dlnl), 2)} below Neptune's ${fmt(nep.a_au, 2)} AU: ` +
+      `the profile reads as ${read(A)}, and the headline posterior's 95 % range in {i:a} ` +
+      `(${fmt(post.lo95)}–${fmt(post.hi95)} AU) lies inside it. Without the ${M.ancient_observations_removed} ` +
+      `observations before 1781 (${M.ancient_measurements_removed} measurements by ` +
+      `${M.ancient_observers.slice(0, -1).join(", ")} and ${M.ancient_observers.at(-1)}) the same profile ` +
+      `stays within ${fmt(Math.abs(bMin))} of its maximum from ${S.reading.flat_range_au[0]} to ` +
+      `${S.reading.flat_range_au[1]} AU, with the fitted mass on the prior's floor of ` +
+      `${fmt(10 ** S.log10_m_range[0], 0)} Earth mass up to ${fmt(Math.max(...massFloor), 0)} AU and the ` +
+      `eccentricity on its ${S.e_max} bound from ${fmt(Math.min(...eBound))} AU on: it reads as ${read(B)}. ` +
+      `By the rule committed beforehand, ${because.charAt(0).toLowerCase()}${because.slice(1)}. ` +
+      `The profile uses ${M.error_model}; nothing in the headline changes.` +
+      (eBoundA.length ? ` On the all-observations curve the eccentricity bound is active at ` +
+        `${eBoundA.join(" and ")} AU.` : ""),
+    cap_fig_7: `The profile likelihood in the semi-major axis: Δ ln {i:L} against the held {i:a}, for all ` +
+      `observations (thick line) and for the observations from 1781 on (thin line), from the ` +
+      `pre-registered M9 run on ${M.error_model}. Dots: the ${n} grid values, each the best of ` +
+      `${S.n_random + S.n_posterior} starts polished with the full model. The horizontal line is the ` +
+      `reading rule's threshold, Δ ln {i:L} = ${fmt(S.reading.dlnl, 0)}. {N@fig-7} Neptune's {i:a} ` +
+      `(${fmt(nep.a_au, 2)} AU) and {L@fig-7} Le Verrier's (${fmt(lv.a_au, 2)} AU), on the ` +
+      `all-observations curve. Reading: ${read(A)} with all observations, ${read(B)} without the ` +
+      `pre-1781 ones.`,
+    cap_fig_8: `Mass against semi-major axis in the headline posterior, made after the fact (not ` +
+      `pre-registered): ${drv(Cn.samples.length, "posterior samples drawn")} posterior samples and the ` +
+      `contours holding 68 % and 95 % of the probability. {N@fig-8} Neptune (JPL: ` +
+      `${fmt(Cn.marks.neptune.mass_earth, 2)} Earth masses, ${fmt(Cn.marks.neptune.a_au, 2)} AU); ` +
+      `{L@fig-8} Le Verrier's planet (${fmt(Cn.marks.le_verrier.mass_earth)} Earth masses, ` +
+      `${fmt(Cn.marks.le_verrier.a_au, 2)} AU).`,
   };
 }
 
@@ -479,7 +539,13 @@ export function limits(D) {
       `posterior weight that the current runs do not determine (${fmt(s1.p, 3)} to about ` +
       `${fmt(s1.arbP[1], 1)}).`);
   }
+  const M = D.m9;
   out.push(
+    `The distance result (§ 5) rests on the ${M.ancient_measurements_removed} measurements by ` +
+      `four observers before 1781 (${M.ancient_observers.slice(0, -1).join(", ")} and ` +
+      `${M.ancient_observers.at(-1)}): their reduction and transcription matter most.`,
+    `The profile in {i:a} uses ${M.error_model}; a Student-t profile is deferred to ` +
+      `v${D.timeline.deferred.to_version}.`,
     deferredFits(D.timeline.deferred),
     `Error model: the evidence favours Student-t errors (ln B = ` +
       `${signed(D.checks.fits.s3_t4.vs_headline.ln_b, 1)}), but the Gaussian error model was ` +

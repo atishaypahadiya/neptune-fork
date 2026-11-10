@@ -7,7 +7,7 @@ Ledger CPU-hours add up across jobs. Wall times are per job: many jobs ran side 
 14-core Apple Silicon machine, so summed wall time overstates the elapsed time. Jobs the ledger
 does not cover took seconds to a few minutes and are marked "not in ledger".
 
-**Ledger total so far: 1086 CPU-hours** (1003 timed live, 83 estimated), 1139 million likelihood
+**Ledger total so far: 1087 CPU-hours** (1004 timed live, 83 estimated), 1141 million likelihood
 calls, 624 million of them N-body integrations over 1690–1846 (the rest are the fast linearized
 likelihood of M8), or 96 billion simulated planet-years.
 
@@ -28,6 +28,7 @@ the commands below use these identifiers.
 | the fast-likelihood rerun | M8 A8f rerun | `docs/notes/M8.md` |
 | the higher-resolution reruns | M8b | `docs/notes/M8.md` |
 | the full-likelihood check of the eccentricity test | A8d(S1) arbiter (`m8_arbiter`) | `docs/notes/M8.md` |
+| the profile likelihood in the semi-major axis (Figs. 7 and 8) | M9 (`fork.export.m9`) | `docs/notes/M9.md` |
 | the 95 % stability condition | `std_95_bounds_le_0p4` (rule_95 in `m8b.json`) | `docs/notes/M8.md` |
 | the convergence gates; the agreement with the headline fit; the seed-agreement condition | `gates_headline_and_single_seed_fits`; `a8b_a8c`; `a8f_headline_cells` | `docs/notes/M8.md` |
 | the transcription check | A6a | `docs/notes/A6.md` |
@@ -162,6 +163,21 @@ There are 40 jobs (10 seeds × 4 cells), with the same nlive as M5b. The recorde
 10:04 to 2026-11-07 14:25), with each job on 4 workers taking 86–111 min (nlive 1000) or 202–221 min (nlive 2000). Each likelihood call
 costs more than in M5b because it computes the apparent place at 279 epochs. The result is in
 `site/data/a6c_coverage.json` and `docs/notes/M6.md`.
+
+## M9: profile likelihood in the semi-major axis
+
+```sh
+uv run python -m fork.export.m9 profile --dataset all --n-workers 12       # 1.6 min wall, 0.09 CPU-h
+uv run python -m fork.export.m9 profile --dataset post1781 --n-workers 12  # 2.3 min wall, 0.07 CPU-h
+uv run python -m fork.export.m9 convergence --dataset all                  # iteration trace of every exact polish; seconds
+uv run python -m fork.export.m9 report        # docs/notes/M9_profile.{json,png} and site/data/m9_profile.json
+uv run python -m fork.export.m9 screen        # the transcription screen (docs/notes/M9_screen.json)
+uv run python docs/notes/scripts/m9_mass_a.py # the after-the-fact corner plot, 23 s
+```
+
+Pre-registered in `docs/notes/M9.md` (code hash and relaunch recorded there); ledger rows
+`m9/profile/*`. Resumable per grid point from `data/cache/m9/`; a run that dies loses at most one
+point's 40 fits.
 
 ## Toy example (not a result)
 

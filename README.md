@@ -24,7 +24,10 @@ The headline fit gives a mass of 17.3 M⊕ (68 %: 16.3–18.4; Neptune 17.15), a
 of 30.2 AU (29.6–30.9), osculating in 1781, and an eccentricity below 0.028 (68 %, one-sided).
 Le Verrier's published elements, carried to that night, give a geocentric longitude of 324.97°,
 inside the 68 % range. In heliocentric longitude his planet lies outside the 95 % range at the
-conjunction of 1821 and stays within the 68 % band only from 1835.75 to 1856.50.
+conjunction of 1821 and stays within the 68 % band only from 1835.75 to 1856.50. The distance
+comes from the pre-1781 observations: with them the data alone place the planet at 28.0–34.0 AU
+and prefer Neptune's distance over Le Verrier's 36 AU by Δ ln L = 3.15; without them any distance
+from 26 to 44 AU fits.
 
 Phase 2 will extend the code to weigh three
 explanations of an orbital anomaly against each other: a hidden mass, a modified law of
@@ -68,7 +71,9 @@ they are not yet pre-registered, will be planned and pushed before launch, and t
 variant opens the Adams–Challis study. The higher-resolution reruns with a faster likelihood did
 not meet the 95 % stability condition, so the 95 % interval stays provisional. The full-likelihood
 check of the eccentricity test has reported: by its pre-registered rule the published verdict
-stands and the question is unresolved (Robustness, below).
+stands and the question is unresolved (Robustness, below). A pre-registered profile likelihood in
+the semi-major axis ([M9](docs/notes/M9.md)) is done: the distance comes from the pre-1781
+observations (Robustness).
 
 **Data and model.** Le Verrier's 279 observations are transcribed and double-checked
 (`data/historical/`), and the apparent-place observation model and the error calibration are
@@ -96,6 +101,25 @@ the pre-registered rule the published verdict stands and the question is unresol
 Student-t errors (ln B = +13.7), but the Gaussian error model was fixed by the
 pre-registration and is kept. Under Student-t errors the median is insensitive to it (it moves 0.37
 headline half-widths), but the 68 % interval widens from 4.22° to 6.33°.
+
+**Distance.** A pre-registered profile likelihood in the semi-major axis
+([M9](docs/notes/M9.md)) asks whether the data fix the planet's distance. With a held at 13
+values from 24 to 44 AU and everything else re-fitted, all 279 observations give a maximum at
+30 AU, fall 2 in ln L below it at 28.0 and 34.0 AU, and put Le Verrier's 36.15 AU 3.15 below
+Neptune's 30.07 AU: the profile reads as constrained, and the headline posterior's 95 % range in
+a (28.7–32.8 AU) lies inside it. Without the 19 observations before 1781 (37 measurements by
+Flamsteed, Le Monnier, Bradley and Mayer) the same profile stays within 1.1 of its maximum from
+26 to 44 AU, with the fitted mass on the prior's 1 M⊕ floor up to 30 AU and the eccentricity on
+its 0.3 bound beyond: it reads as flat. By the rule committed beforehand, the distance comes from
+the pre-1781 observations. The profile uses the Gaussian error model; nothing in the headline
+changes.
+
+![Three stacked panels against the held semi-major axis: the log-likelihood profile for all rows and for the rows from 1781 on with the posterior's marginal, the fitted mass, and the longitude on Galle's night](docs/notes/M9_profile.png)
+
+*Profile likelihood in the semi-major axis (M9).* Top: Δ ln L against the held a for all rows
+(solid) and the rows from 1781 on (dashed), with the headline posterior's marginal in a (dotted)
+and the Δ ln L = −0.5 and −2 lines; open circles mark Neptune's and Le Verrier's a. Middle: the
+fitted mass. Bottom: the longitude on Galle's night, with JPL's Neptune.
 
 **Repeatability.** Repeated runs of the main sampling cell disagreed on the width by far more
 than the sampler's own error estimate. Under a pre-registered repeatability study, two runs with
@@ -126,6 +150,10 @@ condition, so the 95 % interval stays provisional.
 - With eccentricity allowed to 0.5, a low-distance solution (a < 25 AU) pointing near 314° on
   Galle's night carries a posterior weight that the current runs do not determine (0.001 to
   about 0.2).
+- The distance result rests on the 37 measurements by four observers before 1781 (Flamsteed,
+  Le Monnier, Bradley and Mayer): their reduction and transcription matter most
+  ([M9](docs/notes/M9.md)).
+- The profile in a uses the Gaussian error model; a Student-t profile is deferred to v1.1.
 
 ## Quickstart
 
@@ -178,13 +206,14 @@ site/           static site (GitHub Pages) and its data
 
 ## Compute
 
-The ledger (`site/data/ledger.json`) records **1086 CPU-hours** to date: 1003 timed live, plus 83
-estimated from logs. That covers 1139 million likelihood evaluations, 624 million of them N-body
+The ledger (`site/data/ledger.json`) records **1087 CPU-hours** to date: 1004 timed live, plus 83
+estimated from logs. That covers 1141 million likelihood evaluations, 624 million of them N-body
 integrations over 1690–1846 and the rest the fast linearized likelihood. Nested sampling
 accounts for nearly all of it: the posterior calibration on synthetic data, and the coverage
 test with the real error model at 277 CPU-hours. The headline fit took 28.5, its sensitivity
-runs 89, the repeatability study 104, the fast-likelihood validation with its reruns 54, and
-the full-likelihood check of the eccentricity test 98.
+runs 89, the repeatability study 104, the fast-likelihood validation with its reruns 54, the
+full-likelihood check of the eccentricity test 98, and the profile likelihood in the semi-major
+axis 0.2.
 
 ## Prior art
 
