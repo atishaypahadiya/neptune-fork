@@ -401,6 +401,19 @@ export function robustText(D) {
 
 /* ---------- § 6 Limitations ---------- */
 
+/** "a", "a and b", "a, b and c" (no serial comma, as in the README). */
+const andList = (xs) => (xs.length < 2 ? xs.join("") : `${xs.slice(0, -1).join(", ")} and ${xs.at(-1)}`);
+
+/** The spec's M6c fits deferred to v1.1 (m7_timeline.json "deferred", from the release checklist). */
+function deferredFits(d) {
+  const variants = d.m6c_fits.filter((f) => f.kind === "variant").map((f) => f.name);
+  const rest = d.m6c_fits.filter((f) => f.kind !== "variant").map((f) => `the ${f.name}`);
+  const opens = Object.entries(d.opens).map(([key, what]) =>
+    `the ${d.m6c_fits.find((f) => f.key === key).name} variant opens ${what}`);
+  return `Only ${d.fitted} is fitted: ${andList([`the ${andList(variants)} variants`, ...rest])} ` +
+    `are deferred to v${d.to_version} (${[d.status, ...opens].join("; ")}).`;
+}
+
 export function limits(D) {
   const s = D.dataset.spot_checks.human, c = D.dataset.counts, k = D.checks;
   const bad = drv(s.cells - s.matching, "cells in disagreement");
@@ -421,6 +434,7 @@ export function limits(D) {
       `and a full-likelihood arbiter run decides.`);
   }
   out.push(
+    deferredFits(D.timeline.deferred),
     `Error model: the evidence favours Student-t errors (S3, ln B = ` +
       `${signed(D.checks.fits.s3_t4.vs_headline.ln_b, 1)}), but the Gaussian error model was ` +
       `fixed by the pre-registration and is kept. S3 shows the result is insensitive to it: the ` +

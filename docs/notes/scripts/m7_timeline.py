@@ -223,6 +223,21 @@ def main() -> None:
             "2c9ebb3": {"pushed_as": "ed1bf8a", "source": "docs/notes/M6.md, Note on commit hashes"}
         },
         "entries": entries,
+        # The spec's M6c fits not run in v1.0.0 (docs/release_checklist.md, "Deferred to v1.1",
+        # moved there 2026-11-09). Not pre-registered yet, so they have no timeline entry.
+        "deferred": {
+            "source": "docs/release_checklist.md, Deferred to v1.1 (2026-11-09)",
+            "to_version": "1.1",
+            "fitted": "Le Verrier's data choice on the modern reduction track",
+            "m6c_fits": [
+                {"key": "bouvard", "name": "Bouvard", "kind": "variant"},
+                {"key": "adams", "name": "Adams", "kind": "variant"},
+                {"key": "track_1846", "name": "1846 reduction track", "kind": "track"},
+                {"key": "lv_shape", "name": "Le Verrier shape model", "kind": "model"},
+            ],
+            "status": "not yet pre-registered; to be planned and pushed before launch",
+            "opens": {"adams": "the Adams–Challis study"},
+        },
         # The pre-registered reading rules of the M6c sensitivity runs, as written in
         # docs/notes/M6.md before any of their sampling (commit 2981aa1). The site applies them
         # to the numbers in m6_fits.json; it does not restate a verdict.
