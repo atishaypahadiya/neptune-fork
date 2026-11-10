@@ -457,29 +457,27 @@ def profile(dataset: str, n_workers: int, cache: Path = CACHE, *, smoke: bool = 
     pool = (get_context("spawn").Pool(n_workers, initializer=_init_worker, initargs=(dataset,))
             if n_workers > 1 else None)  # fmt: skip
     try:
-        # 1. independent starts, per point (cached per point)
+        # 1. independent starts, one point at a time, each written as it finishes (a run that
+        #    dies loses at most one point's 40 fits)
         q, _, logl = replacement_posterior()
-        tasks = []
-        for k in points:
-            if _path(dataset, f"starts_{k}.json", cache).exists():
-                continue
+        pending = [k for k in points if not _path(dataset, f"starts_{k}.json", cache).exists()]
+        if pending:
+            _log(f"{dataset}: independent starts, {len(pending)} points pending", log_path)
+        for k in pending:
             n_r, n_p = (2, 1) if smoke else (N_RANDOM, N_POSTERIOR)
             starts = random_starts(d, k, n_r) + posterior_starts(q, logl, POINTS_AU[k], n_p)
-            tasks += [{"point": k, "a_au": POINTS_AU[k], "start": s, "exact": False}
-                      for s in starts]  # fmt: skip
-        if tasks:
-            _log(f"{dataset}: independent starts, {len(tasks)} fits", log_path)
+            tasks = [{"point": k, "a_au": POINTS_AU[k], "start": s, "exact": False}
+                     for s in starts]  # fmt: skip
             recs = _run(tasks, pool)
             account(recs)
-            for k in points:
-                mine = [r for r in recs if r["point"] == k]
-                if mine:
-                    _write(_path(dataset, f"starts_{k}.json", cache),
-                           {"point": k, "a_au": POINTS_AU[k], "n_random": N_RANDOM,
-                            "n_posterior": N_POSTERIOR, "optima": mine})  # fmt: skip
-                    best_chi2 = min(r["chi2"] for r in mine if r["success"])
-                    _log(f"{dataset}: point {k} (a = {POINTS_AU[k]} AU) starts done, best χ² "
-                         f"{best_chi2:.3f}", log_path)  # fmt: skip
+            _write(_path(dataset, f"starts_{k}.json", cache),
+                   {"point": k, "a_au": POINTS_AU[k], "n_random": N_RANDOM,
+                    "n_posterior": N_POSTERIOR, "optima": recs})  # fmt: skip
+            ok = [r["chi2"] for r in recs if r["success"]]
+            _log(f"{dataset}: point {k} (a = {POINTS_AU[k]} AU) starts done, {len(recs)} fits, "
+                 f"best χ² {min(ok):.3f}" if ok else
+                 f"{dataset}: point {k} (a = {POINTS_AU[k]} AU) starts done, none succeeded",
+                 log_path)  # fmt: skip
         optima = {k: _read(_path(dataset, f"starts_{k}.json", cache))["optima"] for k in points}
 
         # 2. continuation: parallel neighbour passes, then sequential sweeps (profile.py's)
