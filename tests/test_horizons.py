@@ -55,6 +55,36 @@ def test_bodies_cached_separately(tmp_path):
     assert st.shape == (1, 6) and st[0, 0] == 399.0
 
 
+def test_cache_only_env_raises_on_miss_and_never_fetches_on_hit(tmp_path, monkeypatch):
+    """M10.md, pre-run change (b): with FORK_HORIZONS_CACHE_ONLY set, a cache miss raises,
+    naming the body and the missing epochs, and the live client is never called; a fully
+    cached request is served without touching it. Unset (or "0"), the default is the live
+    client as before."""
+    fake = FakeFetcher()
+    jd = [1.0, 2.0, 3.0]
+    horizons.state_vectors_ecl_j2000("uranus", jd, directory=tmp_path, fetcher=fake)
+
+    def boom(horizons_id, jd_tdb):
+        raise AssertionError("the live client was called under FORK_HORIZONS_CACHE_ONLY")
+
+    monkeypatch.setattr(horizons, "fetch_from_horizons", boom)
+    monkeypatch.setenv(horizons.CACHE_ONLY_ENV, "1")
+    assert horizons.cache_only()
+    st = horizons.state_vectors_ecl_j2000("uranus", jd[::-1], directory=tmp_path)
+    assert st.shape == (3, 6) and len(fake.calls) == 1
+    with pytest.raises(RuntimeError, match=r"uranus.*2 epoch\(s\)|2 epoch\(s\) for uranus"):
+        horizons.state_vectors_ecl_j2000("uranus", [2.0, 4.0, 5.0], directory=tmp_path)
+    with pytest.raises(RuntimeError, match=r"JD 4\.000000, 5\.000000"):
+        horizons.state_vectors_ecl_j2000("uranus", [4.0, 5.0], directory=tmp_path)
+    assert not (tmp_path / "horizons_saturn.npz").exists()
+    with pytest.raises(RuntimeError, match="saturn"):
+        horizons.state_vectors_ecl_j2000("saturn", [1.0], directory=tmp_path)
+    monkeypatch.setenv(horizons.CACHE_ONLY_ENV, "0")
+    assert not horizons.cache_only()
+    with pytest.raises(AssertionError, match="live client"):
+        horizons.state_vectors_ecl_j2000("saturn", [1.0], directory=tmp_path)
+
+
 def test_unknown_body(tmp_path):
     with pytest.raises(KeyError):
         horizons.state_vectors_ecl_j2000("pluto", [1.0], directory=tmp_path, fetcher=FakeFetcher())

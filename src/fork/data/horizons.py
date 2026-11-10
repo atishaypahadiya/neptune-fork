@@ -44,6 +44,31 @@ def cache_dir() -> Path:
     return Path(env) if env else DEFAULT_CACHE_DIR
 
 
+CACHE_ONLY_ENV = "FORK_HORIZONS_CACHE_ONLY"
+
+
+def cache_only() -> bool:
+    """True when ``FORK_HORIZONS_CACHE_ONLY`` is set (to anything but "" or "0"): a cache miss
+    then raises instead of going to Horizons. Pre-registered runs set it (M10.md, pre-run
+    change (b)), so a run can never fetch an ephemeris silently."""
+    return os.environ.get(CACHE_ONLY_ENV, "") not in ("", "0")
+
+
+def cache_only_fetcher(body: str) -> Fetcher:
+    """A fetcher that raises on any miss, naming the body and the missing epochs."""
+
+    def fetch(horizons_id: str, jd_tdb: np.ndarray) -> np.ndarray:
+        jd = np.asarray(jd_tdb, dtype=np.float64)
+        shown = ", ".join(f"{v:.6f}" for v in jd[:5]) + (", …" if jd.size > 5 else "")
+        raise RuntimeError(
+            f"{CACHE_ONLY_ENV} is set and the cache misses {jd.size} epoch(s) for {body} "
+            f"(Horizons id {horizons_id}): JD {shown}. Run `python -m fork.data.horizons "
+            "--fetch` without the variable, or pass the epochs, before a cache-only run."
+        )
+
+    return fetch
+
+
 def _cache_path(body: str, directory: Path) -> Path:
     return directory / f"horizons_{body}.npz"
 
@@ -129,12 +154,14 @@ def state_vectors_ecl_j2000(
     Frame ``ecl_j2000``; AU and AU/day. ``body`` is a key of ``fork.model.bodies.BODIES``
     (jupiter, saturn, uranus, neptune, earth). Epochs missing from the cache are fetched with
     ``fetcher`` (default: live Horizons) and merged into the cache; cached epochs never are.
-    Epochs are matched exactly, so pass the same float JDs you will ask for later.
+    Epochs are matched exactly, so pass the same float JDs you will ask for later. With
+    ``FORK_HORIZONS_CACHE_ONLY`` set and no ``fetcher``, a miss raises (``cache_only_fetcher``).
     """
     if body not in BODIES:
         raise KeyError(f"unknown body {body!r}; choose from {sorted(BODIES)}")
     directory = cache_dir() if directory is None else directory
-    fetcher = fetch_from_horizons if fetcher is None else fetcher
+    if fetcher is None:
+        fetcher = cache_only_fetcher(body) if cache_only() else fetch_from_horizons
     horizons_id = BODIES[body].horizons_id
 
     jd_req = np.atleast_1d(np.asarray(jd_tdb, dtype=np.float64))
