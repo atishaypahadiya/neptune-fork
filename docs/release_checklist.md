@@ -37,6 +37,10 @@ semver: the tag is `vX.Y.Z`, and `pyproject.toml` and `CITATION.cff` hold `X.Y.Z
   factor between the two need a new pre-registered real-data nested run (hours of compute).
 - **M6e, the held-out precoveries:** the Lalande 1795 and Galileo 1612–13 positions are not
   yet sourced or transcribed, and the predictive step is not built; A6e depends on it.
+- **Cache-only fetcher for pre-registered runs:** future pre-registered runs use a cache-only
+  fetcher that raises on miss. Today a run reads Horizons through the default fetcher, which
+  goes live on a cache miss. The A8d(S1) arbiter (launched 2026-11-09) made no network calls,
+  but only because every epoch it needs was cached.
 
 ## Repository state
 
