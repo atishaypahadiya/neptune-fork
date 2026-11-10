@@ -295,11 +295,23 @@ def _exact_residual(q: np.ndarray) -> np.ndarray:
     return z if np.all(np.isfinite(z)) else np.full(n, PENALTY)
 
 
-def fit_at(a_au: float, start: dict, exact: bool) -> dict:
+STATUS_CODES = {  # scipy.optimize.least_squares
+    -1: "improper input parameters",
+    0: "the maximum number of function evaluations was reached (not converged)",
+    1: "gtol satisfied: the scaled gradient is below 1e-10",
+    2: "ftol satisfied: the relative change of the cost in the last step is below 1e-10",
+    3: "xtol satisfied: the relative step is below 1e-10",
+    4: "ftol and xtol both satisfied",
+}
+
+
+def fit_at(a_au: float, start: dict, exact: bool, trace: bool = False) -> dict:
     """One bounded least-squares fit at the held a from ``start`` (log10_m, k, h, lam0, inc,
     node; u for ``exact``). ``_fit_bounded`` runs the interior and, if needed, boundary layouts
     of the e disk; log10 m and i sit in the optimizer's box bounds; (i, Ω) ride along as
-    variables ``_fit_bounded`` does not see, warm-started from the previous run."""
+    variables ``_fit_bounded`` does not see, warm-started from the previous run. With
+    ``trace``, the record carries χ² at every iterate of the run that produced the result, the
+    final gradient norm and scipy's optimality measure."""
     from fork.inference.fit import _fit_bounded, _prior_box, le_verrier_space
 
     sp = le_verrier_space(a_au, E_MAX)
@@ -318,16 +330,38 @@ def fit_at(a_au: float, start: dict, exact: bool) -> dict:
         hi = np.concatenate([np.full(nh, np.inf), [inc_max, np.inf], hi_p])
         x0 = np.clip(x0, lo, hi)
 
+        seen: dict[bytes, float] = {}
+
         def fun(x):
             phi = phi_of(layout.y_from_z(x[nh + 2 :]), x[nh : nh + 2])
-            return _exact_residual(np.concatenate([x[:4], phi])) if exact else _pert_residual(phi)
+            r = _exact_residual(np.concatenate([x[:4], phi])) if exact else _pert_residual(phi)
+            if trace:
+                seen[np.asarray(x, dtype=float).tobytes()] = float(r @ r)
+            return r
 
+        hist: list[float] = []
+
+        def cb(ir):  # scipy ≥ 1.15: the accepted iterate (or a result holding it)
+            x = np.asarray(getattr(ir, "x", ir), dtype=float)
+            hist.append(seen.get(x.tobytes()) or float(np.sum(fun(x) ** 2)))
+
+        extra = {"callback": cb} if trace else {}
+        if trace:
+            hist.append(float(np.sum(fun(x0) ** 2)))
         sol = least_squares(fun, x0, method="trf", bounds=(lo, hi), x_scale="jac", xtol=1e-10,
-                            ftol=1e-10, gtol=1e-10, max_nfev=MAX_NFEV)  # fmt: skip
-        return SimpleNamespace(x=np.concatenate([sol.x[:4] if exact else z[:4], sol.x[nh + 2:]]),
-                               cost=float(sol.cost), success=bool(sol.success),
-                               status=int(sol.status), nfev=int(sol.nfev),
-                               inc=sol.x[nh:nh + 2].copy(), message=str(sol.message))  # fmt: skip
+                            ftol=1e-10, gtol=1e-10, max_nfev=MAX_NFEV, **extra)  # fmt: skip
+        ns = SimpleNamespace(x=np.concatenate([sol.x[:4] if exact else z[:4], sol.x[nh + 2:]]),
+                             cost=float(sol.cost), success=bool(sol.success),
+                             status=int(sol.status), nfev=int(sol.nfev),
+                             inc=sol.x[nh:nh + 2].copy(), message=str(sol.message))  # fmt: skip
+        if trace:
+            last5 = hist[-6] - hist[-1] if len(hist) >= 6 else hist[0] - hist[-1]
+            ns.trace = {"n_iter": len(hist) - 1, "chi2_by_iter": hist,
+                        "chi2_last5_change": float(last5),
+                        "grad_norm": float(np.linalg.norm(sol.grad)),
+                        "optimality": float(sol.optimality), "njev": int(sol.njev),
+                        "message": str(sol.message)}  # fmt: skip
+        return ns
 
     z0 = np.concatenate([head0, sp.z_from_y([start["log10_m"], a_au, start["k"], start["h"],
                                              start["lam0"]])])  # fmt: skip
@@ -336,6 +370,8 @@ def fit_at(a_au: float, start: dict, exact: bool) -> dict:
                    best.x[:4] if exact else None)  # fmt: skip
     rec["origin"] = start.get("origin")
     rec["calls"] = {k: _W["calls"][k] - c0[k] for k in c0}
+    if trace:
+        rec["trace"] = best.trace
     return rec
 
 
@@ -591,6 +627,108 @@ def profile(dataset: str, n_workers: int, cache: Path = CACHE, *, smoke: bool = 
     _log(f"{dataset}: done, {calls['pert']} perturbative and {calls['exact']} exact calls, "
          f"{wall / 60:.1f} min wall, {cpu / 3600:.2f} CPU-h", log_path)  # fmt: skip
     return summary
+
+
+# ---------------------------------------------------------------------------- after the run
+
+
+def _best_polished(pol: dict) -> dict:
+    ok = [r for r in pol["attempts"][-1]["polished"] if r["status"] > 0]
+    return min(ok, key=lambda r: r["chi2"])
+
+
+def convergence(dataset: str, cache: Path = CACHE, max_rounds: int = 4) -> dict:
+    """Rerun every exact polish of the data set from its cached candidate start with the
+    iteration trace, report the final gradient norm, scipy's optimality and status, and the χ²
+    change over the last five iterations; a polish whose last-five change is ≥ ``CONT_TOL_CHI2``
+    is re-polished from its own result until it is below (at most ``max_rounds`` runs), and the
+    point's polish file gains that as a new attempt."""
+    _init_worker(dataset)
+    out = {"dataset": dataset, "tolerance_chi2": CONT_TOL_CHI2, "status_codes": STATUS_CODES,
+           "points": []}  # fmt: skip
+    for k, a in enumerate(POINTS_AU):
+        p_path = _path(dataset, f"polish_{k}.json", cache)
+        pol = _read(p_path)
+        last = pol["attempts"][-1]
+        recs, new_polished, changed = [], [], False
+        for c, r in zip(last["candidates"], last["polished"], strict=True):
+            start = _start_of(c) | {"origin": f"polish:{c['origin']}"}
+            rounds = [fit_at(a, start, True, trace=True)]
+            while (rounds[-1]["trace"]["chi2_last5_change"] >= CONT_TOL_CHI2
+                   and len(rounds) < max_rounds):  # fmt: skip
+                s2 = _start_of(rounds[-1]) | {"origin": f"repolish:{c['origin']}"}
+                rounds.append(fit_at(a, s2, True, trace=True))
+            final = rounds[-1]
+            final["from"], final["chi2_perturbative"] = c["origin"], c["chi2"]
+            recs.append({"from": c["origin"], "cached_chi2": r["chi2"],
+                         "rerun_chi2": rounds[0]["chi2"],
+                         "rerun_minus_cached": rounds[0]["chi2"] - r["chi2"],
+                         "rounds": [{"chi2": x["chi2"], "status": x["status"], "nfev": x["nfev"],
+                                     **x["trace"]} for x in rounds],
+                         "converged": final["trace"]["chi2_last5_change"] < CONT_TOL_CHI2,
+                         "repolished": len(rounds) > 1,
+                         "final_minus_cached": final["chi2"] - r["chi2"]})  # fmt: skip
+            new_polished.append(final if len(rounds) > 1 else r)
+            changed |= len(rounds) > 1
+        if changed:
+            pol["attempts"].append({"repolish": True, "reason": "convergence check: χ² moved by "
+                                    f"{CONT_TOL_CHI2} or more over the last five iterations",
+                                    "candidates": last["candidates"],
+                                    "polished": new_polished,
+                                    "pass": all(x["status"] > 0
+                                                for x in new_polished)})  # fmt: skip
+            pol["pass"] = pol["attempts"][-1]["pass"]
+            _write(p_path, pol)
+        out["points"].append({"k": k, "a_au": a, "polishes": recs, "repolished": changed})
+        _log(
+            f"{dataset}: convergence point {k} (a = {a} AU): "
+            + "; ".join(
+                f"{x['from']}: last-5 Δχ² {x['rounds'][-1]['chi2_last5_change']:.2e}, "
+                f"|grad| {x['rounds'][-1]['grad_norm']:.2e}, status {x['rounds'][-1]['status']}"
+                + (" (re-polished)" if x["repolished"] else "")
+                for x in recs
+            ),
+            cache / "progress.log",
+        )
+    _write(_path(dataset, "convergence.json", cache), out)
+    return out
+
+
+def repolish(dataset: str, k: int, from_points: list[int], cache: Path = CACHE,
+             reason: str = "") -> dict:  # fmt: skip
+    """Re-optimise point ``k`` from other points' exact solutions (a moved to point k's), with
+    the perturbative fit from each start reported beside the exact polish; the point's polish
+    file gains an attempt whose value is the best of the new polishes and the previous one."""
+    _init_worker(dataset)
+    a = POINTS_AU[k]
+    p_path = _path(dataset, f"polish_{k}.json", cache)
+    pol = _read(p_path)
+    prev = _best_polished(pol)
+    cands, polished, pert = [], [], []
+    starts = [
+        (j, _best_polished(_read(_path(dataset, f"polish_{j}.json", cache)))) for j in from_points
+    ] + [(k, prev)]  # the previous best is re-polished too
+    for j, bj in starts:
+        s = _start_of(bj) | {"origin": f"from_point:{j}" if j != k else "previous_best"}
+        pert.append(fit_at(a, s, False))
+        ex = fit_at(a, s, True, trace=True)
+        ex["from"], ex["chi2_perturbative"] = s["origin"], pert[-1]["chi2"]
+        polished.append(ex)
+        cands.append(s | {"chi2": pert[-1]["chi2"], "galle_lon_deg": bj["galle_lon_deg"],
+                          "e": bj["e"], "success": True, "from_point_a_au": POINTS_AU[j],
+                          "from_point_chi2": bj["chi2"]})  # fmt: skip
+        _log(f"{dataset}: re-polish point {k} (a = {a} AU) from point {j} (a = {POINTS_AU[j]} "
+             f"AU): perturbative χ² {pert[-1]['chi2']:.3f}, exact χ² {ex['chi2']:.3f} (status "
+             f"{ex['status']}, last-5 Δχ² {ex['trace']['chi2_last5_change']:.2e}); previous "
+             f"best {prev['chi2']:.3f}", cache / "progress.log")  # fmt: skip
+    attempt = {"repolish": True, "reason": reason, "from_points": from_points,
+               "candidates": cands, "polished": polished,
+               "perturbative_from_starts": pert,
+               "pass": all(x["status"] > 0 for x in polished)}  # fmt: skip
+    pol["attempts"].append(attempt)
+    pol["pass"] = attempt["pass"]
+    _write(p_path, pol)
+    return attempt
 
 
 # ---------------------------------------------------------------------------- reading
@@ -851,8 +989,125 @@ def summarize_dataset(dataset: str, cache: Path = CACHE) -> dict | None:
             "ancient_group_chi2_by_a": ancient}  # fmt: skip
 
 
-def report(cache: Path = CACHE, out_json: Path = OUT_JSON, out_png: Path | None = OUT_PNG) -> dict:
-    """docs/notes/M9_profile.json (and the figure) from the cached runs of both data sets."""
+CORNER_RNG = (2026, 9, 7)
+NEPTUNE_MASS_EARTH = 17.15  # JPL, as M9.md marks it on the corner plot
+CORNER_N_SAMPLES = 600
+CORNER_A_EDGES = (20.0, 46.0, 0.5)
+CORNER_MASS_EDGES = (5.0, 60.0, 1.0)
+SITE_OUT_NAME = "m9_profile.json"
+
+
+def corner_data(q: np.ndarray, w: np.ndarray) -> dict:
+    """The after-the-fact mass–a density of the replacement posterior for the site's corner
+    figure: a weighted 2-D histogram with the density levels enclosing 68 % and 95 % of the
+    mass, a seeded equal-weight subsample for the stipple, and the marginal quantiles."""
+    from dynesty.utils import resample_equal
+
+    from fork.inference.nested import weighted_quantiles
+
+    a, m = np.exp(q[:, Q_LN_A]), 10.0 ** q[:, Q_LOG10_M]
+    ae = np.arange(*CORNER_A_EDGES[:2], CORNER_A_EDGES[2])
+    ae = np.append(ae, CORNER_A_EDGES[1])
+    me = np.append(np.arange(*CORNER_MASS_EDGES[:2], CORNER_MASS_EDGES[2]), CORNER_MASS_EDGES[1])
+    h, _, _ = np.histogram2d(a, m, bins=[ae, me], weights=w)
+    flat = np.sort(h.ravel())[::-1]
+    cum = np.cumsum(flat) / flat.sum()
+    levels = {f: float(flat[np.searchsorted(cum, f)]) for f in (0.68, 0.95)}
+    rng = np.random.default_rng(list(CORNER_RNG))
+    eq = resample_equal(np.column_stack([a, m]), w, rstate=rng)
+    sub = eq[rng.choice(len(eq), CORNER_N_SAMPLES, replace=False)]
+    return {"after_the_fact": True, "rng": list(CORNER_RNG),
+            "a_edges_au": ae.tolist(), "mass_edges_earth": me.tolist(),
+            "density": np.round(h / h.max(), 5).tolist(),
+            "levels": {"p68": levels[0.68] / h.max(), "p95": levels[0.95] / h.max()},
+            "samples": np.round(sub, 3).tolist(),
+            "a_au": dict(zip(("lo68", "median", "hi68"), weighted_quantiles(a, w), strict=True)),
+            "mass_earth": dict(zip(("lo68", "median", "hi68"), weighted_quantiles(m, w),
+                                   strict=True))}  # fmt: skip
+
+
+def _site_points(ds: dict) -> list[dict]:
+    keys = ("a_au", "dlnl", "mass_earth", "e", "inc_deg", "galle_lon_deg", "active_bounds",
+            "reference", "name", "status", "u_flagged")  # fmt: skip
+    return [{k: p.get(k) for k in keys} for p in ds["points"]]
+
+
+def site_payload(out: dict, q: np.ndarray, w: np.ndarray) -> dict:
+    """The compact site copy of the report: what the page's text and Figs. 7 and 8 read."""
+    ridge = json.loads((NOTES / "M6c_r2_ridge.json").read_text())["le_verrier"]
+    ds = {}
+    for name, d in out["datasets"].items():
+        if d is None:
+            continue
+        ds[name] = {
+            "label": {"all": "all observations", "post1781": "the observations from 1781 on"}[name],
+            "n_measurements": d["n_measurements"],
+            "n_observations": d["n_observations"],
+            "points": _site_points(d),
+            "reading": d["reading"],
+            "a_max": d["a_max"],
+            "parabola": d["parabola"],
+            "intervals": d["intervals"],
+            "reference_points": d["reference_points"],
+            "continuation": d["continuation"],
+            "failed_points": d["failed_points"],
+        }
+    conv = {}
+    for name, c in out.get("convergence", {}).items():
+        conv[name] = {
+            k: c[k]
+            for k in (
+                "n_polishes",
+                "max_last5_change",
+                "max_optimality",
+                "max_grad_norm",
+                "n_repolished",
+                "all_status_positive",
+            )
+        }
+    return {"description": "M9, the pre-registered profile likelihood in the semi-major axis "
+            "(docs/notes/M9.md): the site's copy of docs/notes/M9_profile.json, plus the "
+            "after-the-fact mass–a density for Fig. 8.",
+            "pre_registration": "docs/notes/M9.md", "code_commit": out["code_commit"],
+            "settings": out["settings"], "datasets": ds,
+            "ancient_measurements_removed": N_ANCIENT_MEASUREMENTS,
+            "ancient_observations_removed": out["datasets"]["all"]["n_observations"]
+            - out["datasets"]["post1781"]["n_observations"],
+            "ancient_observers": ["Flamsteed", "Le Monnier", "Bradley", "Mayer"],
+            "interpretation": out.get("interpretation"),
+            "posterior_marginal_a": out["posterior_marginal_a"],
+            "volume_term": out.get("volume_term"),
+            "profile_vs_posterior": out.get("profile_vs_posterior"),
+            "neptune_osculating_a_1781_au": out["neptune_osculating_a_1781_au"],
+            "convergence": conv, "error_model": "the headline's Gaussian error model",
+            "corner": corner_data(q, w) | {"marks": {
+                "neptune": {"a_au": REFERENCE_AU["neptune"], "mass_earth": NEPTUNE_MASS_EARTH,
+                            "source": "JPL (docs/notes/M9.md)"},
+                "le_verrier": {"a_au": ridge["a_au"], "mass_earth": ridge["mass_earth"],
+                               "sources": ridge["sources"]}}},
+            "ledger": out["ledger"]}  # fmt: skip
+
+
+def _convergence_summary(c: dict) -> dict:
+    finals = [p["rounds"][-1] for pt in c["points"] for p in pt["polishes"]]
+    return {"n_polishes": len(finals),
+            "max_last5_change": max(f["chi2_last5_change"] for f in finals),
+            "max_optimality": max(f["optimality"] for f in finals),
+            "max_grad_norm": max(f["grad_norm"] for f in finals),
+            "max_rerun_minus_cached": max(abs(p["rerun_minus_cached"]) for pt in c["points"]
+                                          for p in pt["polishes"]),
+            "n_repolished": sum(p["repolished"] for pt in c["points"] for p in pt["polishes"]),
+            "all_status_positive": all(f["status"] > 0 for f in finals),
+            "status_codes": c["status_codes"], "points": c["points"]}  # fmt: skip
+
+
+def report(cache: Path = CACHE, out_json: Path = OUT_JSON, out_png: Path | None = OUT_PNG,
+           site: bool = True) -> dict:  # fmt: skip
+    """docs/notes/M9_profile.json (and the figure) from the cached runs of both data sets, and
+    the site's copy ``site/data/m9_profile.json``."""
+    from fork.export.to_json import write_json
+    from fork.inference.priors import PRIOR_LOG10_M_EARTH
+
     check_frozen()
     head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True,
                           text=True).stdout.strip()  # fmt: skip
@@ -867,6 +1122,7 @@ def report(cache: Path = CACHE, out_json: Path = OUT_JSON, out_png: Path | None 
                  "settings": {"grid_au": A_GRID_AU, "reference_au": REFERENCE_AU,
                               "n_random": N_RANDOM, "n_posterior": N_POSTERIOR,
                               "n_nearest": N_NEAREST, "n_rerun": N_RERUN, "e_max": E_MAX,
+                              "log10_m_range": list(PRIOR_LOG10_M_EARTH),
                               "inc_max_deg": INC_MAX_DEG, "continuation_tol_chi2": CONT_TOL_CHI2,
                               "polish_window_chi2": POLISH_WINDOW_CHI2, "max_polish": MAX_POLISH,
                               "distinct": {"galle_lon_deg": DISTINCT_LON_DEG, "e": DISTINCT_E},
@@ -913,8 +1169,12 @@ def report(cache: Path = CACHE, out_json: Path = OUT_JSON, out_png: Path | None 
         }
         for r in ledger_rows
     ]
+    conv = {ds: _read(_path(ds, "convergence.json", cache)) for ds in DATASETS}
+    out["convergence"] = {ds: _convergence_summary(c) for ds, c in conv.items() if c is not None}
     out_json.parent.mkdir(parents=True, exist_ok=True)
     out_json.write_text(json.dumps(out, indent=1, default=float))
+    if site and all(out["datasets"].values()):
+        write_json(SITE_OUT_NAME, site_payload(out, q, w))
     if out_png is not None:
         from fork.export.m9_plot import draw
 
@@ -1012,6 +1272,16 @@ def main(argv: list[str] | None = None) -> None:
     r = sub.add_parser("report")
     r.add_argument("--cache", type=Path, default=CACHE)
     r.add_argument("--no-png", action="store_true")
+    r.add_argument("--no-site", action="store_true")
+    c = sub.add_parser("convergence")
+    c.add_argument("--dataset", choices=DATASETS, required=True)
+    c.add_argument("--cache", type=Path, default=CACHE)
+    rp = sub.add_parser("repolish")
+    rp.add_argument("--dataset", choices=DATASETS, required=True)
+    rp.add_argument("--point", type=int, required=True)
+    rp.add_argument("--from", dest="from_points", type=int, nargs="+", required=True)
+    rp.add_argument("--reason", default="")
+    rp.add_argument("--cache", type=Path, default=CACHE)
     sub.add_parser("screen")
     a = ap.parse_args(argv)
     if a.cmd == "profile":
@@ -1020,7 +1290,11 @@ def main(argv: list[str] | None = None) -> None:
             raise SystemExit("smoke runs go to a scratch --cache, never the run cache")
         profile(a.dataset, a.n_workers, cache, smoke=a.smoke)
     elif a.cmd == "report":
-        report(a.cache.resolve(), out_png=None if a.no_png else OUT_PNG)
+        report(a.cache.resolve(), out_png=None if a.no_png else OUT_PNG, site=not a.no_site)
+    elif a.cmd == "convergence":
+        convergence(a.dataset, a.cache.resolve())
+    elif a.cmd == "repolish":
+        repolish(a.dataset, a.point, a.from_points, a.cache.resolve(), a.reason)
     else:
         screen()
 
