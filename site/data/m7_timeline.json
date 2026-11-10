@@ -1,6 +1,6 @@
 {
  "description": "Pre-registration timeline: when each pre-registration was committed and first pushed (public), and when its runs launched, finished and were first summarized. Times are PST (UTC-8). Built by docs/notes/scripts/m7_timeline.py from git, GitHub's repository activity API and the run logs.",
- "generated": "2026-11-09T15:20:27-08:00",
+ "generated": "2026-11-09T17:00:38-08:00",
  "sources": {
   "committed": "git committer date",
   "pushed": "GitHub repository activity API: first push whose head is the commit or a descendant",
@@ -193,10 +193,16 @@
     "time": "2026-11-09T13:36:33-08:00",
     "source": "data/cache/m8/runs_m8b/progress.log"
    },
-   "finished": null,
-   "first_summary": null,
+   "finished": {
+    "time": "2026-11-09T16:12:35-08:00",
+    "source": "data/cache/m8/runs_m8b/progress.log"
+   },
+   "first_summary": {
+    "time": "2026-11-09T16:27:36-08:00",
+    "source": "data/cache/m8/runs_m8b/progress.log"
+   },
    "run_commit": "049e88f",
-   "status": "running"
+   "status": "done"
   },
   {
    "id": "m8_arbiter",
@@ -214,10 +220,13 @@
      }
     }
    ],
-   "launched": null,
+   "launched": {
+    "time": "2026-11-09T16:27:37-08:00",
+    "source": "data/cache/nested/m8_arbiter/progress.log"
+   },
    "finished": null,
    "first_summary": null,
-   "status": "not launched"
+   "status": "running"
   }
  ],
  "sensitivity_reading_rules": {

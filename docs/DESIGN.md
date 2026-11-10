@@ -249,6 +249,17 @@ None is on the page until it is confirmed. The candidates, each with its exact s
 listed in the restyle review. The reference's quotes are placeholders and are not used as
 sources.
 
+Confirmed on 2026-11-09 (`site/data/m7_quotes.json`). Each is printed in the journal layer as
+it appears in Krajnović (2016), with the original reference he gives and "quoted in Krajnović
+(2016)":
+- § 3.2: Airy (1846), MNRAS 7, 121, on Le Verrier's letter to him of 28 June 1846.
+- § 4.1: Galle to Le Verrier, 25 September 1846, with "Le [sic] planète" as printed, and
+  Krajnović's translation.
+- § 4.3: Airy to Le Verrier, private letter, 14 October 1846.
+
+Arago's "au bout de sa plume" and Le Verrier's letter of 18 September 1846 are left off: their
+wording is unverified.
+
 ## UI-rule audit (global rule), planned use
 
 - **Small caps:** used only for "Plate", "Fig.", "Table" and "§". They are the period's

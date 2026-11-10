@@ -3,6 +3,7 @@
  "references": [
   {"id": "lv1846", "from": "m7_dataset.json citation.source"},
   {"id": "dataset", "from": "m7_dataset.json zenodo + title + creators"},
+  {"id": "airy1846", "authors": "Airy, G. B.", "year": 1846, "venue": "Monthly Notices of the Royal Astronomical Society", "volume": "7", "pages": "121", "note": "As cited by Krajnović (2016)."},
   {"id": "krajnovic2016", "authors": "Krajnović, D.", "year": 2016, "title": "The contrivance of Neptune", "venue": "Astronomy & Geophysics", "volume": "57", "issue": "5", "pages": "5.28", "url": "https://arxiv.org/abs/1610.06424", "url_text": "arXiv:1610.06424", "note": "Le Verrier's elements, Table 2, after Grosser (1962)."},
   {"id": "grosser1962", "authors": "Grosser, M.", "year": 1962, "title": "The Discovery of Neptune", "venue": "Harvard University Press, Cambridge, MA", "book": true},
   {"id": "britannica1911", "authors": "Encyclopædia Britannica", "year": 1911, "title": "Neptune (planet)", "venue": "Encyclopædia Britannica, 11th edition", "note": "Table of elements."},

@@ -1,0 +1,31 @@
+{
+ "description": "Archival quotes on the site, confirmed for use on 2026-11-09. Each is given as printed in Krajnović (2016), arXiv:1610.06424, with the original reference he gives. Galle's 'Le planète' is as printed, marked [sic].",
+ "quotes": [
+  {
+   "id": "galle1846",
+   "section": "s4-1",
+   "text": "Le [sic] planète, dont vous avez signalé la position, réellement existe",
+   "translation": "The planet whose position you predicted really exists",
+   "translation_by": "Krajnović (2016)",
+   "who": "J. G. Galle to U. J. J. Le Verrier",
+   "original": "letter, Berlin, 25 September 1846",
+   "quoted_in": "Krajnović (2016)"
+  },
+  {
+   "id": "airy1846_mnras",
+   "section": "s3-2",
+   "text": "It is impossible, I think, to read this letter without being struck with its clearness of explanation, with the writer's extraordinary command, not only of the physical theories of perturbation but also of the geometrical theories of the deduction of orbits from observations, and with his perception that his theory ought to explain all the phenomena of the planet's place",
+   "who": "G. B. Airy, on Le Verrier's letter to him of 28 June 1846",
+   "original": "Airy (1846), Monthly Notices of the Royal Astronomical Society, 7, 121",
+   "quoted_in": "Krajnović (2016)"
+  },
+  {
+   "id": "airy1846_letter",
+   "section": "s4-3",
+   "text": "You are recognised beyond doubt as the real predictor of the planet's place",
+   "who": "G. B. Airy to U. J. J. Le Verrier",
+   "original": "private letter, 14 October 1846",
+   "quoted_in": "Krajnović (2016)"
+  }
+ ]
+}

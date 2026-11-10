@@ -93,6 +93,7 @@ likelihood that makes repeated runs of every cell affordable, is specified in th
 
 - A6b (the reduction check against JPL): Comparison against per-group precision not made: no precision figure was fixed before the data were seen. Medians reported. Details in the [A6 report](docs/notes/A6.md).
 - A6a (the transcription check): 0 of 28 rows in error; 95 % upper bound on the per-row error rate 10.1 % (exact one-sided Clopper–Pearson, 0 of 28); the remaining 251 rows are unchecked.
+- The observation model does not include diurnal parallax (up to 0.5″ for Uranus over 1781–1845).
 
 ## Quickstart
 

@@ -186,8 +186,11 @@ export function motionText(D) {
       `Neptune's mass, drawn every ${m.step_years} yr to ${fmt(last, 2)}. The line ` +
       `{U@plate-iii}{N@plate-iii} carries Neptune's pull. {C@plate-iii}: the heliocentric ` +
       `conjunction in the run, ${dateOfStr(c.date_tdb)} (ecliptic of date), ` +
-      `${fmt(Math.abs(c.minus_jpl_hours), 1)} h from JPL's. The run matches Horizons' Uranus to ` +
-      `${v.max_arcsec}″ up to ${dateOfStr(v.last_date_tdb, { time: false })}, the last cached epoch.`,
+      `${fmt(Math.abs(c.minus_jpl_hours), 1)} h from JPL's. Horizons check: at ` +
+      `${dateOfStr(v.last_date_tdb, { time: false })}, the last cached epoch (none reaches ` +
+      `${D.motion.end.label}), the run's Uranus differs from Horizons' by ${v.final_arcsec}″` +
+      (v.final_arcsec === v.max_arcsec ? `, the largest difference over all ${v.n_epochs} cached epochs checked.`
+        : `; the largest over all ${v.n_epochs} cached epochs is ${v.max_arcsec}″.`),
     cap_fig_3: `Uranus's heliocentric longitude (ecliptic J2000) with Neptune minus without, in ` +
       `arcseconds, ${yr(m.frames.t_year[0])}–${fmt(last, 1)}. The cursor follows the plate's ` +
       `year; {C@plate-iii} as in Plate III.`,
@@ -395,6 +398,7 @@ export function limits(D) {
       `and a full-likelihood arbiter run decides.`);
   }
   out.push(
+    `Diurnal parallax is not modelled (up to ${fmt(D.parallax.max_arcsec, 1)}″).`,
     `The headline plan was first pushed after its run had launched; the logs cannot rule out ` +
       `that one of its result files was opened by hand during the run (§ 3.1).`,
     `Plate II and Fig. 5 are diagnostics made after the fact from the pre-registered posterior; ` +
@@ -448,7 +452,7 @@ export function references(D) {
     const parts = [`${r.authors}${r.year ? ` (${r.year})` : ""}. `];
     if (r.book) parts.push({ i: r.title }, `. ${r.venue}.`);
     else {
-      parts.push(`${r.title}. `);
+      if (r.title) parts.push(`${r.title}. `);
       if (r.venue) parts.push({ i: r.venue });
       if (r.volume) parts.push(`, ${r.volume}${r.issue ? `(${r.issue})` : ""}`);
       if (r.pages) parts.push(`, ${r.pages}`);

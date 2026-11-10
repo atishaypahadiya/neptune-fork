@@ -10,17 +10,20 @@ import { plateI, plateII, plateIII } from "./plates.js";
 import { fig1, fig2, fig4, fig5, fig6 } from "./figs.js";
 
 async function load() {
-  const [head, conjL, window_, timeline, checks, rep, conj, m6, dataset, table1, plates, motion, refs] =
+  const [head, conjL, window_, timeline, checks, rep, conj, m6, dataset, table1, plates, motion, refs,
+    quotes, parallax] =
     await Promise.all([
       loadHeadline(), loadConjunction(), loadWindow(), loadTimeline(), loadChecks(),
       loadJSON("m6c_replacement.json"), loadJSON("m6c_conjunction.json"), loadJSON("m6_fits.json"),
       loadJSON("m7_dataset.json"), loadJSON("m7_table1.json"), loadJSON("m7_plates.json"),
-      loadJSON("m7_motion.json"), loadJSON("m7_references.json"),
+      loadJSON("m7_motion.json"), loadJSON("m7_references.json"), loadJSON("m7_quotes.json"),
+      loadJSON("m7_parallax.json"),
     ]);
   // The plates' posterior must be the published one (the script checks this too).
   const q = plates.plate_ii_conjunction.posterior.lon_deg, want = conj.conjunction_helio.all;
   if (Math.abs(q.median - want.median) > 1e-3) throw new Error("m7_plates.json does not match m6c_conjunction.json");
-  return { head, conjL, window: window_, timeline, checks, rep, conj, m6, dataset, table1, plates, motion, refs };
+  return { head, conjL, window: window_, timeline, checks, rep, conj, m6, dataset, table1, plates, motion, refs,
+    quotes, parallax };
 }
 
 function setSlots(values) {
@@ -59,6 +62,24 @@ function table1(D) {
     `${z.license === "cc-zero" ? "CC0 1.0" : z.license}, doi:${z.version_doi}.`;
   note.append(td);
   tf.append(note);
+}
+
+/** Archival quotes (m7_quotes.json), each with its original reference and where it is quoted. */
+function quotes(D) {
+  for (const q of D.quotes.quotes) {
+    const el = document.querySelector(`blockquote[data-quote="${q.id}"]`);
+    if (!el) continue;
+    const add = (tag, cls, text, lang) => {
+      const e = document.createElement(tag);
+      if (cls) e.className = cls;
+      if (lang) e.lang = lang;
+      e.textContent = text;
+      el.append(e);
+    };
+    add("p", "q-text", `“${q.text}”`, q.translation ? "fr" : "en");
+    if (q.translation) add("p", "q-trans", `“${q.translation}” (translation: ${q.translation_by})`);
+    add("footer", "q-src", `${q.who}, ${q.original}; quoted in ${q.quoted_in}.`);
+  }
 }
 
 function references(D) {
@@ -124,6 +145,7 @@ async function main() {
   });
   guard("#table-1", () => table1(D));
   limits(D);
+  guard("main", () => quotes(D));
   references(D);
   copyButtons();
 

@@ -1,0 +1,12 @@
+{
+ "description": "Diurnal parallax of Uranus, not modelled by the observation model: equatorial horizontal parallax asin(R_earth / Delta) over 1781-1845, from JPL Horizons states (cache). Built by docs/notes/scripts/m7_parallax.py.",
+ "n_epochs": 328,
+ "max_arcsec": 0.508,
+ "min_arcsec": 0.424,
+ "max_at_jd_tdb": 2378202.5021,
+ "min_geocentric_distance_au": 17.298,
+ "constants": {
+  "r_earth_km": 6378.137,
+  "au_km": 149597870.7
+ }
+}
