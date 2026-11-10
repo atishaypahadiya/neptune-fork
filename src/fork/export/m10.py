@@ -127,6 +127,7 @@ S3_VARIANT = "s3_t4"
 MAX_ROUNDS = 4  # polish restarts (M10.md, "Convergence, pre-registered")
 MARGINAL_SPREAD_TOL = 1.0  # (marginal − Q) varying by more than this across a grid is reported
 BORDERLINE_AU = 0.2  # amendment 1: |95 % width − 8 AU| ≤ this is "borderline"
+PSEUDO_CAP = 700.0  # see t_residuals
 SCREENED_ROWS = ("LV1846-T77-p131-l13-ra", "LV1846-T77-p135-l03-ra", "LV1846-T77-p135-l08-ra")
 
 
@@ -228,8 +229,14 @@ def t_residuals(resid_arcsec: np.ndarray, group_index: np.ndarray, scale: np.nda
     Σ ρ(f²) over the whole vector is Q."""
     b = t_offset_modes(resid_arcsec, group_index, scale, tau, nu)
     f = (resid_arcsec - b[group_index]) / scale[group_index]
-    pseudo = np.sqrt(nu * np.expm1((b / tau) ** 2 / (nu + 1.0)))
-    return np.concatenate([f, pseudo])
+    # exp overflows past x ≈ 709, so the mapping is capped at PSEUDO_CAP: beyond |b/τ| ≈ 59
+    # (120″ modern, 300″ ancient; no optimum is within a factor 20 of it) the prior term is
+    # held at (ν + 1) × PSEUDO_CAP ≈ 3500 instead of becoming infinite, which scipy refuses
+    # at an initial point. Any other non-finite entry becomes PENALTY.
+    x = np.minimum((b / tau) ** 2 / (nu + 1.0), PSEUDO_CAP)
+    pseudo = np.sqrt(nu * np.expm1(x))
+    out = np.concatenate([f, pseudo])
+    return np.where(np.isfinite(out), out, PENALTY)
 
 
 def q_of(f: np.ndarray, nu: float = NU) -> float:

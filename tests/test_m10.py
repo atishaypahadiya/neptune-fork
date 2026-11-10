@@ -57,6 +57,27 @@ def test_q_is_the_t_data_term_plus_the_prior_at_the_irls_offsets():
     assert np.all(w[:3] < 0.1)  # the planted outliers are discounted
 
 
+def test_residuals_stay_finite_for_absurd_offsets():
+    """A start far from the data (offsets of thousands of arcsec) must give finite residuals,
+    or scipy refuses the initial point (the first launch died on this): the pseudo-residual's
+    exponent is capped, and anything non-finite becomes PENALTY."""
+    # 200 coherent residuals of 150″ in one group: the IRLS mode follows them (b ≈ 150″, 75 τ),
+    # and the uncapped pseudo-residual would be √(ν expm1(1125)) = ∞
+    g = np.zeros(200, dtype=int)
+    r = np.full(200, 150.0)
+    f = m10.t_residuals(r, g, np.array([2.0]), np.array([2.0]))
+    assert np.all(np.isfinite(f)) and abs(f[:200].max()) < 1.0
+    assert (m10.NU + 1) * np.log1p(f[200] ** 2 / m10.NU) == pytest.approx(
+        (m10.NU + 1) * m10.PSEUDO_CAP, rel=1e-9
+    )
+    # the cap is far outside anything an optimum reaches: at |b/τ| ≈ 10 the mapping is exact
+    g2 = np.array([0, 0, 1, 1])
+    r2 = np.array([20.0, 20.0, 50.0, 50.0])
+    f2 = m10.t_residuals(r2, g2, np.array([1.0, 1.0]), np.array([2.0, 5.0]))
+    b = t_offset_modes(r2, g2, np.array([1.0, 1.0]), np.array([2.0, 5.0]), m10.NU)
+    assert (m10.NU + 1) * np.log1p(f2[4:] ** 2 / m10.NU) == pytest.approx((b / [2.0, 5.0]) ** 2)
+
+
 def test_loss_cost_is_half_q_including_the_pseudo_residuals():
     r, g, scale, tau = _toy(np.random.default_rng(2))
     f = m10.t_residuals(r, g, scale, tau)
