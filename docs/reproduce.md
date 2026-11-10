@@ -16,12 +16,16 @@ simulated planet-years.
 ```sh
 uv sync
 uv run python -m fork.data.horizons --fetch   # JPL Horizons → data/cache/ (network, once)
-uv run pytest -m "not slow and not network"   # the CI suite: 240 tests, 72 s under A6c load
+uv run pytest -m "not slow and not network"   # the CI suite: no network calls, about 1 min
 uv run python examples/toy_fit.py             # one-cell demo; see "Toy example" below
 ```
 
-Most tests and the toy example run offline from the committed Horizons fixture
-(`tests/data/horizons_m4.json`). The full exports need `data/cache/` from `--fetch`.
+The CI suite makes no network calls: every Horizons state it reads comes from the committed
+fixtures (`tests/fixtures/horizons/`, see its README, and `tests/data/horizons_m4.json` for the
+older `offline_horizons` modules), and a live fetch raises. The `network` tests, which exercise
+the Horizons client, run in their own weekly workflow (`.github/workflows/network.yml`) or with
+`uv run pytest -m network`. `slow` tests and the full exports read `data/cache/` from `--fetch`.
+The toy example runs offline from `tests/data/horizons_m4.json`.
 
 ## M1–M2: frames and Kepler solver
 

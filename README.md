@@ -105,7 +105,7 @@ likelihood that makes repeated runs of every cell affordable, is specified in th
 
 ```sh
 uv sync
-uv run pytest -m "not slow and not network"   # the CI suite, offline
+uv run pytest -m "not slow and not network"   # the CI suite: no network calls (Horizons states from tests/fixtures/)
 uv run python examples/toy_fit.py             # a few minutes, one core, offline
 ```
 
@@ -125,7 +125,7 @@ src/fork/
   inference/    priors, least-squares fits, profile likelihood, emcee, dynesty (partitioned)
   export/       site/data/*.json writers, M5b and A6c run schedulers, compute ledger
 examples/       toy_fit.py: one-cell demo
-tests/          pytest; `slow` and `network` markers; offline Horizons fixtures in tests/data/
+tests/          pytest; `slow` and `network` markers; Horizons fixtures in tests/fixtures/ and tests/data/
 data/historical/  Le Verrier 1846 Table n° 77: both transcription passes, resolution log,
                   misprints, loader output, error model
 docs/           method, reproduction commands, Phase 1 spec, milestone notes, figures

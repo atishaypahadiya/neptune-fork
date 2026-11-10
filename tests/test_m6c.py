@@ -2,11 +2,27 @@
 path (A6d), and the comparison targets."""
 
 import math
+import os
+import sys
+from pathlib import Path
 
 import numpy as np
 import pytest
 
 from fork.export import m6c
+
+# Files opened while a test points the sink at a list (A6d rule 5, runtime). Audit hooks cannot
+# be removed, so the hook is installed once and does nothing while the sink is None.
+_AUDIT: dict[str, list | None] = {"sink": None}
+
+
+def _audit(event: str, args: tuple) -> None:
+    sink = _AUDIT["sink"]
+    if sink is not None and event == "open" and isinstance(args[0], (str, bytes, os.PathLike)):
+        sink.append(Path(os.fsdecode(args[0])).resolve())
+
+
+sys.addaudithook(_audit)
 
 
 def test_headline_jobs_and_worker_budget():
@@ -107,6 +123,28 @@ def test_dataset_is_table77_with_the_frozen_error_model_and_never_reads_neptune(
                                [5.0 if g.startswith("ancient") else 2.0 for g in GROUPS],
                                rtol=0, atol=1e-12)  # fmt: skip
     assert box.chi2_per_dof > 1.0  # the Uranus-only fit leaves the perturber's signal
+
+
+def test_fit_path_opens_nothing_under_tests_fixtures():
+    """A6d rule 5, runtime half (the static half is tests/test_a6d.py): building the fit's data,
+    context and Uranus box opens no file under tests/fixtures/. Its Horizons states come from
+    FORK_CACHE_DIR, which the tests point at a temporary copy; outside pytest it is unset and
+    the cache is data/cache/."""
+    import fork.data.horizons as hz
+
+    fixtures = (Path(__file__).parent / "fixtures").resolve()
+    copy = Path(os.environ["FORK_CACHE_DIR"]).resolve()
+    assert not copy.is_relative_to(fixtures)
+    assert not hz.DEFAULT_CACHE_DIR.resolve().is_relative_to(fixtures.parent)
+    opened: list[Path] = []
+    _AUDIT["sink"] = opened
+    try:
+        m6c.dataset()
+    finally:
+        _AUDIT["sink"] = None
+    assert not [p for p in opened if p.is_relative_to(fixtures)]
+    horizons_reads = [p for p in opened if p.name.startswith("horizons_")]
+    assert horizons_reads and all(p.parent == copy for p in horizons_reads)
 
 
 def test_jpl_galle_target_matches_horizons():

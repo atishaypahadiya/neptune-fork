@@ -16,6 +16,14 @@ Pure AST, nothing imported or run. The runtime half is
    over ``BODIES`` (only ``horizons.default_fetch_plan`` does that, outside the fit path).
 4. M6d's comparison constants (``JPL_*`` in ``fork.export.m6c``) are applied after sampling, to
    the posterior; the check also asserts that no fit-path function names one.
+5. The test fixtures (``tests/fixtures/``, which hold JPL Horizons states, Neptune's among them,
+   for the default test job): no reachable module, at module level or in any function, has a
+   string constant (docstrings aside) containing "fixture". The tests feed Horizons states to
+   ``fork`` only through ``FORK_CACHE_DIR``, pointed at a temporary copy (``tests/conftest.py``);
+   outside pytest the variable is unset and the cache is ``data/cache/``. Blind spot, as for
+   every check here: a path assembled at run time from other strings. The runtime half,
+   ``tests/test_m6c.py::test_fit_path_opens_nothing_under_tests_fixtures``, records the files
+   the fit path's data build actually opens.
 """
 
 from __future__ import annotations
@@ -81,6 +89,7 @@ class Index:
         self.by_name: dict[str, set[tuple[str, str]]] = {}
         self.module_level: list[str] = []
         self.precovery: list[str] = []
+        self.fixture_refs: list[str] = []
         for m in sorted(modules):
             tree = _tree(m)
             docs = _docstrings(tree)
@@ -88,6 +97,7 @@ class Index:
                 if (isinstance(n, ast.Constant) and isinstance(n.value, str) and id(n) not in docs
                         and "precover" in n.value.lower()):  # fmt: skip
                     self.precovery.append(f"{m}:{n.lineno}")
+            self.fixture_refs += [f"{m}:{h}" for h in fixture_references(tree)]
             self._visit(m, tree, "", None, docs)
 
     def _visit(self, m, node, prefix, cls, docs):
@@ -136,6 +146,14 @@ def _neptune_hit(n: ast.AST, docs: set[int]) -> str | None:
     if isinstance(n, ast.Attribute) and n.attr in NEPTUNE_NAMES:
         return n.attr
     return None
+
+
+def fixture_references(tree: ast.Module) -> list[str]:
+    """Lines with a string constant naming the test fixtures (docstrings aside)."""
+    docs = _docstrings(tree)
+    return [f"{n.lineno}: {n.value[:60]!r}" for n in ast.walk(tree)
+            if isinstance(n, ast.Constant) and isinstance(n.value, str) and id(n) not in docs
+            and "fixture" in n.value.lower()]  # fmt: skip
 
 
 def _names_bodies(expr: ast.AST) -> bool:
@@ -196,3 +214,24 @@ def test_m6d_comparison_constants_stay_off_the_fit_path():
 def test_no_reference_to_a_precovery_file():
     idx, _ = fit_path()
     assert not idx.precovery, f"M6a–M6d modules mention a precovery file: {idx.precovery}"
+
+
+def test_no_fit_path_module_names_the_test_fixtures():
+    """Rule 5: nothing reachable from the fit's entry modules names tests/fixtures/."""
+    idx, _ = fit_path()
+    assert not idx.fixture_refs, f"fit-path modules name the test fixtures: {idx.fixture_refs}"
+    # Not vacuous: the scan covers the Horizons reader's module and the fit's.
+    assert {"fork.data.horizons", "fork.export.m6c"} <= reachable_modules()
+
+
+def test_the_fixture_check_finds_a_planted_reference():
+    """Rule 5 sees a fixture path written the ways code would write it, and skips docstrings."""
+    planted = [
+        'X = Path(__file__).resolve().parents[3] / "tests" / "fixtures" / "horizons"',
+        'def f():\n    return np.load("tests/fixtures/horizons/horizons_uranus.npz")',
+        'import os\nP = os.path.join("tests", "fixtures")',
+        'class C:\n    def m(self):\n        return open(ROOT / "Fixtures" / "a.npz")',
+    ]
+    for src in planted:
+        assert fixture_references(ast.parse(src)), src
+    assert not fixture_references(ast.parse('"""Reads tests/fixtures/ in tests only."""\nX = 1'))

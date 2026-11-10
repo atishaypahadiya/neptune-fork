@@ -1,0 +1,24 @@
+name: network
+
+# Live JPL Horizons tests (`-m network`): they exercise the Horizons client and compare stored
+# constants with fresh Horizons states. Weekly and on demand, apart from the `test` workflow,
+# so a Horizons outage or API change shows up here and never fails the main check. A failed run
+# stays red (no continue-on-error), so the change is visible.
+on:
+  schedule:
+    - cron: "17 6 * * 1"  # Mondays, 06:17 UTC
+  workflow_dispatch:
+
+jobs:
+  network:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.3  # setup-uv publishes no floating major tag
+        with:
+          enable-cache: true
+      - name: Install
+        run: uv sync --locked
+      - name: Live Horizons tests
+        run: uv run pytest -m network

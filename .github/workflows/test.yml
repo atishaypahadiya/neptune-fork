@@ -30,5 +30,7 @@ jobs:
       - name: Install
         run: uv sync --locked
       - name: Fast tests
-        # Network tests hit JPL Horizons; keep CI hermetic.
+        # No network calls: every Horizons state comes from tests/fixtures/horizons (a copy, via
+        # tests/conftest.py) and a live fetch raises. The live client is tested by the
+        # `network` workflow (weekly and on demand).
         run: uv run pytest -m "not slow and not network"
