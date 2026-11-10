@@ -73,8 +73,16 @@ export function fig2(fig, D) {
       .nice().range([mg.l, w - mg.r]);
     const y = d3.scalePoint().domain(F.map((f) => f.e.id)).range([mg.t, h - mg.b]).padding(0.5);
     const g = svg.append("g");
+    // Ticks outward from launch, each kept only if its label clears the last one kept.
+    const keep = new Set([0]);
+    for (const side of [1, -1]) {
+      let last = x(SX(0));
+      for (const [s] of TICKS.filter(([s]) => Math.sign(s) === side).sort((a, b) => Math.abs(a[0]) - Math.abs(b[0]))) {
+        if (Math.abs(x(SX(s)) - last) >= 62) { keep.add(s); last = x(SX(s)); }
+      }
+    }
     for (const [s, t] of TICKS) {
-      if (phone && Math.abs(s) > 0 && Math.abs(s) < 3600) continue;
+      if (!keep.has(s)) continue;
       drv(Math.abs(s) >= 3600 ? Math.abs(s) / 3600 : Math.abs(s) / 60, "Fig. 2 axis tick");
       g.append("path").attr("class", `ln ${s === 0 ? "" : "ctx"}`).attr("d", L([[x(SX(s)), mg.t - 8], [x(SX(s)), h - mg.b + 4]]));
       g.append("text").attr("class", "tick").attr("x", x(SX(s))).attr("y", h - mg.b + 20).attr("text-anchor", "middle").text(t);

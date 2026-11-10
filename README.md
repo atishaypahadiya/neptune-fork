@@ -17,7 +17,7 @@ sampling run under a plan committed before the run. On the night Galle found Nep
 (JPL), 0.03 half-widths from the median. The same posterior gives a mass of 17.3 M⊕ (68 %:
 16.3–18.4; Neptune 17.15), a semi-major axis of 30.2 AU (29.6–30.9), osculating in 1781, and an
 eccentricity below 0.028 (68 %, one-sided). Le Verrier's published elements, carried to that
-night, give 324.97°, inside our 68 % range. Phase 2 will extend the code to weigh three
+night, give a geocentric longitude of 324.97°, inside our 68 % range. Phase 2 will extend the code to weigh three
 explanations of an orbital anomaly against each other: a hidden mass, a modified law of
 gravity, and error in the data.
 
@@ -64,14 +64,16 @@ smaller calibrated errors than M5b assumed ([M6 notes](docs/notes/M6.md)).
 **Result (M6c).** On Table 77 we find the planet at 325.8° on Galle's night (68 %:
 323.6°–327.8°), with a sampler systematic of ±0.13° on the median. JPL's Neptune, 325.87°, is
 0.03 half-widths from the median. Le Verrier's prediction, carried from his published elements
-to that night (324.97°), is also inside the interval. The posterior puts 37 % of its probability
+to that night (324.97°, geocentric, ecliptic of date), is also inside the interval. The posterior puts 37 % of its probability
 within Le Verrier's 52′ miss of the true position (the Peirce probability). These figures are
 derived after the fact from the pre-registered replacement posterior described below.
 
 **Robustness.** JPL's Neptune is inside the 68 % interval in the headline fit and in all three
 pre-registered sensitivity runs (e ≤ 0.5; error levels estimated from the data alone; Student-t
-errors). The medians agree to within 0.4 headline half-widths. The evidence prefers the
-Student-t errors (ln B = +13.7).
+errors). The medians agree to within 0.4 headline half-widths. The evidence favours the
+Student-t errors (ln B = +13.7), but the Gaussian error model was fixed by the
+pre-registration and is kept; S3 shows the result is insensitive to it (the median moves 0.37
+headline half-widths).
 
 **Repeatability.** Repeated runs of the main sampling cell disagreed on the width by far more
 than the sampler's own error estimate. Under a pre-registered repeatability study, two runs with
@@ -94,6 +96,8 @@ likelihood that makes repeated runs of every cell affordable, is specified in th
 - A6b (the reduction check against JPL): Comparison against per-group precision not made: no precision figure was fixed before the data were seen. Medians reported. Details in the [A6 report](docs/notes/A6.md).
 - A6a (the transcription check): 0 of 28 rows in error; 95 % upper bound on the per-row error rate 10.1 % (exact one-sided Clopper–Pearson, 0 of 28); the remaining 251 rows are unchecked.
 - The observation model does not include diurnal parallax (up to 0.5″ for Uranus over 1781–1845).
+- Error model: the evidence favours Student-t errors (S3, ln B = +13.7); the Gaussian error model
+  was fixed by the pre-registration and is kept. S3 moves the median 0.37 headline half-widths.
 
 ## Quickstart
 

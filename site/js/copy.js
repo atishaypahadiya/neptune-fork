@@ -53,14 +53,15 @@ export function abstract(D) {
     `in 1846, with a perturbed-orbit model that is never given Neptune, and sample the posterior ` +
     `by partitioned nested sampling under a plan committed before the run. On the night Galle ` +
     `found Neptune, ${dateOfJd(c.galle_night_jd_tdb)}, we find the unseen planet's geocentric ` +
-    `longitude at ${deg(h.median)} (68 %: ${rng(h.lo68, h.hi68)}; 95 %: ${rng(i95.lo, i95.hi)}, ` +
-    `${i95.state === "final" ? "final" : "provisional"}). Neptune was at ${deg(h.jpl, 2)}, ` +
-    `${deg(off, 2)} from the median. The fitted mass is ${fmt(h.mass.median)} Earth masses ` +
+    `longitude (ecliptic of date) at ${deg(h.median)} (68 %: ${rng(h.lo68, h.hi68)}; 95 %: ` +
+    `${rng(i95.lo, i95.hi)}, ${i95.state === "final" ? "final" : "provisional"}). Neptune's longitude was ` +
+    `${deg(h.jpl, 2)}, ${deg(off, 2)} from the median. The fitted mass is ${fmt(h.mass.median)} Earth masses ` +
     `(68 %: ${range(h.mass.lo68, h.mass.hi68)}; Neptune ${fmt(h.neptune.mass, 2)}) and the ` +
     `semi-major axis ${fmt(h.a.median)} AU (${range(h.a.lo68, h.a.hi68)}). Le Verrier's ` +
-    `published orbit gives ${deg(h.leVerrier)} that night, inside our 68 % range, but at the ` +
-    `conjunction of ${yr(w.marks.conjunction.year)} it lies outside our 95 % range ` +
-    `(§ 4.2); it stays within the 68 % band only from ${fmt(a, 2)} to ${fmt(b, 2)} (§ 4.3).`;
+    `published orbit gives a geocentric longitude of ${deg(h.leVerrier, 2)} that night, inside our ` +
+    `68 % range. In heliocentric longitude (ecliptic of date) his planet lies outside our 95 % ` +
+    `range at the conjunction of ${yr(w.marks.conjunction.year)} (§ 4.2) and stays within the ` +
+    `68 % band only from ${fmt(a, 2)} to ${fmt(b, 2)} (§ 4.3).`;
 }
 
 export function capPlateI(D) {
@@ -166,14 +167,18 @@ export function motionText(D) {
   const m = D.motion, c = m.conjunction.grid_10_day, s = m.along_track_sign_change;
   const v = m.validation.uranus;
   const last = m.frames.t_year.at(-1);
+  const kDays = drv(s.jd_tdb - c.jd_tdb, "days, K to the along-track sign change");
   return {
     pull_intro: `Plate III shows the perturbation Le Verrier inverted, computed directly. The Sun ` +
       `and the eight planets are integrated from JPL's states at Herschel's discovery, once with ` +
-      `Neptune's mass and once without. Before the conjunction {C@plate-iii} Neptune's pull has ` +
-      `a component along Uranus's motion that draws it ahead; from ${dateOfStr(s.date_tdb)}, ` +
-      `${fmt(s.minus_conjunction_days, 1)} days after {C@plate-iii}, it holds Uranus back. By ` +
-      `${fmt(last, 1)} Uranus is ${fmt(Math.abs(m.summary.dlon_end_arcsec), 1)}″ behind where it ` +
-      `would be without Neptune.`,
+      `Neptune's mass and once without. {K@plate-iii} marks the heliocentric conjunction of ` +
+      `Uranus and Neptune, ${dateOfStr(c.date_tdb)} (ecliptic of date; JPL's date to ` +
+      `${fmt(Math.abs(c.minus_jpl_hours), 1)} h). It is Neptune's own conjunction, not ` +
+      `§ 4.2's {C@plate-ii}, the conjunction with the fitted planet. Before {K@plate-iii} ` +
+      `Neptune's pull has a component along Uranus's motion that draws it ahead; from ` +
+      `${dateOfStr(s.date_tdb)}, ${fmt(kDays, 1)} days after {K@plate-iii}, it holds Uranus ` +
+      `back. By ${fmt(last, 1)} Uranus is ${fmt(Math.abs(m.summary.dlon_end_arcsec), 1)}″ behind ` +
+      `where it would be without Neptune.`,
     pull_open_circle: `Open circle: Uranus as it would move without Neptune, from the same ` +
       `${yr(m.frames.t_year[0])} state; its offset is drawn ${m.offset_exaggeration} times ` +
       `larger than life.`,
@@ -184,16 +189,17 @@ export function motionText(D) {
       `${m.integrator.scheme} (Rein & Liu 2012; Rein & Spiegel 2015): the Sun and eight planets ` +
       `from JPL Horizons states at ${dateOfStr(m.initial_states.date)}, run with and without ` +
       `Neptune's mass, drawn every ${m.step_years} yr to ${fmt(last, 2)}. The line ` +
-      `{U@plate-iii}{N@plate-iii} carries Neptune's pull. {C@plate-iii}: the heliocentric ` +
-      `conjunction in the run, ${dateOfStr(c.date_tdb)} (ecliptic of date), ` +
-      `${fmt(Math.abs(c.minus_jpl_hours), 1)} h from JPL's. Horizons check: at ` +
+      `{U@plate-iii}{N@plate-iii} carries Neptune's pull. {K@plate-iii}: the heliocentric ` +
+      `conjunction of Uranus and Neptune in the run, ${dateOfStr(c.date_tdb)} (ecliptic of date), ` +
+      `${fmt(Math.abs(c.minus_jpl_hours), 1)} h from JPL's; drawn at Neptune's place on that date. ` +
+      `It is not Plate II's {C@plate-ii}. Horizons check: at ` +
       `${dateOfStr(v.last_date_tdb, { time: false })}, the last cached epoch (none reaches ` +
       `${D.motion.end.label}), the run's Uranus differs from Horizons' by ${v.final_arcsec}″` +
       (v.final_arcsec === v.max_arcsec ? `, the largest difference over all ${v.n_epochs} cached epochs checked.`
         : `; the largest over all ${v.n_epochs} cached epochs is ${v.max_arcsec}″.`),
     cap_fig_3: `Uranus's heliocentric longitude (ecliptic J2000) with Neptune minus without, in ` +
       `arcseconds, ${yr(m.frames.t_year[0])}–${fmt(last, 1)}. The cursor follows the plate's ` +
-      `year; {C@plate-iii} as in Plate III.`,
+      `year; {K@fig-3} the conjunction of Uranus and Neptune ({K@plate-iii} in Plate III).`,
   };
 }
 
@@ -249,14 +255,15 @@ export function resultText(D) {
   const s95 = i95.state === "final" ? `The 95 % range is ${rng(i95.lo, i95.hi)}.`
     : `The 95 % range, ${rng(i95.lo, i95.hi)}, is ${i95.note}.`;
   return {
-    res_p1: `On Galle's night, ${dateOfJd(h.galleJd)}, we find the planet's geocentric ` +
-      `longitude (ecliptic of date) at ${deg(h.median)}, 68 % range ${rng(h.lo68, h.hi68)}. ` +
+    res_p1: `Every longitude and difference in this section is geocentric, ecliptic of date. On ` +
+      `Galle's night, ${dateOfJd(h.galleJd)}, we find the planet's longitude at ` +
+      `${deg(h.median)}, 68 % range ${rng(h.lo68, h.hi68)}. ` +
       `Neptune was at ${deg(h.jpl, 2)} (JPL Horizons), ` +
       `${fmt(Math.abs(g.vs.jpl.median_minus_target_deg), 2)}° from the median, ` +
       `${fmt(Math.abs(g.vs.jpl.offset_sigma), 2)} of the 68 % half-width. ${s95} Le Verrier's ` +
       `published elements, carried to that night (our calculation; Kepler orbit, equinox 1847.0 ` +
-      `assumed), give {L@fig-4} at ${deg(h.leVerrier, 2)}, ${fmt(Math.abs(lvOff), 2)}° from the ` +
-      `median, inside the 68 % range.`,
+      `assumed), give {L@fig-4} at ${deg(h.leVerrier, 2)}, ${fmt(Math.abs(lvOff), 2)}° from our ` +
+      `median (geocentric), inside the 68 % range.`,
     res_p2: `The same posterior gives a mass of ${fmt(h.mass.median)} Earth masses (68 %: ` +
       `${range(h.mass.lo68, h.mass.hi68)}; Neptune ${fmt(h.neptune.mass, 2)}), a semi-major axis ` +
       `of ${fmt(h.a.median)} AU (${range(h.a.lo68, h.a.hi68)}), osculating in ` +
@@ -315,10 +322,12 @@ export function windowText(D) {
   const [a, b] = w.in68[0] ?? [NaN, NaN];
   const miss = (k) => deg(Math.abs(m[k].le_verrier_minus_jpl_deg));
   return {
-    win_p1: `Hold Le Verrier's published orbit fixed and carry it through time. In heliocentric ` +
-      `longitude (ecliptic of date) his planet crosses our posterior median once, at ` +
-      `${fmt(w.zero[0], 2)}, and stays inside the 68 % band from ${fmt(a, 2)} to ${fmt(b, 2)}. On ` +
-      `Galle's night it was ${miss("galle_night")} from Neptune. A search on ` +
+    win_p1: `Hold Le Verrier's published orbit fixed and carry it through time. Every longitude ` +
+      `and difference in this section is heliocentric, ecliptic of date. His planet crosses our ` +
+      `posterior median once, at ${fmt(w.zero[0], 2)}, and stays inside the 68 % band from ` +
+      `${fmt(a, 2)} to ${fmt(b, 2)}. On Galle's night it was ${miss("galle_night")} from ` +
+      `Neptune in heliocentric longitude (the ${fmt(Math.abs(D.rep.galle_lon_ecl_of_date_deg.vs.le_verrier_derived.median_minus_target_deg), 2)}° ` +
+      `of § 4.1 is geocentric, and from our median). A search on ` +
       `${dateOfJd(m.search_1836.jd_tdb)} would have been off by ${miss("search_1836")}; one on ` +
       `${dateOfJd(m.search_1856.jd_tdb)}, by ${miss("search_1856")}. We did not model the ` +
       `search fields or the star charts.`,
@@ -364,10 +373,14 @@ export function robustText(D) {
     rob_p2: `Three sensitivity runs, with reading rules committed before they ran, test the ` +
       `model's assumptions. ${s1Text} With error levels estimated from the data alone (S2) the ` +
       `result ${v.s2_sigma_data.holds ? "survives" : "does not survive"}: the median moves ` +
-      `${shift("s2_sigma_data")} headline half-widths. With Student-t errors, ν = ${f.s3_t4.config.nu} (S3), the headline ` +
-      `${v.s3_t4.holds ? "is unchanged" : "changes"}: the median moves ${shift("s3_t4")} ` +
-      `half-widths, and the evidence prefers these errors, ln {i:B} = ` +
-      `${signed(f.s3_t4.vs_headline.ln_b, 1)} ± ${fmt(f.s3_t4.vs_headline.ln_b_err, 1)}. ` +
+      `${shift("s2_sigma_data")} headline half-widths. The evidence favours Student-t errors, ` +
+      `ν = ${f.s3_t4.config.nu} (S3), over the Gaussian ones: ln {i:B} = ` +
+      `${signed(f.s3_t4.vs_headline.ln_b, 1)} ± ${fmt(f.s3_t4.vs_headline.ln_b_err, 1)}. The ` +
+      `Gaussian error model was fixed by the pre-registration and stays the headline's, and S3 ` +
+      `shows the result ${v.s3_t4.holds ? "is insensitive to that choice" : "depends on that choice"}: ` +
+      `the median moves ${shift("s3_t4")} headline half-widths, while S3's 68 % range is ` +
+      `${deg(f.s3_t4.galle_lon_ecl_of_date_deg.width68, 2)} wide against the headline's ` +
+      `${deg(k.reported.width68, 2)}. ` +
       `${jplAll ? "Neptune's longitude (JPL) is inside the 68 % range in the headline fit and in all three runs." : ""}`,
     cap_fig_6: `The planet's geocentric longitude on Galle's night (ecliptic of date): the ` +
       `headline as first published (superseded) and as reported, and the three sensitivity ` +
@@ -398,6 +411,11 @@ export function limits(D) {
       `and a full-likelihood arbiter run decides.`);
   }
   out.push(
+    `Error model: the evidence favours Student-t errors (S3, ln B = ` +
+      `${signed(D.checks.fits.s3_t4.vs_headline.ln_b, 1)}), but the Gaussian error model was ` +
+      `fixed by the pre-registration and is kept. S3 shows the result is insensitive to it: the ` +
+      `median moves ${fmt(Math.abs(D.checks.fits.s3_t4.vs_headline.galle_median_shift_headline_half_widths), 2)} ` +
+      `headline half-widths (§ 5).`,
     `Diurnal parallax is not modelled (up to ${fmt(D.parallax.max_arcsec, 1)}″).`,
     `The headline plan was first pushed after its run had launched; the logs cannot rule out ` +
       `that one of its result files was opened by hand during the run (§ 3.1).`,
@@ -429,9 +447,10 @@ export function availability(D) {
       `observations themselves.`,
     cite_concept: cite(z.concept_doi, false),
     cite_version: cite(z.version_doi, true),
-    avail_p2: `The code is MIT-licensed and the data in its historical folder CC0, at ` +
-      `github.com/atishaypahadiya/neptune-fork. Every number on this page is read from the ` +
-      `site's data files, which the repository's scripts regenerate.`,
+    avail_p2: `The code and documentation are at github.com/atishaypahadiya/neptune-fork under ` +
+      `the MIT License; the files in the repository's data/historical/ folder, which hold the ` +
+      `transcription, are under CC0 1.0. Every number on this page is read from the site's data ` +
+      `files, which the repository's scripts regenerate.`,
   };
 }
 
@@ -449,17 +468,27 @@ export function references(D) {
         { i: D.dataset.title }, ` (Version ${z.version}) [Data set]. Zenodo. `,
         { href: `https://doi.org/${z.version_doi}`, text: `doi:${z.version_doi}` }] };
     }
-    const parts = [`${r.authors}${r.year ? ` (${r.year})` : ""}. `];
-    if (r.book) parts.push({ i: r.title }, `. ${r.venue}.`);
+    // Each element ends with one full stop: none is added after text that already ends in one
+    // ("et al."), and an element that is absent adds nothing.
+    const parts = [];
+    const stop = () => {
+      const k = parts.length - 1;
+      if (typeof parts[k] === "string") parts[k] = parts[k].replace(/\s+$/, "").replace(/([^.])$/, "$1.") + " ";
+      else parts.push(". ");
+    };
+    parts.push(`${r.authors}${r.year ? ` (${r.year})` : ""}`); stop();
+    if (r.book) { parts.push({ i: r.title }); stop(); parts.push(r.venue); stop(); }
     else {
-      if (r.title) parts.push(`${r.title}. `);
-      if (r.venue) parts.push({ i: r.venue });
-      if (r.volume) parts.push(`, ${r.volume}${r.issue ? `(${r.issue})` : ""}`);
-      if (r.pages) parts.push(`, ${r.pages}`);
-      parts.push(". ");
+      if (r.title) { parts.push(r.title); stop(); }
+      if (r.venue) {
+        parts.push({ i: r.venue });
+        if (r.volume) parts.push(`, ${r.volume}${r.issue ? `(${r.issue})` : ""}`);
+        if (r.pages) parts.push(`, ${r.pages}`);
+        stop();
+      }
     }
-    if (r.doi) parts.push({ href: `https://doi.org/${r.doi}`, text: `doi:${r.doi}` }, ". ");
-    if (r.url) parts.push({ href: r.url, text: r.url_text }, ". ");
+    if (r.doi) { parts.push({ href: `https://doi.org/${r.doi}`, text: `doi:${r.doi}` }); stop(); }
+    if (r.url) { parts.push({ href: r.url, text: r.url_text }); stop(); }
     if (r.note) parts.push(r.note);
     return { id: r.id, parts };
   });

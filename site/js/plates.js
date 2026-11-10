@@ -202,10 +202,11 @@ export function plateIII(fig, fig3, side, D, onFrame) {
     const N = F.neptune_x.map((x, k) => X(x, F.neptune_y[k]));
     orbit(g, U);
     orbit(g, N);
-    // C on the line from S, at Neptune's position at the conjunction.
+    // K on the line from S, at Neptune's position at the Uranus-Neptune conjunction of the run
+    // (not Plate II's C, the conjunction with the fitted planet).
     const [qx, qy] = X(nepC[0] * 1.06, nepC[1] * 1.06);
     g.append("path").attr("class", "ln ctx").attr("d", d3.line()([[cx, cy], [qx, qy]]));
-    point(g, { id: "C", x: qx, y: qy, letter: "C", dx: 0, dy: 16, anchor: "middle", mark: "none", title: "C: the conjunction" });
+    point(g, { id: "K", x: qx, y: qy, letter: "K", dx: 0, dy: 16, anchor: "middle", mark: "none", title: "K: conjunction of Uranus and Neptune" });
     stipple(g.append("g").attr("class", "ctx"), sunTexture(cx, cy, 6.5), { r: 0.8 });
     point(g, { id: "S", x: cx, y: cy, letter: "S", dx: 12, dy: -10, mark: "none", title: "Sun" });
 
@@ -263,7 +264,7 @@ export function plateIII(fig, fig3, side, D, onFrame) {
       .attr("d", d3.line().x((_, k) => x(F.t_year[k])).y((v) => y(v))(F.dlon_arcsec));
     const xc = x(F.t_year[iC]);
     g.append("path").attr("class", "ln sec dash").attr("d", d3.line()([[xc, mg.t], [xc, h - mg.b]]));
-    point(g, { id: "C", x: xc, y: mg.t + 4, letter: "C", dx: 6, dy: 2, mark: "none" });
+    point(g, { id: "K", x: xc, y: mg.t + 4, letter: "K", dx: 6, dy: 2, mark: "none", title: "K: conjunction of Uranus and Neptune" });
     const cur = g.append("path").attr("class", "ln");
     const dot = g.append("circle").attr("class", "dot").attr("r", 3.2);
     state.update3 = (i) => {

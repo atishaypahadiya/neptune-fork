@@ -113,7 +113,7 @@ p { margin: 0 0 1em; }
 }
 
 /* figures inside the text column run wider than the measure; the caption is on paper below */
-main > section > figure[data-fig] {
+main > section:not(.split) > figure[data-fig] {
   width: min(calc(100vw - 2 * var(--gutter)), 1040px);
   margin: 36px 0 36px 50%; transform: translateX(-50%);
 }
@@ -151,12 +151,17 @@ td.v { color: var(--prussian); }
 tfoot td { border-top: 1px solid var(--deep); padding-top: 8px; }
 tfoot tr + tr td { border-top: 0; font-size: 14px; color: var(--prussian); padding-top: 2px; }
 
-/* ---------- half-bleed plates with a text column (Plates II and III) ---------- */
-.split { display: grid; grid-template-columns: 1fr 1fr; margin: 96px 0; min-height: min(100svh, 900px); }
+/* ---------- half-bleed plates with a text column (Plates II and III) ----------
+   Two equal columns (minmax(0, 1fr): a plate's drawing never widens its track). Below 900 px
+   the text column would hold fewer than about 45 characters, so the plate and its text stack. */
+.split {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); margin: 96px 0;
+  min-height: min(100svh, 900px);
+}
 .split > .plate { position: sticky; top: 0; height: min(100svh, 900px); align-self: start; }
-.split > .side { padding: 64px var(--gutter); max-width: calc(34rem + 2 * var(--gutter)); }
+.split > .side { min-width: 0; padding: 64px var(--gutter); max-width: calc(34rem + 2 * var(--gutter)); }
 .split .side h3 { margin-top: 0; }
-.split.reverse > .side { justify-self: end; }
+.split.reverse > .side { justify-self: end; width: 100%; }
 .year { margin: 0 0 12px; font: 400 clamp(64px, 6vw, 104px) / 1 var(--didot); font-variant-numeric: lining-nums; }
 .side .sec { margin-top: 0; }
 .fig-3 { margin: 24px 0 16px; }
@@ -182,16 +187,25 @@ input[type="range"] { flex: 1; accent-color: var(--prussian); min-height: 44px; 
 .refs { padding-left: 1.6em; font-size: 15px; }
 .refs li { margin-bottom: 0.6em; }
 
-/* ---------- phone ---------- */
-@media (max-width: 720px) {
-  .split { grid-template-columns: 1fr; margin: 64px 0; min-height: 0; }
-  .split > .plate { position: relative; height: 118vw; max-height: 620px; order: 0; }
-  .split > .side { order: 1; padding: 28px var(--gutter) 8px; max-width: none; }
-  .split.reverse > .side { justify-self: stretch; }
+/* ---------- stacked plates: tablet and phone ---------- */
+@media (max-width: 899px) {
+  .split { grid-template-columns: minmax(0, 1fr); margin: 64px 0; min-height: 0; }
+  .split > .plate { position: relative; height: min(92svh, 96vw); order: 0; }
+  .split > .side {
+    order: 1; width: 100%; max-width: calc(var(--measure) + 2 * var(--gutter)); margin: 0 auto;
+    padding: 32px var(--gutter) 8px; justify-self: center;
+  }
+  .split.reverse > .side { justify-self: center; }
   .split#plate-iii .controls {
     position: sticky; bottom: 0; z-index: 3; margin: 0 calc(-1 * var(--gutter));
     padding: 8px var(--gutter); background: var(--paper);
   }
+}
+
+/* ---------- phone ---------- */
+@media (max-width: 720px) {
+  .split > .plate { height: 118vw; max-height: 620px; }
+  .split > .side { padding: 28px var(--gutter) 8px; }
   .fig-1 .canvas { height: 440px; }
   .fig-2 .canvas { height: 520px; }
   .fig-4 .canvas, .fig-5 .canvas { height: 340px; }
@@ -203,4 +217,56 @@ input[type="range"] { flex: 1; accent-color: var(--prussian); min-height: 44px; 
 
 @media (prefers-reduced-motion: reduce) {
   .fig .glow { transition: none; }
+}
+
+/* ---------- print (Save as PDF) ----------
+   One column; every plate full width at the aspect it was drawn at (--ar, set when drawn; the
+   data layer has a viewBox, so it scales); captions under their figures; nothing sticky; no
+   controls. The cyanotype grounds print as they are on screen. */
+@media print {
+  @page { margin: 14mm 14mm 16mm; }
+  html, body { background: var(--paper); }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-size: 10.5pt; line-height: 1.5; }
+  main { padding: 0; }
+  main > section:not(.split) { max-width: none; padding: 0; }
+  .sec { margin: 28pt 0 4pt; }
+  h2 { font-size: 22pt; margin-bottom: 10pt; }
+  h3 { margin-top: 18pt; }
+  .plate, .split > .plate, .plate-i .plate {
+    position: relative; top: auto; height: auto; min-height: 0; max-height: none;
+    width: 100%; break-inside: avoid;
+  }
+  .plate > svg.fig, .canvas > svg.fig { position: relative; inset: auto; height: auto; aspect-ratio: var(--ar, 1.6); }
+  .canvas { height: auto !important; }
+  main > section:not(.split) > figure[data-fig] { width: 100%; margin: 14pt 0; transform: none; }
+  figure[data-fig], .table, .quote { break-inside: avoid; }
+  figure[data-fig] > figcaption, .caption { max-width: none; }
+  .split { display: flex; flex-direction: column; margin: 18pt 0; min-height: 0; }
+  .split > .side { display: contents; }
+  .split > .plate { order: 1; }
+  .split .caption { order: 2; margin-top: 8pt; }
+  .split .side > :not(.caption) { order: 3; }
+  .split .side > :is(.sec, h3) { order: 0; }
+  h2, h3, .sec { break-after: avoid; }
+  p, li { orphans: 3; widows: 3; }
+  /* Of the ground textures (decorative; they encode nothing) print keeps the cloud and the
+     vector vignette. Rasterised at print resolution, mottle, grain and dust take a PDF from
+     about 3.5 MB to over 20 MB. */
+  svg.ground rect[filter]:not([filter="url(#tex-cloud)"]) { display: none; }
+  /* Plates II and III and the figures at most about half a page high, so they sit under the
+     text that introduces them instead of leaving it alone on a page; the viewBox centres the
+     drawing on its ground. Plate I stays a full title page. */
+  .split > .plate > svg.fig, .canvas > svg.fig { max-height: 120mm; }
+  .split#plate-iii .side > .sec { margin-top: 18pt; }
+  .titleblock {
+    position: relative; left: auto; right: auto; bottom: auto; max-width: none;
+    padding: 0 24pt 22pt; text-align: left;
+  }
+  h1 { font-size: 30pt; }
+  .plate-i > .caption { max-width: none; margin: 8pt 0 0; padding: 0; }
+  .controls, .copy, .tip, .error { display: none !important; }
+  .cite { grid-template-columns: 1fr; }
+  .year { font-size: 30pt; margin: 8pt 0 4pt; }
+  a { color: var(--deep); }
 }

@@ -297,9 +297,9 @@ wording is unverified.
 
 ## Changes made while building (2026-11-09)
 
-- **Plate II** is drawn with radii to scale and angles about *SC* magnified by a factor *K*
-  from `m7_plates.json` (the smallest of 1, 2, 5, 10, 20 that opens *CSL* to at least 10°;
-  K = 5). To scale, *C*, *N* and *L* fall within about 30 px of each other. The caption states
+- **Plate II** is drawn with radii to scale and angles about *SC* magnified by a factor
+  from `m7_plates.json` (the smallest of 1, 2, 5, 10, 20 that opens *CSL* to at least 10°:
+  5). To scale, *C*, *N* and *L* fall within about 30 px of each other. The caption states
   the factor, and the angle label gives the true value.
 - **Plate I** on wide screens (≥ 900 px) puts the title block at the bottom left and the
   figure on the right, so the figure can use the plate's full height. On phones the title sits
@@ -309,11 +309,34 @@ wording is unverified.
   in 1846").
 - **Plates II and III** stay in view (sticky) while their text column scrolls past.
 
+Review of the localhost page (2026-11-09):
+- **Plate III's conjunction is *K*,** the conjunction of Uranus and Neptune (the run's, JPL's
+  date to 0.2 h), not Plate II's *C* (the conjunction with the fitted planet, 3 October 1821).
+  Fig. 3 uses *K* too. The 145.8 days in § 3.2 is computed from *K*'s date.
+- **Split columns:** the in-text figure widening (`main > section > figure[data-fig]`) also
+  caught the plates in Plates II and III, which made their tracks 707–1040 px wide. That pushed
+  Plate III's side panel past the right edge at 768 px and cut Plate II's text column to
+  104–288 px. The rule now skips `.split`. The two columns are `minmax(0, 1fr)` each, and
+  below 900 px the plate and its text stack (at 900 px the narrower text column holds about
+  47 characters).
+- **Print** (`@media print`): one column; plates and figures full width at the aspect they were
+  drawn at, at most 120 mm high (Plate I a full title page); captions under their figures;
+  nothing sticky; no controls or copy buttons. Of the ground textures, print keeps the cloud
+  and the vignette; mottle, grain and dust, rasterised at print resolution, take an A4 PDF from
+  2.9 MB to over 20 MB.
+
 ## Acceptance
 
 1. **Number audit:** no number on the rendered page outside the allowlist (the one rule).
-2. **Layout:** desktop 1440 × 900 and phone 390 × 844 screenshots for every plate and figure,
-   with no overflow and no overlapping labels. Saved to `docs/notes/`.
+2. **Layout:** screenshots at 390, 768, 1024 and 1440 px for every plate and figure, saved to
+   `docs/notes/m7_site/`. At each width (and at 900, the stacking breakpoint):
+   - no horizontal overflow and no overlapping labels;
+   - Plate II's and Plate III's side panels lie inside the viewport;
+   - side by side, each text column holds at least 45 characters per line;
+   - no vertical gap over 200 px between content blocks.
+   In print (Save as PDF), from an 800 px window: nothing sticky, plates and figures at the full
+   text width, every caption under its figure, controls hidden. The PDF is saved beside the
+   screenshots.
 3. **Interaction:** every point letter in the prose highlights its point. Plate III plays,
    pauses, scrubs and respects reduced motion.
 4. **Plate III:** the run with Neptune matches Horizons' Uranus in 1850 (the difference is

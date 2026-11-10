@@ -54,6 +54,8 @@ export function mount(fig, draw, opts = {}) {
     if (!force && key === last) return;
     last = key;
     svg.attr("viewBox", `0 0 ${w} ${h}`).selectAll("*").remove();
+    // Print keeps the drawn aspect (site.css @media print) and the viewBox scales the drawing.
+    if (w > 0 && h > 0) box.style.setProperty("--ar", String(w / h));
     draw(svg, w, h);
     refreshLinks();
   };
