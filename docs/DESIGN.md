@@ -345,7 +345,8 @@ Review of the localhost page (2026-11-09):
 2. **Layout** (`tools/check_layout.py`, run by the Pages workflow before deploy; phones as
    touch devices, and in WebKit as well as Chrome before a push): screenshots at 390, 430, 768,
    1024 and 1440 px for every plate and figure, saved to `docs/notes/m7_site/`. At each width
-   (and at 899 and 900, either side of the stacking breakpoint):
+   (and at 360, the narrowest common phone, and at 899 and 900, either side of the stacking
+   breakpoint):
    - no horizontal overflow;
    - no text box (SVG text, lettering along a path glyph by glyph, HTML text over a plate)
      intersects a stroke, a marker or another text, except its own leader line;

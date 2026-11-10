@@ -1,6 +1,6 @@
 """Layout, print and interaction acceptance checks for the site (docs/DESIGN.md, Acceptance).
 
-Loads the page with JavaScript at 390, 430, 768, 899, 900, 1024 and 1440 px (phones as touch
+Loads the page with JavaScript at 360, 390, 430, 768, 899, 900, 1024 and 1440 px (phones as touch
 devices) and in print (A4 from an 800 px window), and fails on any of:
 
 - **Text over marks:** in every plate and figure, a text box (SVG text, the lettering along
@@ -41,7 +41,16 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from check_prerender import AUDIT
 from prerender_site import launch, open_rendered, serve
 
-WIDTHS = [(390, 844), (430, 932), (768, 1024), (899, 900), (900, 900), (1024, 768), (1440, 900)]
+WIDTHS = [
+    (360, 780),
+    (390, 844),
+    (430, 932),
+    (768, 1024),
+    (899, 900),
+    (900, 900),
+    (1024, 768),
+    (1440, 900),
+]
 PHONE = 600  # below this width the page is loaded as a touch device
 
 # The rendered text must hold no emoji or emoji-presentation character.

@@ -114,8 +114,34 @@ export function marks(svg, { skip = new Set() } = {}) {
     if (skip.has(t) || !visible(t) || !t.textContent.trim()) continue;
     for (const q of textQuads(svg, t)) out.texts.push({ q, b: boxOf(q), el: t });
   }
+  // HTML text laid over the plate ("Plate II.", Plate I's title block), line by line.
+  const inv = svg.getScreenCTM()?.inverse();
+  const fig = svg.closest("[data-fig]");
+  if (inv && fig) {
+    for (const e of fig.querySelectorAll(".plate-label, .titleblock h1, .titleblock p")) {
+      if (!e.getClientRects().length) continue;
+      const r = document.createRange();
+      r.selectNodeContents(e);
+      for (const c of r.getClientRects()) {
+        if (!c.width) continue;
+        const q = [[c.left, c.top], [c.right, c.top], [c.right, c.bottom], [c.left, c.bottom]]
+          .map(([x, y]) => apply(inv, x, y));
+        out.texts.push({ q, b: boxOf(q), el: e });
+      }
+    }
+  }
   return out;
 }
+
+/** The drawing's size (mount sets the viewBox to it). */
+const drawing = (svg) => {
+  const v = svg.viewBox?.baseVal;
+  return v && v.width ? [v.x, v.y, v.x + v.width, v.y + v.height] : null;
+};
+const inside = (svg, quads) => {
+  const d = drawing(svg);
+  return !d || quads.every((q) => { const b = boxOf(q); return b[0] >= d[0] + 2 && b[1] >= d[1] + 2 && b[2] <= d[2] - 2 && b[3] <= d[3] - 2; });
+};
 
 /** A text's boxes in drawing space: one box, or one per glyph along a path. */
 export function textQuads(svg, t) {
@@ -196,7 +222,8 @@ export function placeLetters(svg, letters = null) {
     for (const soft of [true, false]) {
       for (const k of order) {
         set(cands[k]);
-        const n = crossings(textQuads(svg, t), obs, { soft });
+        const qs = textQuads(svg, t);
+        const n = crossings(qs, obs, { soft }) + (inside(svg, qs) ? 0 : 1000); // stays in the figure
         if (n === 0) { best = k; break; }
         if (!soft && (best === null || n < best.n)) best = { k, n };
       }
