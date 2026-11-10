@@ -149,6 +149,9 @@ th, td { padding: 5px 10px 5px 0; text-align: left; vertical-align: baseline; }
 th { font-weight: 400; font-size: 14px; color: var(--prussian); }
 td { font-size: clamp(16px, 0.6vw + 12px, 20px); }
 td.n, th.n { text-align: right; }
+/* Headers and year ranges stay on one line; on phones the observatory goes under the source. */
+th, td.yrs { white-space: nowrap; }
+.obs-under { display: none; }
 td.v { color: var(--prussian); }
 tfoot td { border-top: 1px solid var(--deep); padding-top: 8px; }
 tfoot tr + tr td { border-top: 0; font-size: 14px; color: var(--prussian); padding-top: 2px; }
@@ -168,13 +171,21 @@ tfoot tr + tr td { border-top: 0; font-size: 14px; color: var(--prussian); paddi
 .side .sec { margin-top: 0; }
 .fig-3 { margin: 24px 0 16px; }
 .fig-3 .canvas { height: 230px; }
-.controls { display: flex; align-items: center; gap: 16px; margin: 0 0 20px; }
-.controls label { display: flex; align-items: center; gap: 12px; flex: 1; font-size: 15px; color: var(--prussian); }
+/* Plate III's controls: a row of their own between Fig. 3 and the caption, in the flow at
+   every width (nothing sticky below 900 px). */
+.controls { display: flex; align-items: center; gap: 16px; margin: 8px 0 28px; }
+.controls label { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; font-size: 15px; color: var(--prussian); }
 .play {
-  width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--prussian);
-  background: transparent; color: var(--prussian); font: 13px / 1 var(--serif); cursor: pointer;
+  flex: none; display: grid; place-items: center; width: 44px; height: 44px; padding: 0;
+  border-radius: 50%; border: 1px solid var(--prussian); background: transparent;
+  color: var(--prussian); cursor: pointer;
 }
-input[type="range"] { flex: 1; accent-color: var(--prussian); min-height: 44px; }
+/* Icons are inline SVG in the text colour, never characters (which iOS draws as emoji). */
+.icon {
+  display: block; fill: none; stroke: currentColor; stroke-width: 1.6;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+input[type="range"] { flex: 1; min-width: 0; margin: 0; accent-color: var(--prussian); min-height: 44px; }
 
 /* ---------- limitations, availability, references ---------- */
 .limits { padding-left: 1.1em; }
@@ -198,10 +209,6 @@ input[type="range"] { flex: 1; accent-color: var(--prussian); min-height: 44px; 
     padding: 32px var(--gutter) 8px; justify-self: center;
   }
   .split.reverse > .side { justify-self: center; }
-  .split#plate-iii .controls {
-    position: sticky; bottom: 0; z-index: 3; margin: 0 calc(-1 * var(--gutter));
-    padding: 8px var(--gutter); background: var(--paper);
-  }
 }
 
 /* ---------- phone ---------- */
@@ -214,6 +221,8 @@ input[type="range"] { flex: 1; accent-color: var(--prussian); min-height: 44px; 
   .fig-6 .canvas { height: 400px; }
   .sec { margin-top: 64px; }
   th, td { padding-right: 6px; }
+  #table-1 .obs { display: none; }
+  .obs-under { display: block; font-size: 14px; color: var(--prussian); white-space: nowrap; }
   .plate-i .plate { height: min(100svh, 760px); }
 }
 

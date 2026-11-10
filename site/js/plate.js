@@ -6,6 +6,7 @@
 // layer (Plate III's animation) never re-render the filters.
 
 import * as d3 from "d3";
+import { settle } from "./clear.js";
 
 const SVGNS = "http://www.w3.org/2000/svg";
 
@@ -40,7 +41,9 @@ export function ground(fig, { mark = false } = {}) {
 }
 
 /**
- * Mount a figure: ground + data layer, drawn by `draw(svg, w, h)` now and on every resize.
+ * Mount a figure: ground + data layer, drawn by `draw(svg, w, h)` now, on every resize and once
+ * the fonts have loaded (labels are measured in them). After each draw the point letters are
+ * placed clear of the marks and lines that yield break around text (clear.js).
  * Returns a function that redraws on demand.
  */
 export function mount(fig, draw, opts = {}) {
@@ -57,10 +60,13 @@ export function mount(fig, draw, opts = {}) {
     // Print keeps the drawn aspect (site.css @media print) and the viewBox scales the drawing.
     if (w > 0 && h > 0) box.style.setProperty("--ar", String(w / h));
     draw(svg, w, h);
+    if (w > 0 && h > 0) settle(svg.node());
     refreshLinks();
   };
-  new ResizeObserver(() => redraw()).observe(box);
+  // Next frame: a redraw can resize its own box (--ar in print), which must not re-enter here.
+  new ResizeObserver(() => requestAnimationFrame(() => redraw())).observe(box);
   redraw(true);
+  document.fonts?.ready.then(() => redraw(true));
   return () => redraw(true);
 }
 

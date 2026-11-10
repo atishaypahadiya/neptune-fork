@@ -77,8 +77,8 @@ derived after the fact from the pre-registered replacement posterior described b
 pre-registered sensitivity runs (e ≤ 0.5; error levels estimated from the data alone; Student-t
 errors). The medians agree to within 0.4 headline half-widths. The evidence favours the
 Student-t errors (ln B = +13.7), but the Gaussian error model was fixed by the
-pre-registration and is kept; S3 shows the result is insensitive to it (the median moves 0.37
-headline half-widths).
+pre-registration and is kept. Under S3 the median is insensitive to it (it moves 0.37
+headline half-widths), but the 68 % interval widens from 4.22° to 6.33°.
 
 **Repeatability.** Repeated runs of the main sampling cell disagreed on the width by far more
 than the sampler's own error estimate. Under a pre-registered repeatability study, two runs with

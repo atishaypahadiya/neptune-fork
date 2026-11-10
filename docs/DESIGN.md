@@ -292,7 +292,14 @@ wording is unverified.
   `plate-i.png` (Plate I, 1200 × 630). Without JavaScript the page reads in full. With it,
   `main.js` redraws the same content (every render step replaces what it renders) and shows
   the controls that need JS (`data-js hidden`: Plate III's play and scrub, Copy). The Pages
-  workflow runs the build and `tools/check_prerender.py`, and deploys `_site/`.
+  workflow runs the build, `tools/check_prerender.py` and `tools/check_layout.py`, and deploys
+  `_site/`.
+- **Text clear of marks (2026-11-10):** `site/js/clear.js`. After every draw, point letters take
+  their drawn offset if it is clear, else the nearest clear spot around their point (Plate III's
+  every frame). Lines that only guide the eye (gridlines, the launch line, Neptune's line in
+  Fig. 6, Plate II's construction lines: class `yield`) break where they would cross a text.
+  Labels along orbits are tried at a few positions and left out where none is clear; the
+  caption carries the same words.
 - **Kept from the current site:** `data.js` (loaders, the 95 % status, number formatting) and
   the per-panel error and pending states. Removed: the three.js scenes, `lanes.js` and the dark
   styles.
@@ -335,17 +342,27 @@ Review of the localhost page (2026-11-09):
 ## Acceptance
 
 1. **Number audit:** no number on the rendered page outside the allowlist (the one rule).
-2. **Layout:** screenshots at 390, 768, 1024 and 1440 px for every plate and figure, saved to
-   `docs/notes/m7_site/`. At each width (and at 900, the stacking breakpoint):
-   - no horizontal overflow and no overlapping labels;
+2. **Layout** (`tools/check_layout.py`, run by the Pages workflow before deploy; phones as
+   touch devices, and in WebKit as well as Chrome before a push): screenshots at 390, 430, 768,
+   1024 and 1440 px for every plate and figure, saved to `docs/notes/m7_site/`. At each width
+   (and at 899 and 900, either side of the stacking breakpoint):
+   - no horizontal overflow;
+   - no text box (SVG text, lettering along a path glyph by glyph, HTML text over a plate)
+     intersects a stroke, a marker or another text, except its own leader line;
+   - no label along a path is longer than its path (measured with its letter-spacing);
+   - no emoji or emoji-presentation character in the rendered text, with or without JS (icons
+     are inline SVG in the text colour);
+   - nothing sticky or fixed below 900 px; blocks in the side panels of Plates II and III, and
+     Plate III's controls, never overlap;
+   - Table 1's headers and year ranges each on one line;
    - Plate II's and Plate III's side panels lie inside the viewport;
    - side by side, each text column holds at least 45 characters per line;
    - no vertical gap over 200 px between content blocks.
    In print (Save as PDF), from an 800 px window: nothing sticky, plates and figures at the full
-   text width, every caption under its figure, controls hidden. The PDF is saved beside the
-   screenshots.
+   text width, every caption under its figure, controls hidden, and no text over a mark. The PDF
+   is saved beside the screenshots.
 3. **Interaction:** every point letter in the prose highlights its point. Plate III plays,
-   pauses, scrubs and respects reduced motion.
+   pauses, scrubs and respects reduced motion. Tooltips open on tap as well as hover.
 4. **Plate III:** the run with Neptune matches Horizons' Uranus in 1850 (the difference is
    reported), and the conjunction date agrees with `m6c_conjunction.json`'s JPL date (the
    difference is reported).

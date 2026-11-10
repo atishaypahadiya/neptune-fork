@@ -76,12 +76,17 @@ export function abstract(D) {
 
 export function capPlateI(D) {
   const p = D.plates.plate_i_galle_night, q = p.posterior.lon_deg;
+  // The same words as the lettering along Uranus's path (plates.js), which phones leave out.
+  const names = [...new Set(D.table1.rows.map((r) => r.source.replace(/ series$/, "")))];
+  const ty = D.table1.total.years;
   return `The planet on Galle's night, ${dateOfStr(p.date_tdb)}: heliocentric positions ` +
     `projected on the ecliptic of date, seen from the north with the equinox to the right; to ` +
     `scale. {S@plate-i} Sun. {U@plate-i} Uranus (median of the fitted positions) on its dotted ` +
-    `path from JPL Horizons, lettered with the sources of Table 1. Stipple: ` +
+    `path from JPL Horizons, lettered where there is room with the sources of Table 1 ` +
+    `(${names.join(" · ")}, ${ty[0]}–${ty[1]}). Stipple: ` +
     `${p.posterior.subsample_xy.length} of the ${D.conj.n_samples} posterior samples of the ` +
-    `planet (M6c replacement posterior); heliocentric longitude 68 %: ${rng(q.lo68, q.hi68)}. ` +
+    `planet (M6c replacement posterior). Their heliocentric longitude, 68 %: ` +
+    `${rng(q.lo68, q.hi68)}, is not comparable with the geocentric ranges in the text. ` +
     `{N@plate-i} Neptune (JPL Horizons). {L@plate-i} Le Verrier's planet from his published ` +
     `elements (Krajnović 2016, after Grosser 1962).`;
 }
@@ -113,8 +118,9 @@ export function dataText(D) {
       `apparent place of date, in arcseconds (right ascension as Δα cos δ). Built from ` +
       `the published transcription; the per-group medians reproduce the committed error model.`,
     cap_fig_1: `The ${c.rows} observations of Table 77 by source and year, one dot per ` +
-      `observation; the ${s.rows} rows checked by hand are open circles. Hover for the date and ` +
-      `the residuals against JPL.`,
+      `observation, spread up and down within its row so that close dots stay apart (the ` +
+      `spread encodes nothing); the ${s.rows} rows checked by hand are open circles. Tap or ` +
+      `hover for the date and the residuals against JPL.`,
   };
 }
 
@@ -357,6 +363,16 @@ export const SENS = (fits) => ({
   s3_t4: `S3, Student-t errors (ν = ${fits.s3_t4.config.nu})`,
 });
 
+/** S3 against the headline: the median barely moves, the 68 % range widens (§ 5 and § 6). */
+function s3Effect(D, it) {
+  const f = D.checks.fits.s3_t4, holds = D.checks.verdicts.s3_t4.holds;
+  const w0 = D.checks.reported.width68, w3 = f.galle_lon_ecl_of_date_deg.width68;
+  const moves = fmt(Math.abs(f.vs_headline.galle_median_shift_headline_half_widths), 2);
+  return `Under S3 the median ${holds ? `is insensitive to ${it}` : `depends on ${it}`} (it moves ` +
+    `${moves} headline half-widths), ${holds ? "but" : "and"} the 68 % range ` +
+    `${w3 > w0 ? "widens" : "narrows"} from ${deg(w0, 2)} to ${deg(w3, 2)}`;
+}
+
 export function robustText(D) {
   const k = D.checks, rp = k.repeat, v = k.verdicts, f = k.fits;
   const ratio = drv(rp.r1Spread / rp.r1RunError, "R1 spread / run error");
@@ -386,11 +402,8 @@ export function robustText(D) {
       `${shift("s2_sigma_data")} headline half-widths. The evidence favours Student-t errors, ` +
       `ν = ${f.s3_t4.config.nu} (S3), over the Gaussian ones: ln {i:B} = ` +
       `${signed(f.s3_t4.vs_headline.ln_b, 1)} ± ${fmt(f.s3_t4.vs_headline.ln_b_err, 1)}. The ` +
-      `Gaussian error model was fixed by the pre-registration and stays the headline's, and S3 ` +
-      `shows the result ${v.s3_t4.holds ? "is insensitive to that choice" : "depends on that choice"}: ` +
-      `the median moves ${shift("s3_t4")} headline half-widths, while S3's 68 % range is ` +
-      `${deg(f.s3_t4.galle_lon_ecl_of_date_deg.width68, 2)} wide against the headline's ` +
-      `${deg(k.reported.width68, 2)}. ` +
+      `Gaussian error model was fixed by the pre-registration and stays the headline's. ` +
+      `${s3Effect(D, "that choice")}. ` +
       `${jplAll ? "Neptune's longitude (JPL) is inside the 68 % range in the headline fit and in all three runs." : ""}`,
     cap_fig_6: `The planet's geocentric longitude on Galle's night (ecliptic of date): the ` +
       `headline as first published (superseded) and as reported, and the three sensitivity ` +
@@ -437,9 +450,7 @@ export function limits(D) {
     deferredFits(D.timeline.deferred),
     `Error model: the evidence favours Student-t errors (S3, ln B = ` +
       `${signed(D.checks.fits.s3_t4.vs_headline.ln_b, 1)}), but the Gaussian error model was ` +
-      `fixed by the pre-registration and is kept. S3 shows the result is insensitive to it: the ` +
-      `median moves ${fmt(Math.abs(D.checks.fits.s3_t4.vs_headline.galle_median_shift_headline_half_widths), 2)} ` +
-      `headline half-widths (§ 5).`,
+      `fixed by the pre-registration and is kept. ${s3Effect(D, "it")} (§ 5).`,
     `Diurnal parallax is not modelled (up to ${fmt(D.parallax.max_arcsec, 1)}″).`,
     `The headline plan was first pushed after its run had launched; the logs cannot rule out ` +
       `that one of its result files was opened by hand during the run (§ 3.1).`,

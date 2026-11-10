@@ -48,13 +48,22 @@ function table1(D) {
   const years = (y) => (y[0] === y[1] ? `${y[0]}` : `${y[0]}–${y[1]}`);
   for (const r of t.rows) {
     const tr = document.createElement("tr");
-    cell(tr, r.source); cell(tr, r.observatory); cell(tr, years(r.years));
+    // The observatory twice: its own column, and under the source on phones (site.css) unless
+    // the source's name holds it.
+    cell(tr, r.source);
+    if (!r.source.includes(r.observatory)) {
+      const under = document.createElement("span");
+      under.className = "obs-under";
+      under.textContent = r.observatory;
+      tr.lastChild.append(under);
+    }
+    cell(tr, r.observatory, "obs"); cell(tr, years(r.years), "yrs");
     cell(tr, r.observations, "n"); cell(tr, r.measurements.ra, "n"); cell(tr, r.measurements.dec, "n");
     cell(tr, `${fmt(r.median_abs_o_minus_jpl_arcsec, 2)}″`, "n v");
     tb.append(tr);
   }
   const tot = document.createElement("tr");
-  cell(tot, "All sources"); cell(tot, ""); cell(tot, years(t.total.years));
+  cell(tot, "All sources"); cell(tot, "", "obs"); cell(tot, years(t.total.years), "yrs");
   cell(tot, t.total.observations, "n"); cell(tot, t.total.measurements.ra, "n");
   cell(tot, t.total.measurements.dec, "n"); cell(tot, `${fmt(t.total.median_abs_o_minus_jpl_arcsec, 2)}″`, "n v");
   tf.append(tot);

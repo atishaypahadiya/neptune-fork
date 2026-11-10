@@ -157,8 +157,12 @@ under-explores the cell.
 uv sync --group site                                              # Playwright (uses Google Chrome)
 uv run --group site python tools/prerender_site.py --out _site    # prerendered page + plate-i.png
 uv run --group site python tools/check_prerender.py _site         # audit with JS off, = JS page
+uv run --group site python tools/check_layout.py _site            # layout, print, interaction
 ```
 
-The Pages workflow runs the same two steps and deploys `_site/`. Without Google Chrome, run
+The Pages workflow runs the same three steps and deploys `_site/`. Before a change to the site,
+also run the layout check in WebKit, the engine of Safari on iPhones
+(`uv run --group site playwright install webkit`, then `--engine webkit`); `--shots DIR` saves
+screenshots of every plate and figure at each width. Without Google Chrome, run
 `uv run --group site playwright install chromium` first. To preview, serve `_site/` (or
 `site/`, which renders everything client-side) with any static server.

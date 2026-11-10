@@ -39,6 +39,10 @@ jobs:
         run: uv run --no-sync python tools/prerender_site.py --out _site --base-url "${{ steps.pages.outputs.base_url }}/"
       - name: Check the prerendered page
         run: uv run --no-sync python tools/check_prerender.py _site --base-url "${{ steps.pages.outputs.base_url }}/"
+      # Layout, print and interaction at 390-1440 px: no text over a mark, no label longer than
+      # its path, no emoji, nothing sticky below 900 px (docs/DESIGN.md, Acceptance 2 and 3).
+      - name: Check the layout
+        run: uv run --no-sync python tools/check_layout.py _site
       - uses: actions/upload-pages-artifact@v5  # wraps upload-artifact@v7 (node24)
         with:
           path: _site

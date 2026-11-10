@@ -5,6 +5,7 @@
 import * as d3 from "d3";
 import { mount, point, stipple, sunTexture, orbit } from "./plate.js";
 import { fmt, drv } from "./data.js";
+import { marks, textQuads, crossings, placeLetters, yieldLines } from "./clear.js";
 
 const TAU = 2 * Math.PI;
 const lonOf = ([x, y]) => (Math.atan2(y, x) + TAU) % TAU;
@@ -35,25 +36,48 @@ function labelArc(cx, cy, r, lonMid, spanRad) {
   return { d: d3.line()(pts), up };
 }
 
+const ctx2d = document.createElement("canvas").getContext("2d");
+/** A text's drawn width in the font and letter-spacing of `el`. Measured here because WebKit
+ * leaves letter-spacing out of getComputedTextLength, which clipped labels on iPhones. */
+function textWidth(el, text) {
+  const cs = getComputedStyle(el);
+  ctx2d.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+  return ctx2d.measureText(text).width + (parseFloat(cs.letterSpacing) || 0) * text.length;
+}
+
 let arcId = 0;
-/** Text along an arc; shrinks once if it does not fit, and is dropped if it still does not. */
-function arcText(g, cx, cy, r, lonMid, text, { maxSpan = 1.9 * Math.PI, from = null } = {}) {
-  const id = `arc-${arcId++}`;
+/**
+ * Text along a circle about (cx, cy), at the first of `spots` where it fits its path and
+ * crosses nothing. A spot is { r, lon } (the text's middle) or { r, from } (its start, running
+ * toward increasing longitude). Shrinks once if it is too long for `maxSpan`; left out if no
+ * spot is clear (the caption carries the same words).
+ */
+function arcText(g, cx, cy, text, spots, { maxSpan = 1.9 * Math.PI } = {}) {
+  const svg = g.node().ownerSVGElement;
   const probe = g.append("text").attr("class", "lbl").text(text);
-  const len = probe.node().getComputedTextLength();
+  const len0 = Math.max(textWidth(probe.node(), text), probe.node().getComputedTextLength());
+  const size0 = parseFloat(getComputedStyle(probe.node()).fontSize);
   probe.remove();
-  let span = (len * 1.04) / r;
-  let size = null;
-  if (span > maxSpan) { size = 11; span = (span * 11) / 13; }
-  if (span > maxSpan) return null;
-  if (from !== null) lonMid = from + span / 2; // start at `from`, run toward increasing longitude
-  const { d, up } = labelArc(cx, cy, up0(lonMid) ? r : r + 15, lonMid, span);
-  g.append("path").attr("id", id).attr("d", d).attr("fill", "none");
-  const t = g.append("text").attr("class", "lbl");
-  if (size) t.style("font-size", `${size}px`);
-  t.append("textPath").attr("href", `#${id}`).attr("startOffset", "50%")
-    .attr("text-anchor", "middle").text(text);
-  return { up };
+  for (const spot of spots) {
+    let size = null, span = (len0 * 1.08) / spot.r; // 8 % to spare at the ends
+    if (span > maxSpan) { size = 11; span = (span * size) / size0; }
+    if (span > maxSpan) continue;
+    const lonMid = spot.from !== undefined ? spot.from + span / 2 : spot.lon;
+    const id = `arc-${arcId++}`;
+    const { d } = labelArc(cx, cy, up0(lonMid) ? spot.r : spot.r + 15, lonMid, span);
+    const path = g.append("path").attr("id", id).attr("d", d).attr("fill", "none");
+    const t = g.append("text").attr("class", "lbl");
+    if (size) t.style("font-size", `${size}px`);
+    t.append("textPath").attr("href", `#${id}`).attr("startOffset", "50%")
+      .attr("text-anchor", "middle").text(text);
+    const fits = textWidth(t.node(), text) <= path.node().getTotalLength() - 2;
+    if (fits && crossings(textQuads(svg, t.node()), marks(svg, { skip: new Set([t.node()]) })) === 0) {
+      return t;
+    }
+    t.remove();
+    path.remove();
+  }
+  return null;
 }
 const up0 = (lon) => Math.sin(lon) >= 0;
 
@@ -85,21 +109,6 @@ export function plateI(fig, D) {
     stipple(g.append("g"), sub.map(X), { r: phone ? 0.65 : 0.8 });
     stipple(g.append("g").attr("class", "ctx"), sunTexture(cx, cy, 6.5), { r: 0.8 });
 
-    // Labels along orbits: data text only (Table 1's sources and years; the posterior's range).
-    const q = P.posterior.lon_deg;
-    const rLab = s * P.posterior.r_au.hi95 + 8;
-    // Starts just past the stipple's 95 % edge so it never crosses the cloud, N or L.
-    arcText(g, cx, cy, rLab, 0, `the planet, 68 %: ${fmt(q.lo68)}–${fmt(q.hi68)}° heliocentric`,
-      { maxSpan: 1.2 * Math.PI, from: ((q.hi95 + 4) * Math.PI) / 180 });
-    if (!phone) {
-      // Table 1's sources and the span of their years, kept to the lower half so it reads upright.
-      const names = [...new Set(D.table1.rows.map((r) => r.source.replace(/ series$/, "")))];
-      const ty = D.table1.total.years;
-      const rU = s * rOf(b.uranus_fit.xy) + 9;
-      arcText(g, cx, cy, rU, (235 * Math.PI) / 180, `${names.join(" · ")}, ${ty[0]}–${ty[1]}`,
-        { maxSpan: 0.9 * Math.PI });
-    }
-
     point(g, { id: "S", x: cx, y: cy, letter: "S", dx: -12, dy: -12, anchor: "end", mark: "none", title: "Sun" });
     const [ux, uy] = X(b.uranus_fit.xy);
     point(g, { id: "U", x: ux, y: uy, letter: "U", title: "Uranus" });
@@ -108,6 +117,24 @@ export function plateI(fig, D) {
     const [lx, ly] = X(b.le_verrier.xy);
     point(g, { id: "L", x: lx, y: ly, letter: "L", mark: "open", dx: 9, dy: 12,
                anchor: "start", title: "Le Verrier's planet" });
+
+    // Labels along orbits, drawn after the points so they keep clear of them, and only where
+    // they fit and cross nothing; the caption carries the same words. The planet's starts past
+    // the stipple's 95 % edge. It carries no numbers: the plate's longitudes are heliocentric,
+    // the headline's geocentric.
+    const q = P.posterior.lon_deg, rad = (deg) => (deg * Math.PI) / 180;
+    const rLab = s * P.posterior.r_au.hi95 + 8;
+    arcText(g, cx, cy, "the planet",
+      [rLab, rLab + 10].flatMap((r) => [4, 8, 12, 18, 24, 32].map((k) => ({ r, from: rad(q.hi95 + k) }))),
+      { maxSpan: 1.2 * Math.PI });
+    // Uranus's path: Table 1's sources and the span of their years, in the lower half so it
+    // reads upright.
+    const names = [...new Set(D.table1.rows.map((r) => r.source.replace(/ series$/, "")))];
+    const ty = D.table1.total.years;
+    const rU = s * rOf(b.uranus_fit.xy) + 9;
+    arcText(g, cx, cy, `${names.join(" · ")}, ${ty[0]}–${ty[1]}`,
+      [235, 245, 225, 255, 215, 265, 205].flatMap((a) => [{ r: rU, lon: rad(a) }, { r: rU + 8, lon: rad(a) }]),
+      { maxSpan: 0.9 * Math.PI });
   }, { mark: true });
 }
 
@@ -151,10 +178,11 @@ export function plateII(fig, D) {
     // The line SU produced to C, the line SL, and the angle CSL (labelled with its true value).
     const lvA = mag(b.le_verrier.xy)[0];
     const end = rMax;
-    g.append("path").attr("class", "ln").attr("d", d3.line()([[cx, cy], XP([med, end])]));
-    g.append("path").attr("class", "ln sec").attr("d", d3.line()([[cx, cy], XP([lvA, end])]));
+    // Construction lines: they break where a letter needs the room (clear.js).
+    g.append("path").attr("class", "ln yield").attr("d", d3.line()([[cx, cy], XP([med, end])]));
+    g.append("path").attr("class", "ln sec yield").attr("d", d3.line()([[cx, cy], XP([lvA, end])]));
     const arc = d3.range(0, 25).map((k) => XP([med + ((lvA - med) * k) / 24, end]));
-    g.append("path").attr("class", "ln sec").attr("d", d3.line()(arc));
+    g.append("path").attr("class", "ln sec yield").attr("d", d3.line()(arc));
     const [ax, ay] = XP([(med + lvA) / 2, end]);
     g.append("text").attr("class", "lbl").attr("x", ax).attr("y", ay + 20).attr("text-anchor", "middle")
       .text(`${fmt(Math.abs(s0.le_verrier.minus_median_deg), 2)}°`);
@@ -205,20 +233,21 @@ export function plateIII(fig, fig3, side, D, onFrame) {
     // K on the line from S, at Neptune's position at the Uranus-Neptune conjunction of the run
     // (not Plate II's C, the conjunction with the fitted planet).
     const [qx, qy] = X(nepC[0] * 1.06, nepC[1] * 1.06);
-    g.append("path").attr("class", "ln ctx").attr("d", d3.line()([[cx, cy], [qx, qy]]));
+    g.append("path").attr("class", "ln ctx yield").attr("d", d3.line()([[cx, cy], [qx, qy]]));
     point(g, { id: "K", x: qx, y: qy, letter: "K", dx: 0, dy: 16, anchor: "middle", mark: "none", title: "K: conjunction of Uranus and Neptune" });
     stipple(g.append("g").attr("class", "ctx"), sunTexture(cx, cy, 6.5), { r: 0.8 });
     point(g, { id: "S", x: cx, y: cy, letter: "S", dx: 12, dy: -10, mark: "none", title: "Sun" });
 
     const trail = g.append("path").attr("class", "ln model");
-    const pull = g.append("path").attr("class", "ln");
-    const pullLbl = g.append("text").attr("class", "lbl");
+    const pull = g.append("path").attr("class", "ln").attr("data-leader-of", "pull");
+    const pullLbl = g.append("text").attr("class", "lbl").attr("data-leader", "pull");
     const free = g.append("circle").attr("class", "open").attr("r", 4.5);
     const pu = point(g, { id: "U", x: 0, y: 0, letter: "U", r: 3.4, title: "Uranus" });
     const pn = point(g, { id: "N", x: 0, y: 0, letter: "N", r: 3.4, title: "Neptune" });
     pu.select(".glow").style("opacity", 0.6);
     pn.select(".glow").style("opacity", 0.6);
 
+    const svgNode = svg.node(), letters = [pu, pn].map((p) => p.select("text.letter").node());
     state.update = (i) => {
       const [ux, uy] = U[i], [nx, ny] = N[i];
       trail.attr("d", d3.line()(U.slice(0, i + 1)));
@@ -234,11 +263,19 @@ export function plateIII(fig, fig3, side, D, onFrame) {
       pullLbl.attr("transform", `translate(${mx},${my}) rotate(${ang}) translate(0,-7)`)
         .attr("text-anchor", "middle")
         .text(F.accel_along_track[i] >= 0 ? "drawn ahead" : "held back");
-      // Only on a line long enough to carry it clear of the letters at its ends.
+      // The letters move with their planets: each frame they take a clear spot (clear.js).
+      pullLbl.style("display", "none");
+      placeLetters(svgNode, letters);
+      // The label only on a line long enough to carry it, and where it crosses nothing but
+      // its own line.
       const len = pullLbl.node().getComputedTextLength();
       const room = Math.hypot(nx - ux, ny - uy) - len;
       const inside = mx - len / 2 > 8 && mx + len / 2 < w - 8 && my > 24 && my < h - 24;
       pullLbl.style("display", room > 64 && inside ? null : "none");
+      if (room > 64 && inside) {
+        const obs = marks(svgNode, { skip: new Set([pullLbl.node()]) });
+        if (crossings(textQuads(svgNode, pullLbl.node()), obs, { leader: "pull" })) pullLbl.style("display", "none");
+      }
     };
     state.update(state.i);
   });
@@ -251,7 +288,7 @@ export function plateIII(fig, fig3, side, D, onFrame) {
     const g = svg.append("g");
     for (const t of y.ticks(4)) {
       drv(t, "Fig. 3 axis tick");
-      g.append("path").attr("class", "ln ctx").attr("d", d3.line()([[mg.l, y(t)], [w - mg.r, y(t)]]));
+      g.append("path").attr("class", "ln ctx yield").attr("d", d3.line()([[mg.l, y(t)], [w - mg.r, y(t)]]));
       g.append("text").attr("class", "tick").attr("x", mg.l - 6).attr("y", y(t) + 4)
         .attr("text-anchor", "end").text(`${t < 0 ? "−" : ""}${Math.abs(t)}″`);
     }
@@ -263,14 +300,16 @@ export function plateIII(fig, fig3, side, D, onFrame) {
     g.append("path").attr("class", "ln model")
       .attr("d", d3.line().x((_, k) => x(F.t_year[k])).y((v) => y(v))(F.dlon_arcsec));
     const xc = x(F.t_year[iC]);
-    g.append("path").attr("class", "ln sec dash").attr("d", d3.line()([[xc, mg.t], [xc, h - mg.b]]));
+    g.append("path").attr("class", "ln sec dash yield").attr("d", d3.line()([[xc, mg.t], [xc, h - mg.b]]));
     point(g, { id: "K", x: xc, y: mg.t + 4, letter: "K", dx: 6, dy: 2, mark: "none", title: "K: conjunction of Uranus and Neptune" });
-    const cur = g.append("path").attr("class", "ln");
+    const cur = g.append("path").attr("class", "ln yield");
     const dot = g.append("circle").attr("class", "dot").attr("r", 3.2);
     state.update3 = (i) => {
       const xi = x(F.t_year[i]);
-      cur.attr("d", d3.line()([[xi, mg.t], [xi, h - mg.b]]));
+      cur.attr("d", d3.line()([[xi, mg.t], [xi, h - mg.b]])).style("display", null);
+      delete cur.node().dataset.d0;
       dot.attr("cx", xi).attr("cy", y(F.dlon_arcsec[i]));
+      yieldLines(svg.node()); // the cursor breaks where it passes a label
     };
     state.update3(state.i);
   });
@@ -302,7 +341,8 @@ export function plateIII(fig, fig3, side, D, onFrame) {
   };
   const setPlaying = (p) => {
     playing = p;
-    btn.textContent = p ? "❚❚" : "▶";
+    btn.querySelector(".i-play").hidden = p;
+    btn.querySelector(".i-pause").hidden = !p;
     btn.setAttribute("aria-label", p ? "Pause" : "Play");
     cancelAnimationFrame(raf);
     lastT = 0;
@@ -311,11 +351,13 @@ export function plateIII(fig, fig3, side, D, onFrame) {
   let userPaused = false;
   btn.addEventListener("click", () => { userPaused = playing; setPlaying(!playing); });
   scrub.addEventListener("input", () => { userPaused = true; setPlaying(false); show(Number(scrub.value)); });
+  // Plays while Plate III's section is in view: on phones the controls and Fig. 3 sit a screen
+  // below the plate, so watching the plate alone would stop the run as soon as it started.
   new IntersectionObserver(([e]) => {
     inView = e.isIntersecting;
     if (!inView) setPlaying(false);
     else if (!reduce && !userPaused) setPlaying(true);
-  }, { threshold: 0.35 }).observe(fig);
+  }, { threshold: 0.2 }).observe(fig.closest(".split") ?? fig);
 
   show(reduce ? iC : 0);
   setPlaying(false);

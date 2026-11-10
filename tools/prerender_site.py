@@ -28,7 +28,7 @@ import threading
 from collections.abc import Iterator
 from pathlib import Path
 
-from playwright.sync_api import Browser, Page, sync_playwright
+from playwright.sync_api import Browser, BrowserContext, Page, sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
 SITE = ROOT / "site"
@@ -70,7 +70,7 @@ def launch(p) -> Browser:
 
 
 def open_rendered(
-    browser: Browser,
+    browser: Browser | BrowserContext,
     url: str,
     viewport: dict,
     problems: list[str],
@@ -78,8 +78,12 @@ def open_rendered(
 ) -> Page:
     """Load the page with JS, reduced motion (Plate III holds its conjunction frame), and wait
     for data-ready. Page errors, failed requests and HTTP errors (bar optional files) go to
-    ``problems``; the names of the data files it loaded go to ``fetched``."""
-    page = browser.new_page(viewport=viewport, reduced_motion="reduce", device_scale_factor=1)
+    ``problems``; the names of the data files it loaded go to ``fetched``. Given a browser
+    context (a phone, say), the page opens in it with the context's own settings."""
+    if isinstance(browser, BrowserContext):
+        page = browser.new_page()
+    else:
+        page = browser.new_page(viewport=viewport, reduced_motion="reduce", device_scale_factor=1)
     page.on("pageerror", lambda e: problems.append(f"pageerror: {e}"))
     page.on("requestfailed", lambda r: problems.append(f"request failed: {r.url}"))
     page.on(
