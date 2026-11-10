@@ -43,6 +43,16 @@ export function titleBlock(D) {
   };
 }
 
+/** The S3 clause after the headline range: Student-t errors, which the evidence favours. */
+function s3Clause(D) {
+  const f = D.checks.fits.s3_t4, g = f.galle_lon_ecl_of_date_deg, j = g.vs.jpl;
+  const inside = j.in_68 && g.lo68 <= j.target && j.target <= g.hi68;
+  return `Under Student-t errors (S3), which the evidence favours (ln {i:B} = ` +
+    `${signed(f.vs_headline.ln_b, 1)}), the 68 % range widens to ${rng(g.lo68, g.hi68)} ` +
+    `(${deg(g.width68, 2)} vs ${deg(D.checks.reported.width68, 2)}) and Neptune ` +
+    `${inside ? "stays inside it" : "falls outside it"}.`;
+}
+
 export function abstract(D) {
   const h = D.head, i95 = h.i95, w = D.window;
   const c = D.conj;
@@ -54,7 +64,7 @@ export function abstract(D) {
     `by partitioned nested sampling under a plan committed before the run. On the night Galle ` +
     `found Neptune, ${dateOfJd(c.galle_night_jd_tdb)}, we find the unseen planet's geocentric ` +
     `longitude (ecliptic of date) at ${deg(h.median)} (68 %: ${rng(h.lo68, h.hi68)}; 95 %: ` +
-    `${rng(i95.lo, i95.hi)}, ${i95.state === "final" ? "final" : "provisional"}). Neptune's longitude was ` +
+    `${rng(i95.lo, i95.hi)}, ${i95.state === "final" ? "final" : "provisional"}). ${s3Clause(D)} Neptune's longitude was ` +
     `${deg(h.jpl, 2)}, ${deg(off, 2)} from the median. The fitted mass is ${fmt(h.mass.median)} Earth masses ` +
     `(68 %: ${range(h.mass.lo68, h.mass.hi68)}; Neptune ${fmt(h.neptune.mass, 2)}) and the ` +
     `semi-major axis ${fmt(h.a.median)} AU (${range(h.a.lo68, h.a.hi68)}). Le Verrier's ` +

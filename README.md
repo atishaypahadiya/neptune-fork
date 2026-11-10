@@ -13,7 +13,9 @@ published in 1846 (his Table 77), with a perturbed-orbit model that is never giv
 own Wisdom–Holman integrator, an apparent-place observation model, and partitioned nested
 sampling run under a plan committed before the run. On the night Galle found Neptune,
 23 September 1846, we find the unseen planet's geocentric longitude (ecliptic of date) at
-**325.8°** (68 %: 323.6°–327.8°; 95 %: 320.2°–330.4°, provisional). Neptune was at 325.87°
+**325.8°** (68 %: 323.6°–327.8°; 95 %: 320.2°–330.4°, provisional). Under Student-t errors (S3),
+which the evidence favours (ln B = +13.7), the 68 % range widens to 321.0°–327.3° (6.33° vs
+4.22°) and Neptune stays inside it. Neptune was at 325.87°
 (JPL), 0.03 half-widths from the median. The same posterior gives a mass of 17.3 M⊕ (68 %:
 16.3–18.4; Neptune 17.15), a semi-major axis of 30.2 AU (29.6–30.9), osculating in 1781, and an
 eccentricity below 0.028 (68 %, one-sided). Le Verrier's published elements, carried to that
