@@ -1,0 +1,17 @@
+{
+ "description": "Reference list for the site (§ 8). Every number the site shows that is not computed from another site/data file is one of these citations. Entries 'lv1846' and 'dataset' are built from m7_dataset.json's citation block at load time.",
+ "references": [
+  {"id": "lv1846", "from": "m7_dataset.json citation.source"},
+  {"id": "dataset", "from": "m7_dataset.json zenodo + title + creators"},
+  {"id": "krajnovic2016", "authors": "Krajnović, D.", "year": 2016, "title": "The contrivance of Neptune", "venue": "Astronomy & Geophysics", "volume": "57", "issue": "5", "pages": "5.28", "url": "https://arxiv.org/abs/1610.06424", "url_text": "arXiv:1610.06424", "note": "Le Verrier's elements, Table 2, after Grosser (1962)."},
+  {"id": "grosser1962", "authors": "Grosser, M.", "year": 1962, "title": "The Discovery of Neptune", "venue": "Harvard University Press, Cambridge, MA", "book": true},
+  {"id": "britannica1911", "authors": "Encyclopædia Britannica", "year": 1911, "title": "Neptune (planet)", "venue": "Encyclopædia Britannica, 11th edition", "note": "Table of elements."},
+  {"id": "horizons", "authors": "Giorgini, J. D., et al.", "title": "JPL Horizons on-line solar system data and ephemeris computation service", "venue": "Jet Propulsion Laboratory", "url": "https://ssd.jpl.nasa.gov/horizons/", "url_text": "ssd.jpl.nasa.gov/horizons", "note": "States of the Sun, the planets and the Earth–Moon barycentre."},
+  {"id": "luzum2011", "authors": "Luzum, B., et al.", "year": 2011, "title": "The IAU 2009 system of astronomical constants: the report of the IAU working group on numerical standards for Fundamental Astronomy", "venue": "Celestial Mechanics and Dynamical Astronomy", "volume": "110", "pages": "293–304", "doi": "10.1007/s10569-011-9352-4", "note": "Planetary mass ratios."},
+  {"id": "capitaine2003", "authors": "Capitaine, N., Wallace, P. T., & Chapront, J.", "year": 2003, "title": "Expressions for IAU 2000 precession quantities", "venue": "Astronomy & Astrophysics", "volume": "412", "pages": "567–586", "doi": "10.1051/0004-6361:20031539"},
+  {"id": "speagle2020", "authors": "Speagle, J. S.", "year": 2020, "title": "dynesty: a dynamic nested sampling package for estimating Bayesian posteriors and evidences", "venue": "Monthly Notices of the Royal Astronomical Society", "volume": "493", "pages": "3132–3158", "doi": "10.1093/mnras/staa278"},
+  {"id": "rein2012", "authors": "Rein, H., & Liu, S.-F.", "year": 2012, "title": "REBOUND: an open-source multi-purpose N-body code for collisional dynamics", "venue": "Astronomy & Astrophysics", "volume": "537", "pages": "A128", "doi": "10.1051/0004-6361/201118085"},
+  {"id": "rein2015", "authors": "Rein, H., & Spiegel, D. S.", "year": 2015, "title": "IAS15: a fast, adaptive, high-order integrator for gravitational dynamics, accurate to machine precision over a billion orbits", "venue": "Monthly Notices of the Royal Astronomical Society", "volume": "446", "pages": "1424–1437", "doi": "10.1093/mnras/stu2164"},
+  {"id": "whitmore2026", "authors": "Whitmore, J.", "year": 2026, "title": "discoverneptune", "url": "https://jbwhit.github.io/discoverneptune/", "url_text": "jbwhit.github.io/discoverneptune", "note": "An independent reconstruction with REBOUND."}
+ ]
+}

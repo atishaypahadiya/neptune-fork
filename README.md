@@ -4,81 +4,90 @@
 [![pages](https://github.com/atishaypahadiya/neptune-fork/actions/workflows/pages.yml/badge.svg)](https://github.com/atishaypahadiya/neptune-fork/actions/workflows/pages.yml)
 [![DOI, all versions](https://zenodo.org/badge/DOI/10.5281/zenodo.24044791.svg)](https://doi.org/10.5281/zenodo.24044791)
 
-This project rebuilds Le Verrier's 1846 prediction of Neptune from Uranus's observed motion, from
-first principles: its own symplectic N-body integrator, and calibrated Bayesian posteriors for
-where the unseen planet should be in place of a single best fit. Phase 2 will
-generalise it into a "fork engine" that weighs hidden mass, a modified law of gravity and plain
-data error as explanations for an orbital anomaly.
+Refitting Le Verrier's prediction of Neptune from his observations of Uranus.
+
+## Abstract
+
+We refit the 279 observations of Uranus (529 measured coordinates, 1690–1845) that Le Verrier
+published in 1846 (his Table 77), with a perturbed-orbit model that is never given Neptune: our
+own Wisdom–Holman integrator, an apparent-place observation model, and partitioned nested
+sampling run under a plan committed before the run. On the night Galle found Neptune,
+23 September 1846, we find the unseen planet's geocentric longitude (ecliptic of date) at
+**325.8°** (68 %: 323.6°–327.8°; 95 %: 320.2°–330.4°, provisional). Neptune was at 325.87°
+(JPL), 0.03 half-widths from the median. The same posterior gives a mass of 17.3 M⊕ (68 %:
+16.3–18.4; Neptune 17.15), a semi-major axis of 30.2 AU (29.6–30.9), osculating in 1781, and an
+eccentricity below 0.028 (68 %, one-sided). Le Verrier's published elements, carried to that
+night, give 324.97°, inside our 68 % range. Phase 2 will extend the code to weigh three
+explanations of an orbital anomaly against each other: a hidden mass, a modified law of
+gravity, and error in the data.
+
+The site (`site/`) presents the result as a short paper with plates; every number on it is read
+from `site/data/`.
+
+## Calibration on synthetic data
 
 ![Ten horizontal 68% intervals for the perturber's 1846 longitude, one per synthetic dataset, against a vertical line at true Neptune; two dashed intervals miss it](docs/notes/M5b_coverage.png)
 
-*Coverage test (A3b) on synthetic data.* Each row is one noise realisation. It shows the
-posterior median and central 68 % interval for where the inferred planet sits on 1846-09-23,
-Galle's discovery night. True Neptune (325.87°) lies inside 8 of the 10 intervals. For
-calibrated 68 % intervals that count gives a two-sided binomial p = 0.52, and the intervals
-are 7–11° wide.
+*Coverage test (A3b) on synthetic data.* Each row is one noise realisation: the posterior
+median and central 68 % interval for the inferred planet's longitude on 1846-09-23. True Neptune
+(325.87°) lies inside 8 of the 10 intervals; for calibrated 68 % intervals that count gives a
+two-sided binomial p = 0.52. The intervals are 7–11° wide.
 
-There are two separate noise-free checks:
-- **Point fit (M5a, least squares):** recovers Neptune's 1846 longitude to 0.07°. This shows
-  the model and fitter are unbiased.
+Two noise-free checks:
+- **Point fit (M5a, least squares):** recovers Neptune's 1846 longitude to 0.07°; the model and
+  fitter are unbiased.
 - **Posterior (M5b):** wider, with its median at 322.05° against the true 325.87°, a −0.75σ
-  offset. The shift runs along the mass–distance degeneracy, where the likelihood is flat.
-
-The figure and the two checks above use synthetic data. The pre-registered fit to Le Verrier's
-real observations (M6c) puts the planet at 325.8° on Galle's night, with a 68 % interval of
-323.6°–327.8°, against JPL's 325.87°; its 95 % interval is provisional. Details are under
-Status below.
+  offset along the mass–distance degeneracy, where the likelihood is flat.
 
 ## Status
 
-Phase 1. The pre-registered real-data fit (M6c) is done and reported below, and the A6
-acceptance tests are reported ([A6 report](docs/notes/A6.md)); M6d and M6e are deferred to
-v1.1, M8 (a faster likelihood that decides the
-provisional 95 % interval) is running, and M7 (the public site) is being built. Milestones
-M0–M5b are complete:
+Phase 1. Milestones M0–M5b are complete:
 
 - frames;
 - the Kepler solver;
-- the integrators, matching REBOUND to 2e-9″;
+- the integrators, which match REBOUND to 2e-9″;
 - the forward model;
 - point fits and the profile likelihood;
 - partitioned nested sampling with the A3 calibration tests.
 
-For M6, Le Verrier's 279 observations are transcribed and double-checked (`data/historical/`),
-and the apparent-place observation model and error calibration are built. The A6c coverage test
-on synthetic data passed: the truth is inside the 68 % interval for 8 of 10 seeds (two-sided
-binomial p = 0.52), with an rms offset of 0.87σ and a median 68 % width of 5.1°. That is
-narrower than M5b's 9.1°, mostly because Table 77 has more measurements and smaller calibrated
-errors than M5b assumed ([M6 notes](docs/notes/M6.md)).
+The pre-registered real-data fit (M6c) is done and reported, and the A6 acceptance tests are
+reported ([A6 report](docs/notes/A6.md)). M6d and M6e are deferred to v1.1. M8, a faster
+likelihood that decides the provisional 95 % interval, is running. M7 is the public site.
 
-The pre-registered real-data fit (M6c) on Table 77 puts the planet at **325.8°** on the night
-Galle found Neptune, with a 68 % interval of 323.6°–327.8° and a sampler systematic of ±0.13°
-on the median. JPL's Neptune is at 325.87°, 0.03 half-widths from the median. Le Verrier's
-prediction, propagated from his published elements to that night (324.97°), is also inside the
-interval. The same posterior gives a mass of 17.3 M⊕ (68 %: 16.3–18.4; Neptune: 17.15), a
-semi-major axis of 30.2 AU (29.6–30.9) and e below 0.028 (68 %, one-sided). It puts 37 % of its
-probability within Le Verrier's 52′ miss of the true position (the Peirce probability). These
-are derived after the fact from the pre-registered replacement posterior described below.
+**Data and model (M6).** Le Verrier's 279 observations are transcribed and double-checked
+(`data/historical/`), and the apparent-place observation model and the error calibration are
+built. The A6c coverage test on synthetic data passed: the truth is inside the 68 % interval for
+8 of 10 seeds (two-sided binomial p = 0.52), with an rms offset of 0.87σ and a median 68 % width
+of 5.1°. That is narrower than M5b's 9.1°, mostly because Table 77 has more measurements and
+smaller calibrated errors than M5b assumed ([M6 notes](docs/notes/M6.md)).
 
-The direction is robust. JPL's Neptune is inside the 68 % interval in the headline fit and in
-all three pre-registered sensitivity runs (e ≤ 0.5, error levels estimated from the data alone,
-Student-t errors). The medians agree to within 0.4 headline half-widths. The evidence strongly
-prefers the Student-t errors (ln B = +13.7). Repeated runs of the main sampling cell
-disagreed on the width by far more than the sampler's own error estimate. A pre-registered
-repeatability study settled it: two runs with 4× the live points agree on the width, and under
-the pre-registered rule their merge replaces that cell. This widened the first published
-interval (323.9°–327.4°) by about 20 %, to the one above
-([M6 notes](docs/notes/M6.md#m6c-cell-2-repeatability-results-2026-11-08)). The 68 % interval is
-the headline. The 95 % interval (320.2°–330.4°) is provisional: it widened from 6.6° to 10.2°
-because it depends on the small weights of three cells that are still single runs. A faster
-likelihood that makes repeated runs of every cell affordable is specified as M8 in the
+**Result (M6c).** On Table 77 we find the planet at 325.8° on Galle's night (68 %:
+323.6°–327.8°), with a sampler systematic of ±0.13° on the median. JPL's Neptune, 325.87°, is
+0.03 half-widths from the median. Le Verrier's prediction, carried from his published elements
+to that night (324.97°), is also inside the interval. The posterior puts 37 % of its probability
+within Le Verrier's 52′ miss of the true position (the Peirce probability). These figures are
+derived after the fact from the pre-registered replacement posterior described below.
+
+**Robustness.** JPL's Neptune is inside the 68 % interval in the headline fit and in all three
+pre-registered sensitivity runs (e ≤ 0.5; error levels estimated from the data alone; Student-t
+errors). The medians agree to within 0.4 headline half-widths. The evidence prefers the
+Student-t errors (ln B = +13.7).
+
+**Repeatability.** Repeated runs of the main sampling cell disagreed on the width by far more
+than the sampler's own error estimate. Under a pre-registered repeatability study, two runs with
+4× the live points agreed on the width, and their merge replaced that cell. This widened the
+first published interval (323.9°–327.4°) by about 20 %, to the one above
+([M6 notes](docs/notes/M6.md#m6c-cell-2-repeatability-results-2026-11-08)). The 68 % interval
+is the headline. The 95 % interval (320.2°–330.4°) is provisional: it widened from 6.6° to 10.2°
+because it depends on the small weights of three cells that are still single runs. M8, a faster
+likelihood that makes repeated runs of every cell affordable, is specified in the
 [Phase 1 spec](docs/PHASE1_SPEC.md#m8-fast-linearized-likelihood).
 
-Data: Le Verrier Table 77, on Zenodo.
+**Data availability.** Le Verrier's Table 77, transcribed, is on Zenodo (CC0).
 - Concept DOI [10.5281/zenodo.24044791](https://doi.org/10.5281/zenodo.24044791) (the badge
-  above): all versions; cite this for the dataset in general.
-- Version DOI [10.5281/zenodo.24044792](https://doi.org/10.5281/zenodo.24044792): v1.0.0; cite
-  this for exact reproducibility.
+  above) covers all versions; cite it for the dataset in general.
+- Version DOI [10.5281/zenodo.24044792](https://doi.org/10.5281/zenodo.24044792) is v1.0.0;
+  cite it for exact reproduction.
 
 ## Limitations
 

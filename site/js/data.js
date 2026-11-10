@@ -4,6 +4,20 @@
 
 const DATA = new URL("../data/", import.meta.url);
 
+/**
+ * Numbers computed from JSON values (differences, counts, calendar dates, unit changes) are
+ * recorded here with a note, for the number audit (docs/DESIGN.md, the one rule): every number
+ * in the rendered text must be a JSON value, a citation, or one of these.
+ */
+export const derived = [];
+const seen = new Set();
+export function drv(x, note) {
+  const k = `${note}|${x}`;
+  if (!seen.has(k)) { seen.add(k); derived.push({ x, note }); }
+  return x;
+}
+globalThis.__derived = derived;
+
 const cache = new Map();
 
 /**
@@ -112,6 +126,7 @@ export async function loadHeadline() {
     // Le Verrier's printed prediction: heliocentric longitude at his elements' epoch, 1847.0.
     leVerrierPrinted: { lon: lvPub.helio_lon_ecl_of_date_1847_deg, source: lvPub.sources[0] },
     galle: jdToDate(conj.galle_night_jd_tdb),
+    galleJd: conj.galle_night_jd_tdb,
     hist: { centre: h.centre_deg, edges: h.edges_rel_deg, counts },
     i95: interval95(rep, m8, m8b),
   };

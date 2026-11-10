@@ -278,9 +278,25 @@ sources.
 - **Kept from the current site:** `data.js` (loaders, the 95 % status, number formatting) and
   the per-panel error and pending states. Removed: the three.js scenes, `lanes.js` and the dark
   styles.
-- **New data files:** `m7_table1.json`, `m7_motion.json`, plus Plate II's posterior samples
-  (added to a new `m7_conjunction_samples.json`, so `m6c_conjunction.json` is not changed).
-  Each is written by a script in `docs/notes/scripts/` and described in M7.md.
+- **New data files:** `m7_table1.json`, `m7_motion.json` and `m7_plates.json` (the geometry of
+  Plates I and II, with the posterior subsample; it takes the place of the
+  `m7_conjunction_samples.json` planned here, so `m6c_conjunction.json` is not changed), plus
+  `m7_references.json` (the reference list, so no cited number is typed into HTML). Each
+  generated file is written by a script in `docs/notes/scripts/` and described in M7.md.
+
+## Changes made while building (2026-11-09)
+
+- **Plate II** is drawn with radii to scale and angles about *SC* magnified by a factor *K*
+  from `m7_plates.json` (the smallest of 1, 2, 5, 10, 20 that opens *CSL* to at least 10°;
+  K = 5). To scale, *C*, *N* and *L* fall within about 30 px of each other. The caption states
+  the factor, and the angle label gives the true value.
+- **Plate I** on wide screens (≥ 900 px) puts the title block at the bottom left and the
+  figure on the right, so the figure can use the plate's full height. On phones the title sits
+  below the figure, as specified.
+- **Title:** "Refitting Le Verrier's prediction of Neptune", with a subtitle from the data
+  ("A pre-registered Bayesian reconstruction from the 279 observations of Uranus he published
+  in 1846").
+- **Plates II and III** stay in view (sticky) while their text column scrolls past.
 
 ## Acceptance
 

@@ -5,231 +5,228 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>neptune-fork</title>
   <link rel="icon" href="data:,">
-  <meta name="description" content="Le Verrier's 1846 prediction of Neptune, rebuilt from his own data as a calibrated Bayesian inference.">
+  <meta name="description" content="A pre-registered Bayesian reconstruction of Le Verrier's prediction of Neptune from his observations of Uranus.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500&family=EB+Garamond:ital@1&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=GFS+Didot&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
   <link rel="stylesheet" href="css/site.css">
   <script type="importmap">
-    {"imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
-    }}
+    {"imports": {"d3": "https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm"}}
   </script>
 </head>
 <body>
+  <!-- Ground textures for every plate: shared SVG filters with fixed seeds. They encode nothing. -->
+  <svg class="defs" aria-hidden="true" focusable="false">
+    <defs>
+      <filter id="tex-mottle" x="0" y="0" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.0045 0.006" numOctaves="5" seed="80"/>
+        <feColorMatrix values="0 0 0 0 0.059  0 0 0 0 0.165  0 0 0 0 0.42  -2.2 0 0 0 1.25"/>
+      </filter>
+      <filter id="tex-cloud" x="0" y="0" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.003 0.004" numOctaves="4" seed="33"/>
+        <feColorMatrix values="0 0 0 0 0.616  0 0 0 0 0.722  0 0 0 0 0.863  2.4 0 0 0 -1.45"/>
+      </filter>
+      <filter id="tex-grain" x="0" y="0" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" seed="7" stitchTiles="stitch"/>
+        <feColorMatrix type="saturate" values="0"/>
+      </filter>
+      <filter id="tex-dust" x="0" y="0" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.38" numOctaves="1" seed="98"/>
+        <feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  24 0 0 0 -17"/>
+      </filter>
+      <radialGradient id="tex-vignette" cx="50%" cy="50%" r="72%">
+        <stop offset="0.62" stop-color="#9db8dc" stop-opacity="0"/>
+        <stop offset="1" stop-color="#9db8dc" stop-opacity="0.75"/>
+      </radialGradient>
+      <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="5"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <header class="plate-i" id="plate-i">
+    <figure class="plate full" data-fig="plate-i" aria-describedby="cap-plate-i">
+      <svg class="fig" role="img" aria-label="Plate I"></svg>
+      <div class="titleblock">
+        <h1>Refitting Le Verrier's prediction of Neptune</h1>
+        <p class="subtitle" data-v="subtitle"></p>
+        <p class="byline"><span data-v="author"></span> · <span data-v="pub_year"></span> · version <a class="doi" data-href="doi_version_url"><span data-v="doi_version"></span></a></p>
+      </div>
+      <span class="plate-label sc">Plate I.</span>
+      <p class="error" hidden></p>
+    </figure>
+    <p class="caption" id="cap-plate-i"><span class="sc">Plate I.</span> <span data-v="cap_plate_i"></span></p>
+  </header>
+
   <main>
-    <section class="scene" id="headline" aria-labelledby="headline-title">
-      <canvas aria-hidden="true"></canvas>
-      <svg class="leaders" aria-hidden="true"></svg>
-
-      <div class="copy">
-        <p class="chapter">Where to look</p>
-        <h1 id="headline-title">Le Verrier's data</h1>
-        <p class="body">Loading the results…</p>
-      </div>
-
-
-      <div class="labels" aria-hidden="true">
-        <div class="anno" data-anchor="neptune"><p class="t"></p><p class="s"></p></div>
-        <div class="anno" data-anchor="median"><p class="t"></p><p class="s"></p></div>
-        <div class="anno hoverable has-short" data-anchor="lv"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
-        <div class="anno" data-anchor="planet"><p class="t"></p><p class="s s1"></p><p class="s s2"></p></div>
-        <div class="ticks"></div>
-        <p class="tip" hidden></p>
-      </div>
-
-      <p class="axis-title" aria-hidden="true"></p>
-      <p class="equation" aria-label="Bayes: the posterior for the longitude is proportional to the likelihood times the prior, integrated over the other parameters"><i>p</i>(λ | data) ∝ ∫ <i>L</i>(data | θ) π(θ) dθ</p>
-
-
-      <p class="alt sr-only"></p>
-      <p class="error" hidden></p>
+    <section id="s1" aria-labelledby="h-s1">
+      <p class="sec sc">§ 1</p>
+      <h2 id="h-s1">Abstract</h2>
+      <p data-v="abstract"></p>
     </section>
 
-    <section class="scene" id="conjunction" aria-labelledby="conjunction-title">
-      <canvas aria-hidden="true"></canvas>
-      <svg class="leaders" aria-hidden="true"></svg>
-
-      <div class="copy">
-        <p class="chapter">What the data measured</p>
-        <h2 id="conjunction-title">The data</h2>
-        <p class="body">Loading the results…</p>
-        <p class="note"></p>
-      </div>
-
-      <div class="labels" aria-hidden="true">
-        <div class="anno right" data-anchor="conj"><p class="t"></p><p class="s"></p></div>
-        <div class="anno" data-anchor="galle"><p class="t"></p><p class="s"></p></div>
-        <div class="anno has-short" data-anchor="inner"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
-        <div class="anno right has-short" data-anchor="outer"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
-        <div class="anno" data-anchor="lv"><p class="t"></p><p class="s"></p></div>
-        <div class="anno right" data-anchor="nep"><p class="t"></p><p class="s"></p></div>
-        <div class="anno quiet" data-anchor="ribbon"><p class="t"></p></div>
-        <div class="ticks"></div>
-        <p class="tip" hidden></p>
-      </div>
-
-      <p class="equation" aria-label="The spread in longitude grows with time: minus three halves times the mean motion, times the relative spread in semi-major axis, times the time since the conjunction">δλ(<i>t</i>) ≈ −<sup>3</sup>⁄<sub>2</sub> <i>n</i> (δ<i>a</i> / <i>a</i>) (<i>t</i> − <i>t</i><sub>c</sub>)</p>
-
-      <p class="alt sr-only"></p>
-      <p class="error" hidden></p>
-    </section>
-
-    <section class="scene" id="window" aria-labelledby="window-title">
-      <canvas aria-hidden="true"></canvas>
-      <svg class="leaders" aria-hidden="true"></svg>
-
-      <div class="copy">
-        <p class="chapter">The lucky window</p>
-        <h2 id="window-title">Le Verrier's planet</h2>
-        <p class="body">Loading the results…</p>
-        <p class="note"></p>
-      </div>
-
-      <div class="labels" aria-hidden="true">
-        <div class="anno right has-short" data-anchor="s1836"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
-        <div class="anno right has-short" data-anchor="zero"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
-        <div class="anno has-short" data-anchor="galle"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
-        <div class="anno has-short" data-anchor="s1856"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
-        <div class="anno has-short" data-anchor="lvp"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
-        <div class="anno has-short" data-anchor="nep"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
-        <div class="anno quiet" data-anchor="b68"><p class="t"></p></div>
-        <div class="anno quiet" data-anchor="b95"><p class="t"></p></div>
-        <div class="anno has-short" data-anchor="window"><p class="t"></p><p class="ts"></p></div>
-        <div class="anno quiet" data-anchor="ahead"><p class="t"></p></div>
-        <div class="anno quiet" data-anchor="behind"><p class="t"></p></div>
-        <div class="ticks"></div>
-        <p class="tip" hidden></p>
-      </div>
-
-      <p class="equation" aria-label="Le Verrier's offset changes at the difference of the two mean motions times the time elapsed; the mean motion is the square root of G M over a cubed">Δλ(<i>t</i>) ≈ (<i>n</i><sub>LV</sub> − <i>n</i>)(<i>t</i> − <i>t</i><sub>0</sub>),  <i>n</i> = √(<i>GM</i> / <i>a</i><sup>3</sup>)</p>
-
-      <p class="alt sr-only"></p>
-      <p class="error" hidden></p>
-    </section>
-
-    <section class="scene" id="timeline" aria-labelledby="timeline-title">
-      <canvas aria-hidden="true"></canvas>
-      <svg class="leaders" aria-hidden="true"></svg>
-      <div class="copy wide">
-        <h2 id="timeline-title">How we kept ourselves honest</h2>
-        <h3>When each plan went public</h3>
-        <p class="body">Loading the results…</p>
-        <p class="note"></p>
-      </div>
-      <div class="labels" aria-hidden="true">
-        <div class="anno lane has-short" data-anchor="lane-m6c_headline"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
-        <div class="anno lane has-short" data-anchor="lane-m6c_sensitivity"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
-        <div class="anno lane has-short" data-anchor="lane-m6c_repeat"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
-        <div class="anno lane has-short" data-anchor="lane-m8_a8"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
-        <div class="anno lane has-short" data-anchor="lane-m8_a8f_rerun"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
-        <div class="anno lane has-short" data-anchor="lane-m8b"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
-        <div class="anno lane has-short" data-anchor="lane-m8_arbiter"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
-        <div class="anno quiet" data-anchor="wall"><p class="t"></p></div>
-        <div class="anno" data-anchor="hCommit"><p class="t"></p></div>
-        <div class="anno" data-anchor="hPush"><p class="t"></p><p class="s"></p></div>
-        <div class="anno" data-anchor="hFinish"><p class="t"></p></div>
-        <div class="anno" data-anchor="hSummary"><p class="t"></p></div>
-        <div class="ticks"></div>
-        <p class="tip" hidden></p>
-      </div>
-      <p class="alt sr-only"></p>
-      <p class="error" hidden></p>
-    </section>
-
-    <section class="scene" id="checks" aria-labelledby="checks-title">
-      <canvas aria-hidden="true"></canvas>
-      <svg class="leaders" aria-hidden="true"></svg>
-      <div class="copy wide">
-        <h3 id="checks-title">What we corrected, and what held</h3>
-        <p class="body">Loading the results…</p>
-        <p class="note"></p>
-      </div>
-      <div class="labels" aria-hidden="true">
-        <div class="anno lane has-short" data-anchor="lane-first"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
-        <div class="anno lane has-short" data-anchor="lane-reported"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
-        <div class="anno lane has-short" data-anchor="lane-s1_e05"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
-        <div class="anno lane has-short" data-anchor="lane-s2_sigma_data"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
-        <div class="anno lane has-short" data-anchor="lane-s3_t4"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
-        <div class="anno" data-anchor="jpl"><p class="t"></p></div>
-        <div class="ticks"></div>
-        <p class="tip" hidden></p>
-      </div>
-      <p class="alt sr-only"></p>
-      <p class="error" hidden></p>
-    </section>
-
-    <section class="scene" id="dataset" aria-labelledby="dataset-title">
-      <div class="copy">
-        <p class="chapter">The dataset</p>
-        <h2 id="dataset-title">The observations, published on their own</h2>
-        <p class="body">Loading the dataset…</p>
-        <p class="note"></p>
-      </div>
-      <div class="cite">
-        <p class="chapter">Cite</p>
-        <p class="doi"><span class="k">All versions</span> <a class="doi-concept"></a><br>
-          <span class="h">Cite this for the dataset in general</span></p>
-        <p class="ref" id="cite-concept"></p>
-        <button type="button" data-copy="cite-concept">Copy</button>
-        <p class="doi"><span class="k ver"></span> <a class="doi-version"></a><br>
-          <span class="h">Cite this for exact reproducibility</span></p>
-        <p class="ref" id="cite-version"></p>
-        <button type="button" data-copy="cite-version">Copy</button>
-        <p class="h">For the observations themselves, cite the source:</p>
-        <p class="ref cite-source"></p>
-        <p class="licence">… <a class="record">Zenodo record</a></p>
-      </div>
-      <div class="stage">
-        <canvas aria-hidden="true"></canvas>
-        <svg class="leaders" aria-hidden="true"></svg>
-        <div class="labels" aria-hidden="true">
-        <div class="anno lane has-short" data-anchor="lane-greenwich"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
-        <div class="anno lane has-short" data-anchor="lane-paris"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
-        <div class="anno lane has-short" data-anchor="lane-gottingen"><p class="t"></p><p class="s"></p><p class="ts"></p></div>
-          <div class="anno" data-anchor="spot"><p class="t"></p><p class="s"></p></div>
-          <div class="ticks"></div>
+    <section id="s2" aria-labelledby="h-s2">
+      <p class="sec sc">§ 2</p>
+      <h2 id="h-s2">Data: Le Verrier's observations of Uranus</h2>
+      <p data-v="data_p1"></p>
+      <p data-v="data_p2"></p>
+      <figure class="table" id="table-1">
+        <table>
+          <caption><span class="sc">Table 1.</span> <span data-v="cap_table_1"></span></caption>
+          <thead><tr><th scope="col">Source</th><th scope="col">Observatory</th><th scope="col">Years</th><th scope="col" class="n">n</th><th scope="col" class="n">RA</th><th scope="col" class="n">Dec</th><th scope="col" class="n">|O − JPL|</th></tr></thead>
+          <tbody></tbody>
+          <tfoot></tfoot>
+        </table>
+        <p class="error" hidden></p>
+      </figure>
+      <figure class="fig-1" id="fig-1" data-fig="fig-1" aria-describedby="cap-fig-1">
+        <div class="canvas">
+          <svg class="fig" role="img" aria-label="Fig. 1"></svg>
           <p class="tip" hidden></p>
+          <p class="error" hidden></p>
         </div>
+        <figcaption id="cap-fig-1"><span class="sc">Fig. 1.</span> <span data-v="cap_fig_1"></span></figcaption>
+      </figure>
+    </section>
+
+    <section id="s3" aria-labelledby="h-s3">
+      <p class="sec sc">§ 3</p>
+      <h2 id="h-s3">Method</h2>
+
+      <h3 id="s3-1"><span class="sc">§ 3.1</span> Pre-registration</h3>
+      <p data-v="prereg_p1"></p>
+      <p data-v="prereg_p2"></p>
+      <figure class="fig-2" id="fig-2" data-fig="fig-2" aria-describedby="cap-fig-2">
+        <div class="canvas">
+          <svg class="fig" role="img" aria-label="Fig. 2"></svg>
+          <p class="tip" hidden></p>
+          <p class="error" hidden></p>
+        </div>
+        <figcaption id="cap-fig-2"><span class="sc">Fig. 2.</span> <span data-v="cap_fig_2"></span></figcaption>
+      </figure>
+
+      <h3 id="s3-2"><span class="sc">§ 3.2</span> The perturbation Le Verrier inverted</h3>
+      <p data-v="pull_intro"></p>
+    </section>
+
+    <section class="split" id="plate-iii" aria-labelledby="h-plate-iii">
+      <figure class="plate" data-fig="plate-iii" aria-describedby="cap-plate-iii">
+        <svg class="fig" role="img" aria-label="Plate III"></svg>
+        <span class="plate-label sc">Plate III.</span>
+        <p class="error" hidden></p>
+      </figure>
+      <div class="side">
+        <p class="sec sc">Plate III.</p>
+        <p class="year" id="h-plate-iii" aria-live="off"></p>
+        <p data-v="pull_text"></p>
+        <p class="note" data-v="pull_open_circle"></p>
+        <figure class="fig-3" id="fig-3" data-fig="fig-3" aria-describedby="cap-fig-3">
+          <div class="canvas">
+            <svg class="fig" role="img" aria-label="Fig. 3"></svg>
+          </div>
+          <figcaption id="cap-fig-3"><span class="sc">Fig. 3.</span> <span data-v="cap_fig_3"></span></figcaption>
+        </figure>
+        <div class="controls">
+          <button type="button" class="play" aria-label="Pause">❚❚</button>
+          <label>Year <input type="range" class="scrub" min="0" max="0" step="1" value="0"></label>
+        </div>
+        <p class="caption" id="cap-plate-iii"><span class="sc">Plate III.</span> <span data-v="cap_plate_iii"></span></p>
       </div>
-      <p class="alt sr-only"></p>
-      <p class="error" hidden></p>
+    </section>
+
+    <section aria-labelledby="s3-3">
+      <h3 id="s3-3"><span class="sc">§ 3.3</span> Observation model, likelihood and priors</h3>
+      <p data-v="model_p1"></p>
+      <p data-v="model_p2"></p>
+    </section>
+
+    <section id="s4" aria-labelledby="h-s4">
+      <p class="sec sc">§ 4</p>
+      <h2 id="h-s4">Results</h2>
+      <h3 id="s4-1"><span class="sc">§ 4.1</span> The planet's longitude on Galle's night</h3>
+      <p data-v="res_p1"></p>
+      <figure class="fig-4" id="fig-4" data-fig="fig-4" aria-describedby="cap-fig-4">
+        <div class="canvas">
+          <svg class="fig" role="img" aria-label="Fig. 4"></svg>
+          <p class="tip" hidden></p>
+          <p class="error" hidden></p>
+        </div>
+        <figcaption id="cap-fig-4"><span class="sc">Fig. 4.</span> <span data-v="cap_fig_4"></span></figcaption>
+      </figure>
+      <p data-v="res_p2"></p>
+    </section>
+
+    <section class="split reverse" id="plate-ii" aria-labelledby="s4-2">
+      <div class="side paper">
+        <h3 id="s4-2"><span class="sc">§ 4.2</span> The conjunction of <span data-v="conj_year"></span></h3>
+        <p data-v="conj_p1"></p>
+        <p data-v="conj_p2"></p>
+        <p class="caption" id="cap-plate-ii"><span class="sc">Plate II.</span> <span data-v="cap_plate_ii"></span></p>
+      </div>
+      <figure class="plate" data-fig="plate-ii" aria-describedby="cap-plate-ii">
+        <svg class="fig" role="img" aria-label="Plate II"></svg>
+        <span class="plate-label sc">Plate II.</span>
+        <p class="error" hidden></p>
+      </figure>
+    </section>
+
+    <section aria-labelledby="s4-3">
+      <h3 id="s4-3"><span class="sc">§ 4.3</span> When Le Verrier's orbit agrees with the data</h3>
+      <p data-v="win_p1"></p>
+      <figure class="fig-5" id="fig-5" data-fig="fig-5" aria-describedby="cap-fig-5">
+        <div class="canvas">
+          <svg class="fig" role="img" aria-label="Fig. 5"></svg>
+          <p class="tip" hidden></p>
+          <p class="error" hidden></p>
+        </div>
+        <figcaption id="cap-fig-5"><span class="sc">Fig. 5.</span> <span data-v="cap_fig_5"></span></figcaption>
+      </figure>
+    </section>
+
+    <section id="s5" aria-labelledby="h-s5">
+      <p class="sec sc">§ 5</p>
+      <h2 id="h-s5">Robustness</h2>
+      <p data-v="rob_p1"></p>
+      <p data-v="rob_p2"></p>
+      <figure class="fig-6" id="fig-6" data-fig="fig-6" aria-describedby="cap-fig-6">
+        <div class="canvas">
+          <svg class="fig" role="img" aria-label="Fig. 6"></svg>
+          <p class="tip" hidden></p>
+          <p class="error" hidden></p>
+        </div>
+        <figcaption id="cap-fig-6"><span class="sc">Fig. 6.</span> <span data-v="cap_fig_6"></span></figcaption>
+      </figure>
+    </section>
+
+    <section id="s6" aria-labelledby="h-s6">
+      <p class="sec sc">§ 6</p>
+      <h2 id="h-s6">Limitations</h2>
+      <ul class="limits" data-v-list="limits"></ul>
+    </section>
+
+    <section id="s7" aria-labelledby="h-s7">
+      <p class="sec sc">§ 7</p>
+      <h2 id="h-s7">Data availability</h2>
+      <p data-v="avail_p1"></p>
+      <div class="cite">
+        <p class="cite-key">All versions <a class="doi" data-href="doi_concept_url"><span data-v="doi_concept"></span></a></p>
+        <p class="cite-text" id="cite-concept" data-v="cite_concept"></p>
+        <button type="button" class="copy" data-copy="cite-concept">Copy</button>
+        <p class="cite-key">Version <span data-v="version"></span> <a class="doi" data-href="doi_version_url"><span data-v="doi_version"></span></a></p>
+        <p class="cite-text" id="cite-version" data-v="cite_version"></p>
+        <button type="button" class="copy" data-copy="cite-version">Copy</button>
+      </div>
+      <p data-v="avail_p2"></p>
+    </section>
+
+    <section id="s8" aria-labelledby="h-s8">
+      <p class="sec sc">§ 8</p>
+      <h2 id="h-s8">References</h2>
+      <ol class="refs"></ol>
     </section>
   </main>
-  <div class="grain" aria-hidden="true"></div>
 
-  <script type="module">
-    import { loadChecks, loadConjunction, loadDataset, loadHeadline, loadTimeline, loadWindow } from "./js/data.js";
-    import { fillHeadline, mountHeadline } from "./js/scene-headline.js";
-    import { fillConjunction, mountConjunction } from "./js/scene-conjunction.js";
-    import { fillWindow, mountWindow } from "./js/scene-window.js";
-    import { fillTimeline, mountTimeline } from "./js/scene-timeline.js";
-    import { fillChecks, mountChecks } from "./js/scene-checks.js";
-    import { fillDataset, mountDataset } from "./js/scene-dataset.js";
-    // Each panel loads its own data and fails on its own, with a visible message.
-    const panels = [
-      ["headline", loadHeadline, fillHeadline, mountHeadline],
-      ["conjunction", loadConjunction, fillConjunction, mountConjunction],
-      ["window", loadWindow, fillWindow, mountWindow],
-      ["timeline", loadTimeline, fillTimeline, mountTimeline],
-      ["checks", loadChecks, fillChecks, mountChecks],
-      ["dataset", loadDataset, fillDataset, mountDataset],
-    ];
-    await Promise.all(panels.map(async ([id, load, fill, mount]) => {
-      const root = document.getElementById(id);
-      try {
-        const d = await load();
-        fill(root, d);
-        mount(root, d);
-        root.classList.add("ready");
-      } catch (err) {
-        const e = root.querySelector(".error");
-        e.hidden = false;
-        e.textContent = `Could not load the results: ${err.message}`;
-        console.error(err);
-      }
-    }));
-  </script>
+  <p class="sr-only" id="alt-text"></p>
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>

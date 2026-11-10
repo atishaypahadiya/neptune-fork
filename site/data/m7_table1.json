@@ -1,0 +1,1780 @@
+{
+ "description": "Table 1: Table 77's observations of Uranus by source. Built by docs/notes/scripts/m7_table1.py from data/historical/leverrier_1846.csv and the M6b calibration residuals (fork.data.calibration).",
+ "residual": "median absolute on-sky residual against JPL's Uranus (apparent place of date; RA as Δα·cos δ), all of a source's measurements, arcsec",
+ "grouping_note": "the error model pools the four ancient observers into one group (ancient RA, ancient Dec); the modern rows are its series",
+ "rows": [
+  {
+   "key": "Flamsteed",
+   "source": "Flamsteed",
+   "era": "ancient",
+   "observatory": "Greenwich",
+   "years": [
+    1690,
+    1715
+   ],
+   "observations": 5,
+   "measurements": {
+    "ra": 5,
+    "dec": 5
+   },
+   "median_abs_o_minus_jpl_arcsec": 5.37
+  },
+  {
+   "key": "Le Monnier",
+   "source": "Le Monnier",
+   "era": "ancient",
+   "observatory": "Paris",
+   "years": [
+    1750,
+    1771
+   ],
+   "observations": 12,
+   "measurements": {
+    "ra": 12,
+    "dec": 12
+   },
+   "median_abs_o_minus_jpl_arcsec": 3.38
+  },
+  {
+   "key": "Bradley",
+   "source": "Bradley",
+   "era": "ancient",
+   "observatory": "Greenwich",
+   "years": [
+    1753,
+    1753
+   ],
+   "observations": 1,
+   "measurements": {
+    "ra": 1,
+    "dec": 0
+   },
+   "median_abs_o_minus_jpl_arcsec": 1.07
+  },
+  {
+   "key": "Mayer",
+   "source": "Mayer",
+   "era": "ancient",
+   "observatory": "Göttingen",
+   "years": [
+    1756,
+    1756
+   ],
+   "observations": 1,
+   "measurements": {
+    "ra": 1,
+    "dec": 1
+   },
+   "median_abs_o_minus_jpl_arcsec": 1.41
+  },
+  {
+   "key": "greenwich",
+   "source": "Greenwich series",
+   "era": "modern",
+   "observatory": "Greenwich",
+   "years": [
+    1781,
+    1830
+   ],
+   "observations": 87,
+   "measurements": {
+    "ra": 87,
+    "dec": 80
+   },
+   "median_abs_o_minus_jpl_arcsec": 1.81
+  },
+  {
+   "key": "paris_1801_1827",
+   "source": "Paris series",
+   "era": "modern",
+   "observatory": "Paris",
+   "years": [
+    1801,
+    1827
+   ],
+   "observations": 107,
+   "measurements": {
+    "ra": 107,
+    "dec": 95
+   },
+   "median_abs_o_minus_jpl_arcsec": 1.93
+  },
+  {
+   "key": "paris_1835_1845",
+   "source": "Paris series",
+   "era": "modern",
+   "observatory": "Paris",
+   "years": [
+    1835,
+    1845
+   ],
+   "observations": 66,
+   "measurements": {
+    "ra": 66,
+    "dec": 57
+   },
+   "median_abs_o_minus_jpl_arcsec": 1.02
+  }
+ ],
+ "total": {
+  "observations": 279,
+  "measurements": {
+   "ra": 279,
+   "dec": 250
+  },
+  "years": [
+   1690,
+   1845
+  ],
+  "median_abs_o_minus_jpl_arcsec": 1.66
+ },
+ "check": "per-group medians reproduce data/historical/m6_error_model.json to 1e-6 arcsec",
+ "observations": [
+  {
+   "id": "LV1846-T77-p129-l01",
+   "source": "Flamsteed",
+   "ra": 5.12,
+   "dec": 1.57
+  },
+  {
+   "id": "LV1846-T77-p129-l02",
+   "source": "Flamsteed",
+   "ra": -11.03,
+   "dec": 2.82
+  },
+  {
+   "id": "LV1846-T77-p129-l03",
+   "source": "Flamsteed",
+   "ra": -2.62,
+   "dec": -8.12
+  },
+  {
+   "id": "LV1846-T77-p129-l04",
+   "source": "Flamsteed",
+   "ra": 0.01,
+   "dec": -7.13
+  },
+  {
+   "id": "LV1846-T77-p129-l05",
+   "source": "Flamsteed",
+   "ra": 6.96,
+   "dec": -5.61
+  },
+  {
+   "id": "LV1846-T77-p129-l06",
+   "source": "Le Monnier",
+   "ra": -1.23,
+   "dec": -3.59
+  },
+  {
+   "id": "LV1846-T77-p129-l07",
+   "source": "Le Monnier",
+   "ra": 0.33,
+   "dec": 3.5
+  },
+  {
+   "id": "LV1846-T77-p129-l08",
+   "source": "Bradley",
+   "ra": 1.07
+  },
+  {
+   "id": "LV1846-T77-p129-l09",
+   "source": "Mayer",
+   "ra": 0.42,
+   "dec": -2.41
+  },
+  {
+   "id": "LV1846-T77-p129-l10",
+   "source": "Le Monnier",
+   "ra": -2.07,
+   "dec": 3.68
+  },
+  {
+   "id": "LV1846-T77-p129-l11",
+   "source": "Le Monnier",
+   "ra": 3.48,
+   "dec": 1.67
+  },
+  {
+   "id": "LV1846-T77-p129-l12",
+   "source": "Le Monnier",
+   "ra": -6.99,
+   "dec": -2.93
+  },
+  {
+   "id": "LV1846-T77-p129-l13",
+   "source": "Le Monnier",
+   "ra": -0.98,
+   "dec": -6.15
+  },
+  {
+   "id": "LV1846-T77-p129-l14",
+   "source": "Le Monnier",
+   "ra": -0.73,
+   "dec": -3.29
+  },
+  {
+   "id": "LV1846-T77-p129-l15",
+   "source": "Le Monnier",
+   "ra": 9.92,
+   "dec": -1.18
+  },
+  {
+   "id": "LV1846-T77-p129-l16",
+   "source": "Le Monnier",
+   "ra": 6.66,
+   "dec": -1.19
+  },
+  {
+   "id": "LV1846-T77-p129-l17",
+   "source": "Le Monnier",
+   "ra": 4.14,
+   "dec": -1.14
+  },
+  {
+   "id": "LV1846-T77-p129-l18",
+   "source": "Le Monnier",
+   "ra": -8.17,
+   "dec": 5.79
+  },
+  {
+   "id": "LV1846-T77-p129-l19",
+   "source": "Le Monnier",
+   "ra": 13.52,
+   "dec": 2.83
+  },
+  {
+   "id": "LV1846-T77-p129-l20",
+   "source": "greenwich",
+   "ra": 1.91
+  },
+  {
+   "id": "LV1846-T77-p129-l21",
+   "source": "greenwich",
+   "ra": -2.37,
+   "dec": 1.98
+  },
+  {
+   "id": "LV1846-T77-p129-l22",
+   "source": "greenwich",
+   "ra": 0.66,
+   "dec": 0.77
+  },
+  {
+   "id": "LV1846-T77-p129-l23",
+   "source": "greenwich",
+   "ra": 3.22,
+   "dec": -0.52
+  },
+  {
+   "id": "LV1846-T77-p129-l24",
+   "source": "greenwich",
+   "ra": -0.12,
+   "dec": -0.5
+  },
+  {
+   "id": "LV1846-T77-p129-l25",
+   "source": "greenwich",
+   "ra": 2.79,
+   "dec": -2.95
+  },
+  {
+   "id": "LV1846-T77-p129-l26",
+   "source": "greenwich",
+   "ra": 0.67,
+   "dec": -3.11
+  },
+  {
+   "id": "LV1846-T77-p129-l27",
+   "source": "greenwich",
+   "ra": 0.04,
+   "dec": -1.53
+  },
+  {
+   "id": "LV1846-T77-p129-l28",
+   "source": "greenwich",
+   "ra": 0.92,
+   "dec": -2.42
+  },
+  {
+   "id": "LV1846-T77-p129-l29",
+   "source": "greenwich",
+   "ra": 1.46,
+   "dec": -4.89
+  },
+  {
+   "id": "LV1846-T77-p129-l30",
+   "source": "greenwich",
+   "ra": 3.54,
+   "dec": 1.25
+  },
+  {
+   "id": "LV1846-T77-p129-l31",
+   "source": "greenwich",
+   "ra": 1.8,
+   "dec": -0.49
+  },
+  {
+   "id": "LV1846-T77-p130-l01",
+   "source": "greenwich",
+   "ra": 1.32,
+   "dec": 0.87
+  },
+  {
+   "id": "LV1846-T77-p130-l02",
+   "source": "greenwich",
+   "ra": -0.66,
+   "dec": -2.17
+  },
+  {
+   "id": "LV1846-T77-p130-l03",
+   "source": "greenwich",
+   "ra": 0.12,
+   "dec": -4.11
+  },
+  {
+   "id": "LV1846-T77-p130-l04",
+   "source": "greenwich",
+   "ra": 2.72,
+   "dec": -3.48
+  },
+  {
+   "id": "LV1846-T77-p130-l05",
+   "source": "greenwich",
+   "ra": 1.79,
+   "dec": -1.81
+  },
+  {
+   "id": "LV1846-T77-p130-l06",
+   "source": "greenwich",
+   "ra": 2.4
+  },
+  {
+   "id": "LV1846-T77-p130-l07",
+   "source": "greenwich",
+   "ra": 2.02,
+   "dec": 3.52
+  },
+  {
+   "id": "LV1846-T77-p130-l08",
+   "source": "greenwich",
+   "ra": -0.92,
+   "dec": 1.92
+  },
+  {
+   "id": "LV1846-T77-p130-l09",
+   "source": "greenwich",
+   "ra": -0.95,
+   "dec": 0.77
+  },
+  {
+   "id": "LV1846-T77-p130-l10",
+   "source": "greenwich",
+   "ra": 1.22,
+   "dec": -3.27
+  },
+  {
+   "id": "LV1846-T77-p130-l11",
+   "source": "greenwich",
+   "ra": 1.19,
+   "dec": -0.39
+  },
+  {
+   "id": "LV1846-T77-p130-l12",
+   "source": "greenwich",
+   "ra": 0.39,
+   "dec": 1.48
+  },
+  {
+   "id": "LV1846-T77-p130-l13",
+   "source": "greenwich",
+   "ra": 0.62,
+   "dec": 2.47
+  },
+  {
+   "id": "LV1846-T77-p130-l14",
+   "source": "greenwich",
+   "ra": 0.1,
+   "dec": -1.31
+  },
+  {
+   "id": "LV1846-T77-p130-l15",
+   "source": "greenwich",
+   "ra": 4.01,
+   "dec": 0.49
+  },
+  {
+   "id": "LV1846-T77-p130-l16",
+   "source": "greenwich",
+   "ra": -2.73,
+   "dec": 1.72
+  },
+  {
+   "id": "LV1846-T77-p130-l17",
+   "source": "greenwich",
+   "ra": 3.65,
+   "dec": 3.79
+  },
+  {
+   "id": "LV1846-T77-p130-l18",
+   "source": "greenwich",
+   "ra": 3.72
+  },
+  {
+   "id": "LV1846-T77-p130-l19",
+   "source": "greenwich",
+   "ra": 6.2,
+   "dec": 2.32
+  },
+  {
+   "id": "LV1846-T77-p130-l20",
+   "source": "greenwich",
+   "ra": 3.72,
+   "dec": -2.54
+  },
+  {
+   "id": "LV1846-T77-p130-l21",
+   "source": "greenwich",
+   "ra": 4.95
+  },
+  {
+   "id": "LV1846-T77-p130-l22",
+   "source": "greenwich",
+   "ra": 2.07,
+   "dec": 2.68
+  },
+  {
+   "id": "LV1846-T77-p130-l23",
+   "source": "greenwich",
+   "ra": 2.56,
+   "dec": 5.01
+  },
+  {
+   "id": "LV1846-T77-p130-l24",
+   "source": "greenwich",
+   "ra": -0.22,
+   "dec": 4.06
+  },
+  {
+   "id": "LV1846-T77-p130-l25",
+   "source": "greenwich",
+   "ra": 2.99,
+   "dec": 1.78
+  },
+  {
+   "id": "LV1846-T77-p130-l26",
+   "source": "greenwich",
+   "ra": 1.66,
+   "dec": 2.41
+  },
+  {
+   "id": "LV1846-T77-p130-l27",
+   "source": "greenwich",
+   "ra": 1.19,
+   "dec": 2.52
+  },
+  {
+   "id": "LV1846-T77-p130-l28",
+   "source": "greenwich",
+   "ra": 3.72,
+   "dec": 4.61
+  },
+  {
+   "id": "LV1846-T77-p130-l29",
+   "source": "greenwich",
+   "ra": 2.19,
+   "dec": 2.97
+  },
+  {
+   "id": "LV1846-T77-p130-l30",
+   "source": "greenwich",
+   "ra": 1.29,
+   "dec": 2.11
+  },
+  {
+   "id": "LV1846-T77-p130-l31",
+   "source": "greenwich",
+   "ra": 0.37,
+   "dec": 1.13
+  },
+  {
+   "id": "LV1846-T77-p130-l32",
+   "source": "greenwich",
+   "ra": 0.17,
+   "dec": 1.26
+  },
+  {
+   "id": "LV1846-T77-p130-l33",
+   "source": "greenwich",
+   "ra": 0.11,
+   "dec": 1.81
+  },
+  {
+   "id": "LV1846-T77-p130-l34",
+   "source": "greenwich",
+   "ra": 3.79,
+   "dec": 1.83
+  },
+  {
+   "id": "LV1846-T77-p130-l35",
+   "source": "greenwich",
+   "ra": 0.53,
+   "dec": 2.53
+  },
+  {
+   "id": "LV1846-T77-p130-l36",
+   "source": "greenwich",
+   "ra": 1.72,
+   "dec": 2.7
+  },
+  {
+   "id": "LV1846-T77-p130-l37",
+   "source": "greenwich",
+   "ra": 0.14,
+   "dec": 2.77
+  },
+  {
+   "id": "LV1846-T77-p131-l01",
+   "source": "greenwich",
+   "ra": 1.35,
+   "dec": 6.77
+  },
+  {
+   "id": "LV1846-T77-p131-l02",
+   "source": "greenwich",
+   "ra": 2.0,
+   "dec": 3.4
+  },
+  {
+   "id": "LV1846-T77-p131-l03",
+   "source": "greenwich",
+   "ra": 7.27,
+   "dec": -2.72
+  },
+  {
+   "id": "LV1846-T77-p131-l04",
+   "source": "greenwich",
+   "ra": 6.11,
+   "dec": -1.56
+  },
+  {
+   "id": "LV1846-T77-p131-l05",
+   "source": "greenwich",
+   "ra": 4.29
+  },
+  {
+   "id": "LV1846-T77-p131-l06",
+   "source": "greenwich",
+   "ra": 4.86,
+   "dec": -1.25
+  },
+  {
+   "id": "LV1846-T77-p131-l07",
+   "source": "greenwich",
+   "ra": 0.85,
+   "dec": 0.98
+  },
+  {
+   "id": "LV1846-T77-p131-l08",
+   "source": "greenwich",
+   "ra": 1.04,
+   "dec": 1.53
+  },
+  {
+   "id": "LV1846-T77-p131-l09",
+   "source": "greenwich",
+   "ra": 0.6,
+   "dec": 2.36
+  },
+  {
+   "id": "LV1846-T77-p131-l10",
+   "source": "greenwich",
+   "ra": 2.9
+  },
+  {
+   "id": "LV1846-T77-p131-l11",
+   "source": "greenwich",
+   "ra": 2.56,
+   "dec": -4.53
+  },
+  {
+   "id": "LV1846-T77-p131-l12",
+   "source": "greenwich",
+   "ra": -2.46,
+   "dec": -0.24
+  },
+  {
+   "id": "LV1846-T77-p131-l13",
+   "source": "greenwich",
+   "ra": 9.08,
+   "dec": 3.88
+  },
+  {
+   "id": "LV1846-T77-p131-l14",
+   "source": "greenwich",
+   "ra": 1.39,
+   "dec": 2.91
+  },
+  {
+   "id": "LV1846-T77-p131-l15",
+   "source": "greenwich",
+   "ra": 2.28,
+   "dec": 2.02
+  },
+  {
+   "id": "LV1846-T77-p131-l16",
+   "source": "greenwich",
+   "ra": 3.42,
+   "dec": 1.77
+  },
+  {
+   "id": "LV1846-T77-p131-l17",
+   "source": "greenwich",
+   "ra": 0.93,
+   "dec": 2.68
+  },
+  {
+   "id": "LV1846-T77-p131-l18",
+   "source": "greenwich",
+   "ra": 2.94,
+   "dec": 5.34
+  },
+  {
+   "id": "LV1846-T77-p131-l19",
+   "source": "greenwich",
+   "ra": 3.04,
+   "dec": 0.86
+  },
+  {
+   "id": "LV1846-T77-p131-l20",
+   "source": "greenwich",
+   "ra": -0.41,
+   "dec": -3.06
+  },
+  {
+   "id": "LV1846-T77-p131-l21",
+   "source": "greenwich",
+   "ra": 1.35,
+   "dec": 2.26
+  },
+  {
+   "id": "LV1846-T77-p131-l22",
+   "source": "greenwich",
+   "ra": -2.19
+  },
+  {
+   "id": "LV1846-T77-p131-l23",
+   "source": "greenwich",
+   "ra": 0.35,
+   "dec": -2.95
+  },
+  {
+   "id": "LV1846-T77-p131-l24",
+   "source": "greenwich",
+   "ra": 0.18,
+   "dec": -0.03
+  },
+  {
+   "id": "LV1846-T77-p131-l25",
+   "source": "paris_1801_1827",
+   "ra": 2.05,
+   "dec": 2.7
+  },
+  {
+   "id": "LV1846-T77-p131-l26",
+   "source": "paris_1801_1827",
+   "ra": -2.38,
+   "dec": 2.22
+  },
+  {
+   "id": "LV1846-T77-p131-l27",
+   "source": "paris_1801_1827",
+   "ra": -0.81,
+   "dec": -0.56
+  },
+  {
+   "id": "LV1846-T77-p131-l28",
+   "source": "paris_1801_1827",
+   "ra": -1.88,
+   "dec": 3.5
+  },
+  {
+   "id": "LV1846-T77-p131-l29",
+   "source": "paris_1801_1827",
+   "ra": 0.71
+  },
+  {
+   "id": "LV1846-T77-p131-l30",
+   "source": "paris_1801_1827",
+   "ra": -0.46,
+   "dec": 3.63
+  },
+  {
+   "id": "LV1846-T77-p131-l31",
+   "source": "paris_1801_1827",
+   "ra": -1.65,
+   "dec": 0.6
+  },
+  {
+   "id": "LV1846-T77-p131-l32",
+   "source": "paris_1801_1827",
+   "ra": -1.07
+  },
+  {
+   "id": "LV1846-T77-p131-l33",
+   "source": "paris_1801_1827",
+   "ra": -1.88
+  },
+  {
+   "id": "LV1846-T77-p131-l34",
+   "source": "paris_1801_1827",
+   "ra": -3.24,
+   "dec": 1.37
+  },
+  {
+   "id": "LV1846-T77-p132-l01",
+   "source": "paris_1801_1827",
+   "ra": -2.68,
+   "dec": 2.84
+  },
+  {
+   "id": "LV1846-T77-p132-l02",
+   "source": "paris_1801_1827",
+   "ra": -1.17,
+   "dec": 1.58
+  },
+  {
+   "id": "LV1846-T77-p132-l03",
+   "source": "paris_1801_1827",
+   "ra": 2.98,
+   "dec": -4.82
+  },
+  {
+   "id": "LV1846-T77-p132-l04",
+   "source": "paris_1801_1827",
+   "ra": 1.98
+  },
+  {
+   "id": "LV1846-T77-p132-l05",
+   "source": "paris_1801_1827",
+   "ra": -0.9,
+   "dec": -4.3
+  },
+  {
+   "id": "LV1846-T77-p132-l06",
+   "source": "paris_1801_1827",
+   "ra": 2.63,
+   "dec": 7.05
+  },
+  {
+   "id": "LV1846-T77-p132-l07",
+   "source": "paris_1801_1827",
+   "ra": 0.87
+  },
+  {
+   "id": "LV1846-T77-p132-l08",
+   "source": "paris_1801_1827",
+   "ra": -5.53,
+   "dec": 4.96
+  },
+  {
+   "id": "LV1846-T77-p132-l09",
+   "source": "paris_1801_1827",
+   "ra": 0.52,
+   "dec": 0.02
+  },
+  {
+   "id": "LV1846-T77-p132-l10",
+   "source": "paris_1801_1827",
+   "ra": 1.62,
+   "dec": 0.86
+  },
+  {
+   "id": "LV1846-T77-p132-l11",
+   "source": "paris_1801_1827",
+   "ra": 2.34,
+   "dec": 5.62
+  },
+  {
+   "id": "LV1846-T77-p132-l12",
+   "source": "paris_1801_1827",
+   "ra": -5.43,
+   "dec": 3.79
+  },
+  {
+   "id": "LV1846-T77-p132-l13",
+   "source": "paris_1801_1827",
+   "ra": -1.34,
+   "dec": -0.32
+  },
+  {
+   "id": "LV1846-T77-p132-l14",
+   "source": "paris_1801_1827",
+   "ra": -2.3,
+   "dec": 1.7
+  },
+  {
+   "id": "LV1846-T77-p132-l15",
+   "source": "paris_1801_1827",
+   "ra": -0.9,
+   "dec": 1.22
+  },
+  {
+   "id": "LV1846-T77-p132-l16",
+   "source": "greenwich",
+   "ra": -2.17,
+   "dec": 0.78
+  },
+  {
+   "id": "LV1846-T77-p132-l17",
+   "source": "paris_1801_1827",
+   "ra": 1.09,
+   "dec": 5.64
+  },
+  {
+   "id": "LV1846-T77-p132-l18",
+   "source": "paris_1801_1827",
+   "ra": 3.79
+  },
+  {
+   "id": "LV1846-T77-p132-l19",
+   "source": "paris_1801_1827",
+   "ra": -1.97,
+   "dec": 3.75
+  },
+  {
+   "id": "LV1846-T77-p132-l20",
+   "source": "paris_1801_1827",
+   "ra": 0.41,
+   "dec": 0.1
+  },
+  {
+   "id": "LV1846-T77-p132-l21",
+   "source": "paris_1801_1827",
+   "ra": 1.79,
+   "dec": -4.12
+  },
+  {
+   "id": "LV1846-T77-p132-l22",
+   "source": "greenwich",
+   "ra": -1.05,
+   "dec": -0.07
+  },
+  {
+   "id": "LV1846-T77-p132-l23",
+   "source": "paris_1801_1827",
+   "ra": -3.93,
+   "dec": 3.63
+  },
+  {
+   "id": "LV1846-T77-p132-l24",
+   "source": "paris_1801_1827",
+   "ra": -1.27,
+   "dec": 1.93
+  },
+  {
+   "id": "LV1846-T77-p132-l25",
+   "source": "paris_1801_1827",
+   "ra": -2.96,
+   "dec": -3.54
+  },
+  {
+   "id": "LV1846-T77-p132-l26",
+   "source": "paris_1801_1827",
+   "ra": 0.82,
+   "dec": 2.32
+  },
+  {
+   "id": "LV1846-T77-p132-l27",
+   "source": "paris_1801_1827",
+   "ra": -2.31,
+   "dec": -1.28
+  },
+  {
+   "id": "LV1846-T77-p132-l28",
+   "source": "greenwich",
+   "ra": -1.15,
+   "dec": -3.96
+  },
+  {
+   "id": "LV1846-T77-p132-l29",
+   "source": "paris_1801_1827",
+   "ra": 0.01,
+   "dec": 0.05
+  },
+  {
+   "id": "LV1846-T77-p132-l30",
+   "source": "paris_1801_1827",
+   "ra": -2.64
+  },
+  {
+   "id": "LV1846-T77-p132-l31",
+   "source": "paris_1801_1827",
+   "ra": -2.04,
+   "dec": 1.15
+  },
+  {
+   "id": "LV1846-T77-p132-l32",
+   "source": "paris_1801_1827",
+   "ra": 3.24,
+   "dec": -2.47
+  },
+  {
+   "id": "LV1846-T77-p132-l33",
+   "source": "paris_1801_1827",
+   "ra": -0.02,
+   "dec": -2.34
+  },
+  {
+   "id": "LV1846-T77-p132-l34",
+   "source": "paris_1801_1827",
+   "ra": -1.52,
+   "dec": -4.86
+  },
+  {
+   "id": "LV1846-T77-p132-l35",
+   "source": "paris_1801_1827",
+   "ra": -4.09,
+   "dec": 3.69
+  },
+  {
+   "id": "LV1846-T77-p132-l36",
+   "source": "paris_1801_1827",
+   "ra": 5.96
+  },
+  {
+   "id": "LV1846-T77-p132-l37",
+   "source": "paris_1801_1827",
+   "ra": 1.6,
+   "dec": 7.08
+  },
+  {
+   "id": "LV1846-T77-p133-l01",
+   "source": "paris_1801_1827",
+   "ra": -0.09,
+   "dec": 1.46
+  },
+  {
+   "id": "LV1846-T77-p133-l02",
+   "source": "paris_1801_1827",
+   "ra": -3.48,
+   "dec": 2.69
+  },
+  {
+   "id": "LV1846-T77-p133-l03",
+   "source": "paris_1801_1827",
+   "ra": 3.09,
+   "dec": -0.85
+  },
+  {
+   "id": "LV1846-T77-p133-l04",
+   "source": "paris_1801_1827",
+   "ra": 0.53,
+   "dec": 0.35
+  },
+  {
+   "id": "LV1846-T77-p133-l05",
+   "source": "paris_1801_1827",
+   "ra": 1.83,
+   "dec": 1.45
+  },
+  {
+   "id": "LV1846-T77-p133-l06",
+   "source": "paris_1801_1827",
+   "ra": 1.65,
+   "dec": 1.23
+  },
+  {
+   "id": "LV1846-T77-p133-l07",
+   "source": "paris_1801_1827",
+   "ra": 5.53,
+   "dec": 1.22
+  },
+  {
+   "id": "LV1846-T77-p133-l08",
+   "source": "paris_1801_1827",
+   "ra": 0.48,
+   "dec": 1.93
+  },
+  {
+   "id": "LV1846-T77-p133-l09",
+   "source": "paris_1801_1827",
+   "ra": 3.67,
+   "dec": -4.79
+  },
+  {
+   "id": "LV1846-T77-p133-l10",
+   "source": "paris_1801_1827",
+   "ra": 5.46
+  },
+  {
+   "id": "LV1846-T77-p133-l11",
+   "source": "paris_1801_1827",
+   "ra": 4.21,
+   "dec": -0.59
+  },
+  {
+   "id": "LV1846-T77-p133-l12",
+   "source": "paris_1801_1827",
+   "ra": -1.9,
+   "dec": 5.77
+  },
+  {
+   "id": "LV1846-T77-p133-l13",
+   "source": "paris_1801_1827",
+   "ra": 2.38,
+   "dec": 0.39
+  },
+  {
+   "id": "LV1846-T77-p133-l14",
+   "source": "paris_1801_1827",
+   "ra": -0.96,
+   "dec": 3.57
+  },
+  {
+   "id": "LV1846-T77-p133-l15",
+   "source": "paris_1801_1827",
+   "ra": 1.91,
+   "dec": -0.04
+  },
+  {
+   "id": "LV1846-T77-p133-l16",
+   "source": "paris_1801_1827",
+   "ra": 3.76,
+   "dec": -2.52
+  },
+  {
+   "id": "LV1846-T77-p133-l17",
+   "source": "paris_1801_1827",
+   "ra": 3.96,
+   "dec": 1.88
+  },
+  {
+   "id": "LV1846-T77-p133-l18",
+   "source": "paris_1801_1827",
+   "ra": 3.82,
+   "dec": -0.07
+  },
+  {
+   "id": "LV1846-T77-p133-l19",
+   "source": "paris_1801_1827",
+   "ra": 3.88,
+   "dec": 0.68
+  },
+  {
+   "id": "LV1846-T77-p133-l20",
+   "source": "paris_1801_1827",
+   "ra": 0.65,
+   "dec": 3.15
+  },
+  {
+   "id": "LV1846-T77-p133-l21",
+   "source": "paris_1801_1827",
+   "ra": 0.38,
+   "dec": -0.63
+  },
+  {
+   "id": "LV1846-T77-p133-l22",
+   "source": "paris_1801_1827",
+   "ra": -0.55,
+   "dec": -0.46
+  },
+  {
+   "id": "LV1846-T77-p133-l23",
+   "source": "paris_1801_1827",
+   "ra": 2.28,
+   "dec": 4.15
+  },
+  {
+   "id": "LV1846-T77-p133-l24",
+   "source": "paris_1801_1827",
+   "ra": 3.64,
+   "dec": 1.13
+  },
+  {
+   "id": "LV1846-T77-p133-l25",
+   "source": "paris_1801_1827",
+   "ra": 0.93,
+   "dec": -0.21
+  },
+  {
+   "id": "LV1846-T77-p133-l26",
+   "source": "paris_1801_1827",
+   "ra": -2.93,
+   "dec": 1.32
+  },
+  {
+   "id": "LV1846-T77-p133-l27",
+   "source": "paris_1801_1827",
+   "ra": -1.97,
+   "dec": 3.13
+  },
+  {
+   "id": "LV1846-T77-p133-l28",
+   "source": "paris_1801_1827",
+   "ra": 3.08,
+   "dec": 1.91
+  },
+  {
+   "id": "LV1846-T77-p133-l29",
+   "source": "paris_1801_1827",
+   "ra": -4.11,
+   "dec": 4.21
+  },
+  {
+   "id": "LV1846-T77-p133-l30",
+   "source": "paris_1801_1827",
+   "ra": 0.27,
+   "dec": 1.97
+  },
+  {
+   "id": "LV1846-T77-p133-l31",
+   "source": "paris_1801_1827",
+   "ra": -0.2,
+   "dec": 3.23
+  },
+  {
+   "id": "LV1846-T77-p133-l32",
+   "source": "paris_1801_1827",
+   "ra": 0.85,
+   "dec": 2.2
+  },
+  {
+   "id": "LV1846-T77-p133-l33",
+   "source": "paris_1801_1827",
+   "ra": 4.68,
+   "dec": 0.66
+  },
+  {
+   "id": "LV1846-T77-p133-l34",
+   "source": "paris_1801_1827",
+   "ra": 0.42,
+   "dec": 1.27
+  },
+  {
+   "id": "LV1846-T77-p133-l35",
+   "source": "paris_1801_1827",
+   "ra": 1.42,
+   "dec": -0.17
+  },
+  {
+   "id": "LV1846-T77-p133-l36",
+   "source": "paris_1801_1827",
+   "ra": -1.85,
+   "dec": 1.62
+  },
+  {
+   "id": "LV1846-T77-p133-l37",
+   "source": "paris_1801_1827",
+   "ra": -1.55,
+   "dec": -1.26
+  },
+  {
+   "id": "LV1846-T77-p134-l01",
+   "source": "paris_1801_1827",
+   "ra": -2.82,
+   "dec": 2.85
+  },
+  {
+   "id": "LV1846-T77-p134-l02",
+   "source": "paris_1801_1827",
+   "ra": -1.97,
+   "dec": -0.24
+  },
+  {
+   "id": "LV1846-T77-p134-l03",
+   "source": "paris_1801_1827",
+   "ra": 0.46,
+   "dec": 4.7
+  },
+  {
+   "id": "LV1846-T77-p134-l04",
+   "source": "paris_1801_1827",
+   "ra": 0.93,
+   "dec": 1.58
+  },
+  {
+   "id": "LV1846-T77-p134-l05",
+   "source": "paris_1801_1827",
+   "ra": 1.96,
+   "dec": -3.08
+  },
+  {
+   "id": "LV1846-T77-p134-l06",
+   "source": "paris_1801_1827",
+   "ra": -3.37
+  },
+  {
+   "id": "LV1846-T77-p134-l07",
+   "source": "paris_1801_1827",
+   "ra": -2.37,
+   "dec": 5.11
+  },
+  {
+   "id": "LV1846-T77-p134-l08",
+   "source": "paris_1801_1827",
+   "ra": -3.33,
+   "dec": 4.13
+  },
+  {
+   "id": "LV1846-T77-p134-l09",
+   "source": "paris_1801_1827",
+   "ra": 0.04,
+   "dec": 0.12
+  },
+  {
+   "id": "LV1846-T77-p134-l10",
+   "source": "paris_1801_1827",
+   "ra": -2.26,
+   "dec": 3.36
+  },
+  {
+   "id": "LV1846-T77-p134-l11",
+   "source": "paris_1801_1827",
+   "ra": -2.09,
+   "dec": 4.29
+  },
+  {
+   "id": "LV1846-T77-p134-l12",
+   "source": "paris_1801_1827",
+   "ra": -0.28,
+   "dec": -0.71
+  },
+  {
+   "id": "LV1846-T77-p134-l13",
+   "source": "paris_1801_1827",
+   "ra": 1.25,
+   "dec": -0.08
+  },
+  {
+   "id": "LV1846-T77-p134-l14",
+   "source": "paris_1801_1827",
+   "ra": -0.03,
+   "dec": 1.3
+  },
+  {
+   "id": "LV1846-T77-p134-l15",
+   "source": "paris_1801_1827",
+   "ra": 1.41,
+   "dec": 0.68
+  },
+  {
+   "id": "LV1846-T77-p134-l16",
+   "source": "paris_1801_1827",
+   "ra": 3.38,
+   "dec": 5.17
+  },
+  {
+   "id": "LV1846-T77-p134-l17",
+   "source": "paris_1801_1827",
+   "ra": 1.32,
+   "dec": -2.09
+  },
+  {
+   "id": "LV1846-T77-p134-l18",
+   "source": "paris_1801_1827",
+   "ra": -0.33,
+   "dec": -0.84
+  },
+  {
+   "id": "LV1846-T77-p134-l19",
+   "source": "paris_1801_1827",
+   "ra": -0.27,
+   "dec": -1.98
+  },
+  {
+   "id": "LV1846-T77-p134-l20",
+   "source": "paris_1801_1827",
+   "ra": 3.04,
+   "dec": 3.53
+  },
+  {
+   "id": "LV1846-T77-p134-l21",
+   "source": "paris_1801_1827",
+   "ra": 7.8
+  },
+  {
+   "id": "LV1846-T77-p134-l22",
+   "source": "paris_1801_1827",
+   "ra": 0.51,
+   "dec": 5.34
+  },
+  {
+   "id": "LV1846-T77-p134-l23",
+   "source": "paris_1801_1827",
+   "ra": 0.71,
+   "dec": 0.26
+  },
+  {
+   "id": "LV1846-T77-p134-l24",
+   "source": "paris_1801_1827",
+   "ra": 8.04
+  },
+  {
+   "id": "LV1846-T77-p134-l25",
+   "source": "paris_1801_1827",
+   "ra": 1.93,
+   "dec": 0.38
+  },
+  {
+   "id": "LV1846-T77-p134-l26",
+   "source": "paris_1801_1827",
+   "ra": 2.47,
+   "dec": 6.15
+  },
+  {
+   "id": "LV1846-T77-p134-l27",
+   "source": "greenwich",
+   "ra": 2.63,
+   "dec": -0.56
+  },
+  {
+   "id": "LV1846-T77-p134-l28",
+   "source": "greenwich",
+   "ra": 6.24,
+   "dec": -0.68
+  },
+  {
+   "id": "LV1846-T77-p134-l29",
+   "source": "greenwich",
+   "ra": -3.48,
+   "dec": -0.33
+  },
+  {
+   "id": "LV1846-T77-p134-l30",
+   "source": "greenwich",
+   "ra": -0.61,
+   "dec": 0.95
+  },
+  {
+   "id": "LV1846-T77-p134-l31",
+   "source": "greenwich",
+   "ra": -0.73,
+   "dec": -1.27
+  },
+  {
+   "id": "LV1846-T77-p134-l32",
+   "source": "greenwich",
+   "ra": 0.67,
+   "dec": 1.25
+  },
+  {
+   "id": "LV1846-T77-p134-l33",
+   "source": "greenwich",
+   "ra": -0.36,
+   "dec": 0.6
+  },
+  {
+   "id": "LV1846-T77-p134-l34",
+   "source": "greenwich",
+   "ra": 0.52,
+   "dec": -1.12
+  },
+  {
+   "id": "LV1846-T77-p135-l01",
+   "source": "greenwich",
+   "ra": 2.41,
+   "dec": -1.53
+  },
+  {
+   "id": "LV1846-T77-p135-l02",
+   "source": "greenwich",
+   "ra": 2.68,
+   "dec": -0.46
+  },
+  {
+   "id": "LV1846-T77-p135-l03",
+   "source": "greenwich",
+   "ra": -6.34,
+   "dec": -1.06
+  },
+  {
+   "id": "LV1846-T77-p135-l04",
+   "source": "paris_1835_1845",
+   "ra": 2.03,
+   "dec": 2.14
+  },
+  {
+   "id": "LV1846-T77-p135-l05",
+   "source": "paris_1835_1845",
+   "ra": -0.87
+  },
+  {
+   "id": "LV1846-T77-p135-l06",
+   "source": "paris_1835_1845",
+   "ra": 4.43,
+   "dec": 0.47
+  },
+  {
+   "id": "LV1846-T77-p135-l07",
+   "source": "paris_1835_1845",
+   "ra": 2.5
+  },
+  {
+   "id": "LV1846-T77-p135-l08",
+   "source": "paris_1835_1845",
+   "ra": 9.15,
+   "dec": 1.69
+  },
+  {
+   "id": "LV1846-T77-p135-l09",
+   "source": "paris_1835_1845",
+   "ra": 1.74,
+   "dec": -0.53
+  },
+  {
+   "id": "LV1846-T77-p135-l10",
+   "source": "paris_1835_1845",
+   "ra": -3.46,
+   "dec": -0.21
+  },
+  {
+   "id": "LV1846-T77-p135-l11",
+   "source": "paris_1835_1845",
+   "ra": 1.77,
+   "dec": 0.72
+  },
+  {
+   "id": "LV1846-T77-p135-l12",
+   "source": "paris_1835_1845",
+   "ra": 1.65,
+   "dec": 0.26
+  },
+  {
+   "id": "LV1846-T77-p135-l13",
+   "source": "paris_1835_1845",
+   "ra": -0.79,
+   "dec": 0.43
+  },
+  {
+   "id": "LV1846-T77-p135-l14",
+   "source": "paris_1835_1845",
+   "ra": -1.39,
+   "dec": -0.07
+  },
+  {
+   "id": "LV1846-T77-p135-l15",
+   "source": "paris_1835_1845",
+   "ra": 0.75,
+   "dec": 1.13
+  },
+  {
+   "id": "LV1846-T77-p135-l16",
+   "source": "paris_1835_1845",
+   "ra": -0.45,
+   "dec": -0.86
+  },
+  {
+   "id": "LV1846-T77-p135-l17",
+   "source": "paris_1835_1845",
+   "ra": 4.34,
+   "dec": 1.55
+  },
+  {
+   "id": "LV1846-T77-p135-l18",
+   "source": "paris_1835_1845",
+   "ra": 2.67,
+   "dec": 0.94
+  },
+  {
+   "id": "LV1846-T77-p135-l19",
+   "source": "paris_1835_1845",
+   "ra": -0.74,
+   "dec": -0.45
+  },
+  {
+   "id": "LV1846-T77-p135-l20",
+   "source": "paris_1835_1845",
+   "ra": 0.96,
+   "dec": 0.1
+  },
+  {
+   "id": "LV1846-T77-p135-l21",
+   "source": "paris_1835_1845",
+   "ra": -1.74,
+   "dec": 0.26
+  },
+  {
+   "id": "LV1846-T77-p135-l22",
+   "source": "paris_1835_1845",
+   "ra": 1.62,
+   "dec": 0.93
+  },
+  {
+   "id": "LV1846-T77-p135-l23",
+   "source": "paris_1835_1845",
+   "ra": -0.55,
+   "dec": 0.59
+  },
+  {
+   "id": "LV1846-T77-p135-l24",
+   "source": "paris_1835_1845",
+   "ra": 1.74,
+   "dec": 2.29
+  },
+  {
+   "id": "LV1846-T77-p135-l25",
+   "source": "paris_1835_1845",
+   "ra": 0.06,
+   "dec": 2.16
+  },
+  {
+   "id": "LV1846-T77-p135-l26",
+   "source": "paris_1835_1845",
+   "ra": 3.14,
+   "dec": -0.06
+  },
+  {
+   "id": "LV1846-T77-p135-l27",
+   "source": "paris_1835_1845",
+   "ra": 3.64,
+   "dec": -0.35
+  },
+  {
+   "id": "LV1846-T77-p135-l28",
+   "source": "paris_1835_1845",
+   "ra": 1.19,
+   "dec": -0.52
+  },
+  {
+   "id": "LV1846-T77-p135-l29",
+   "source": "paris_1835_1845",
+   "ra": 1.67,
+   "dec": 0.01
+  },
+  {
+   "id": "LV1846-T77-p135-l30",
+   "source": "paris_1835_1845",
+   "ra": 1.02,
+   "dec": -1.05
+  },
+  {
+   "id": "LV1846-T77-p135-l31",
+   "source": "paris_1835_1845",
+   "ra": -0.01,
+   "dec": -0.89
+  },
+  {
+   "id": "LV1846-T77-p135-l32",
+   "source": "paris_1835_1845",
+   "ra": 0.21,
+   "dec": -3.95
+  },
+  {
+   "id": "LV1846-T77-p135-l33",
+   "source": "paris_1835_1845",
+   "ra": -0.17,
+   "dec": -1.05
+  },
+  {
+   "id": "LV1846-T77-p135-l34",
+   "source": "paris_1835_1845",
+   "ra": 0.62,
+   "dec": -1.99
+  },
+  {
+   "id": "LV1846-T77-p135-l35",
+   "source": "paris_1835_1845",
+   "ra": 1.18,
+   "dec": -2.01
+  },
+  {
+   "id": "LV1846-T77-p135-l36",
+   "source": "paris_1835_1845",
+   "ra": 1.11,
+   "dec": -3.42
+  },
+  {
+   "id": "LV1846-T77-p135-l37",
+   "source": "paris_1835_1845",
+   "ra": -1.2,
+   "dec": -0.62
+  },
+  {
+   "id": "LV1846-T77-p135-l38",
+   "source": "paris_1835_1845",
+   "ra": -0.93,
+   "dec": 1.13
+  },
+  {
+   "id": "LV1846-T77-p135-l39",
+   "source": "paris_1835_1845",
+   "ra": 1.18,
+   "dec": -1.3
+  },
+  {
+   "id": "LV1846-T77-p136-l01",
+   "source": "paris_1835_1845",
+   "ra": 3.11,
+   "dec": 0.52
+  },
+  {
+   "id": "LV1846-T77-p136-l02",
+   "source": "paris_1835_1845",
+   "ra": -1.68,
+   "dec": 2.66
+  },
+  {
+   "id": "LV1846-T77-p136-l03",
+   "source": "paris_1835_1845",
+   "ra": 3.87
+  },
+  {
+   "id": "LV1846-T77-p136-l04",
+   "source": "paris_1835_1845",
+   "ra": -0.1
+  },
+  {
+   "id": "LV1846-T77-p136-l05",
+   "source": "paris_1835_1845",
+   "ra": 0.71,
+   "dec": 0.9
+  },
+  {
+   "id": "LV1846-T77-p136-l06",
+   "source": "paris_1835_1845",
+   "ra": 0.78,
+   "dec": -0.21
+  },
+  {
+   "id": "LV1846-T77-p136-l07",
+   "source": "paris_1835_1845",
+   "ra": 2.66
+  },
+  {
+   "id": "LV1846-T77-p136-l08",
+   "source": "paris_1835_1845",
+   "ra": 1.23,
+   "dec": 0.94
+  },
+  {
+   "id": "LV1846-T77-p136-l09",
+   "source": "paris_1835_1845",
+   "ra": 0.67,
+   "dec": 1.97
+  },
+  {
+   "id": "LV1846-T77-p136-l10",
+   "source": "paris_1835_1845",
+   "ra": 2.49,
+   "dec": -0.72
+  },
+  {
+   "id": "LV1846-T77-p136-l11",
+   "source": "paris_1835_1845",
+   "ra": 0.6,
+   "dec": -0.35
+  },
+  {
+   "id": "LV1846-T77-p136-l12",
+   "source": "paris_1835_1845",
+   "ra": -0.42,
+   "dec": 0.35
+  },
+  {
+   "id": "LV1846-T77-p136-l13",
+   "source": "paris_1835_1845",
+   "ra": 1.42,
+   "dec": 2.83
+  },
+  {
+   "id": "LV1846-T77-p136-l14",
+   "source": "paris_1835_1845",
+   "ra": 1.11,
+   "dec": 2.5
+  },
+  {
+   "id": "LV1846-T77-p136-l15",
+   "source": "paris_1835_1845",
+   "ra": 1.25,
+   "dec": 0.28
+  },
+  {
+   "id": "LV1846-T77-p136-l16",
+   "source": "paris_1835_1845",
+   "ra": 0.48,
+   "dec": 1.02
+  },
+  {
+   "id": "LV1846-T77-p136-l17",
+   "source": "paris_1835_1845",
+   "ra": 1.51,
+   "dec": 2.35
+  },
+  {
+   "id": "LV1846-T77-p136-l18",
+   "source": "paris_1835_1845",
+   "ra": -0.94,
+   "dec": 1.48
+  },
+  {
+   "id": "LV1846-T77-p136-l19",
+   "source": "paris_1835_1845",
+   "ra": -1.06,
+   "dec": 0.52
+  },
+  {
+   "id": "LV1846-T77-p136-l20",
+   "source": "paris_1835_1845",
+   "ra": 0.07
+  },
+  {
+   "id": "LV1846-T77-p136-l21",
+   "source": "paris_1835_1845",
+   "ra": 1.23
+  },
+  {
+   "id": "LV1846-T77-p136-l22",
+   "source": "paris_1835_1845",
+   "ra": -1.08
+  },
+  {
+   "id": "LV1846-T77-p136-l23",
+   "source": "paris_1835_1845",
+   "ra": 0.75
+  },
+  {
+   "id": "LV1846-T77-p136-l24",
+   "source": "paris_1835_1845",
+   "ra": 0.84,
+   "dec": -0.05
+  },
+  {
+   "id": "LV1846-T77-p136-l25",
+   "source": "paris_1835_1845",
+   "ra": 2.88,
+   "dec": 1.12
+  },
+  {
+   "id": "LV1846-T77-p136-l26",
+   "source": "paris_1835_1845",
+   "ra": -0.37,
+   "dec": 0.49
+  },
+  {
+   "id": "LV1846-T77-p136-l27",
+   "source": "paris_1835_1845",
+   "ra": 0.3,
+   "dec": -2.0
+  },
+  {
+   "id": "LV1846-T77-p136-l28",
+   "source": "paris_1835_1845",
+   "ra": 0.35,
+   "dec": -0.19
+  },
+  {
+   "id": "LV1846-T77-p136-l29",
+   "source": "paris_1835_1845",
+   "ra": -1.49,
+   "dec": -0.06
+  },
+  {
+   "id": "LV1846-T77-p136-l30",
+   "source": "paris_1835_1845",
+   "ra": -2.24,
+   "dec": -0.94
+  }
+ ],
+ "observations_note": "per observation (Table 77 row id): source key and the signed residual O - JPL of each measured coordinate, arcsec (RA as Δα·cos δ)"
+}
