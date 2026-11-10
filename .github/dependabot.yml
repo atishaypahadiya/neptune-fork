@@ -1,0 +1,8 @@
+# Keeps the GitHub Actions in .github/workflows/ current, including the commit-SHA pins
+# (astral-sh/setup-uv), whose version comment Dependabot updates with the SHA.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
