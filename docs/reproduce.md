@@ -7,9 +7,9 @@ Ledger CPU-hours add up across jobs. Wall times are per job: many jobs ran side 
 14-core Apple Silicon machine, so summed wall time overstates the elapsed time. Jobs the ledger
 does not cover took seconds to a few minutes and are marked "not in ledger".
 
-**Ledger total so far: 934 CPU-hours** (851 timed live, 83 estimated), 562 million likelihood
-calls. One likelihood call is one N-body integration over 1690–1846, so that is 87 billion
-simulated planet-years.
+**Ledger total so far: 1086 CPU-hours** (1003 timed live, 83 estimated), 1139 million likelihood
+calls, 624 million of them N-body integrations over 1690–1846 (the rest are the fast linearized
+likelihood of M8), or 96 billion simulated planet-years.
 
 ## Run identifiers
 
