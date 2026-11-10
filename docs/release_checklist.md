@@ -56,21 +56,27 @@ semver: the tag is `vX.Y.Z`, and `pyproject.toml` and `CITATION.cff` hold `X.Y.Z
 
 ## Repository state
 
-- [ ] Branch merged to `main`, working tree clean, and nothing in `data/cache/` is needed to
-  read the release.
-- [ ] `uv sync --locked` succeeds on a fresh clone.
-- [ ] `uv run ruff check . && uv run ruff format --check .` passes.
+- [x] Branch merged to `main`, working tree clean, and nothing in `data/cache/` is needed to
+  read the release. 2026-11-10: all work is on `main`; every result the README and site read
+  is under `site/data/` or `docs/notes/` (the M9 report, the arbiter summary, the fits).
+- [x] `uv sync --locked` succeeds on a fresh clone. 2026-11-10: clone of b799fd1, `uv sync
+  --locked` in 0.5 s (packages cached), `fork` 1.0.0 importable.
+- [x] `uv run ruff check . && uv run ruff format --check .` passes. 2026-11-10: "All checks
+  passed!", 100 files already formatted.
 - [x] `uv run pytest -m "not slow and not network"` passes locally and on CI (the badge is
   green on `main`). 2026-11-09: a0ec860, CI run
   https://github.com/atishaypahadiya/neptune-fork/actions/runs/42740104130 (lint and test
   green, 322 passed) and locally 322 passed.
-- [ ] `uv run pytest -m slow` passes locally. Record the wall time.
-- [ ] `uv run python examples/toy_fit.py` finishes in under 5 min on an idle machine. The time
+- [x] `uv run pytest -m slow` passes locally. Record the wall time. 2026-11-10: 22 passed in
+  5 min 59 s wall (1344 s CPU), while the layout check ran alongside.
+- [x] `uv run python examples/toy_fit.py` finishes in under 5 min on an idle machine. The time
   in `docs/reproduce.md` (4.6 min) was measured under A6c load, so re-time it and update.
-- [ ] Committed `site/data/*.json` matches a fresh export where tests check that
-  (`test_export.py`, `test_ledger.py`).
-- [ ] `uv run python -m fork.export.ledger` re-run, and the CPU-hour totals in `README.md` and
-  `docs/reproduce.md` updated (they will include A6c and M6c).
+  2026-11-10: 2 min 58 s on the idle machine; `docs/reproduce.md` updated.
+- [x] Committed `site/data/*.json` matches a fresh export where tests check that
+  (`test_export.py`, `test_ledger.py`). 2026-11-10: in the fast suite's 332 passed.
+- [x] `uv run python -m fork.export.ledger` re-run, and the CPU-hour totals in `README.md` and
+  `docs/reproduce.md` updated (they will include A6c and M6c). 2026-11-10: 1087 CPU-h (1004
+  live, 83 estimated), through M9; both files say so.
 - [x] The A6d static check holds: no M6a–M6d code path reads Neptune's real ephemeris or the
   M6e precovery file (`tests/test_a6d.py`, 2026-11-09; runtime half in `tests/test_m6c.py`).
 - [x] Whitmore's *discoverneptune* is cited in the README. If any of its data are reused,
