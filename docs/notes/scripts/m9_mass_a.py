@@ -1,14 +1,17 @@
 """After-the-fact diagnostic (not pre-registered; listed in docs/notes/M9.md): the mass–a corner
 plot of the M6c replacement posterior.
 
-    uv run python docs/notes/scripts/m9_mass_a.py      # -> docs/notes/M9_mass_a.png
+    uv run python docs/notes/scripts/m9_mass_a.py                    # -> docs/notes/M9_mass_a.png
+    uv run python docs/notes/scripts/m9_mass_a.py --variant s3_t4    # -> docs/notes/M10_mass_a.png
 
 Joint density of the perturber's mass and semi-major axis with the contours enclosing 68 % and
 95 % of the posterior mass, each marginal beside it, and two marked points: Neptune (JPL;
 17.15 M⊕, a = 30.07 AU) and Le Verrier's planet (36.6 M⊕, 36.15 AU; ``M6c_r2_ridge.json``'s
-sources). Weighted samples from every cell via ``PartitionedResult``.
+sources). Weighted samples from every cell via ``PartitionedResult``. With ``--variant s3_t4``
+the same plot of S3's posterior (M10.md's after-the-fact diagnostic).
 """
 
+import argparse
 import json
 from pathlib import Path
 
@@ -31,15 +34,27 @@ def contour_levels(h: np.ndarray, fractions=(0.68, 0.95)) -> list[float]:
     return [float(flat[np.searchsorted(cum, f)]) for f in fractions]
 
 
-def main() -> None:
-    from fork.export.m9 import replacement_posterior
+def main(variant: str = "replacement") -> None:
     from fork.inference.nested import weighted_quantiles
 
-    q, w, _ = replacement_posterior()
+    if variant == "replacement":
+        from fork.export.m9 import replacement_posterior as posterior
+
+        out_png, which = OUT_PNG, "the headline (replacement) posterior"
+    else:
+        from fork.export.m10 import s3_posterior as posterior
+
+        out_png, which = OUT_PNG.with_name("M10_mass_a.png"), "S3's Student-t posterior"
+    q, w, _ = posterior()
     a, m = np.exp(q[:, 5]), 10.0 ** q[:, 4]
     lv = json.loads(RIDGE_JSON.read_text())["le_verrier"]
-    fig, axes = plt.subplots(2, 2, figsize=(7.0, 7.0), constrained_layout=True,
-                             gridspec_kw={"width_ratios": [3, 1], "height_ratios": [1, 3]})
+    fig, axes = plt.subplots(
+        2,
+        2,
+        figsize=(7.0, 7.0),
+        constrained_layout=True,
+        gridspec_kw={"width_ratios": [3, 1], "height_ratios": [1, 3]},
+    )
     ax_j, ax_m, ax_a, ax_blank = axes[1, 0], axes[1, 1], axes[0, 0], axes[0, 1]
     ax_blank.axis("off")
     a_edges = np.linspace(20.0, 46.0, 105)
@@ -51,9 +66,10 @@ def main() -> None:
                   colors=[BLUE], alpha=0.35, antialiased=True)  # fmt: skip
     ax_j.contourf(ac, mc, h.T, levels=[levels[1], h.max() * 1.01], colors=[BLUE], alpha=0.5)
     ax_j.contour(ac, mc, h.T, levels=levels, colors=[BLUE], linewidths=1.0)
-    for pt, label, mk in ((NEPTUNE, "Neptune (JPL)", "o"),
-                          ({"mass_earth": lv["mass_earth"], "a_au": lv["a_au"]},
-                           "Le Verrier's planet", "s")):
+    for pt, label, mk in (
+        (NEPTUNE, "Neptune (JPL)", "o"),
+        ({"mass_earth": lv["mass_earth"], "a_au": lv["a_au"]}, "Le Verrier's planet", "s"),
+    ):
         ax_j.plot(pt["a_au"], pt["mass_earth"], marker=mk, markersize=8, markerfacecolor="none",
                   markeredgecolor=INK, linestyle="none")  # fmt: skip
         ax_j.annotate(label, (pt["a_au"], pt["mass_earth"]), xytext=(8, 6),
@@ -75,11 +91,13 @@ def main() -> None:
     for ax in (ax_j, ax_a, ax_m):
         for s in ("top", "right"):
             ax.spines[s].set_visible(False)
-    fig.suptitle("Mass against a in the headline (replacement) posterior: 68 % and 95 % contours; "
-                 "made after the fact", fontsize=9)  # fmt: skip
-    fig.savefig(OUT_PNG, dpi=160)
-    print(f"wrote {OUT_PNG}")
+    fig.suptitle(f"Mass against a in {which}: 68 % and 95 % contours; made after the fact",
+                 fontsize=9)  # fmt: skip
+    fig.savefig(out_png, dpi=160)
+    print(f"wrote {out_png}")
 
 
 if __name__ == "__main__":
-    main()
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--variant", choices=("replacement", "s3_t4"), default="replacement")
+    main(ap.parse_args().variant)
