@@ -186,8 +186,8 @@ uv run python examples/toy_fit.py
 uv run pytest tests/test_toy_example.py     # capped at 15 iterations, a few seconds
 ```
 This runs one cell (a 28–60 AU, e < 0.12) on synthetic seed 0 at nlive 20, single process,
-offline. One run took 3.0 min on one core (674 iterations, 41k likelihood calls) while A6c
-kept the machine at load ~19, so expect less on an idle machine. It shows the pipeline working.
+offline. One run took 3.0 min on one core (674 iterations, 41k likelihood calls) on an idle
+machine (2026-11-10; 4.6 min under A6c's load on 2026-11-06). It shows the pipeline working.
 Its interval and ln Z are not M5b results. That run's 68 % interval was about 5° wide, half the
 width of the real M5b intervals, and its ln Z_k error was ±3. At nlive 20 the sampler
 under-explores the cell.
