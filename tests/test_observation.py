@@ -181,3 +181,42 @@ def test_uranus_frame_reduces_to_the_ecliptic_when_uranus_is_planar():
     a, _ = predict_states_ecl_j2000(planar, [E], ctx)
     b, _ = predict_states_ecl_j2000(inclined, [E], ctx)
     np.testing.assert_allclose(a[0, 3], b[0, 3], rtol=0, atol=1e-12)
+
+
+def test_uranus_box_from_two_starts_takes_the_lower_chi2(structure, monkeypatch):
+    """M10.md, pre-run change (a): the box fit is started from the data-only line start and
+    from a second in-plane start; the lower χ² centres the box. With the line start made bad
+    (a halved, from where LM stops in a far worse solution, as it does on the real rows), the
+    true-orbit start wins and the box contains the truth; with no extra start the original rule
+    is unchanged, bit for bit."""
+    from fork.data.horizons import states_about_inner_barycenter_ecl_j2000 as about
+    from fork.export.to_json import A1_EPOCH_JD_TDB as E
+    from fork.inference import fit_radec
+    from fork.inference.fit import uranus_theta_to_x
+    from fork.model.forward import ForwardContext, uranus_inc_raan_at_epoch, uranus_theta_from_state
+
+    truth = om.true_uranus_ra_dec(structure)
+    vals, _ = om.synthetic_values(structure, truth, np.random.default_rng(0))
+    obs = structure.with_values(vals)
+    ctx = ForwardContext.from_horizons(E)
+    inc_raan = uranus_inc_raan_at_epoch(E)
+    true_x = uranus_theta_to_x(uranus_theta_from_state(about("uranus", [E])[0]))[:4]
+
+    plain = fit_radec.uranus_box_radec(obs, ctx, inc_raan)
+    same, fits = fit_radec.uranus_box_radec_with_fits(obs, ctx, inc_raan)
+    assert same == plain and [f["start"] for f in fits] == ["line"] and fits[0]["centres_box"]
+
+    good = fit_radec.initial_uranus_theta_radec
+
+    def bad_start(obs_, epoch, ir):
+        th = good(obs_, epoch, ir)
+        th[0] *= 0.5
+        return th
+
+    monkeypatch.setattr(fit_radec, "initial_uranus_theta_radec", bad_start)
+    box, fits = fit_radec.uranus_box_radec_with_fits(obs, ctx, inc_raan, extra_starts=[true_x])
+    by = {f["start"]: f for f in fits}
+    assert by["line"]["chi2"] > by["start:0"]["chi2"] * 10  # the bad start is stuck elsewhere
+    assert by["start:0"]["centres_box"] and not by["line"]["centres_box"]
+    assert box.contains(true_x)
+    assert np.allclose(box.centre, by["start:0"]["u"])

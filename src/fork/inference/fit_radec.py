@@ -15,6 +15,7 @@ gives a. The orbit starts circular, with λ₀ from the line's intercept at the 
 from __future__ import annotations
 
 import math
+from collections.abc import Sequence
 
 import numpy as np
 from scipy.optimize import least_squares
@@ -55,11 +56,16 @@ def initial_uranus_theta_radec(
 def fit_uranus_radec(
     obs: RaDecObservations, context: ForwardContext, inc_raan: tuple[float, float],
     fixed_perturber_theta: np.ndarray | None = None,
+    x0_in_plane: np.ndarray | None = None,
 ) -> tuple[np.ndarray, float, int]:  # fmt: skip
     """(Uranus θ (6), χ², dof) of the LM fit; χ² is the augmented (offset-marginal) one.
-    dof = measurements − 4; the offsets are counted by their prior terms."""
+    dof = measurements − 4; the offsets are counted by their prior terms. The fit starts from
+    the data-only line start, or from ``x0_in_plane`` (Uranus's (a, e cos ϖ, e sin ϖ, λ₀))
+    when given (M10: a second start from the headline's u_ref)."""
     pert = np.empty(0) if fixed_perturber_theta is None else np.asarray(fixed_perturber_theta)
     x0 = uranus_theta_to_x(initial_uranus_theta_radec(obs, context.epoch_jd_tdb, inc_raan))
+    if x0_in_plane is not None:
+        x0 = np.concatenate([np.asarray(x0_in_plane, dtype=float), x0[4:]])
 
     def resid(x4: np.ndarray) -> np.ndarray:
         theta = uranus_x_to_theta(np.concatenate([x4, x0[4:]]))
@@ -77,8 +83,36 @@ def uranus_box_radec(
 ) -> UranusBox:  # fmt: skip
     """The M5 box rule on RA/Dec data: centred on the Uranus-only fit, half-widths
     ``n_sigma`` × its formal σ scaled by √(χ²/dof)."""
-    theta, chi2, dof = fit_uranus_radec(obs, context, inc_raan)
+    return uranus_box_radec_with_fits(obs, context, inc_raan, n_sigma)[0]
+
+
+def uranus_box_radec_with_fits(
+    obs: RaDecObservations, context: ForwardContext, inc_raan: tuple[float, float],
+    n_sigma: float = URANUS_BOX_N_SIGMA, extra_starts: Sequence[np.ndarray] = (),
+) -> tuple[UranusBox, list[dict]]:  # fmt: skip
+    """``uranus_box_radec`` with the Uranus-only fit started from the data-only line start and
+    from each of ``extra_starts`` (in-plane x, e.g. the headline's u_ref); the box is centred on
+    the lowest-χ² solution. Returns the box and one record per start (name, χ², dof, the
+    solution's in-plane x, whether it centres the box). With no extra starts this is the
+    original rule, bit for bit (M10.md, pre-run change (a): M9 found the post-1781 line start
+    converging to a poor local solution, χ² 2,900 for 488 dof)."""
+    runs = []
+    for name, start in [("line", None)] + [(f"start:{j}", s) for j, s in enumerate(extra_starts)]:
+        try:
+            runs.append((name, *fit_uranus_radec(obs, context, inc_raan, x0_in_plane=start)))
+        except ValueError:  # the LM left the elements' domain (a ≤ 0 or e ≥ 1)
+            if not extra_starts:
+                raise
+            runs.append((name, None, math.inf, 0))
+    if all(r[1] is None for r in runs):
+        raise ValueError("every start of the Uranus-only fit left the elements' domain")
+    i_best = min(range(len(runs)), key=lambda i: runs[i][2])
+    _, theta, chi2, dof = runs[i_best]
     x = uranus_theta_to_x(theta)
+    fits = [{"start": name, "chi2": float(c2), "dof": int(df) if th is not None else None,
+             "u": None if th is None else [float(v) for v in uranus_theta_to_x(th)[:4]],
+             "centres_box": i == i_best}
+            for i, (name, th, c2, df) in enumerate(runs)]  # fmt: skip
 
     def resid(x4: np.ndarray) -> np.ndarray:
         return obs.whitened(uranus_x_to_theta(np.concatenate([x4, x[4:]])), context)
@@ -92,5 +126,6 @@ def uranus_box_radec(
     sigma = np.sqrt(np.diag(np.linalg.inv(jac.T @ jac)))
     chi2_nu = chi2 / dof
     s = sigma * math.sqrt(max(chi2_nu, 1.0))
-    return UranusBox(tuple(float(v) for v in x[:4]), tuple(float(v) for v in n_sigma * s),
-                     tuple(float(v) for v in s), float(chi2_nu))  # fmt: skip
+    box = UranusBox(tuple(float(v) for v in x[:4]), tuple(float(v) for v in n_sigma * s),
+                    tuple(float(v) for v in s), float(chi2_nu))  # fmt: skip
+    return box, fits
