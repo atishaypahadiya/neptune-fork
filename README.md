@@ -67,7 +67,8 @@ variants, the 1846 reduction track and the Le Verrier shape model) are deferred 
 they are not yet pre-registered, will be planned and pushed before launch, and the `adams`
 variant opens the Adams–Challis study. The higher-resolution reruns with a faster likelihood did
 not meet the 95 % stability condition, so the 95 % interval stays provisional. The full-likelihood
-check of the eccentricity test is running.
+check of the eccentricity test has reported: by its pre-registered rule the published verdict
+stands and the question is unresolved (Robustness, below).
 
 **Data and model.** Le Verrier's 279 observations are transcribed and double-checked
 (`data/historical/`), and the apparent-place observation model and the error calibration are
@@ -86,7 +87,12 @@ derived after the fact from the pre-registered replacement posterior described b
 
 **Robustness.** JPL's Neptune is inside the 68 % interval in the headline fit and in all three
 pre-registered sensitivity runs (e ≤ 0.5; error levels estimated from the data alone; Student-t
-errors). The medians agree to within 0.4 headline half-widths. The evidence favours the
+errors). The medians agree to within 0.4 headline half-widths. With eccentricity allowed up to
+0.5, the published run gives P(a < 25 AU) = 0.001 ("not at all"); the fast-likelihood check
+(0.109) and the full-likelihood check (0.12–0.19, depending on the other cells' evidence)
+disagree with it, and the full-likelihood check's own two seeds disagree beyond tolerance; by
+the pre-registered rule the published verdict stands and the question is unresolved
+([notes](docs/notes/M8.md#a8ds1-arbiter-results-2026-11-10)). The evidence favours the
 Student-t errors (ln B = +13.7), but the Gaussian error model was fixed by the
 pre-registration and is kept. Under Student-t errors the median is insensitive to it (it moves 0.37
 headline half-widths), but the 68 % interval widens from 4.22° to 6.33°.
@@ -117,6 +123,9 @@ condition, so the 95 % interval stays provisional.
 - Error model: the evidence favours Student-t errors (ln B = +13.7); the Gaussian error model
   was fixed by the pre-registration and is kept. Student-t errors move the median 0.37 headline
   half-widths.
+- With eccentricity allowed to 0.5, a low-distance solution (a < 25 AU) pointing near 314° on
+  Galle's night carries a posterior weight that the current runs do not determine (0.001 to
+  about 0.2).
 
 ## Quickstart
 
@@ -169,11 +178,13 @@ site/           static site (GitHub Pages) and its data
 
 ## Compute
 
-The ledger (`site/data/ledger.json`) records **934 CPU-hours** to date: 851 timed live, plus 83
-estimated from logs. That covers 562 million likelihood evaluations, each one N-body
-integration over 1690–1846. Nested sampling accounts for nearly all of it: the posterior
-calibration on synthetic data, and the coverage test with the real error model at 277 CPU-hours.
-The headline fit took 28.5, its sensitivity runs 89, and the repeatability study 104.
+The ledger (`site/data/ledger.json`) records **1086 CPU-hours** to date: 1003 timed live, plus 83
+estimated from logs. That covers 1139 million likelihood evaluations, 624 million of them N-body
+integrations over 1690–1846 and the rest the fast linearized likelihood. Nested sampling
+accounts for nearly all of it: the posterior calibration on synthetic data, and the coverage
+test with the real error model at 277 CPU-hours. The headline fit took 28.5, its sensitivity
+runs 89, the repeatability study 104, the fast-likelihood validation with its reruns 54, and
+the full-likelihood check of the eccentricity test 98.
 
 ## Prior art
 

@@ -400,6 +400,15 @@ export function robustText(D) {
       `${fmt(s1.p, 3)}, which the rule reads as "${s1.word}"; the faster approximate likelihood ` +
       `gives ${fmt(s1.m8p, 3)}, and the verdict is pending a full-likelihood check.`;
   }
+  if (s1.unresolved) {
+    const [pLo, pHi] = s1.arbP;
+    s1Text = `With eccentricity allowed up to ${emax}, the published run gives P({i:a} < 25 AU) = ` +
+      `${fmt(s1.p, 3)}, which the rule reads as "${s1.word}". The fast-likelihood validation ` +
+      `(${fmt(s1.m8p, 3)}) and the full-likelihood check (${fmt(pLo, 2)}–${fmt(pHi, 2)}, depending on ` +
+      `which runs supply the other cells' evidence) disagree with it, and the full-likelihood ` +
+      `check's own two seeds disagree beyond the tolerance. By the pre-registered rule the ` +
+      `published verdict stands and the question is unresolved.`;
+  }
   return {
     rob_p1: `The first published 68 % range, ${rng(k.first.lo68, k.first.hi68, 2)} ` +
       `(${fmt(k.first.width68, 2)}° wide), rested on one run of the main cell. Four repeats at ` +
@@ -421,7 +430,8 @@ export function robustText(D) {
     cap_fig_6: `The planet's geocentric longitude on Galle's night (ecliptic of date): the ` +
       `headline as first published (superseded) and as reported, and the three sensitivity ` +
       `runs. Dot: median; thick line: 68 % range; thin line: 95 % range, dashed where ` +
-      `provisional. {N@fig-6} Neptune (JPL Horizons). Reading rules: ${k.rulesSource}.`,
+      `provisional. ${v.s1_e05.unresolved ? "Open dot and dashed lines: the verdict is unresolved. " : ""}` +
+      `{N@fig-6} Neptune (JPL Horizons). Reading rules: ${k.rulesSource}.`,
   };
 }
 
@@ -461,6 +471,13 @@ export function limits(D) {
   if (k.verdicts.s1_e05.pending) {
     out.push(`The eccentricity test's verdict is pending: the published run and the faster ` +
       `approximate likelihood disagree, and a full-likelihood check decides.`);
+  }
+  if (k.verdicts.s1_e05.unresolved) {
+    const s1 = k.verdicts.s1_e05;
+    out.push(`With eccentricity allowed to ${k.fits.s1_e05.config.e_max}, a low-distance solution ` +
+      `({i:a} < 25 AU) pointing near ${fmt(s1.arbiter.merged.median, 0)}° on Galle's night carries a ` +
+      `posterior weight that the current runs do not determine (${fmt(s1.p, 3)} to about ` +
+      `${fmt(s1.arbP[1], 1)}).`);
   }
   out.push(
     deferredFits(D.timeline.deferred),

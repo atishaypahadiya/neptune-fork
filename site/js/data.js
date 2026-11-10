@@ -286,6 +286,14 @@ export async function loadChecks() {
       pending: !!(a8d && !a8d.pass) && !arbiter,
       m8p: a8d?.p_a_below_25_au ?? null,
       arbiter,
+      // The arbiter's pre-registered outcome (docs/notes/M8.md): 1 pass; 2 fail with its ln Z
+      // within the tolerance of the published run's; 3 fail agreeing with neither. Under 3 the
+      // published verdict stands and the question is unresolved. `arbP` is the P(a < 25 AU) the
+      // arbiter's ln Z implies against the published other cells and against M8's, in order.
+      outcome: s1Outcome(arbiter),
+      unresolved: s1Outcome(arbiter) === 3,
+      arbP: arbiter ? [arbiter.reading_rule.arbiter_with_published_other_cells,
+                       arbiter.reading_rule.arbiter_with_m8_other_cells].sort((a, b) => a - b) : null,
     },
     s2_sigma_data: { holds: keeps("s2_sigma_data"), rule: rules.s2_sigma_data.text },
     s3_t4: { holds: keeps("s3_t4"), rule: rules.s3_t4.text },
@@ -304,6 +312,14 @@ export async function loadChecks() {
       outcome: repeat.decision.outcome,
     },
   };
+}
+
+/** The A8d(S1) arbiter's pre-registered outcome, 1–3 (docs/notes/M8.md), or null before it reports. */
+function s1Outcome(arbiter) {
+  if (!arbiter) return null;
+  if (arbiter.test.pass) return 1;
+  const near = Math.abs(arbiter.test.arbiter.ln_z - arbiter.published_ln_z0) <= arbiter.test.tolerances.ln_z;
+  return near ? 2 : 3;
 }
 
 /** Panel 5: the dataset (m7_dataset.json). */

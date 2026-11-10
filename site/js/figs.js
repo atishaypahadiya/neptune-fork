@@ -253,10 +253,12 @@ export function fig6(fig, D) {
   const rows = [
     { key: "first", label: "Headline, first published", iv: k.first, dash95: false },
     { key: "reported", label: "Headline, reported", iv: k.reported, dash95: k.reported.i95.state !== "final" },
-    ...Object.keys(names).map((key) => ({
-      key, label: names[key] + (key === "s1_e05" && k.verdicts.s1_e05.pending ? " (verdict pending)" : ""),
-      iv: g0(key), dash95: false,
-    })),
+    ...Object.keys(names).map((key) => {
+      const v = key === "s1_e05" ? k.verdicts.s1_e05 : null;
+      const tag = v?.pending ? " (verdict pending)" : v?.unresolved ? " (unresolved)" : "";
+      // A pending or unresolved verdict is drawn as provisional: dashed ranges and an open dot.
+      return { key, label: names[key] + tag, iv: g0(key), dash95: false, provisional: !!(v?.pending || v?.unresolved) };
+    }),
   ];
   const tip = probe(fig);
   mount(fig, (svg, w, h) => {
@@ -273,10 +275,10 @@ export function fig6(fig, D) {
       const yy = y(r.key);
       if (phone) g.append("text").attr("class", "lbl row").attr("x", mg.l).attr("y", yy - 13).text(r.label);
       else g.append("text").attr("class", "lbl row").attr("x", mg.l - 14).attr("y", yy + 4).attr("text-anchor", "end").text(r.label);
-      g.append("path").attr("class", `ln sec${r.dash95 ? " dash" : ""}`).attr("d", L([[x(r.iv.lo95), yy], [x(r.iv.hi95), yy]]));
-      g.append("path").attr("class", `ln model${r.key === "first" ? " sec" : ""}`).attr("d", L([[x(r.iv.lo68), yy], [x(r.iv.hi68), yy]]))
-        .style("stroke-width", 3);
-      g.append("circle").attr("class", "dot").attr("cx", x(r.iv.median)).attr("cy", yy).attr("r", 4);
+      g.append("path").attr("class", `ln sec${r.dash95 || r.provisional ? " dash" : ""}`).attr("d", L([[x(r.iv.lo95), yy], [x(r.iv.hi95), yy]]));
+      g.append("path").attr("class", `ln model${r.key === "first" ? " sec" : ""}${r.provisional ? " dash" : ""}`)
+        .attr("d", L([[x(r.iv.lo68), yy], [x(r.iv.hi68), yy]])).style("stroke-width", 3);
+      g.append("circle").attr("class", r.provisional ? "open" : "dot").attr("cx", x(r.iv.median)).attr("cy", yy).attr("r", 4);
       g.append("rect").attr("class", "hit").attr("x", mg.l).attr("y", yy - 14).attr("width", w - mg.l - mg.r).attr("height", 28)
         .on("pointermove pointerdown", () => tip.show(x(r.iv.median), yy, `${r.label}: median ${fmt(r.iv.median, 2)}°, 68 % ` +
           `${fmt(r.iv.lo68, 2)}–${fmt(r.iv.hi68, 2)}°, 95 % ${fmt(r.iv.lo95, 2)}–${fmt(r.iv.hi95, 2)}°`))
