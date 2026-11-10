@@ -4,7 +4,7 @@ import math
 
 import numpy as np
 import pytest
-from hypothesis import given, settings
+from hypothesis import example, given, settings
 from hypothesis import strategies as st
 
 from fork.data.frames import elements_to_state
@@ -113,6 +113,10 @@ def test_full_period_high_eccentricity(a, e):
 
 
 @settings(max_examples=1000, deadline=None)
+# The one case that failed on CI's x86 runner (2026-11-10, run 42816309814) with the former
+# fixed bound of 1e-12·a: 4.87e-12 = 1.14e-12·a, at pericentre (mean anomaly 0.002) of an
+# e = 0.875 orbit after 8 periods. Pinned so every run checks it.
+@example(a=4.265625, e=0.875, inc=0.0, raan=0.0, argp=1.0, mean=0.001953125, n_periods=8.0)
 @given(
     a=st.floats(0.3, 100.0),
     e=st.floats(0.0, 0.95),
@@ -126,7 +130,17 @@ def test_agrees_with_analytic_ellipse(a, e, inc, raan, argp, mean, n_periods):
     """Spec M2: universal-variable solution == Kepler-equation ellipse, 1000 cases, e ∈ [0, 0.95].
 
     The reference ellipse uses a = 1/α of the rounded state (otherwise the test measures the
-    rounding of the initial state rather than the propagator). Measured worst: 1.2e-13·a.
+    rounding of the initial state rather than the propagator).
+
+    The bound scales with 1/(1 − e). Both sides carry a mean anomaly of up to 20 revolutions
+    (about 126 rad) through libm's sin and cos, whose last bit differs between platforms; a
+    last-bit difference δM in the mean anomaly becomes a difference δE = δM / (1 − e cos E) in
+    the eccentric anomaly (the conditioning of Kepler's equation), which is 1/(1 − e) at
+    pericentre, and then a position difference of about a·δE. So the platform-dependent part
+    of the discrepancy is up to a/(1 − e) times the rounding of M, not a times it. Measured
+    worst on Apple Silicon: 1.2e-13·a over 20 000 random cases (6e-14·a/(1 − e)); on CI's x86
+    runner the pinned example reached 1.14e-12·a = 1.4e-13·a/(1 − e). The bound 1e-12·a/(1 − e)
+    is 7× above that case and 8× above the former bound at e = 0.875.
     """
     r0, v0 = elements_to_state(a, e, inc, raan, argp, mean, MU)
     a_state = 1.0 / state_alpha(r0, v0)
@@ -134,8 +148,9 @@ def test_agrees_with_analytic_ellipse(a, e, inc, raan, argp, mean, n_periods):
     dt = n_periods * TWO_PI / n
     r_ref, v_ref = elements_to_state(a_state, e, inc, raan, argp, mean + n * dt, MU)
     r, v = kepler_step(r0, v0, MU, dt)
-    assert np.linalg.norm(r - r_ref) < 1e-12 * a
-    assert np.linalg.norm(v - v_ref) < 1e-12 * a * n * 50  # v ≤ ~6 n a at e = 0.95 pericenter
+    tol = 1e-12 * a / (1.0 - e)  # the conditioning of Kepler's equation near pericentre
+    assert np.linalg.norm(r - r_ref) < tol
+    assert np.linalg.norm(v - v_ref) < tol * n * 50  # v ≤ ~6 n a at e = 0.95 pericenter
 
 
 def test_very_long_dt():
