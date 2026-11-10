@@ -121,7 +121,7 @@ def main() -> None:
     entries = [
         {
             "id": "m6c_headline",
-            "title": "M6c headline fit",
+            "title": "Headline fit",
             "notes": "docs/notes/M6.md, M6c pre-registration",
             "preregistration": [prereg("2c9ebb3", "pre-registration")],
             "launched": log_time(m6c / "driver.log", r"^run: 4 jobs pending"),
@@ -133,7 +133,7 @@ def main() -> None:
         },
         {
             "id": "m6c_sensitivity",
-            "title": "M6c sensitivity runs S1–S3",
+            "title": "Sensitivity runs",
             "notes": "docs/notes/M6.md, M6c sensitivity runs S1–S3: pre-registration",
             "preregistration": [prereg("2981aa1", "pre-registration")],
             "launched": log_time(m6c / "driver.log", r"^run s1_e05:"),
@@ -142,7 +142,7 @@ def main() -> None:
         },
         {
             "id": "m6c_repeat",
-            "title": "M6c cell-2 repeatability",
+            "title": "Repeatability runs",
             "notes": "docs/notes/M6.md, M6c cell-2 repeatability: pre-registration",
             "preregistration": [prereg("328350a", "pre-registration")],
             "launched": log_time(m6c / "repeat.log", r"^run: 6 jobs pending"),
@@ -156,7 +156,7 @@ def main() -> None:
         },
         {
             "id": "m8_a8",
-            "title": "M8 A8b–A8f (48 runs)",
+            "title": "Fast-likelihood validation",
             "notes": "docs/notes/M8.md, Pre-registration: A8b–A8f; Before launch",
             "preregistration": [
                 prereg("2d2b1ff", "pre-registration"),
@@ -169,7 +169,7 @@ def main() -> None:
         },
         {
             "id": "m8_a8f_rerun",
-            "title": "M8 A8f rerun",
+            "title": "Fast-likelihood rerun",
             "notes": "docs/notes/M8.md, Follow-up pre-registration",
             "preregistration": [prereg("049e88f", "pre-registration")],
             "launched": log_time(m8 / "runs_a8f" / "progress.log", r"^run: "),
@@ -179,7 +179,7 @@ def main() -> None:
         },
         {
             "id": "m8b",
-            "title": "M8b (decides the 95 % interval)",
+            "title": "Higher-resolution reruns (decide the 95 % range)",
             "notes": "docs/notes/M8.md, Follow-up pre-registration",
             "preregistration": [prereg("049e88f", "pre-registration")],
             "launched": log_time(m8 / "runs_m8b" / "progress.log", r"^run: "),
@@ -189,7 +189,7 @@ def main() -> None:
         },
         {
             "id": "m8_arbiter",
-            "title": "A8d(S1) arbiter (decides the S1 verdict)",
+            "title": "Full-likelihood check of the eccentricity test",
             "notes": "docs/notes/M8.md, Follow-up pre-registration",
             "preregistration": [prereg("049e88f", "pre-registration")],
             "launched": log_time(CACHE / "nested" / "m8_arbiter" / "progress.log", r"start"),
@@ -242,7 +242,7 @@ def main() -> None:
         # docs/notes/M6.md before any of their sampling (commit 2981aa1). The site applies them
         # to the numbers in m6_fits.json; it does not restate a verdict.
         "sensitivity_reading_rules": {
-            "source": "docs/notes/M6.md, M6c sensitivity runs S1–S3: pre-registration (2981aa1)",
+            "source": "docs/notes/M6.md, pre-registration of the sensitivity runs (M6c, commit 2981aa1)",
             "s1_e05": {
                 "quantity": "p_a_below_25_au",
                 "moved_above": 0.5,

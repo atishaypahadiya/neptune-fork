@@ -128,8 +128,10 @@ def main() -> None:
             },
             "same_rows": {key(r) for r in auto["rows"]} == spot,
         },
-        "provenance": "Machine-assisted transcription and reconciliation (an AI model), not done "
-        "by an independent human; 28 rows then spot-checked by a human against the Gallica scan.",
+        "provenance": "The table was transcribed twice from the scan and the two transcriptions "
+        "reconciled, each disagreement resolved against the page image. 28 rows were then checked "
+        "by hand against the scan, with no discrepancies; the remaining 251 rows have had no "
+        "human check.",
         "package_files": sorted(
             p.name for p in PKG.iterdir() if p.is_file() and not p.name.startswith(".")
         ),

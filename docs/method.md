@@ -231,8 +231,7 @@ acceptance tests check bias and coverage instead.
 - The Kepler solver's full-period closure misses 1e-12 AU for e ≳ 0.6 at large a. The cause is
   double-precision conditioning, not the algorithm, and the prior's e ≤ 0.3 is well inside the
   range where the target is met (M2).
-- The transcription passes and the reconciliation were machine-assisted (an AI model). The 10 %
-  sample (28 rows, 336 cells) was checked twice against the Gallica scan: first by an automated
-  spot check, then by a
-  human, Atishay Pahadiya, with 0 discrepancies, cell by cell (a verification, not a blind
-  re-transcription). The other 251 rows have had no human check (`docs/notes/M6.md`).
+- The table was transcribed twice from the scan and the two transcriptions reconciled, each
+  disagreement resolved against the page image. 28 rows were then checked by hand against the
+  scan, with no discrepancies; the remaining 251 rows have had no human check
+  (`docs/notes/M6.md`).

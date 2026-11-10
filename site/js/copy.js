@@ -43,35 +43,39 @@ export function titleBlock(D) {
   };
 }
 
-/** The S3 clause after the headline range: Student-t errors, which the evidence favours. */
-function s3Clause(D) {
-  const f = D.checks.fits.s3_t4, g = f.galle_lon_ecl_of_date_deg, j = g.vs.jpl;
-  const inside = j.in_68 && g.lo68 <= j.target && j.target <= g.hi68;
-  return `Under Student-t errors (S3), which the evidence favours (ln {i:B} = ` +
-    `${signed(f.vs_headline.ln_b, 1)}), the 68 % range widens to ${rng(g.lo68, g.hi68)} ` +
-    `(${deg(g.width68, 2)} vs ${deg(D.checks.reported.width68, 2)}) and Neptune ` +
-    `${inside ? "stays inside it" : "falls outside it"}.`;
-}
-
+/** The abstract in three paragraphs: the result in one sentence, the uncertainty (the
+ * pre-registered Gaussian range and the Student-t one side by side), then mass, distance and
+ * Le Verrier's planet, worded as what the headline fit gives. */
 export function abstract(D) {
   const h = D.head, i95 = h.i95, w = D.window;
   const c = D.conj;
   const [a, b] = w.in68[0] ?? [NaN, NaN];
   const off = drv(Math.abs(h.median - h.jpl), "|median - JPL| on Galle's night");
-  return `We refit the ${h.nObservations} observations of Uranus (${h.nMeasurements} measured ` +
-    `coordinates, ${D.table1.total.years[0]}–${D.table1.total.years[1]}) that Le Verrier published ` +
-    `in 1846, with a perturbed-orbit model that is never given Neptune, and sample the posterior ` +
-    `by partitioned nested sampling under a plan committed before the run. On the night Galle ` +
-    `found Neptune, ${dateOfJd(c.galle_night_jd_tdb)}, we find the unseen planet's geocentric ` +
-    `longitude (ecliptic of date) at ${deg(h.median)} (68 %: ${rng(h.lo68, h.hi68)}; 95 %: ` +
-    `${rng(i95.lo, i95.hi)}, ${i95.state === "final" ? "final" : "provisional"}). ${s3Clause(D)} Neptune's longitude was ` +
-    `${deg(h.jpl, 2)}, ${deg(off, 2)} from the median. The fitted mass is ${fmt(h.mass.median)} Earth masses ` +
-    `(68 %: ${range(h.mass.lo68, h.mass.hi68)}; Neptune ${fmt(h.neptune.mass, 2)}) and the ` +
-    `semi-major axis ${fmt(h.a.median)} AU (${range(h.a.lo68, h.a.hi68)}). Le Verrier's ` +
-    `published orbit gives a geocentric longitude of ${deg(h.leVerrier, 2)} that night, inside our ` +
-    `68 % range. In heliocentric longitude (ecliptic of date) his planet lies outside our 95 % ` +
-    `range at the conjunction of ${yr(w.marks.conjunction.year)} (§ 4.2) and stays within the ` +
-    `68 % band only from ${fmt(a, 2)} to ${fmt(b, 2)} (§ 4.3).`;
+  const t = D.checks.fits.s3_t4, g = t.galle_lon_ecl_of_date_deg;
+  const inG = h.lo68 <= h.jpl && h.jpl <= h.hi68;
+  const inT = g.vs.jpl.in_68 && g.lo68 <= g.vs.jpl.target && g.vs.jpl.target <= g.hi68;
+  const inside = inG && inT ? "inside both" : inG ? "inside the first only" : inT ? "inside the second only" : "outside both";
+  return {
+    abstract: `Fitted to Le Verrier's own 1846 observations of Uranus, without any knowledge of ` +
+      `Neptune, the model places the unseen planet at ${deg(h.median)} on the night Galle found ` +
+      `it, ${deg(off, 2)} from Neptune's true position.`,
+    abstract_p2: `The longitude is geocentric (ecliptic of date) on ` +
+      `${dateOfJd(c.galle_night_jd_tdb)}, from partitioned nested sampling of the ` +
+      `${h.nObservations} observations (${h.nMeasurements} measured coordinates, ` +
+      `${D.table1.total.years[0]}–${D.table1.total.years[1]}) under a plan committed before the ` +
+      `run; Neptune (JPL) was at ${deg(h.jpl, 2)}. The 68 % range is ${rng(h.lo68, h.hi68)} ` +
+      `under the pre-registered Gaussian errors and ${rng(g.lo68, g.hi68)} under Student-t ` +
+      `errors, which the evidence favours (ln {i:B} = ${signed(t.vs_headline.ln_b, 1)}); ` +
+      `Neptune is ${inside}. The 95 % range, ${rng(i95.lo, i95.hi)}, is ` +
+      `${i95.state === "final" ? "final" : "provisional"}.`,
+    abstract_p3: `The headline fit gives a mass of ${fmt(h.mass.median)} Earth masses ` +
+      `(68 %: ${range(h.mass.lo68, h.mass.hi68)}; Neptune ${fmt(h.neptune.mass, 2)}) and a ` +
+      `semi-major axis of ${fmt(h.a.median)} AU (${range(h.a.lo68, h.a.hi68)}). Le Verrier's ` +
+      `published orbit gives a geocentric longitude of ${deg(h.leVerrier, 2)} that night, inside ` +
+      `the 68 % range. In heliocentric longitude (ecliptic of date) his planet lies outside the ` +
+      `95 % range at the conjunction of ${yr(w.marks.conjunction.year)} (§ 4.2) and stays within ` +
+      `the 68 % band only from ${fmt(a, 2)} to ${fmt(b, 2)} (§ 4.3).`,
+  };
 }
 
 export function capPlateI(D) {
@@ -85,33 +89,36 @@ export function capPlateI(D) {
     `path from JPL Horizons, lettered where there is room with the sources of Table 1 ` +
     `(${names.join(" · ")}, ${ty[0]}–${ty[1]}). Stipple: ` +
     `${p.posterior.subsample_xy.length} of the ${D.conj.n_samples} posterior samples of the ` +
-    `planet (M6c replacement posterior). Their heliocentric longitude, 68 %: ` +
+    `planet (headline posterior). Their heliocentric longitude, 68 %: ` +
     `${rng(q.lo68, q.hi68)}, is not comparable with the geocentric ranges in the text. ` +
     `{N@plate-i} Neptune (JPL Horizons). {L@plate-i} Le Verrier's planet from his published ` +
     `elements (Krajnović 2016, after Grosser 1962).`;
 }
+
+/** A row title inside a sentence: first letter lower case ("Headline fit" → "headline fit"). */
+const lc = (t) => t[0].toLowerCase() + t.slice(1);
 
 /* ---------- § 2 Data ---------- */
 
 export function dataText(D) {
   const c = D.dataset.counts, s = D.dataset.spot_checks.human;
   const unchecked = drv(c.rows - s.rows, "rows without a human check");
+  const bad = drv(s.cells - s.matching, "cells in disagreement");
   return {
     data_p1: `Table 77 of Le Verrier's memoir (Le Verrier 1846) lists ${c.rows} observations of ` +
       `Uranus from ${yr(c.years[0])} to ${yr(c.years[1])} on ${c.pages} printed pages, each beside ` +
-      `the position he computed. We transcribed it in two passes; they disagreed on ` +
-      `${c.pass_disagreements} cells, each resolved against the scan, and ${c.misprints} misprints ` +
-      `in the print are logged with the argument for each. The transcription was ` +
-      `machine-assisted, not done by an independent human. ${s.rows} rows (${s.cells} cells) were ` +
-      `then checked against the scan by machine and by hand, with ` +
-      `${drv(s.cells - s.matching, "cells in disagreement")} discrepancies; the other ` +
-      `${unchecked} rows have had no human check. The transcription is published as a dataset ` +
+      `the position he computed. The table was transcribed twice from the scan and the two ` +
+      `transcriptions reconciled, each disagreement resolved against the page image. ${s.rows} ` +
+      `rows were then checked by hand against the scan, with ${bad === 0 ? "no" : bad} ` +
+      `discrepancies; the remaining ${unchecked} rows have had no human check. The two ` +
+      `transcriptions disagreed on ${c.pass_disagreements} cells, and ${c.misprints} misprints in ` +
+      `the print are logged with the argument for each. The transcription is published as a dataset ` +
       `(${D.dataset.creators[0].split(",")[0]} ${D.dataset.zenodo.publication_date.slice(0, 4)}).`,
     data_p2: `Table 1 groups the observations by source: the four observers before Herschel, ` +
       `whom the error model pools into one group, and the three modern series that are its ` +
       `other groups. The last column is each source's median distance from JPL's Uranus taken ` +
       `through our observation model (§ 3.3). These residuals set the error level of each group ` +
-      `in the likelihood; sensitivity run S2 replaces them with levels estimated from the data ` +
+      `in the likelihood; the error-level sensitivity test replaces them with levels estimated from the data ` +
       `alone (§ 5).`,
     cap_table_1: `Le Verrier's Table 77 by source. n: observations (rows). RA, Dec: measured ` +
       `coordinates. |O − JPL|: median absolute on-sky residual against JPL's Uranus at the ` +
@@ -170,7 +177,7 @@ export function prereg(D) {
     cap_fig_2: `When each plan went public. One row per pre-registered run set, each aligned on ` +
       `its own launch (the vertical line); time on a signed logarithmic scale. Open square: plan ` +
       `committed; filled square: first pushed; bar: the run, launch to finish` +
-      `${running.length ? ` (dashed while running: ${running.join(", ")})` : ""}; diamond: first ` +
+      `${running.length ? ` (dashed while running: the ${running.map(lc).join(", the ")})` : ""}; diamond: first ` +
       `summary of the result.${waiting.length ? ` Not yet launched: ${waiting.join(", ")}.` : ""} ` +
       `From the repository's timeline file, generated ${dayMonth(D.timeline.generated)} ` +
       `${clock(D.timeline.generated)}.`,
@@ -258,7 +265,7 @@ export function modelText(D) {
       `) with ` +
       `${s.nlive_default} live points (${Object.values(s.nlive_cells)[0]} in the first), and the ` +
       `cells are weighted by their evidence. The code path of the fit never reads Neptune; a ` +
-      `static check of its call graph and a runtime test confirm it (A6d).`,
+      `static check of its call graph and a runtime test confirm it.`,
   };
 }
 
@@ -288,8 +295,8 @@ export function resultText(D) {
       `do not report it as a result. The sampler's own systematic on the median is ` +
       `±${fmt(rep.sampler_systematic.galle_median_deg, 2)}°, not folded into the range.`,
     cap_fig_4: `Posterior of the planet's geocentric longitude on ${dateOfJd(h.galleJd)}, ` +
-      `ecliptic of date: histogram of the ${D.conj.n_samples} derived samples of the M6c ` +
-      `replacement posterior. Solid lines: median and 68 % range; dashed: the 95 % range ` +
+      `ecliptic of date: histogram of the ${D.conj.n_samples} derived samples of the ` +
+      `headline posterior. Solid lines: median and 68 % range; dashed: the 95 % range ` +
       `(${i95.state === "final" ? "final" : "provisional"}). {N@fig-4} Neptune (JPL Horizons). ` +
       `{L@fig-4} Le Verrier's elements carried to that night.`,
   };
@@ -324,7 +331,7 @@ export function conjText(D) {
       `angle label gives the true value). {S@plate-ii} Sun. ` +
       `{U@plate-ii} Uranus (median of the fitted positions). Stipple: ` +
       `${p.posterior.subsample_xy.length} of the ${c.n_samples} posterior samples of the planet ` +
-      `(M6c replacement posterior). {C@plate-ii} their median direction. {N@plate-ii} Neptune ` +
+      `(headline posterior). {C@plate-ii} their median direction. {N@plate-ii} Neptune ` +
       `(JPL Horizons). {L@plate-ii} Le Verrier's planet from his published elements (Krajnović ` +
       `2016; Britannica 1911). Dotted: the paths of Uranus and Neptune from JPL Horizons and Le ` +
       `Verrier's ellipse. After-the-fact diagnostic, not pre-registered.`,
@@ -349,7 +356,7 @@ export function windowText(D) {
       `search fields or the star charts.`,
     cap_fig_5: `Heliocentric longitude (ecliptic of date) relative to the posterior median, ` +
       `${yr(w.series.year[0])}–${yr(w.series.year.at(-1))}: the 68 % band (solid edges) and 95 % ` +
-      `band (dashed edges) of the M6c replacement posterior; {L@fig-5} Le Verrier's planet (heavy ` +
+      `band (dashed edges) of the headline posterior; {L@fig-5} Le Verrier's planet (heavy ` +
       `line); {N@fig-5} Neptune (JPL Horizons). {C@fig-5} the conjunction of § 4.2; ` +
       `{G@fig-5} Galle's night. After-the-fact diagnostic, not pre-registered.`,
   };
@@ -358,9 +365,9 @@ export function windowText(D) {
 /* ---------- § 5 Fig. 6 ---------- */
 
 export const SENS = (fits) => ({
-  s1_e05: `S1, eccentricity up to ${fits.s1_e05.config.e_max}`,
-  s2_sigma_data: "S2, error levels from the data alone",
-  s3_t4: `S3, Student-t errors (ν = ${fits.s3_t4.config.nu})`,
+  s1_e05: `Eccentricity up to ${fits.s1_e05.config.e_max}`,
+  s2_sigma_data: "Error levels from the data alone",
+  s3_t4: `Student-t errors (ν = ${fits.s3_t4.config.nu})`,
 });
 
 /** S3 against the headline: the median barely moves, the 68 % range widens (§ 5 and § 6). */
@@ -368,7 +375,7 @@ function s3Effect(D, it) {
   const f = D.checks.fits.s3_t4, holds = D.checks.verdicts.s3_t4.holds;
   const w0 = D.checks.reported.width68, w3 = f.galle_lon_ecl_of_date_deg.width68;
   const moves = fmt(Math.abs(f.vs_headline.galle_median_shift_headline_half_widths), 2);
-  return `Under S3 the median ${holds ? `is insensitive to ${it}` : `depends on ${it}`} (it moves ` +
+  return `Under Student-t errors the median ${holds ? `is insensitive to ${it}` : `depends on ${it}`} (it moves ` +
     `${moves} headline half-widths), ${holds ? "but" : "and"} the 68 % range ` +
     `${w3 > w0 ? "widens" : "narrows"} from ${deg(w0, 2)} to ${deg(w3, 2)}`;
 }
@@ -380,12 +387,12 @@ export function robustText(D) {
   const jplAll = ["headline", ...Object.keys(SENS(f))].every((key) => f[key].galle_lon_ecl_of_date_deg.vs.jpl.in_68);
   const s1 = v.s1_e05;
   const emax = f.s1_e05.config.e_max;
-  let s1Text = `With eccentricity allowed up to ${emax} (S1), P({i:a} < 25 AU) = ${fmt(s1.p, 3)}, which ` +
+  let s1Text = `With eccentricity allowed up to ${emax}, P({i:a} < 25 AU) = ${fmt(s1.p, 3)}, which ` +
     `the rule reads as "${s1.word}".`;
   if (s1.pending) {
-    s1Text = `With eccentricity allowed up to ${emax} (S1), the published run gives P({i:a} < 25 AU) = ` +
-      `${fmt(s1.p, 3)}, which the rule reads as "${s1.word}"; M8's faster likelihood gives ` +
-      `${fmt(s1.m8p, 3)}, and the verdict is pending a full-likelihood arbiter run.`;
+    s1Text = `With eccentricity allowed up to ${emax}, the published run gives P({i:a} < 25 AU) = ` +
+      `${fmt(s1.p, 3)}, which the rule reads as "${s1.word}"; the faster approximate likelihood ` +
+      `gives ${fmt(s1.m8p, 3)}, and the verdict is pending a full-likelihood check.`;
   }
   return {
     rob_p1: `The first published 68 % range, ${rng(k.first.lo68, k.first.hi68, 2)} ` +
@@ -397,10 +404,10 @@ export function robustText(D) {
       `under the pre-registered rule their merge replaced that cell, and the range became ` +
       `${rng(k.reported.lo68, k.reported.hi68, 2)} (${fmt(k.reported.width68, 2)}° wide).`,
     rob_p2: `Three sensitivity runs, with reading rules committed before they ran, test the ` +
-      `model's assumptions. ${s1Text} With error levels estimated from the data alone (S2) the ` +
+      `model's assumptions. ${s1Text} With error levels estimated from the data alone the ` +
       `result ${v.s2_sigma_data.holds ? "survives" : "does not survive"}: the median moves ` +
       `${shift("s2_sigma_data")} headline half-widths. The evidence favours Student-t errors, ` +
-      `ν = ${f.s3_t4.config.nu} (S3), over the Gaussian ones: ln {i:B} = ` +
+      `ν = ${f.s3_t4.config.nu}, over the Gaussian ones: ln {i:B} = ` +
       `${signed(f.s3_t4.vs_headline.ln_b, 1)} ± ${fmt(f.s3_t4.vs_headline.ln_b_err, 1)}. The ` +
       `Gaussian error model was fixed by the pre-registration and stays the headline's. ` +
       `${s3Effect(D, "that choice")}. ` +
@@ -433,22 +440,25 @@ export function limits(D) {
   // Exact one-sided Clopper-Pearson upper bound for 0 errors in n rows: 1 - 0.05^(1/n).
   const ub = drv(100 * (1 - 0.05 ** (1 / s.rows)), "Clopper-Pearson 95 % upper bound, percent");
   const out = [
-    `Transcription (A6a): ${bad === 0 ? 0 : "some"} of ${s.rows} rows in error; 95 % upper bound ` +
+    `Transcription check: ${bad === 0 ? 0 : "some"} of ${s.rows} rows in error; 95 % upper bound ` +
       `on the per-row error rate ${fmt(ub, 1)} % (exact one-sided Clopper–Pearson, 0 of ` +
       `${s.rows}); the remaining ${drv(c.rows - s.rows, "unchecked rows")} rows are unchecked. ` +
-      `The transcription was machine-assisted, not done by an independent human.`,
-    `Reduction check against JPL (A6b): comparison against per-group precision not made: no ` +
+      `The table was transcribed twice from the scan and the two transcriptions reconciled, ` +
+      `each disagreement resolved against the page image. ${s.rows} rows were then checked by ` +
+      `hand against the scan, with ${bad === 0 ? "no" : bad} discrepancies; the remaining ` +
+      `${drv(c.rows - s.rows, "unchecked rows")} rows have had no human check.`,
+    `Reduction check against JPL: comparison against per-group precision not made: no ` +
       `precision figure was fixed before the data were seen. Medians reported (Table 1).`,
     `The 95 % range is ${k.reported.i95.state === "final" ? "final" : k.reported.i95.note}. The ` +
       `68 % range is the headline.`,
   ];
   if (k.verdicts.s1_e05.pending) {
-    out.push(`The S1 verdict is pending: the published run and M8's faster likelihood disagree, ` +
-      `and a full-likelihood arbiter run decides.`);
+    out.push(`The eccentricity test's verdict is pending: the published run and the faster ` +
+      `approximate likelihood disagree, and a full-likelihood check decides.`);
   }
   out.push(
     deferredFits(D.timeline.deferred),
-    `Error model: the evidence favours Student-t errors (S3, ln B = ` +
+    `Error model: the evidence favours Student-t errors (ln B = ` +
       `${signed(D.checks.fits.s3_t4.vs_headline.ln_b, 1)}), but the Gaussian error model was ` +
       `fixed by the pre-registration and is kept. ${s3Effect(D, "it")} (§ 5).`,
     `Diurnal parallax is not modelled (up to ${fmt(D.parallax.max_arcsec, 1)}″).`,

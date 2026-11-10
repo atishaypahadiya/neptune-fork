@@ -88,6 +88,19 @@ const SX = (s) => Math.sign(s) * Math.log10(1 + Math.abs(s) / 20);
 const TICKS = [[-36000, "−10 h"], [-3600, "−1 h"], [-600, "−10 min"], [-60, "−1 min"], [0, "launch"],
   [60, "+1 min"], [600, "+10 min"], [3600, "+1 h"], [36000, "+10 h"]];
 
+/** A Fig. 2 row label as one line, or two if it is longer than 28 characters. */
+function rowLines(title) {
+  if (title.length <= 28) return [title];
+  const k = title.indexOf(" (");
+  if (k > 0) return [title.slice(0, k), title.slice(k + 1)];
+  const mid = title.length / 2;
+  let best = -1;
+  for (let i = title.indexOf(" "); i >= 0; i = title.indexOf(" ", i + 1)) {
+    if (best < 0 || Math.abs(i - mid) < Math.abs(best - mid)) best = i;
+  }
+  return best < 0 ? [title] : [title.slice(0, best), title.slice(best + 1)];
+}
+
 export function fig2(fig, D) {
   const F = timelineFacts(D.timeline);
   const tip = probe(fig);
@@ -117,8 +130,12 @@ export function fig2(fig, D) {
     for (const f of F) {
       const yy = y(f.e.id);
       const lane = g.append("g");
-      if (phone) lane.append("text").attr("class", "lbl row").attr("x", mg.l).attr("y", yy - 14).text(f.e.title);
-      else lane.append("text").attr("class", "lbl row").attr("x", mg.l - 12).attr("y", yy + 4).attr("text-anchor", "end").text(f.e.title);
+      // Long names take two lines: before a parenthesis, else at the space nearest the middle.
+      const lines = rowLines(f.e.title);
+      const t = phone
+        ? lane.append("text").attr("class", "lbl row").attr("x", mg.l).attr("y", yy - 14 - 13 * (lines.length - 1))
+        : lane.append("text").attr("class", "lbl row").attr("x", mg.l - 12).attr("y", yy + 4 - 6.5 * (lines.length - 1)).attr("text-anchor", "end");
+      lines.forEach((s, i) => t.append("tspan").attr("x", t.attr("x")).attr("dy", i ? 13 : 0).text(s));
       if (!f.L) continue;
       const end = f.dFinish ?? f.dNow;
       lane.append("path").attr("class", `ln model${f.dFinish === null ? " dash" : ""}`)

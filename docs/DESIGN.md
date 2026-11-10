@@ -181,7 +181,7 @@ file says it is an after-the-fact diagnostic, not pre-registered, and the captio
 - **Built by** `docs/notes/scripts/m7_table1.py` → `site/data/m7_table1.json`, from
   `data/historical/leverrier_1846.csv`. The per-source |O − JPL| values come from
   `fork.data.calibration`, which the script imports; `src/` is not changed.
-- **Footer row:** totals; "28 rows checked by hand (A6a)"; the licence (CC0) and the version
+- **Footer row:** totals; "28 rows checked by hand against the scan"; the licence (CC0) and the version
   DOI from `m7_dataset.json`.
 - **Caption:** "Table 1." in small caps, then what the residual is measured against.
 - The values are typeset in Source Serif 4 tabular figures, with no rules except one hairline

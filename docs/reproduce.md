@@ -11,6 +11,31 @@ does not cover took seconds to a few minutes and are marked "not in ledger".
 calls. One likelihood call is one N-body integration over 1690–1846, so that is 87 billion
 simulated planet-years.
 
+## Run identifiers
+
+The site and the README name runs and checks descriptively. The milestone notes, the spec and
+the commands below use these identifiers.
+
+| name on the site and in the README | identifier | notes |
+|---|---|---|
+| the headline fit (its posterior: the headline posterior) | M6c headline; the replacement posterior, with cell 2 replaced by the R2 merge | `docs/notes/M6.md` |
+| the sensitivity runs | M6c S1–S3 | `docs/notes/M6.md` |
+| the eccentricity sensitivity test (eccentricity up to 0.5) | S1 (`s1_e05`) | `docs/notes/M6.md` |
+| the error-level sensitivity test (error levels from the data alone) | S2 (`s2_sigma_data`) | `docs/notes/M6.md` |
+| the Student-t sensitivity test | S3 (`s3_t4`) | `docs/notes/M6.md` |
+| the repeatability runs | M6c cell-2 repeatability (R1, R2) | `docs/notes/M6.md` |
+| the fast-likelihood validation | M8, A8b–A8f (48 runs) | `docs/notes/M8.md` |
+| the fast-likelihood rerun | M8 A8f rerun | `docs/notes/M8.md` |
+| the higher-resolution reruns | M8b | `docs/notes/M8.md` |
+| the full-likelihood check of the eccentricity test | A8d(S1) arbiter (`m8_arbiter`) | `docs/notes/M8.md` |
+| the 95 % stability condition | `std_95_bounds_le_0p4` (rule_95 in `m8b.json`) | `docs/notes/M8.md` |
+| the convergence gates; the agreement with the headline fit; the seed-agreement condition | `gates_headline_and_single_seed_fits`; `a8b_a8c`; `a8f_headline_cells` | `docs/notes/M8.md` |
+| the transcription check | A6a | `docs/notes/A6.md` |
+| the reduction check against JPL | A6b | `docs/notes/A6.md` |
+| the coverage test on synthetic data with the real error model | A6c | `docs/notes/A6.md` |
+| the leak check (the fit never reads Neptune) | A6d | `docs/notes/A6.md` |
+| the coverage test on synthetic data | A3b (M5b) | `docs/notes/M5.md` |
+
 ## Setup
 
 ```sh

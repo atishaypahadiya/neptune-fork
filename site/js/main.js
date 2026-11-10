@@ -71,7 +71,7 @@ function table1(D) {
   const note = document.createElement("tr");
   const td = document.createElement("td");
   td.colSpan = 7;
-  td.textContent = `${s.rows} rows checked by hand against the scan (A6a). ` +
+  td.textContent = `${s.rows} rows checked by hand against the scan. ` +
     `${z.license === "cc-zero" ? "CC0 1.0" : z.license}, doi:${z.version_doi}.`;
   note.append(td);
   tf.append(note);
@@ -147,7 +147,7 @@ async function main() {
   D.head.galleJd ??= D.conj.galle_night_jd_tdb;
   setSlots({
     ...C.titleBlock(D),
-    abstract: C.abstract(D),
+    ...C.abstract(D),
     cap_plate_i: C.capPlateI(D),
     ...C.dataText(D),
     ...C.prereg(D),

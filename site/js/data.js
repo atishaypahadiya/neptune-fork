@@ -63,6 +63,14 @@ export function jdToDate(jd) {
   return { day, month, year, text: `${day} ${names[month - 1]} ${year}` };
 }
 
+/** Reader-facing names of the 95 % replacement rule's conditions (m8b.json rule_95). */
+const CONDITION_NAMES = {
+  gates_headline_and_single_seed_fits: "the convergence gates",
+  a8b_a8c: "the agreement with the headline fit",
+  a8f_headline_cells: "the seed-agreement condition",
+  std_95_bounds_le_0p4: "the 95 % stability condition",
+};
+
 /**
  * Status of the 95 % interval. M6c's is provisional (`provisional` lists its bounds); M8 tried to
  * replace it and its rule did not hold (`m8_runs.json` rule_95.replace); M8b decides next
@@ -73,7 +81,9 @@ export function interval95(rep, m8, m8b) {
   const provisional = (rep.provisional ?? []).some((k) => k.endsWith("95"));
   const base = { lo: g.lo95, hi: g.hi95, source: "M6c" };
   if (!provisional) return { ...base, state: "final", note: "" };
-  for (const [name, run, key] of [["M8b", m8b, "m8b_95"], ["M8", m8, "m8_95"]]) {
+  // Reader-facing names; the run IDs (M8b, M8) are mapped in docs/reproduce.md.
+  for (const [name, run, key] of [["the higher-resolution reruns", m8b, "m8b_95"],
+                                  ["the fast-likelihood validation", m8, "m8_95"]]) {
     const rule = run?.rule_95;
     if (rule?.replace) {
       return { lo: rule[key][0], hi: rule[key][1], source: name, state: "final",
@@ -82,12 +92,12 @@ export function interval95(rep, m8, m8b) {
   }
   if (!m8b) {
     return { ...base, state: "pending",
-             note: "provisional: the M8b reruns that decide it have not reported" };
+             note: "provisional: the higher-resolution reruns that decide it have not reported" };
   }
   const failed = Object.entries(m8b.rule_95?.conditions ?? {}).filter(([, ok]) => !ok)
-    .map(([k]) => k);
+    .map(([k]) => CONDITION_NAMES[k] ?? k);
   return { ...base, state: "provisional",
-           note: `provisional: M8b did not meet the replacement rule (${failed.join(", ")})` };
+           note: `provisional: the higher-resolution reruns did not meet ${failed.join(" or ")}` };
 }
 
 /** Everything panel 1 (the headline) shows. */
