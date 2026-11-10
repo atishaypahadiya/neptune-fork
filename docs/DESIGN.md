@@ -284,8 +284,15 @@ wording is unverified.
 
 ## Build
 
-- Static, no build step, `site/` only. ES modules; an importmap pins D3 at an exact version
-  from jsDelivr; fonts come from Google Fonts with serif fallbacks.
+- Static, `site/` only. ES modules; an importmap pins D3 at an exact version from jsDelivr;
+  fonts come from Google Fonts with serif fallbacks.
+- **Prerendered for Pages (2026-11-09):** `tools/prerender_site.py` loads `site/` in headless
+  Chrome and writes the rendered page (text, tables, captions, references, the static SVG of
+  every plate and figure) as `_site/index.html`, with the head tags for link previews and
+  `plate-i.png` (Plate I, 1200 × 630). Without JavaScript the page reads in full. With it,
+  `main.js` redraws the same content (every render step replaces what it renders) and shows
+  the controls that need JS (`data-js hidden`: Plate III's play and scrub, Copy). The Pages
+  workflow runs the build and `tools/check_prerender.py`, and deploys `_site/`.
 - **Kept from the current site:** `data.js` (loaders, the 95 % status, number formatting) and
   the per-panel error and pending states. Removed: the three.js scenes, `lanes.js` and the dark
   styles.
@@ -346,3 +353,8 @@ Review of the localhost page (2026-11-09):
    the pending S1 verdict read as such.
 6. **Guards:** no change to `src/`, `release/`, the pre-registered files or M8b; the
    design-ref file is never staged.
+7. **Without JavaScript** (`tools/check_prerender.py`, run by the Pages workflow before
+   deploy): the built page, loaded with JS off, passes the number audit, and its numbers, text
+   and SVG labels match the JS-rendered page exactly (the JS-only controls left out of both).
+   Title = the paper's title, description = the abstract's first sentence, canonical URL,
+   Open Graph and Twitter card tags with `plate-i.png` at 1200 × 630.

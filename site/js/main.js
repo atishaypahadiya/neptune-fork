@@ -1,5 +1,7 @@
 // Loads site/data/, fills the text of the paper and draws its plates and figures. Each figure
 // fails on its own (with a message in place) if its data are missing or inconsistent.
+// Every render step replaces what it renders, so running over the prerendered page
+// (tools/prerender_site.py) gives the same page plus the JS-only controls.
 
 import {
   loadJSON, loadHeadline, loadConjunction, loadWindow, loadTimeline, loadChecks, fmt, drv,
@@ -35,6 +37,8 @@ function setSlots(values) {
 
 function table1(D) {
   const t = D.table1, tb = document.querySelector("#table-1 tbody"), tf = document.querySelector("#table-1 tfoot");
+  tb.replaceChildren();
+  tf.replaceChildren();
   const cell = (tr, text, cls = "") => {
     const td = document.createElement("td");
     td.textContent = text;
@@ -69,6 +73,7 @@ function quotes(D) {
   for (const q of D.quotes.quotes) {
     const el = document.querySelector(`blockquote[data-quote="${q.id}"]`);
     if (!el) continue;
+    el.replaceChildren();
     const add = (tag, cls, text, lang) => {
       const e = document.createElement(tag);
       if (cls) e.className = cls;
@@ -84,6 +89,7 @@ function quotes(D) {
 
 function references(D) {
   const ol = document.querySelector(".refs");
+  ol.replaceChildren();
   for (const r of C.references(D)) {
     const li = document.createElement("li");
     li.id = `ref-${r.id}`;
@@ -98,6 +104,7 @@ function references(D) {
 
 function limits(D) {
   const ul = document.querySelector(".limits");
+  ul.replaceChildren();
   for (const t of C.limits(D)) {
     const li = document.createElement("li");
     fill(li, t);
@@ -162,6 +169,8 @@ async function main() {
   guard('[data-fig="plate-ii"]', (el) => plateII(el, D));
   guard('[data-fig="fig-5"]', (el) => fig5(el, D));
   guard('[data-fig="fig-6"]', (el) => fig6(el, D));
+  // Controls that only work with JS (Plate III's play and scrub, Copy) are hidden in the HTML.
+  for (const el of document.querySelectorAll("[data-js]")) el.hidden = false;
   document.documentElement.dataset.ready = "1";
 }
 

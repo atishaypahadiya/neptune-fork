@@ -150,3 +150,15 @@ kept the machine at load ~19, so expect less on an idle machine. It shows the pi
 Its interval and ln Z are not M5b results. That run's 68 % interval was about 5° wide, half the
 width of the real M5b intervals, and its ln Z_k error was ±3. At nlive 20 the sampler
 under-explores the cell.
+
+## Site (Pages build)
+
+```sh
+uv sync --group site                                              # Playwright (uses Google Chrome)
+uv run --group site python tools/prerender_site.py --out _site    # prerendered page + plate-i.png
+uv run --group site python tools/check_prerender.py _site         # audit with JS off, = JS page
+```
+
+The Pages workflow runs the same two steps and deploys `_site/`. Without Google Chrome, run
+`uv run --group site playwright install chromium` first. To preview, serve `_site/` (or
+`site/`, which renders everything client-side) with any static server.

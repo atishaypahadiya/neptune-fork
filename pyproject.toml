@@ -23,6 +23,9 @@ dev = [
     "ruff>=0.6",
     "frictionless>=5",
 ]
+site = [
+    "playwright>=1.65.0",
+]
 
 [build-system]
 requires = ["hatchling"]

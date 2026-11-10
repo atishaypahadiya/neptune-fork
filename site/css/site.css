@@ -17,6 +17,8 @@
 }
 
 * { box-sizing: border-box; }
+/* `hidden` wins over display rules: controls that need JS are hidden in the prerendered page. */
+[hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
