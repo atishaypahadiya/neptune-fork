@@ -2,7 +2,8 @@
 
 [![test](https://github.com/atishaypahadiya/neptune-fork/actions/workflows/test.yml/badge.svg)](https://github.com/atishaypahadiya/neptune-fork/actions/workflows/test.yml)
 [![pages](https://github.com/atishaypahadiya/neptune-fork/actions/workflows/pages.yml/badge.svg)](https://github.com/atishaypahadiya/neptune-fork/actions/workflows/pages.yml)
-[![DOI, all versions](https://zenodo.org/badge/DOI/10.5281/zenodo.24044791.svg)](https://doi.org/10.5281/zenodo.24044791)
+[![DOI, dataset, all versions](https://zenodo.org/badge/DOI/10.5281/zenodo.24044791.svg)](https://doi.org/10.5281/zenodo.24044791)
+[![DOI, code, all versions](https://zenodo.org/badge/DOI/10.5281/zenodo.24121059.svg)](https://doi.org/10.5281/zenodo.24121059)
 
 Refitting Le Verrier's prediction of Neptune from his observations of Uranus.
 
@@ -137,6 +138,10 @@ condition, so the 95 % interval stays provisional.
   above) covers all versions; cite it for the dataset in general.
 - Version DOI [10.5281/zenodo.24044792](https://doi.org/10.5281/zenodo.24044792) is v1.0.0;
   cite it for exact reproduction.
+- The code of release v1.0.0 is archived on Zenodo as well: version DOI
+  [10.5281/zenodo.24121060](https://doi.org/10.5281/zenodo.24121060), concept DOI
+  [10.5281/zenodo.24121059](https://doi.org/10.5281/zenodo.24121059) for all versions
+  (`CITATION.cff` carries both).
 
 ## Limitations
 

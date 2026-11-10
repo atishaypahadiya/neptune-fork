@@ -109,9 +109,13 @@ semver: the tag is `vX.Y.Z`, and `pyproject.toml` and `CITATION.cff` hold `X.Y.Z
 
 ## Tag and release
 
-- [ ] `git tag -a v1.0.0 -m "v1.0.0: Phase 1 through M6"`
-- [ ] `git push origin v1.0.0`
-- [ ] GitHub release from the tag. Release notes:
+- [x] `git tag -a v1.0.0 -m "v1.0.0: Phase 1 through M6"` 2026-11-10: on 1ac45a3, with CI (test
+  and pages) green on it.
+- [x] `git push origin v1.0.0` 2026-11-10: pushed over SSH.
+- [x] GitHub release from the tag. 2026-11-10 22:36:57 UTC, not a draft:
+  https://github.com/atishaypahadiya/neptune-fork/releases/tag/v1.0.0, with the notes below in
+  the paper's voice (what was found, what is provisional or unresolved, what is deferred to
+  v1.1, the dataset DOIs, the licence split, the ledger total). Release notes:
   - what is included;
   - the headline numbers, each marked synthetic or real:
     - A1: 2e-9″ against REBOUND;
@@ -123,6 +127,11 @@ semver: the tag is `vX.Y.Z`, and `pyproject.toml` and `CITATION.cff` hold `X.Y.Z
   - the ×1.8 evidence-error inflation;
   - the license split (MIT code, CC0 1.0 for `data/historical/`);
   - the compute ledger total.
-- [ ] Zenodo DOI minted. Add the DOI badge to `README.md` and `doi:` to `CITATION.cff`, in a
-  follow-up commit.
-- [ ] The Pages site still deploys from `main`.
+- [x] Zenodo DOI minted. Add the DOI badge to `README.md` and `doi:` to `CITATION.cff`, in a
+  follow-up commit. 2026-11-10: version DOI 10.5281/zenodo.24121060, concept DOI
+  10.5281/zenodo.24121059 (https://zenodo.org/records/24121060), minted within 20 minutes of
+  the release; badge and availability bullet in `README.md`, `doi:` and both identifiers in
+  `CITATION.cff`, and the site's byline and Data availability read them from
+  `site/data/release.json`.
+- [x] The Pages site still deploys from `main`. 2026-11-10: the pages workflow deployed 1ac45a3
+  and the live page carries the release byline ("code v1.0.0").
