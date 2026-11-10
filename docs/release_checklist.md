@@ -48,8 +48,10 @@ semver: the tag is `vX.Y.Z`, and `pyproject.toml` and `CITATION.cff` hold `X.Y.Z
   read the release.
 - [ ] `uv sync --locked` succeeds on a fresh clone.
 - [ ] `uv run ruff check . && uv run ruff format --check .` passes.
-- [ ] `uv run pytest -m "not slow and not network"` passes locally and on CI (the badge is
-  green on `main`).
+- [x] `uv run pytest -m "not slow and not network"` passes locally and on CI (the badge is
+  green on `main`). 2026-11-09: a0ec860, CI run
+  https://github.com/atishaypahadiya/neptune-fork/actions/runs/42740104130 (lint and test
+  green, 322 passed) and locally 322 passed.
 - [ ] `uv run pytest -m slow` passes locally. Record the wall time.
 - [ ] `uv run python examples/toy_fit.py` finishes in under 5 min on an idle machine. The time
   in `docs/reproduce.md` (4.6 min) was measured under A6c load, so re-time it and update.
@@ -59,8 +61,10 @@ semver: the tag is `vX.Y.Z`, and `pyproject.toml` and `CITATION.cff` hold `X.Y.Z
   `docs/reproduce.md` updated (they will include A6c and M6c).
 - [x] The A6d static check holds: no M6a–M6d code path reads Neptune's real ephemeris or the
   M6e precovery file (`tests/test_a6d.py`, 2026-11-09; runtime half in `tests/test_m6c.py`).
-- [ ] Whitmore's *discoverneptune* is cited in the README. If any of its data are reused,
-  check its license first.
+- [x] Whitmore's *discoverneptune* is cited in the README. If any of its data are reused,
+  check its license first. 2026-11-09: `README.md` line 165; none of its data are reused (it
+  appears only as a citation, here and in `CITATION.cff`, `.zenodo.json` and
+  `release/leverrier-table77/README.md`).
 
 ## Metadata
 
@@ -75,8 +79,10 @@ semver: the tag is `vX.Y.Z`, and `pyproject.toml` and `CITATION.cff` hold `X.Y.Z
   `uvx cffconvert --validate`.
 - [ ] `.zenodo.json` is valid JSON and agrees with `CITATION.cff`. Zenodo uses `.zenodo.json`
   over `CITATION.cff` when both exist.
-- [ ] Zenodo GitHub integration enabled for `atishaypahadiya/neptune-fork`. This has to happen
-  **before** the GitHub release is published, or no DOI is minted.
+- [x] Zenodo GitHub integration enabled for `atishaypahadiya/neptune-fork`. This has to happen
+  **before** the GitHub release is published, or no DOI is minted. 2026-11-09: the repository
+  has an active webhook to `zenodo.org/api/hooks/receivers/github` on `release` events
+  (`gh api repos/atishaypahadiya/neptune-fork/hooks`); `docs/notes/M8.md`, Operational notes.
 
 ## Tag and release
 
