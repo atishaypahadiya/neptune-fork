@@ -1,0 +1,2517 @@
+{
+ "description": "M9: profile likelihood in the semi-major axis, pre-registered in docs/notes/M9.md (2026-11-09). Diagnostic only; no published number changes.",
+ "code_commit": "7dbc42b1fab999cf7f5f29eb03ed1dc412ec98f7",
+ "frozen": {
+  "data/historical/leverrier_1846.csv": "2f546b9979f613c62d9c2dc77cd92b8269a9dbea4d3f87eecf39d2145509ebc4",
+  "data/historical/m6_error_model.json": "0856fa30d1675bf926d3921580de919b45fb72474e2f41ba58a5d153a6bec277",
+  "docs/notes/M8_u_ref.json": "4bf4537c88ab2364c7f46247d87489de7beaa3031b677d8080435887caa4b3c5"
+ },
+ "settings": {
+  "grid_au": [
+   24.0,
+   26.0,
+   28.0,
+   29.0,
+   29.5,
+   30.0,
+   30.5,
+   31.0,
+   32.0,
+   34.0,
+   36.0,
+   40.0,
+   44.0
+  ],
+  "reference_au": {
+   "neptune": 30.07,
+   "le_verrier": 36.15
+  },
+  "n_random": 32,
+  "n_posterior": 8,
+  "n_nearest": 200,
+  "n_rerun": 40,
+  "e_max": 0.3,
+  "inc_max_deg": 10.0,
+  "continuation_tol_chi2": 0.01,
+  "polish_window_chi2": 4.0,
+  "max_polish": 3,
+  "distinct": {
+   "galle_lon_deg": 2.0,
+   "e": 0.03
+  },
+  "reading": {
+   "dlnl": -2.0,
+   "x_au": 4.0,
+   "flat_range_au": [
+    26.0,
+    44.0
+   ]
+  }
+ },
+ "datasets": {
+  "all": {
+   "dataset": "all",
+   "n_measurements": 529,
+   "n_observations": 279,
+   "points": [
+    {
+     "k": 0,
+     "a_au": 24.0,
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "rerun": false,
+     "n_starts": 40,
+     "perturbative_best_chi2": 649.0366732516378,
+     "candidates": [
+      {
+       "origin": "random:10",
+       "chi2": 649.0366732516378,
+       "e": 0.3,
+       "galle_lon_deg": 317.395858567649
+      }
+     ],
+     "polished": [
+      {
+       "from": "random:10",
+       "chi2": 649.3547680777089,
+       "chi2_perturbative": 649.0366732516378,
+       "status": 3,
+       "nfev": 48,
+       "mass_earth": 18.85015101757959,
+       "e": 0.29999999999999993,
+       "inc_deg": 2.4747553710392154,
+       "galle_lon_deg": 317.38298124962887,
+       "active_bounds": [
+        "e_max"
+       ],
+       "u_box_half_widths": 0.7715272761653282,
+       "u_vs_u_ref_std": 12.904471794106964
+      }
+     ],
+     "chi2": 649.3547680777089,
+     "ln_l": -324.6773840388544,
+     "mass_earth": 18.85015101757959,
+     "e": 0.29999999999999993,
+     "inc_deg": 2.4747553710392154,
+     "galle_lon_deg": 317.38298124962887,
+     "active_bounds": [
+      "e_max"
+     ],
+     "u_box_half_widths": 0.7715272761653282,
+     "u_vs_u_ref_std": 12.904471794106964,
+     "u_flagged": true,
+     "chi2_perturbative_minus_exact": -0.31809482607104655,
+     "group_chi2": {
+      "ancient:ra": 40.12757032972093,
+      "ancient:dec": 13.250033404723354,
+      "greenwich:ra": 127.0466723466193,
+      "greenwich:dec": 84.16894715982845,
+      "paris_1801_1827:ra": 93.79708047225084,
+      "paris_1801_1827:dec": 100.81259675186315,
+      "paris_1835_1845:ra": 109.31447345796661,
+      "paris_1835_1845:dec": 80.83739415473629
+     },
+     "dlnl": -6.431822559170371
+    },
+    {
+     "k": 1,
+     "a_au": 26.0,
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "rerun": false,
+     "n_starts": 40,
+     "perturbative_best_chi2": 672.2753511179619,
+     "candidates": [
+      {
+       "origin": "posterior:3",
+       "chi2": 672.2753511179619,
+       "e": 0.27476202364869967,
+       "galle_lon_deg": 347.5353941409782
+      }
+     ],
+     "polished": [
+      {
+       "from": "posterior:3",
+       "chi2": 672.417716779817,
+       "chi2_perturbative": 672.2753511179619,
+       "status": 2,
+       "nfev": 10,
+       "mass_earth": 15.287962136778946,
+       "e": 0.2748014412011859,
+       "inc_deg": 0.9786718411572815,
+       "galle_lon_deg": 347.538709093693,
+       "active_bounds": [],
+       "u_box_half_widths": 0.7917814669664263,
+       "u_vs_u_ref_std": 2.1213970192005815
+      }
+     ],
+     "chi2": 672.417716779817,
+     "ln_l": -336.2088583899085,
+     "mass_earth": 15.287962136778946,
+     "e": 0.2748014412011859,
+     "inc_deg": 0.9786718411572815,
+     "galle_lon_deg": 347.538709093693,
+     "active_bounds": [],
+     "u_box_half_widths": 0.7917814669664263,
+     "u_vs_u_ref_std": 2.1213970192005815,
+     "u_flagged": false,
+     "chi2_perturbative_minus_exact": -0.14236566185513766,
+     "group_chi2": {
+      "ancient:ra": 33.29482417588778,
+      "ancient:dec": 10.776193425244344,
+      "greenwich:ra": 125.66364522657206,
+      "greenwich:dec": 85.8444513167409,
+      "paris_1801_1827:ra": 100.61668914484125,
+      "paris_1801_1827:dec": 102.73705792829918,
+      "paris_1835_1845:ra": 130.23114073818456,
+      "paris_1835_1845:dec": 83.25371482404692
+     },
+     "dlnl": -17.96329691022447
+    },
+    {
+     "k": 2,
+     "a_au": 28.0,
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "rerun": false,
+     "n_starts": 40,
+     "perturbative_best_chi2": 640.1413512390327,
+     "candidates": [
+      {
+       "origin": "posterior:5",
+       "chi2": 640.1413512390327,
+       "e": 0.11565543959394778,
+       "galle_lon_deg": 333.48892068561827
+      }
+     ],
+     "polished": [
+      {
+       "from": "posterior:5",
+       "chi2": 640.1811554674113,
+       "chi2_perturbative": 640.1413512390327,
+       "status": 3,
+       "nfev": 15,
+       "mass_earth": 16.042809914105916,
+       "e": 0.11591748858931603,
+       "inc_deg": 1.231086019645846,
+       "galle_lon_deg": 333.4775751193669,
+       "active_bounds": [],
+       "u_box_half_widths": 0.8147650810284293,
+       "u_vs_u_ref_std": 0.5678821170658916
+      }
+     ],
+     "chi2": 640.1811554674113,
+     "ln_l": -320.09057773370563,
+     "mass_earth": 16.042809914105916,
+     "e": 0.11591748858931603,
+     "inc_deg": 1.231086019645846,
+     "galle_lon_deg": 333.4775751193669,
+     "active_bounds": [],
+     "u_box_half_widths": 0.8147650810284293,
+     "u_vs_u_ref_std": 0.5678821170658916,
+     "u_flagged": false,
+     "chi2_perturbative_minus_exact": -0.03980422837855713,
+     "group_chi2": {
+      "ancient:ra": 28.824899427570276,
+      "ancient:dec": 11.686355834208392,
+      "greenwich:ra": 127.32255126463579,
+      "greenwich:dec": 84.65764152723983,
+      "paris_1801_1827:ra": 93.31034803804533,
+      "paris_1801_1827:dec": 101.42941874480827,
+      "paris_1835_1845:ra": 112.37623159169281,
+      "paris_1835_1845:dec": 80.5737090392106
+     },
+     "dlnl": -1.8450162540215729
+    },
+    {
+     "k": 3,
+     "a_au": 29.0,
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "rerun": false,
+     "n_starts": 40,
+     "perturbative_best_chi2": 636.9972721929155,
+     "candidates": [
+      {
+       "origin": "random:4",
+       "chi2": 636.9972721929155,
+       "e": 0.057365293527176404,
+       "galle_lon_deg": 329.3133595457437
+      }
+     ],
+     "polished": [
+      {
+       "from": "random:4",
+       "chi2": 637.0109869535715,
+       "chi2_perturbative": 636.9972721929155,
+       "status": 2,
+       "nfev": 17,
+       "mass_earth": 16.63796047197435,
+       "e": 0.05759797254491246,
+       "inc_deg": 1.5546545976362882,
+       "galle_lon_deg": 329.29854453841335,
+       "active_bounds": [],
+       "u_box_half_widths": 0.8208079255809563,
+       "u_vs_u_ref_std": 0.20510564047005134
+      }
+     ],
+     "chi2": 637.0109869535715,
+     "ln_l": -318.5054934767858,
+     "mass_earth": 16.63796047197435,
+     "e": 0.05759797254491246,
+     "inc_deg": 1.5546545976362882,
+     "galle_lon_deg": 329.29854453841335,
+     "active_bounds": [],
+     "u_box_half_widths": 0.8208079255809563,
+     "u_vs_u_ref_std": 0.20510564047005134,
+     "u_flagged": false,
+     "chi2_perturbative_minus_exact": -0.013714760656057479,
+     "group_chi2": {
+      "ancient:ra": 28.814463710250084,
+      "ancient:dec": 11.947525000601592,
+      "greenwich:ra": 128.48077922282752,
+      "greenwich:dec": 84.1356195647293,
+      "paris_1801_1827:ra": 92.20320100408169,
+      "paris_1801_1827:dec": 101.14229714822292,
+      "paris_1835_1845:ra": 109.83695260919211,
+      "paris_1835_1845:dec": 80.45014869366639
+     },
+     "dlnl": -0.25993199710171666
+    },
+    {
+     "k": 4,
+     "a_au": 29.5,
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "rerun": false,
+     "n_starts": 40,
+     "perturbative_best_chi2": 636.5390277899783,
+     "candidates": [
+      {
+       "origin": "random:14",
+       "chi2": 636.5390277899783,
+       "e": 0.03171786164016647,
+       "galle_lon_deg": 327.63516463503424
+      }
+     ],
+     "polished": [
+      {
+       "from": "random:14",
+       "chi2": 636.54350160951,
+       "chi2_perturbative": 636.5390277899783,
+       "status": 2,
+       "nfev": 14,
+       "mass_earth": 16.94198152812461,
+       "e": 0.03186160727908888,
+       "inc_deg": 1.7121648367792268,
+       "galle_lon_deg": 327.62310566250943,
+       "active_bounds": [],
+       "u_box_half_widths": 0.823096373630241,
+       "u_vs_u_ref_std": 0.2088583710066681
+      }
+     ],
+     "chi2": 636.54350160951,
+     "ln_l": -318.271750804755,
+     "mass_earth": 16.94198152812461,
+     "e": 0.03186160727908888,
+     "inc_deg": 1.7121648367792268,
+     "galle_lon_deg": 327.62310566250943,
+     "active_bounds": [],
+     "u_box_half_widths": 0.823096373630241,
+     "u_vs_u_ref_std": 0.2088583710066681,
+     "u_flagged": false,
+     "chi2_perturbative_minus_exact": -0.004473819531767731,
+     "group_chi2": {
+      "ancient:ra": 28.933022005577985,
+      "ancient:dec": 12.054847259805896,
+      "greenwich:ra": 129.0458257898323,
+      "greenwich:dec": 83.90215497230382,
+      "paris_1801_1827:ra": 91.90285637754647,
+      "paris_1801_1827:dec": 101.01905103919624,
+      "paris_1835_1845:ra": 109.19038974741198,
+      "paris_1835_1845:dec": 80.49535441783526
+     },
+     "dlnl": -0.026189325070959057
+    },
+    {
+     "k": 5,
+     "a_au": 30.0,
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "rerun": false,
+     "n_starts": 40,
+     "perturbative_best_chi2": 636.4938029821516,
+     "candidates": [
+      {
+       "origin": "cont:4",
+       "chi2": 636.4938023710863,
+       "e": 0.008830959468556127,
+       "galle_lon_deg": 326.1671878067117
+      }
+     ],
+     "polished": [
+      {
+       "from": "cont:4",
+       "chi2": 636.4911229593681,
+       "chi2_perturbative": 636.4938023710863,
+       "status": 2,
+       "nfev": 13,
+       "mass_earth": 17.25550003000136,
+       "e": 0.008948149424688018,
+       "inc_deg": 1.891447218602095,
+       "galle_lon_deg": 326.15001354017767,
+       "active_bounds": [],
+       "u_box_half_widths": 0.825125512213724,
+       "u_vs_u_ref_std": 0.19651480264275029
+      }
+     ],
+     "chi2": 636.4911229593681,
+     "ln_l": -318.24556147968406,
+     "mass_earth": 17.25550003000136,
+     "e": 0.008948149424688018,
+     "inc_deg": 1.891447218602095,
+     "galle_lon_deg": 326.15001354017767,
+     "active_bounds": [],
+     "u_box_half_widths": 0.825125512213724,
+     "u_vs_u_ref_std": 0.19651480264275029,
+     "u_flagged": false,
+     "chi2_perturbative_minus_exact": 0.0026794117181907495,
+     "group_chi2": {
+      "ancient:ra": 29.091562030258086,
+      "ancient:dec": 12.134886371690605,
+      "greenwich:ra": 129.56757407564155,
+      "greenwich:dec": 83.69553794617858,
+      "paris_1801_1827:ra": 91.69485085777124,
+      "paris_1801_1827:dec": 100.93659412938283,
+      "paris_1835_1845:ra": 108.79022503505254,
+      "paris_1835_1845:dec": 80.57989251339276
+     },
+     "dlnl": 0.0
+    },
+    {
+     "k": 6,
+     "a_au": 30.5,
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "rerun": false,
+     "n_starts": 40,
+     "perturbative_best_chi2": 636.7157468014493,
+     "candidates": [
+      {
+       "origin": "posterior:1",
+       "chi2": 636.7157468014493,
+       "e": 0.015829822031567294,
+       "galle_lon_deg": 324.8742708817771
+      }
+     ],
+     "polished": [
+      {
+       "from": "posterior:1",
+       "chi2": 636.7072022881938,
+       "chi2_perturbative": 636.7157468014493,
+       "status": 2,
+       "nfev": 14,
+       "mass_earth": 17.56606961129133,
+       "e": 0.015733915078747274,
+       "inc_deg": 2.0557353123944497,
+       "galle_lon_deg": 324.86188893864846,
+       "active_bounds": [],
+       "u_box_half_widths": 0.8268199129366204,
+       "u_vs_u_ref_std": 0.2469314697609104
+      }
+     ],
+     "chi2": 636.7072022881938,
+     "ln_l": -318.3536011440969,
+     "mass_earth": 17.56606961129133,
+     "e": 0.015733915078747274,
+     "inc_deg": 2.0557353123944497,
+     "galle_lon_deg": 324.86188893864846,
+     "active_bounds": [],
+     "u_box_half_widths": 0.8268199129366204,
+     "u_vs_u_ref_std": 0.2469314697609104,
+     "u_flagged": false,
+     "chi2_perturbative_minus_exact": 0.008544513255515085,
+     "group_chi2": {
+      "ancient:ra": 29.258578217563763,
+      "ancient:dec": 12.204230222526608,
+      "greenwich:ra": 130.0637536581192,
+      "greenwich:dec": 83.50475554111712,
+      "paris_1801_1827:ra": 91.56574373056242,
+      "paris_1801_1827:dec": 100.85872938644555,
+      "paris_1835_1845:ra": 108.56359470898866,
+      "paris_1835_1845:dec": 80.68781682287049
+     },
+     "dlnl": -0.10803966441284274
+    },
+    {
+     "k": 7,
+     "a_au": 31.0,
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "rerun": false,
+     "n_starts": 40,
+     "perturbative_best_chi2": 637.1074986569738,
+     "candidates": [
+      {
+       "origin": "posterior:0",
+       "chi2": 637.1074986569738,
+       "e": 0.03633290327122593,
+       "galle_lon_deg": 323.7279082381524
+      }
+     ],
+     "polished": [
+      {
+       "from": "posterior:0",
+       "chi2": 637.0941743362845,
+       "chi2_perturbative": 637.1074986569738,
+       "status": 3,
+       "nfev": 14,
+       "mass_earth": 17.882090032203482,
+       "e": 0.03619223634230435,
+       "inc_deg": 2.2231084618900554,
+       "galle_lon_deg": 323.7142803846493,
+       "active_bounds": [],
+       "u_box_half_widths": 0.8283656958307349,
+       "u_vs_u_ref_std": 0.3514144616434628
+      }
+     ],
+     "chi2": 637.0941743362845,
+     "ln_l": -318.54708716814224,
+     "mass_earth": 17.882090032203482,
+     "e": 0.03619223634230435,
+     "inc_deg": 2.2231084618900554,
+     "galle_lon_deg": 323.7142803846493,
+     "active_bounds": [],
+     "u_box_half_widths": 0.8283656958307349,
+     "u_vs_u_ref_std": 0.3514144616434628,
+     "u_flagged": false,
+     "chi2_perturbative_minus_exact": 0.013324320689321212,
+     "group_chi2": {
+      "ancient:ra": 29.435824248945423,
+      "ancient:dec": 12.259525195724438,
+      "greenwich:ra": 130.51554864948594,
+      "greenwich:dec": 83.33938139708178,
+      "paris_1801_1827:ra": 91.47991362496926,
+      "paris_1801_1827:dec": 100.79700019071042,
+      "paris_1835_1845:ra": 108.45938618592334,
+      "paris_1835_1845:dec": 80.80759484344391
+     },
+     "dlnl": -0.3015256884581845
+    },
+    {
+     "k": 8,
+     "a_au": 32.0,
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "rerun": false,
+     "n_starts": 40,
+     "perturbative_best_chi2": 638.1606135824659,
+     "candidates": [
+      {
+       "origin": "posterior:4",
+       "chi2": 638.1606135824659,
+       "e": 0.074441147716373,
+       "galle_lon_deg": 321.79262252031367
+      }
+     ],
+     "polished": [
+      {
+       "from": "posterior:4",
+       "chi2": 638.14003987365,
+       "chi2_perturbative": 638.1606135824659,
+       "status": 3,
+       "nfev": 13,
+       "mass_earth": 18.50159627169363,
+       "e": 0.07433121633229504,
+       "inc_deg": 2.551462430676085,
+       "galle_lon_deg": 321.77840303919544,
+       "active_bounds": [],
+       "u_box_half_widths": 0.8309524896829399,
+       "u_vs_u_ref_std": 0.5262617588226464
+      }
+     ],
+     "chi2": 638.14003987365,
+     "ln_l": -319.070019936825,
+     "mass_earth": 18.50159627169363,
+     "e": 0.07433121633229504,
+     "inc_deg": 2.551462430676085,
+     "galle_lon_deg": 321.77840303919544,
+     "active_bounds": [],
+     "u_box_half_widths": 0.8309524896829399,
+     "u_vs_u_ref_std": 0.5262617588226464,
+     "u_flagged": false,
+     "chi2_perturbative_minus_exact": 0.020573708815845748,
+     "group_chi2": {
+      "ancient:ra": 29.76819125740709,
+      "ancient:dec": 12.346896645546241,
+      "greenwich:ra": 131.31777883391237,
+      "greenwich:dec": 83.0475926791712,
+      "paris_1801_1827:ra": 91.41624231256019,
+      "paris_1801_1827:dec": 100.7021974404335,
+      "paris_1835_1845:ra": 108.47595086362952,
+      "paris_1835_1845:dec": 81.06518984098986
+     },
+     "dlnl": -0.8244584571409632
+    },
+    {
+     "k": 9,
+     "a_au": 34.0,
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "rerun": false,
+     "n_starts": 40,
+     "perturbative_best_chi2": 640.5299078660164,
+     "candidates": [
+      {
+       "origin": "posterior:6",
+       "chi2": 640.5299078660164,
+       "e": 0.13944767593927784,
+       "galle_lon_deg": 318.93514762264294
+      }
+     ],
+     "polished": [
+      {
+       "from": "posterior:6",
+       "chi2": 640.5001473240677,
+       "chi2_perturbative": 640.5299078660164,
+       "status": 2,
+       "nfev": 13,
+       "mass_earth": 19.706642839056727,
+       "e": 0.13933585535475304,
+       "inc_deg": 3.162648208794884,
+       "galle_lon_deg": 318.91792602061,
+       "active_bounds": [],
+       "u_box_half_widths": 0.8348863660647586,
+       "u_vs_u_ref_std": 0.7921614369944306
+      }
+     ],
+     "chi2": 640.5001473240677,
+     "ln_l": -320.25007366203386,
+     "mass_earth": 19.706642839056727,
+     "e": 0.13933585535475304,
+     "inc_deg": 3.162648208794884,
+     "galle_lon_deg": 318.91792602061,
+     "active_bounds": [],
+     "u_box_half_widths": 0.8348863660647586,
+     "u_vs_u_ref_std": 0.7921614369944306,
+     "u_flagged": false,
+     "chi2_perturbative_minus_exact": 0.029760541948689934,
+     "group_chi2": {
+      "ancient:ra": 30.344179860600978,
+      "ancient:dec": 12.449606820856344,
+      "greenwich:ra": 132.5490031288525,
+      "greenwich:dec": 82.60416285548061,
+      "paris_1801_1827:ra": 91.47745331139069,
+      "paris_1801_1827:dec": 100.58788523726972,
+      "paris_1835_1845:ra": 108.92352453963807,
+      "paris_1835_1845:dec": 81.56433156997876
+     },
+     "dlnl": -2.0045121823497993
+    },
+    {
+     "k": 10,
+     "a_au": 36.0,
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "rerun": false,
+     "n_starts": 40,
+     "perturbative_best_chi2": 642.6852021534227,
+     "candidates": [
+      {
+       "origin": "posterior:7",
+       "chi2": 642.6852021534227,
+       "e": 0.19329733433524882,
+       "galle_lon_deg": 316.94183858213546
+      }
+     ],
+     "polished": [
+      {
+       "from": "posterior:7",
+       "chi2": 642.6498297098437,
+       "chi2_perturbative": 642.6852021534227,
+       "status": 3,
+       "nfev": 16,
+       "mass_earth": 20.845148109871843,
+       "e": 0.19315798842602766,
+       "inc_deg": 3.7013509068722725,
+       "galle_lon_deg": 316.9220077420812,
+       "active_bounds": [],
+       "u_box_half_widths": 0.8377935494524872,
+       "u_vs_u_ref_std": 0.9886645937169088
+      }
+     ],
+     "chi2": 642.6498297098437,
+     "ln_l": -321.3249148549219,
+     "mass_earth": 20.845148109871843,
+     "e": 0.19315798842602766,
+     "inc_deg": 3.7013509068722725,
+     "galle_lon_deg": 316.9220077420812,
+     "active_bounds": [],
+     "u_box_half_widths": 0.8377935494524872,
+     "u_vs_u_ref_std": 0.9886645937169088,
+     "u_flagged": false,
+     "chi2_perturbative_minus_exact": 0.035372443578921775,
+     "group_chi2": {
+      "ancient:ra": 30.801124458653124,
+      "ancient:dec": 12.500883550768236,
+      "greenwich:ra": 133.40398365649725,
+      "greenwich:dec": 82.29412481506145,
+      "paris_1801_1827:ra": 91.621852998753,
+      "paris_1801_1827:dec": 100.51888615658683,
+      "paris_1835_1845:ra": 109.5140312963864,
+      "paris_1835_1845:dec": 81.99494277713731
+     },
+     "dlnl": -3.0793533752378153
+    },
+    {
+     "k": 11,
+     "a_au": 40.0,
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "rerun": false,
+     "n_starts": 40,
+     "perturbative_best_chi2": 646.0102256216555,
+     "candidates": [
+      {
+       "origin": "posterior:2",
+       "chi2": 646.0102256216555,
+       "e": 0.27916041282642523,
+       "galle_lon_deg": 314.3589770199166
+      }
+     ],
+     "polished": [
+      {
+       "from": "posterior:2",
+       "chi2": 645.9680133311231,
+       "chi2_perturbative": 646.0102256216555,
+       "status": 2,
+       "nfev": 15,
+       "mass_earth": 22.8822009778062,
+       "e": 0.2791036169880523,
+       "inc_deg": 4.610554817944842,
+       "galle_lon_deg": 314.34288308519365,
+       "active_bounds": [],
+       "u_box_half_widths": 0.8419283639224606,
+       "u_vs_u_ref_std": 1.4032415178409747
+      }
+     ],
+     "chi2": 645.9680133311231,
+     "ln_l": -322.98400666556154,
+     "mass_earth": 22.8822009778062,
+     "e": 0.2791036169880523,
+     "inc_deg": 4.610554817944842,
+     "galle_lon_deg": 314.34288308519365,
+     "active_bounds": [],
+     "u_box_half_widths": 0.8419283639224606,
+     "u_vs_u_ref_std": 1.4032415178409747,
+     "u_flagged": false,
+     "chi2_perturbative_minus_exact": 0.04221229053246134,
+     "group_chi2": {
+      "ancient:ra": 31.463835738237442,
+      "ancient:dec": 12.540261324723533,
+      "greenwich:ra": 134.43580204133565,
+      "greenwich:dec": 81.89310307753993,
+      "paris_1801_1827:ra": 91.91692380643033,
+      "paris_1801_1827:dec": 100.45240803231397,
+      "paris_1835_1845:ra": 110.59628156891019,
+      "paris_1835_1845:dec": 82.669397741632
+     },
+     "dlnl": -4.738445185877481
+    },
+    {
+     "k": 12,
+     "a_au": 44.0,
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "rerun": false,
+     "n_starts": 40,
+     "perturbative_best_chi2": 658.830690866495,
+     "candidates": [
+      {
+       "origin": "posterior:4",
+       "chi2": 658.830690866495,
+       "e": 0.29999999999999993,
+       "galle_lon_deg": 311.9872850262345
+      }
+     ],
+     "polished": [
+      {
+       "from": "posterior:4",
+       "chi2": 658.743935166284,
+       "chi2_perturbative": 658.830690866495,
+       "status": 2,
+       "nfev": 48,
+       "mass_earth": 28.119321786704813,
+       "e": 0.29999999999999993,
+       "inc_deg": 4.914412353700304,
+       "galle_lon_deg": 311.9546390521629,
+       "active_bounds": [
+        "e_max"
+       ],
+       "u_box_half_widths": 0.8498176524002844,
+       "u_vs_u_ref_std": 1.8014011400151784
+      }
+     ],
+     "chi2": 658.743935166284,
+     "ln_l": -329.371967583142,
+     "mass_earth": 28.119321786704813,
+     "e": 0.29999999999999993,
+     "inc_deg": 4.914412353700304,
+     "galle_lon_deg": 311.9546390521629,
+     "active_bounds": [
+      "e_max"
+     ],
+     "u_box_half_widths": 0.8498176524002844,
+     "u_vs_u_ref_std": 1.8014011400151784,
+     "u_flagged": false,
+     "chi2_perturbative_minus_exact": 0.08675570021102885,
+     "group_chi2": {
+      "ancient:ra": 47.66465547662651,
+      "ancient:dec": 12.098392355611052,
+      "greenwich:ra": 132.26381253178272,
+      "greenwich:dec": 82.58729978304056,
+      "paris_1801_1827:ra": 91.52267277922252,
+      "paris_1801_1827:dec": 100.57717116741902,
+      "paris_1835_1845:ra": 110.15819704434605,
+      "paris_1835_1845:dec": 81.87173402823552
+     },
+     "dlnl": -11.126406103457953
+    },
+    {
+     "k": 13,
+     "a_au": 30.07,
+     "reference": true,
+     "name": "neptune",
+     "status": "pass",
+     "rerun": false,
+     "n_starts": 40,
+     "perturbative_best_chi2": 636.5114435158042,
+     "candidates": [
+      {
+       "origin": "random:8",
+       "chi2": 636.5114435158042,
+       "e": 0.006405731360622393,
+       "galle_lon_deg": 325.97599528374246
+      }
+     ],
+     "polished": [
+      {
+       "from": "random:8",
+       "chi2": 636.5079016662413,
+       "chi2_perturbative": 636.5114435158042,
+       "status": 2,
+       "nfev": 11,
+       "mass_earth": 17.30757196370111,
+       "e": 0.006594213143171466,
+       "inc_deg": 1.9126284841060068,
+       "galle_lon_deg": 325.958795308129,
+       "active_bounds": [],
+       "u_box_half_widths": 0.8254211187043842,
+       "u_vs_u_ref_std": 0.1950860581438579
+      }
+     ],
+     "chi2": 636.5079016662413,
+     "ln_l": -318.25395083312065,
+     "mass_earth": 17.30757196370111,
+     "e": 0.006594213143171466,
+     "inc_deg": 1.9126284841060068,
+     "galle_lon_deg": 325.958795308129,
+     "active_bounds": [],
+     "u_box_half_widths": 0.8254211187043842,
+     "u_vs_u_ref_std": 0.1950860581438579,
+     "u_flagged": false,
+     "chi2_perturbative_minus_exact": 0.003541849562907373,
+     "group_chi2": {
+      "ancient:ra": 29.12500218619126,
+      "ancient:dec": 12.143549397191624,
+      "greenwich:ra": 129.62619913225384,
+      "greenwich:dec": 83.67294942257904,
+      "paris_1801_1827:ra": 91.66670225653404,
+      "paris_1801_1827:dec": 100.92468522002544,
+      "paris_1835_1845:ra": 108.75648030358869,
+      "paris_1835_1845:dec": 80.59233374787739
+     },
+     "dlnl": -0.008389353436598412
+    },
+    {
+     "k": 14,
+     "a_au": 36.15,
+     "reference": true,
+     "name": "le_verrier",
+     "status": "pass",
+     "rerun": false,
+     "n_starts": 40,
+     "perturbative_best_chi2": 642.832943900876,
+     "candidates": [
+      {
+       "origin": "posterior:2",
+       "chi2": 642.832943900876,
+       "e": 0.19698295589946768,
+       "galle_lon_deg": 316.81671516308785
+      }
+     ],
+     "polished": [
+      {
+       "from": "posterior:2",
+       "chi2": 642.7972314255478,
+       "chi2_perturbative": 642.832943900876,
+       "status": 4,
+       "nfev": 19,
+       "mass_earth": 20.929322796323852,
+       "e": 0.1968012973783126,
+       "inc_deg": 3.7417148268996097,
+       "galle_lon_deg": 316.7974872997704,
+       "active_bounds": [],
+       "u_box_half_widths": 0.8379821180770577,
+       "u_vs_u_ref_std": 1.0014103771935652
+      }
+     ],
+     "chi2": 642.7972314255478,
+     "ln_l": -321.3986157127739,
+     "mass_earth": 20.929322796323852,
+     "e": 0.1968012973783126,
+     "inc_deg": 3.7417148268996097,
+     "galle_lon_deg": 316.7974872997704,
+     "active_bounds": [],
+     "u_box_half_widths": 0.8379821180770577,
+     "u_vs_u_ref_std": 1.0014103771935652,
+     "u_flagged": false,
+     "chi2_perturbative_minus_exact": 0.035712475328182336,
+     "group_chi2": {
+      "ancient:ra": 30.838227937615734,
+      "ancient:dec": 12.502397584952982,
+      "greenwich:ra": 133.45336243820748,
+      "greenwich:dec": 82.27262838257008,
+      "paris_1801_1827:ra": 91.63260951497448,
+      "paris_1801_1827:dec": 100.51419995797568,
+      "paris_1835_1845:ra": 109.55922962706218,
+      "paris_1835_1845:dec": 82.02457598218933
+     },
+     "dlnl": -3.153054233089847
+    }
+   ],
+   "reading": {
+    "reading": "constrained",
+    "a_max_au": 30.0,
+    "clauses": {
+     "a_max_not_at_grid_end": true,
+     "falls_below_within_x_left": true,
+     "falls_below_within_x_right": true,
+     "no_second_branch": true,
+     "flat_26_44": false
+    },
+    "failed": [],
+    "where": {
+     "second_branch_points": [],
+     "below_threshold_in_26_44": [
+      26.0,
+      34.0,
+      36.0,
+      40.0,
+      44.0
+     ]
+    },
+    "thresholds": {
+     "dlnl": -2.0,
+     "x_au": 4.0,
+     "flat_range_au": [
+      26.0,
+      44.0
+     ]
+    },
+    "missing_points": []
+   },
+   "a_max": {
+    "a_au": 30.0,
+    "mass_earth": 17.25550003000136
+   },
+   "parabola": {
+    "a_au": 29.84755465332679,
+    "dlnl": 0.0062388516780913505
+   },
+   "intervals": {
+    "dlnl_minus_0p5": [
+     28.848545588759563,
+     31.379540781201673
+    ],
+    "dlnl_minus_2": [
+     27.980769196258066,
+     33.99235258149115
+    ]
+   },
+   "reference_points": {
+    "neptune": {
+     "a_au": 30.07,
+     "dlnl": -0.008389353436598412,
+     "above_grid_maximum": false,
+     "mass_earth": 17.30757196370111,
+     "galle_lon_deg": 325.958795308129,
+     "e": 0.006594213143171466
+    },
+    "le_verrier": {
+     "a_au": 36.15,
+     "dlnl": -3.153054233089847,
+     "above_grid_maximum": false,
+     "mass_earth": 20.929322796323852,
+     "galle_lon_deg": 316.7974872997704,
+     "e": 0.1968012973783126
+    }
+   },
+   "continuation": {
+    "passes": 1,
+    "converged": true,
+    "n_neighbour_runs": 28,
+    "sweep_pairs": 1,
+    "sweep_improved": []
+   },
+   "failed_points": [],
+   "ancient_group_chi2_by_a": {
+    "24.0": 53.377603734444286,
+    "26.0": 44.07101760113213,
+    "28.0": 40.51125526177867,
+    "29.0": 40.761988710851675,
+    "29.5": 40.98786926538388,
+    "30.0": 41.22644840194869,
+    "30.5": 41.46280844009037,
+    "31.0": 41.69534944466986,
+    "32.0": 42.115087902953334,
+    "34.0": 42.79378668145732,
+    "36.0": 43.30200800942136,
+    "40.0": 44.00409706296097,
+    "44.0": 59.76304783223756
+   }
+  },
+  "post1781": {
+   "dataset": "post1781",
+   "n_measurements": 492,
+   "n_observations": 260,
+   "points": [
+    {
+     "k": 0,
+     "a_au": 24.0,
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "rerun": false,
+     "n_starts": 40,
+     "perturbative_best_chi2": 590.4091892157916,
+     "candidates": [
+      {
+       "origin": "random:27",
+       "chi2": 590.4091892157916,
+       "e": 0.10800358927638003,
+       "galle_lon_deg": 354.7599293323898
+      },
+      {
+       "origin": "random:21",
+       "chi2": 591.5211022573021,
+       "e": 0.29999999999999993,
+       "galle_lon_deg": 315.40852723291505
+      }
+     ],
+     "polished": [
+      {
+       "from": "random:27",
+       "chi2": 590.3006704326448,
+       "chi2_perturbative": 590.4091892157916,
+       "status": 2,
+       "nfev": 19,
+       "mass_earth": 1.0000000006783503,
+       "e": 0.10755359438794125,
+       "inc_deg": 0.5504476144177864,
+       "galle_lon_deg": 354.1253334565454,
+       "active_bounds": [
+        "mass_lo"
+       ],
+       "u_box_half_widths": 1.8461857515216669,
+       "u_vs_u_ref_std": 20.116020127450458
+      },
+      {
+       "from": "random:21",
+       "chi2": 591.523873161748,
+       "chi2_perturbative": 591.5211022573021,
+       "status": 2,
+       "nfev": 52,
+       "mass_earth": 16.823133467569406,
+       "e": 0.29999999999999993,
+       "inc_deg": 3.2103135540318646,
+       "galle_lon_deg": 315.3692769478784,
+       "active_bounds": [
+        "e_max"
+       ],
+       "u_box_half_widths": 1.6009074698359547,
+       "u_vs_u_ref_std": 9.714979212039985
+      }
+     ],
+     "chi2": 590.3006704326448,
+     "ln_l": -295.1503352163224,
+     "mass_earth": 1.0000000006783503,
+     "e": 0.10755359438794125,
+     "inc_deg": 0.5504476144177864,
+     "galle_lon_deg": 354.1253334565454,
+     "active_bounds": [
+      "mass_lo"
+     ],
+     "u_box_half_widths": 1.8461857515216669,
+     "u_vs_u_ref_std": 20.116020127450458,
+     "u_flagged": true,
+     "chi2_perturbative_minus_exact": 0.10851878314679198,
+     "group_chi2": {
+      "ancient:ra": 0.0,
+      "ancient:dec": 0.0,
+      "greenwich:ra": 122.66858441618244,
+      "greenwich:dec": 85.41034578904616,
+      "paris_1801_1827:ra": 91.21657350259017,
+      "paris_1801_1827:dec": 101.45668805158112,
+      "paris_1835_1845:ra": 109.00079056374925,
+      "paris_1835_1845:dec": 80.54768810949571
+     },
+     "dlnl": -1.57778146258579
+    },
+    {
+     "k": 1,
+     "a_au": 26.0,
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "rerun": false,
+     "n_starts": 40,
+     "perturbative_best_chi2": 589.4345659925324,
+     "candidates": [
+      {
+       "origin": "random:24",
+       "chi2": 589.4345659925324,
+       "e": 0.17602486633164852,
+       "galle_lon_deg": 355.45021336206867
+      },
+      {
+       "origin": "random:3",
+       "chi2": 591.1328107467759,
+       "e": 0.3,
+       "galle_lon_deg": 310.0401640195175
+      }
+     ],
+     "polished": [
+      {
+       "from": "random:24",
+       "chi2": 589.3240872631934,
+       "chi2_perturbative": 589.4345659925324,
+       "status": 2,
+       "nfev": 19,
+       "mass_earth": 1.0000000000259561,
+       "e": 0.17495809925634076,
+       "inc_deg": 0.4362979938022355,
+       "galle_lon_deg": 354.89258194200363,
+       "active_bounds": [
+        "mass_lo"
+       ],
+       "u_box_half_widths": 1.8112666673675224,
+       "u_vs_u_ref_std": 18.75563090971914
+      },
+      {
+       "from": "random:3",
+       "chi2": 591.131185624189,
+       "chi2_perturbative": 591.1328107467759,
+       "status": 2,
+       "nfev": 36,
+       "mass_earth": 22.704925621945716,
+       "e": 0.2863405171865139,
+       "inc_deg": 3.793643080207636,
+       "galle_lon_deg": 311.0416844753566,
+       "active_bounds": [],
+       "u_box_half_widths": 1.505037499962461,
+       "u_vs_u_ref_std": 14.245055369812116
+      }
+     ],
+     "chi2": 589.3240872631934,
+     "ln_l": -294.6620436315967,
+     "mass_earth": 1.0000000000259561,
+     "e": 0.17495809925634076,
+     "inc_deg": 0.4362979938022355,
+     "galle_lon_deg": 354.89258194200363,
+     "active_bounds": [
+      "mass_lo"
+     ],
+     "u_box_half_widths": 1.8112666673675224,
+     "u_vs_u_ref_std": 18.75563090971914,
+     "u_flagged": true,
+     "chi2_perturbative_minus_exact": 0.11047872933897906,
+     "group_chi2": {
+      "ancient:ra": 0.0,
+      "ancient:dec": 0.0,
+      "greenwich:ra": 122.43424569563037,
+      "greenwich:dec": 85.50654889720585,
+      "paris_1801_1827:ra": 90.85700858565458,
+      "paris_1801_1827:dec": 101.61205829578564,
+      "paris_1835_1845:ra": 108.46871263946555,
+      "paris_1835_1845:dec": 80.44551314945157
+     },
+     "dlnl": -1.0894898778601032
+    },
+    {
+     "k": 2,
+     "a_au": 28.0,
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "rerun": false,
+     "n_starts": 40,
+     "perturbative_best_chi2": 588.3194658205188,
+     "candidates": [
+      {
+       "origin": "random:31",
+       "chi2": 588.3194658205188,
+       "e": 0.2386414488516284,
+       "galle_lon_deg": 356.4439392064945
+      },
+      {
+       "origin": "random:6",
+       "chi2": 590.930227623484,
+       "e": 0.3,
+       "galle_lon_deg": 306.163180663874
+      }
+     ],
+     "polished": [
+      {
+       "from": "random:31",
+       "chi2": 588.1935272207437,
+       "chi2_perturbative": 588.3194658205188,
+       "status": 3,
+       "nfev": 22,
+       "mass_earth": 1.0000000000557765,
+       "e": 0.23753532249758175,
+       "inc_deg": 0.33488962639041475,
+       "galle_lon_deg": 355.97282402909434,
+       "active_bounds": [
+        "mass_lo"
+       ],
+       "u_box_half_widths": 1.8030037767976856,
+       "u_vs_u_ref_std": 18.43372248884306
+      },
+      {
+       "from": "random:6",
+       "chi2": 588.1936164537665,
+       "chi2_perturbative": 590.930227623484,
+       "status": 2,
+       "nfev": 370,
+       "mass_earth": 1.0000080502783315,
+       "e": 0.23753692310592342,
+       "inc_deg": 0.33628212387124035,
+       "galle_lon_deg": 355.9559985206594,
+       "active_bounds": [],
+       "u_box_half_widths": 1.8033451386693566,
+       "u_vs_u_ref_std": 18.447021377425475
+      }
+     ],
+     "chi2": 588.1935272207437,
+     "ln_l": -294.09676361037185,
+     "mass_earth": 1.0000000000557765,
+     "e": 0.23753532249758175,
+     "inc_deg": 0.33488962639041475,
+     "galle_lon_deg": 355.97282402909434,
+     "active_bounds": [
+      "mass_lo"
+     ],
+     "u_box_half_widths": 1.8030037767976856,
+     "u_vs_u_ref_std": 18.43372248884306,
+     "u_flagged": true,
+     "chi2_perturbative_minus_exact": 0.12593859977505417,
+     "group_chi2": {
+      "ancient:ra": 0.0,
+      "ancient:dec": 0.0,
+      "greenwich:ra": 122.31575150868768,
+      "greenwich:dec": 85.59436501777957,
+      "paris_1801_1827:ra": 90.32832815227786,
+      "paris_1801_1827:dec": 101.7918024498555,
+      "paris_1835_1845:ra": 107.78583925829005,
+      "paris_1835_1845:dec": 80.37744083385302
+     },
+     "dlnl": -0.5242098566352524
+    },
+    {
+     "k": 3,
+     "a_au": 29.0,
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "rerun": false,
+     "n_starts": 40,
+     "perturbative_best_chi2": 587.7736803172845,
+     "candidates": [
+      {
+       "origin": "posterior:5",
+       "chi2": 587.7736803172845,
+       "e": 0.2672247275931233,
+       "galle_lon_deg": 356.9653183721744
+      },
+      {
+       "origin": "random:10",
+       "chi2": 590.8683340293032,
+       "e": 0.29999999999999993,
+       "galle_lon_deg": 304.6467384753273
+      }
+     ],
+     "polished": [
+      {
+       "from": "posterior:5",
+       "chi2": 587.6335587084245,
+       "chi2_perturbative": 587.7736803172845,
+       "status": 2,
+       "nfev": 19,
+       "mass_earth": 1.0000000000087197,
+       "e": 0.26617947973946804,
+       "inc_deg": 0.2926663686972508,
+       "galle_lon_deg": 356.5468679399953,
+       "active_bounds": [
+        "mass_lo"
+       ],
+       "u_box_half_widths": 1.8033055838678285,
+       "u_vs_u_ref_std": 18.445480388398643
+      },
+      {
+       "from": "random:10",
+       "chi2": 587.633602600104,
+       "chi2_perturbative": 590.8683340293032,
+       "status": 3,
+       "nfev": 308,
+       "mass_earth": 1.000000226590781,
+       "e": 0.2661773858030503,
+       "inc_deg": 0.29334669351390175,
+       "galle_lon_deg": 356.52384233489283,
+       "active_bounds": [
+        "mass_lo"
+       ],
+       "u_box_half_widths": 1.8037679826904913,
+       "u_vs_u_ref_std": 18.463494674508368
+      }
+     ],
+     "chi2": 587.6335587084245,
+     "ln_l": -293.81677935421226,
+     "mass_earth": 1.0000000000087197,
+     "e": 0.26617947973946804,
+     "inc_deg": 0.2926663686972508,
+     "galle_lon_deg": 356.5468679399953,
+     "active_bounds": [
+      "mass_lo"
+     ],
+     "u_box_half_widths": 1.8033055838678285,
+     "u_vs_u_ref_std": 18.445480388398643,
+     "u_flagged": true,
+     "chi2_perturbative_minus_exact": 0.14012160885999947,
+     "group_chi2": {
+      "ancient:ra": 0.0,
+      "ancient:dec": 0.0,
+      "greenwich:ra": 122.27082468232628,
+      "greenwich:dec": 85.62594021248614,
+      "paris_1801_1827:ra": 90.09740144465371,
+      "paris_1801_1827:dec": 101.8996809782162,
+      "paris_1835_1845:ra": 107.37165680906654,
+      "paris_1835_1845:dec": 80.36805458167558
+     },
+     "dlnl": -0.24422560047565867
+    },
+    {
+     "k": 4,
+     "a_au": 29.5,
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "rerun": false,
+     "n_starts": 40,
+     "perturbative_best_chi2": 587.5243751263363,
+     "candidates": [
+      {
+       "origin": "random:7",
+       "chi2": 587.5243751263363,
+       "e": 0.2808363602145631,
+       "galle_lon_deg": 357.22071371718596
+      },
+      {
+       "origin": "random:24",
+       "chi2": 590.8439859362327,
+       "e": 0.3,
+       "galle_lon_deg": 303.96843532347117
+      }
+     ],
+     "polished": [
+      {
+       "from": "random:7",
+       "chi2": 587.376587342726,
+       "chi2_perturbative": 587.5243751263363,
+       "status": 3,
+       "nfev": 28,
+       "mass_earth": 1.0,
+       "e": 0.27983193587902055,
+       "inc_deg": 0.27403082018104863,
+       "galle_lon_deg": 356.8192688575007,
+       "active_bounds": [
+        "mass_lo"
+       ],
+       "u_box_half_widths": 1.804248421924137,
+       "u_vs_u_ref_std": 18.482211784909705
+      },
+      {
+       "from": "random:24",
+       "chi2": 587.3765896052407,
+       "chi2_perturbative": 590.8439859362327,
+       "status": 3,
+       "nfev": 333,
+       "mass_earth": 1.000000000066318,
+       "e": 0.27983267681128804,
+       "inc_deg": 0.2737286990687625,
+       "galle_lon_deg": 356.83000589599294,
+       "active_bounds": [
+        "mass_lo"
+       ],
+       "u_box_half_widths": 1.804016539164262,
+       "u_vs_u_ref_std": 18.4731780197365
+      }
+     ],
+     "chi2": 587.376587342726,
+     "ln_l": -293.688293671363,
+     "mass_earth": 1.0,
+     "e": 0.27983193587902055,
+     "inc_deg": 0.27403082018104863,
+     "galle_lon_deg": 356.8192688575007,
+     "active_bounds": [
+      "mass_lo"
+     ],
+     "u_box_half_widths": 1.804248421924137,
+     "u_vs_u_ref_std": 18.482211784909705,
+     "u_flagged": true,
+     "chi2_perturbative_minus_exact": 0.14778778361028344,
+     "group_chi2": {
+      "ancient:ra": 0.0,
+      "ancient:dec": 0.0,
+      "greenwich:ra": 122.25392030029094,
+      "greenwich:dec": 85.63255791604878,
+      "paris_1801_1827:ra": 90.009042317166,
+      "paris_1801_1827:dec": 101.95412182692002,
+      "paris_1835_1845:ra": 107.15331789684355,
+      "paris_1835_1845:dec": 80.37362708545673
+     },
+     "dlnl": -0.11573991762639935
+    },
+    {
+     "k": 5,
+     "a_au": 30.0,
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "rerun": false,
+     "n_starts": 40,
+     "perturbative_best_chi2": 587.3000259593093,
+     "candidates": [
+      {
+       "origin": "random:2",
+       "chi2": 587.3000259593093,
+       "e": 0.29400348693691836,
+       "galle_lon_deg": 357.4641407256087
+      },
+      {
+       "origin": "random:28",
+       "chi2": 590.8231346785194,
+       "e": 0.29999999999999993,
+       "galle_lon_deg": 303.345318525113
+      }
+     ],
+     "polished": [
+      {
+       "from": "random:2",
+       "chi2": 587.1451075074732,
+       "chi2_perturbative": 587.3000259593093,
+       "status": 2,
+       "nfev": 22,
+       "mass_earth": 1.0000000000020248,
+       "e": 0.29304429568226364,
+       "inc_deg": 0.25724663664752867,
+       "galle_lon_deg": 357.0785330778591,
+       "active_bounds": [
+        "mass_lo"
+       ],
+       "u_box_half_widths": 1.8055411714129372,
+       "u_vs_u_ref_std": 18.5325751466184
+      },
+      {
+       "from": "random:28",
+       "chi2": 587.1451633840052,
+       "chi2_perturbative": 590.8231346785194,
+       "status": 3,
+       "nfev": 369,
+       "mass_earth": 1.000001825578897,
+       "e": 0.2930409341988134,
+       "inc_deg": 0.2574674572534258,
+       "galle_lon_deg": 357.0664013052058,
+       "active_bounds": [
+        "mass_lo"
+       ],
+       "u_box_half_widths": 1.805764638447044,
+       "u_vs_u_ref_std": 18.541281049166564
+      }
+     ],
+     "chi2": 587.1451075074732,
+     "ln_l": -293.5725537537366,
+     "mass_earth": 1.0000000000020248,
+     "e": 0.29304429568226364,
+     "inc_deg": 0.25724663664752867,
+     "galle_lon_deg": 357.0785330778591,
+     "active_bounds": [
+      "mass_lo"
+     ],
+     "u_box_half_widths": 1.8055411714129372,
+     "u_vs_u_ref_std": 18.5325751466184,
+     "u_flagged": true,
+     "chi2_perturbative_minus_exact": 0.1549184518361244,
+     "group_chi2": {
+      "ancient:ra": 0.0,
+      "ancient:dec": 0.0,
+      "greenwich:ra": 122.24049397550075,
+      "greenwich:dec": 85.63805405983071,
+      "paris_1801_1827:ra": 89.94468076100188,
+      "paris_1801_1827:dec": 102.0106996419224,
+      "paris_1835_1845:ra": 106.9263144087271,
+      "paris_1835_1845:dec": 80.38486466049027
+     },
+     "dlnl": 0.0
+    },
+    {
+     "k": 6,
+     "a_au": 30.5,
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "rerun": false,
+     "n_starts": 40,
+     "perturbative_best_chi2": 587.4715685242768,
+     "candidates": [
+      {
+       "origin": "random:29",
+       "chi2": 587.4715685242768,
+       "e": 0.29999999999999993,
+       "galle_lon_deg": 356.46144214963476
+      },
+      {
+       "origin": "random:7",
+       "chi2": 590.8051965077111,
+       "e": 0.29999999999999993,
+       "galle_lon_deg": 302.77268399000457
+      }
+     ],
+     "polished": [
+      {
+       "from": "random:29",
+       "chi2": 587.285915705696,
+       "chi2_perturbative": 587.4715685242768,
+       "status": 2,
+       "nfev": 70,
+       "mass_earth": 1.1114249646754117,
+       "e": 0.29999999999999993,
+       "inc_deg": 0.28443271919656127,
+       "galle_lon_deg": 356.2723776680656,
+       "active_bounds": [
+        "e_max"
+       ],
+       "u_box_half_widths": 1.8015076712243783,
+       "u_vs_u_ref_std": 18.37543671360535
+      },
+      {
+       "from": "random:7",
+       "chi2": 590.3405488245944,
+       "chi2_perturbative": 590.8051965077111,
+       "status": 2,
+       "nfev": 157,
+       "mass_earth": 19.068334813240092,
+       "e": 0.09135164438978845,
+       "inc_deg": 2.547592128615861,
+       "galle_lon_deg": 319.36904642596056,
+       "active_bounds": [],
+       "u_box_half_widths": 1.5938753444780924,
+       "u_vs_u_ref_std": 5.889661825844525
+      }
+     ],
+     "chi2": 587.285915705696,
+     "ln_l": -293.642957852848,
+     "mass_earth": 1.1114249646754117,
+     "e": 0.29999999999999993,
+     "inc_deg": 0.28443271919656127,
+     "galle_lon_deg": 356.2723776680656,
+     "active_bounds": [
+      "e_max"
+     ],
+     "u_box_half_widths": 1.8015076712243783,
+     "u_vs_u_ref_std": 18.37543671360535,
+     "u_flagged": true,
+     "chi2_perturbative_minus_exact": 0.18565281858082017,
+     "group_chi2": {
+      "ancient:ra": 0.0,
+      "ancient:dec": 0.0,
+      "greenwich:ra": 122.3998666365031,
+      "greenwich:dec": 85.55287115263312,
+      "paris_1801_1827:ra": 89.95350067999026,
+      "paris_1801_1827:dec": 101.94360739829865,
+      "paris_1835_1845:ra": 107.03796344410017,
+      "paris_1835_1845:dec": 80.39810639417063
+     },
+     "dlnl": -0.07040409911138568
+    },
+    {
+     "k": 7,
+     "a_au": 31.0,
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "rerun": false,
+     "n_starts": 40,
+     "perturbative_best_chi2": 587.9324212066572,
+     "candidates": [
+      {
+       "origin": "random:5",
+       "chi2": 587.9324212066572,
+       "e": 0.3,
+       "galle_lon_deg": 354.53642728223184
+      },
+      {
+       "origin": "random:24",
+       "chi2": 590.7896607428412,
+       "e": 0.29999999999999993,
+       "galle_lon_deg": 302.2377878370387
+      }
+     ],
+     "polished": [
+      {
+       "from": "random:5",
+       "chi2": 587.7919874389389,
+       "chi2_perturbative": 587.9324212066572,
+       "status": 2,
+       "nfev": 87,
+       "mass_earth": 1.382446433237202,
+       "e": 0.2999999999999999,
+       "inc_deg": 0.36244088834816346,
+       "galle_lon_deg": 354.3549243342087,
+       "active_bounds": [
+        "e_max"
+       ],
+       "u_box_half_widths": 1.7985423811539194,
+       "u_vs_u_ref_std": 18.25991396330953
+      },
+      {
+       "from": "random:24",
+       "chi2": 587.7920201505303,
+       "chi2_perturbative": 590.7896607428412,
+       "status": 2,
+       "nfev": 401,
+       "mass_earth": 1.38256805402931,
+       "e": 0.3,
+       "inc_deg": 0.36262503708350885,
+       "galle_lon_deg": 354.3353369327554,
+       "active_bounds": [
+        "e_max"
+       ],
+       "u_box_half_widths": 1.79914515669818,
+       "u_vs_u_ref_std": 18.283397092119678
+      }
+     ],
+     "chi2": 587.7919874389389,
+     "ln_l": -293.89599371946946,
+     "mass_earth": 1.382446433237202,
+     "e": 0.2999999999999999,
+     "inc_deg": 0.36244088834816346,
+     "galle_lon_deg": 354.3549243342087,
+     "active_bounds": [
+      "e_max"
+     ],
+     "u_box_half_widths": 1.7985423811539194,
+     "u_vs_u_ref_std": 18.25991396330953,
+     "u_flagged": true,
+     "chi2_perturbative_minus_exact": 0.14043376771826388,
+     "group_chi2": {
+      "ancient:ra": 0.0,
+      "ancient:dec": 0.0,
+      "greenwich:ra": 122.44389007299952,
+      "greenwich:dec": 85.52587485905129,
+      "paris_1801_1827:ra": 90.11869483907142,
+      "paris_1801_1827:dec": 101.8134738932069,
+      "paris_1835_1845:ra": 107.49606015978321,
+      "paris_1835_1845:dec": 80.39399361482646
+     },
+     "dlnl": -0.3234399657328595
+    },
+    {
+     "k": 8,
+     "a_au": 32.0,
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "rerun": false,
+     "n_starts": 40,
+     "perturbative_best_chi2": 588.5410288644887,
+     "candidates": [
+      {
+       "origin": "random:26",
+       "chi2": 588.5410288644887,
+       "e": 0.3,
+       "galle_lon_deg": 351.08975749775584
+      },
+      {
+       "origin": "random:15",
+       "chi2": 590.7640858673492,
+       "e": 0.29999999999999993,
+       "galle_lon_deg": 301.30073175577854
+      }
+     ],
+     "polished": [
+      {
+       "from": "random:26",
+       "chi2": 588.4496712386122,
+       "chi2_perturbative": 588.5410288644887,
+       "status": 3,
+       "nfev": 99,
+       "mass_earth": 2.021513645899415,
+       "e": 0.3,
+       "inc_deg": 0.5172594027051163,
+       "galle_lon_deg": 350.91454379768265,
+       "active_bounds": [
+        "e_max"
+       ],
+       "u_box_half_widths": 1.7952580708172972,
+       "u_vs_u_ref_std": 18.131962716080327
+      },
+      {
+       "from": "random:15",
+       "chi2": 588.4496500252895,
+       "chi2_perturbative": 590.7640858673492,
+       "status": 2,
+       "nfev": 340,
+       "mass_earth": 2.021827374332176,
+       "e": 0.3,
+       "inc_deg": 0.516796974482033,
+       "galle_lon_deg": 350.92512493112645,
+       "active_bounds": [
+        "e_max"
+       ],
+       "u_box_half_widths": 1.7951976814020818,
+       "u_vs_u_ref_std": 18.129610045289724
+      }
+     ],
+     "chi2": 588.4496500252895,
+     "ln_l": -294.22482501264477,
+     "mass_earth": 2.021827374332176,
+     "e": 0.3,
+     "inc_deg": 0.516796974482033,
+     "galle_lon_deg": 350.92512493112645,
+     "active_bounds": [
+      "e_max"
+     ],
+     "u_box_half_widths": 1.7951976814020818,
+     "u_vs_u_ref_std": 18.129610045289724,
+     "u_flagged": true,
+     "chi2_perturbative_minus_exact": 2.314435842059652,
+     "group_chi2": {
+      "ancient:ra": 0.0,
+      "ancient:dec": 0.0,
+      "greenwich:ra": 122.47940385699795,
+      "greenwich:dec": 85.49231063872485,
+      "paris_1801_1827:ra": 90.38958965164984,
+      "paris_1801_1827:dec": 101.6561144753216,
+      "paris_1835_1845:ra": 108.00925930710406,
+      "paris_1835_1845:dec": 80.42297209549135
+     },
+     "dlnl": -0.6522712589081721
+    },
+    {
+     "k": 9,
+     "a_au": 34.0,
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "rerun": false,
+     "n_starts": 40,
+     "perturbative_best_chi2": 589.0203867713894,
+     "candidates": [
+      {
+       "origin": "posterior:2",
+       "chi2": 589.0203867713894,
+       "e": 0.3,
+       "galle_lon_deg": 345.2842264251219
+      },
+      {
+       "origin": "random:18",
+       "chi2": 590.7255685255249,
+       "e": 0.29999999999999993,
+       "galle_lon_deg": 299.8246200253321
+      }
+     ],
+     "polished": [
+      {
+       "from": "posterior:2",
+       "chi2": 588.9604195167353,
+       "chi2_perturbative": 589.0203867713894,
+       "status": 3,
+       "nfev": 140,
+       "mass_earth": 3.69074164307432,
+       "e": 0.3,
+       "inc_deg": 0.7991433079664731,
+       "galle_lon_deg": 345.17263334880806,
+       "active_bounds": [
+        "e_max"
+       ],
+       "u_box_half_widths": 1.7821877816999032,
+       "u_vs_u_ref_std": 17.62276607422558
+      },
+      {
+       "from": "random:18",
+       "chi2": 588.9604150154801,
+       "chi2_perturbative": 590.7255685255249,
+       "status": 3,
+       "nfev": 372,
+       "mass_earth": 3.6906701103383477,
+       "e": 0.3,
+       "inc_deg": 0.7994133871676613,
+       "galle_lon_deg": 345.1658424732163,
+       "active_bounds": [
+        "e_max"
+       ],
+       "u_box_half_widths": 1.7823254141339813,
+       "u_vs_u_ref_std": 17.6281280040661
+      }
+     ],
+     "chi2": 588.9604150154801,
+     "ln_l": -294.48020750774003,
+     "mass_earth": 3.6906701103383477,
+     "e": 0.3,
+     "inc_deg": 0.7994133871676613,
+     "galle_lon_deg": 345.1658424732163,
+     "active_bounds": [
+      "e_max"
+     ],
+     "u_box_half_widths": 1.7823254141339813,
+     "u_vs_u_ref_std": 17.6281280040661,
+     "u_flagged": true,
+     "chi2_perturbative_minus_exact": 1.7651535100447973,
+     "group_chi2": {
+      "ancient:ra": 0.0,
+      "ancient:dec": 0.0,
+      "greenwich:ra": 122.52131966997605,
+      "greenwich:dec": 85.43421280348794,
+      "paris_1801_1827:ra": 90.57739914588724,
+      "paris_1801_1827:dec": 101.50591855876849,
+      "paris_1835_1845:ra": 108.43544517028587,
+      "paris_1835_1845:dec": 80.48611966707445
+     },
+     "dlnl": -0.9076537540034337
+    },
+    {
+     "k": 10,
+     "a_au": 36.0,
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "rerun": false,
+     "n_starts": 40,
+     "perturbative_best_chi2": 589.1692124496358,
+     "candidates": [
+      {
+       "origin": "posterior:2",
+       "chi2": 589.1692124496358,
+       "e": 0.3,
+       "galle_lon_deg": 340.3351848603023
+      },
+      {
+       "origin": "random:27",
+       "chi2": 590.6914687967824,
+       "e": 0.29999999999999993,
+       "galle_lon_deg": 298.7994050593589
+      }
+     ],
+     "polished": [
+      {
+       "from": "posterior:2",
+       "chi2": 589.1212498185002,
+       "chi2_perturbative": 589.1692124496358,
+       "status": 3,
+       "nfev": 164,
+       "mass_earth": 5.886127373691311,
+       "e": 0.3,
+       "inc_deg": 1.0481668091689829,
+       "galle_lon_deg": 340.29068902705086,
+       "active_bounds": [
+        "e_max"
+       ],
+       "u_box_half_widths": 1.755443913474416,
+       "u_vs_u_ref_std": 16.580869619731605
+      },
+      {
+       "from": "random:27",
+       "chi2": 590.7066039395756,
+       "chi2_perturbative": 590.6914687967824,
+       "status": 2,
+       "nfev": 315,
+       "mass_earth": 59.300755619033716,
+       "e": 0.3,
+       "inc_deg": 6.342325298673698,
+       "galle_lon_deg": 298.7910633661083,
+       "active_bounds": [
+        "e_max"
+       ],
+       "u_box_half_widths": 1.2383173011095976,
+       "u_vs_u_ref_std": 27.145197672417115
+      }
+     ],
+     "chi2": 589.1212498185002,
+     "ln_l": -294.5606249092501,
+     "mass_earth": 5.886127373691311,
+     "e": 0.3,
+     "inc_deg": 1.0481668091689829,
+     "galle_lon_deg": 340.29068902705086,
+     "active_bounds": [
+      "e_max"
+     ],
+     "u_box_half_widths": 1.755443913474416,
+     "u_vs_u_ref_std": 16.580869619731605,
+     "u_flagged": true,
+     "chi2_perturbative_minus_exact": 0.04796263113553323,
+     "group_chi2": {
+      "ancient:ra": 0.0,
+      "ancient:dec": 0.0,
+      "greenwich:ra": 122.50605579038553,
+      "greenwich:dec": 85.39864925690996,
+      "paris_1801_1827:ra": 90.61623591990015,
+      "paris_1801_1827:dec": 101.4330792159856,
+      "paris_1835_1845:ra": 108.64077274342769,
+      "paris_1835_1845:dec": 80.52645689189141
+     },
+     "dlnl": -0.9880711555135235
+    },
+    {
+     "k": 11,
+     "a_au": 40.0,
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "rerun": false,
+     "n_starts": 40,
+     "perturbative_best_chi2": 589.2521845814967,
+     "candidates": [
+      {
+       "origin": "random:8",
+       "chi2": 589.2521845814967,
+       "e": 0.29999999999999993,
+       "galle_lon_deg": 331.8483416211757
+      },
+      {
+       "origin": "random:27",
+       "chi2": 590.6042009157866,
+       "e": 0.29999999999999993,
+       "galle_lon_deg": 297.74287349424236
+      }
+     ],
+     "polished": [
+      {
+       "from": "random:8",
+       "chi2": 589.2187232944565,
+       "chi2_perturbative": 589.2521845814967,
+       "status": 2,
+       "nfev": 168,
+       "mass_earth": 11.914047747163233,
+       "e": 0.29999999999999993,
+       "inc_deg": 1.5110444804498062,
+       "galle_lon_deg": 331.77631370064705,
+       "active_bounds": [
+        "e_max"
+       ],
+       "u_box_half_widths": 1.6721166187614338,
+       "u_vs_u_ref_std": 13.334577340991908
+      },
+      {
+       "from": "random:27",
+       "chi2": 590.6188097140189,
+       "chi2_perturbative": 590.6042009157866,
+       "status": 3,
+       "nfev": 367,
+       "mass_earth": 69.83563718735032,
+       "e": 0.29999999999999993,
+       "inc_deg": 6.644409613892033,
+       "galle_lon_deg": 297.7134819536175,
+       "active_bounds": [
+        "e_max"
+       ],
+       "u_box_half_widths": 1.2176199378731747,
+       "u_vs_u_ref_std": 27.333375993562612
+      }
+     ],
+     "chi2": 589.2187232944565,
+     "ln_l": -294.60936164722824,
+     "mass_earth": 11.914047747163233,
+     "e": 0.29999999999999993,
+     "inc_deg": 1.5110444804498062,
+     "galle_lon_deg": 331.77631370064705,
+     "active_bounds": [
+      "e_max"
+     ],
+     "u_box_half_widths": 1.6721166187614338,
+     "u_vs_u_ref_std": 13.334577340991908,
+     "u_flagged": true,
+     "chi2_perturbative_minus_exact": 0.03346128704026796,
+     "group_chi2": {
+      "ancient:ra": 0.0,
+      "ancient:dec": 0.0,
+      "greenwich:ra": 122.28585713752102,
+      "greenwich:dec": 85.3503023344923,
+      "paris_1801_1827:ra": 90.68938013596828,
+      "paris_1801_1827:dec": 101.37037300036478,
+      "paris_1835_1845:ra": 108.91906139896366,
+      "paris_1835_1845:dec": 80.60374928714644
+     },
+     "dlnl": -1.0368078934916412
+    },
+    {
+     "k": 12,
+     "a_au": 44.0,
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "rerun": false,
+     "n_starts": 40,
+     "perturbative_best_chi2": 589.2713268050748,
+     "candidates": [
+      {
+       "origin": "random:24",
+       "chi2": 589.2713268050748,
+       "e": 0.29999999999999993,
+       "galle_lon_deg": 324.5634286437216
+      },
+      {
+       "origin": "random:3",
+       "chi2": 590.4688927429181,
+       "e": 0.29999999999999993,
+       "galle_lon_deg": 297.71807072899173
+      }
+     ],
+     "polished": [
+      {
+       "from": "random:24",
+       "chi2": 589.2494725685684,
+       "chi2_perturbative": 589.2713268050748,
+       "status": 3,
+       "nfev": 188,
+       "mass_earth": 20.33193580388689,
+       "e": 0.29999999999999993,
+       "inc_deg": 1.960397861004133,
+       "galle_lon_deg": 324.50690561711394,
+       "active_bounds": [
+        "e_max"
+       ],
+       "u_box_half_widths": 1.622351582386457,
+       "u_vs_u_ref_std": 9.085876714465986
+      },
+      {
+       "from": "random:3",
+       "chi2": 589.2494657645518,
+       "chi2_perturbative": 590.4688927429181,
+       "status": 4,
+       "nfev": 328,
+       "mass_earth": 20.33215871917879,
+       "e": 0.29999999999999993,
+       "inc_deg": 1.958213488624242,
+       "galle_lon_deg": 324.522597096624,
+       "active_bounds": [
+        "e_max"
+       ],
+       "u_box_half_widths": 1.6222126327386004,
+       "u_vs_u_ref_std": 9.081203300035776
+      }
+     ],
+     "chi2": 589.2494657645518,
+     "ln_l": -294.6247328822759,
+     "mass_earth": 20.33215871917879,
+     "e": 0.29999999999999993,
+     "inc_deg": 1.958213488624242,
+     "galle_lon_deg": 324.522597096624,
+     "active_bounds": [
+      "e_max"
+     ],
+     "u_box_half_widths": 1.6222126327386004,
+     "u_vs_u_ref_std": 9.081203300035776,
+     "u_flagged": true,
+     "chi2_perturbative_minus_exact": 1.2194269783663003,
+     "group_chi2": {
+      "ancient:ra": 0.0,
+      "ancient:dec": 0.0,
+      "greenwich:ra": 121.89341179265472,
+      "greenwich:dec": 85.31550724784374,
+      "paris_1801_1827:ra": 90.84932042010982,
+      "paris_1801_1827:dec": 101.35318113657631,
+      "paris_1835_1845:ra": 109.16947466205023,
+      "paris_1835_1845:dec": 80.66857050531694
+     },
+     "dlnl": -1.0521791285393078
+    },
+    {
+     "k": 13,
+     "a_au": 30.07,
+     "reference": true,
+     "name": "neptune",
+     "status": "pass",
+     "rerun": false,
+     "n_starts": 40,
+     "perturbative_best_chi2": 587.2710037428043,
+     "candidates": [
+      {
+       "origin": "posterior:2",
+       "chi2": 587.2710037428043,
+       "e": 0.2958113979766237,
+       "galle_lon_deg": 357.49659294044403
+      },
+      {
+       "origin": "random:0",
+       "chi2": 590.8204598006862,
+       "e": 0.3,
+       "galle_lon_deg": 303.26267826351403
+      }
+     ],
+     "polished": [
+      {
+       "from": "posterior:2",
+       "chi2": 587.1151488139844,
+       "chi2_perturbative": 587.2710037428043,
+       "status": 3,
+       "nfev": 21,
+       "mass_earth": 1.000000000831483,
+       "e": 0.2948606414539645,
+       "inc_deg": 0.2544271748353898,
+       "galle_lon_deg": 357.13351366268614,
+       "active_bounds": [
+        "mass_lo"
+       ],
+       "u_box_half_widths": 1.8052984593124008,
+       "u_vs_u_ref_std": 18.523119488413695
+      },
+      {
+       "from": "random:0",
+       "chi2": 587.1152460780853,
+       "chi2_perturbative": 590.8204598006862,
+       "status": 2,
+       "nfev": 363,
+       "mass_earth": 1.0000241697956007,
+       "e": 0.29485978975154375,
+       "inc_deg": 0.25428244982254966,
+       "galle_lon_deg": 357.1298552114594,
+       "active_bounds": [],
+       "u_box_half_widths": 1.8054025970043552,
+       "u_vs_u_ref_std": 18.52717651902392
+      }
+     ],
+     "chi2": 587.1151488139844,
+     "ln_l": -293.5575744069922,
+     "mass_earth": 1.000000000831483,
+     "e": 0.2948606414539645,
+     "inc_deg": 0.2544271748353898,
+     "galle_lon_deg": 357.13351366268614,
+     "active_bounds": [
+      "mass_lo"
+     ],
+     "u_box_half_widths": 1.8052984593124008,
+     "u_vs_u_ref_std": 18.523119488413695,
+     "u_flagged": true,
+     "chi2_perturbative_minus_exact": 0.1558549288198492,
+     "group_chi2": {
+      "ancient:ra": 0.0,
+      "ancient:dec": 0.0,
+      "greenwich:ra": 122.24360698172724,
+      "greenwich:dec": 85.63091295054618,
+      "paris_1801_1827:ra": 89.94292177269948,
+      "paris_1801_1827:dec": 102.01951633738967,
+      "paris_1835_1845:ra": 106.89170826931603,
+      "paris_1835_1845:dec": 80.38648250230584
+     },
+     "dlnl": 0.014979346744382838
+    },
+    {
+     "k": 14,
+     "a_au": 36.15,
+     "reference": true,
+     "name": "le_verrier",
+     "status": "pass",
+     "rerun": false,
+     "n_starts": 40,
+     "perturbative_best_chi2": 589.1754922772341,
+     "candidates": [
+      {
+       "origin": "random:15",
+       "chi2": 589.1754922772341,
+       "e": 0.3,
+       "galle_lon_deg": 339.9888261620174
+      },
+      {
+       "origin": "random:13",
+       "chi2": 591.6238071582329,
+       "e": 4.84754002065876e-07,
+       "galle_lon_deg": 312.0203672251413
+      }
+     ],
+     "polished": [
+      {
+       "from": "random:15",
+       "chi2": 589.128113847707,
+       "chi2_perturbative": 589.1754922772341,
+       "status": 4,
+       "nfev": 167,
+       "mass_earth": 6.071195380386581,
+       "e": 0.29999999999999993,
+       "inc_deg": 1.0726194940578557,
+       "galle_lon_deg": 339.8758874181234,
+       "active_bounds": [
+        "e_max"
+       ],
+       "u_box_half_widths": 1.754289721399224,
+       "u_vs_u_ref_std": 16.535904223521577
+      },
+      {
+       "from": "random:13",
+       "chi2": 590.7039279331048,
+       "chi2_perturbative": 591.6238071582329,
+       "status": 3,
+       "nfev": 360,
+       "mass_earth": 59.62512702689028,
+       "e": 0.3,
+       "inc_deg": 6.359183409565605,
+       "galle_lon_deg": 298.74901300292913,
+       "active_bounds": [
+        "e_max"
+       ],
+       "u_box_half_widths": 1.2379280246332915,
+       "u_vs_u_ref_std": 27.153646135422054
+      }
+     ],
+     "chi2": 589.128113847707,
+     "ln_l": -294.5640569238535,
+     "mass_earth": 6.071195380386581,
+     "e": 0.29999999999999993,
+     "inc_deg": 1.0726194940578557,
+     "galle_lon_deg": 339.8758874181234,
+     "active_bounds": [
+      "e_max"
+     ],
+     "u_box_half_widths": 1.754289721399224,
+     "u_vs_u_ref_std": 16.535904223521577,
+     "u_flagged": true,
+     "chi2_perturbative_minus_exact": 0.04737842952704341,
+     "group_chi2": {
+      "ancient:ra": 0.0,
+      "ancient:dec": 0.0,
+      "greenwich:ra": 122.48636875489393,
+      "greenwich:dec": 85.40474474538975,
+      "paris_1801_1827:ra": 90.6146379938889,
+      "paris_1801_1827:dec": 101.43561770674324,
+      "paris_1835_1845:ra": 108.65181532812815,
+      "paris_1835_1845:dec": 80.5349293186631
+     },
+     "dlnl": -0.9915031701169141
+    }
+   ],
+   "reading": {
+    "reading": "flat",
+    "a_max_au": 30.0,
+    "clauses": {
+     "a_max_not_at_grid_end": true,
+     "falls_below_within_x_left": false,
+     "falls_below_within_x_right": false,
+     "no_second_branch": false,
+     "flat_26_44": true
+    },
+    "failed": [],
+    "where": {
+     "second_branch_points": [
+      24.0,
+      36.0,
+      40.0,
+      44.0
+     ],
+     "below_threshold_in_26_44": []
+    },
+    "thresholds": {
+     "dlnl": -2.0,
+     "x_au": 4.0,
+     "flat_range_au": [
+      26.0,
+      44.0
+     ]
+    },
+    "missing_points": []
+   },
+   "a_max": {
+    "a_au": 30.0,
+    "mass_earth": 1.0000000000020248
+   },
+   "parabola": {
+    "a_au": 30.060888095289744,
+    "dlnl": 0.0013802058189753552
+   },
+   "intervals": {
+    "dlnl_minus_0p5": [
+     28.0864686356559,
+     31.536931970683852
+    ],
+    "dlnl_minus_2": [
+     null,
+     null
+    ]
+   },
+   "reference_points": {
+    "neptune": {
+     "a_au": 30.07,
+     "dlnl": 0.014979346744382838,
+     "above_grid_maximum": true,
+     "mass_earth": 1.000000000831483,
+     "galle_lon_deg": 357.13351366268614,
+     "e": 0.2948606414539645
+    },
+    "le_verrier": {
+     "a_au": 36.15,
+     "dlnl": -0.9915031701169141,
+     "above_grid_maximum": false,
+     "mass_earth": 6.071195380386581,
+     "galle_lon_deg": 339.8758874181234,
+     "e": 0.29999999999999993
+    }
+   },
+   "continuation": {
+    "passes": 1,
+    "converged": true,
+    "n_neighbour_runs": 28,
+    "sweep_pairs": 1,
+    "sweep_improved": []
+   },
+   "failed_points": [],
+   "ancient_group_chi2_by_a": {
+    "24.0": 0.0,
+    "26.0": 0.0,
+    "28.0": 0.0,
+    "29.0": 0.0,
+    "29.5": 0.0,
+    "30.0": 0.0,
+    "30.5": 0.0,
+    "31.0": 0.0,
+    "32.0": 0.0,
+    "34.0": 0.0,
+    "36.0": 0.0,
+    "40.0": 0.0,
+    "44.0": 0.0
+   }
+  }
+ },
+ "posterior_marginal_a": {
+  "grid_au": [
+   24.0,
+   26.0,
+   28.0,
+   29.0,
+   29.5,
+   30.0,
+   30.5,
+   31.0,
+   32.0,
+   34.0,
+   36.0,
+   40.0,
+   44.0
+  ],
+  "bin_edges_ln_a": [
+   3.1380324765111776,
+   3.218075184184714,
+   3.295150524098343,
+   3.349750170080839,
+   3.375843046666124,
+   3.3927938225039647,
+   3.4094620326377605,
+   3.425856944049256,
+   3.449861553642436,
+   3.496048213707944,
+   3.5549397315361357,
+   3.6361991962850233,
+   3.7365345440160986,
+   3.8318447238204234
+  ],
+  "ln_p_rel": [
+   -5.799023515837211,
+   -12.600157030811738,
+   -4.687654876549812,
+   -1.9242123957326833,
+   -0.9449147693292828,
+   0.0,
+   -0.09198498775850839,
+   -1.5304085734938457,
+   -2.389774722378525,
+   -4.4939414074759245,
+   -6.012091477560549,
+   -7.696952310251552,
+   -12.952196164825272
+  ],
+  "n_eff": [
+   11684.77116013126,
+   29.56424904040524,
+   869.0325938257222,
+   4467.427894805044,
+   7862.6833933815215,
+   20866.650052728983,
+   18501.493268871818,
+   6274.93703190004,
+   4917.662968678578,
+   2100.15546844495,
+   2137.8561169767454,
+   542.8473226481806,
+   9.300486991882622
+  ],
+  "mass": [
+   0.004558223112977685,
+   4.88308742644869e-06,
+   0.009447674054500737,
+   0.07158216928682361,
+   0.12381578951937078,
+   0.31321798240928544,
+   0.2810077014367759,
+   0.09763473894097485,
+   0.07954416069770787,
+   0.012368485185458189,
+   0.003739499889688025,
+   0.0008563824628345929,
+   4.246485903580677e-06
+  ],
+  "a_au": {
+   "median": 30.217713385242895,
+   "lo68": 29.597316977217748,
+   "hi68": 30.90448922211318,
+   "lo95": 28.653746556473127,
+   "hi95": 32.752538833759644
+  },
+  "tight": true,
+  "tight_below_au": 8.0,
+  "min_eff_samples": 50,
+  "published_a_au": {
+   "median": 30.218,
+   "lo68": 29.597,
+   "hi68": 30.904,
+   "lo95": 28.654,
+   "hi95": 32.752
+  }
+ },
+ "neptune_osculating_a_1781_au": 30.223384182057853,
+ "volume_term": [
+  {
+   "a_au": 24.0,
+   "volume_term": 0.6327990433331596,
+   "n_eff": 11684.77116013126
+  },
+  {
+   "a_au": 26.0,
+   "volume_term": null,
+   "n_eff": 29.56424904040524
+  },
+  {
+   "a_au": 28.0,
+   "volume_term": -2.8426386225282387,
+   "n_eff": 869.0325938257222
+  },
+  {
+   "a_au": 29.0,
+   "volume_term": -1.6642803986309667,
+   "n_eff": 4467.427894805044
+  },
+  {
+   "a_au": 29.5,
+   "volume_term": -0.9187254442583237,
+   "n_eff": 7862.6833933815215
+  },
+  {
+   "a_au": 30.0,
+   "volume_term": 0.0,
+   "n_eff": 20866.650052728983
+  },
+  {
+   "a_au": 30.5,
+   "volume_term": 0.016054676654334354,
+   "n_eff": 18501.493268871818
+  },
+  {
+   "a_au": 31.0,
+   "volume_term": -1.2288828850356612,
+   "n_eff": 6274.93703190004
+  },
+  {
+   "a_au": 32.0,
+   "volume_term": -1.5653162652375618,
+   "n_eff": 4917.662968678578
+  },
+  {
+   "a_au": 34.0,
+   "volume_term": -2.489429225126125,
+   "n_eff": 2100.15546844495
+  },
+  {
+   "a_au": 36.0,
+   "volume_term": -2.932738102322734,
+   "n_eff": 2137.8561169767454
+  },
+  {
+   "a_au": 40.0,
+   "volume_term": -2.958507124374071,
+   "n_eff": 542.8473226481806
+  },
+  {
+   "a_au": 44.0,
+   "volume_term": null,
+   "n_eff": 9.300486991882622
+  }
+ ],
+ "profile_vs_posterior": {
+  "profile": "constrained",
+  "posterior_tight": true,
+  "posterior_95": [
+   28.653746556473127,
+   32.752538833759644
+  ],
+  "profile_dlnl_minus_2": [
+   27.980769196258066,
+   33.99235258149115
+  ],
+  "posterior_95_within_profile": true,
+  "width_ratio_posterior_over_profile": 0.6818157571189705,
+  "reading": "constrained, posterior within and widths within a factor 2: the data set the posterior's a; the headline interval stands as a measurement"
+ },
+ "interpretation": {
+  "a": "constrained",
+  "b": "flat",
+  "text": "The distance comes from the pre-1781 sightings: the 155-year lever arm. Without them the data allow any a from 26 to 44 AU at \u0394 ln L > \u22122."
+ },
+ "ledger": [
+  {
+   "job": "m9/profile/all",
+   "n_likelihood_calls": 1053784,
+   "n_integrations": 1393,
+   "wall_s": 96.2,
+   "cpu_s": 318.3,
+   "n_workers": 12
+  },
+  {
+   "job": "m9/profile/post1781",
+   "n_likelihood_calls": 438012,
+   "n_integrations": 47136,
+   "wall_s": 135.1,
+   "cpu_s": 244.0,
+   "n_workers": 12
+  }
+ ]
+}

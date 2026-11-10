@@ -1,0 +1,68 @@
+{
+ "description": "M9 transcription screen: measurements more than 4 \u03c3_g from their group's median O \u2212 JPL (docs/notes/M9.md). Report only; nothing is changed.",
+ "threshold_sigma": 4.0,
+ "n_measurements": 529,
+ "n_hand_checked_rows": 28,
+ "flagged": [
+  {
+   "id": "LV1846-T77-p131-l13-ra",
+   "page": "131",
+   "line": 13,
+   "source": "CdT1849Add:p131:row13 (Table 77); CdT1849Add:p127:\u00a775",
+   "date": "1795 D\u00e9c. 2, 18 0 56 t.m.",
+   "quantity": "ra",
+   "o_minus_jpl_arcsec": 9.079226492077968,
+   "group": "greenwich:ra",
+   "group_median_arcsec": 1.3217313542601143,
+   "sigma_g_arcsec": 1.91,
+   "deviation_sigma": 4.061515778962227,
+   "hand_checked": false,
+   "misprint_logged": null,
+   "le_verrier_o_minus_c_arcsec": "+33.00",
+   "neighbours_o_minus_c_arcsec": [
+    "+23.10",
+    "+27.30"
+   ]
+  },
+  {
+   "id": "LV1846-T77-p135-l03-ra",
+   "page": "135",
+   "line": 3,
+   "source": "CdT1849Add:p135:row3 (Table 77); CdT1849Add:p127:\u00a775",
+   "date": "1830 Nov. 11, 5 25 32 t.m.",
+   "quantity": "ra",
+   "o_minus_jpl_arcsec": -6.34450175806614,
+   "group": "greenwich:ra",
+   "group_median_arcsec": 1.3217313542601143,
+   "sigma_g_arcsec": 1.91,
+   "deviation_sigma": -4.013734613783379,
+   "hand_checked": true,
+   "misprint_logged": "dec_obs: -18 12 6.9 -> -19 12 6.9",
+   "le_verrier_o_minus_c_arcsec": "-5.25",
+   "neighbours_o_minus_c_arcsec": [
+    "+4.95",
+    "-31.35"
+   ]
+  },
+  {
+   "id": "LV1846-T77-p135-l08-ra",
+   "page": "135",
+   "line": 8,
+   "source": "CdT1849Add:p135:row8 (Table 77); CdT1849Add:p127:\u00a775",
+   "date": "1835 Juill. 24, 13 59 53 t.m.",
+   "quantity": "ra",
+   "o_minus_jpl_arcsec": 9.154173275448857,
+   "group": "paris_1835_1845:ra",
+   "group_median_arcsec": 0.7667806832966193,
+   "sigma_g_arcsec": 1.44,
+   "deviation_sigma": 5.824578188994609,
+   "hand_checked": false,
+   "misprint_logged": null,
+   "le_verrier_o_minus_c_arcsec": "-23.55",
+   "neighbours_o_minus_c_arcsec": [
+    "-30.45",
+    "-30.60"
+   ]
+  }
+ ]
+}
