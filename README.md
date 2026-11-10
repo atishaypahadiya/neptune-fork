@@ -53,7 +53,10 @@ Phase 1. Milestones M0–M5b are complete:
 - partitioned nested sampling with the A3 calibration tests.
 
 The pre-registered real-data fit (M6c) is done and reported, and the A6 acceptance tests are
-reported ([A6 report](docs/notes/A6.md)). M6d and M6e are deferred to v1.1. M8, a faster
+reported ([A6 report](docs/notes/A6.md)). M6d and M6e are deferred to v1.1. The spec's other M6c fits (the `bouvard` and `adams` data
+variants, the 1846 reduction track and the Le Verrier shape model) are deferred to v1.1 too:
+they are not yet pre-registered, will be planned and pushed before launch, and the `adams`
+variant opens the Adams–Challis study. M8, a faster
 likelihood that decides the provisional 95 % interval, is running. M7 is the public site.
 
 **Data and model (M6).** Le Verrier's 279 observations are transcribed and double-checked
@@ -98,6 +101,7 @@ likelihood that makes repeated runs of every cell affordable, is specified in th
 - A6b (the reduction check against JPL): Comparison against per-group precision not made: no precision figure was fixed before the data were seen. Medians reported. Details in the [A6 report](docs/notes/A6.md).
 - A6a (the transcription check): 0 of 28 rows in error; 95 % upper bound on the per-row error rate 10.1 % (exact one-sided Clopper–Pearson, 0 of 28); the remaining 251 rows are unchecked.
 - The observation model does not include diurnal parallax (up to 0.5″ for Uranus over 1781–1845).
+- Only Le Verrier's data choice on the modern reduction track is fitted: the `bouvard` and `adams` variants, the 1846 reduction track and the Le Verrier shape model are deferred to v1.1 (not yet pre-registered; to be planned and pushed before launch; the `adams` variant opens the Adams–Challis study).
 - Error model: the evidence favours Student-t errors (S3, ln B = +13.7); the Gaussian error model
   was fixed by the pre-registration and is kept. S3 moves the median 0.37 headline half-widths.
 

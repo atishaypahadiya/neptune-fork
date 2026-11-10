@@ -22,7 +22,7 @@ semver: the tag is `vX.Y.Z`, and `pyproject.toml` and `CITATION.cff` hold `X.Y.Z
 - [x] A6c passed and committed (`site/data/a6c_coverage.json`, with a note in
   `docs/notes/M6.md`). If it fails, stop and report, as the spec says. Don't tag.
 - [ ] M6c fits are done, with `site/data/m6_fits.json` and the figures the spec lists. (M6d and
-  M6e moved to "Deferred to v1.1" below, 2026-11-09.)
+  M6e moved to "Deferred to v1.1" below, 2026-11-09, and the M6c variant fits with them.)
 - [x] All A6 tests reported against their pre-registered thresholds (A6a–A6e).
   - A6a–A6d reported in `docs/notes/A6.md` (2026-11-09): A6a, A6c and A6d pass, and A6b's
     loader test passes. A6e is deferred with M6e.
@@ -37,6 +37,9 @@ semver: the tag is `vX.Y.Z`, and `pyproject.toml` and `CITATION.cff` hold `X.Y.Z
   factor between the two need a new pre-registered real-data nested run (hours of compute).
 - **M6e, the held-out precoveries:** the Lalande 1795 and Galileo 1612–13 positions are not
   yet sourced or transcribed, and the predictive step is not built; A6e depends on it.
+- **M6c variant fits** (`bouvard`, `adams`, the 1846 reduction track, the Le Verrier shape
+  model; moved here 2026-11-09): not yet pre-registered; to be planned and pushed before
+  launch; the `adams` variant opens the Adams–Challis study.
 - **Cache-only fetcher for pre-registered runs:** future pre-registered runs use a cache-only
   fetcher that raises on miss. Today a run reads Horizons through the default fetcher, which
   goes live on a cache miss. The A8d(S1) arbiter (launched 2026-11-09) made no network calls,
