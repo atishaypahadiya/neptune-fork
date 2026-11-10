@@ -3,7 +3,7 @@
 
 import * as d3 from "d3";
 import { mount, point, probe, stipple } from "./plate.js";
-import { fmt, drv, clock, dayMonth, duration } from "./data.js";
+import { fmt, drv, clock, dayMonth, duration, profileSegments } from "./data.js";
 import { timelineFacts, SENS } from "./copy.js";
 
 const L = d3.line();
@@ -311,9 +311,14 @@ export function fig7(fig, D) {
     // the reading rule's threshold
     g.append("path").attr("class", "ln sec yield").attr("d", L([[mg.l, y(S.reading.dlnl)], [w - mg.r, y(S.reading.dlnl)]]));
     xAxis(g, x, h - mg.b, grid.filter((v) => Number.isInteger(v) && (!phone || v % 4 === 0)));
+    // Each run of grid points is one line; a dip between two families of solutions (the 26 AU
+    // point of the all-observations profile) is left unjoined, so the low-distance branch at
+    // 24 AU and the main branch from 28 AU on are separate segments.
     const curve = (ds, cls) => {
       const P = pts(ds);
-      g.append("path").attr("class", `ln ${cls}`).attr("d", L(P.map((p) => [x(p.a_au), y(p.dlnl)])));
+      for (const seg of profileSegments(P)) {
+        if (seg.length > 1) g.append("path").attr("class", `ln ${cls}`).attr("d", L(seg.map((p) => [x(p.a_au), y(p.dlnl)])));
+      }
       g.selectAll(null).data(P).join("circle").attr("class", "dot").attr("cx", (p) => x(p.a_au)).attr("cy", (p) => y(p.dlnl)).attr("r", 2.6);
     };
     curve(B, "sec");

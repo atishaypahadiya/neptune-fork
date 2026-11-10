@@ -4,7 +4,7 @@
 // `{X@fig}` in a template is the point letter X linked to its point in that figure.
 
 import {
-  fmt, range, signed, jdToDate, clock, dayMonth, duration, secondsBetween, drv,
+  fmt, range, signed, jdToDate, clock, dayMonth, duration, secondsBetween, drv, profileSegments,
 } from "./data.js";
 
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August",
@@ -38,6 +38,8 @@ export function titleBlock(D) {
     doi_concept: z.concept_doi,
     doi_concept_url: z.concept_url,
     version: z.version,
+    code_version: D.release.tag,
+    code_version_url: D.release.software_doi ? `https://doi.org/${D.release.software_doi}` : D.release.release_url,
     subtitle: `A pre-registered Bayesian reconstruction from the ${D.head.nObservations} ` +
       `observations of Uranus he published in ${D.dataset.citation.source.year}`,
   };
@@ -446,6 +448,23 @@ export function robustText(D) {
   };
 }
 
+/** Fig. 7's sentence on the two families of solutions in the all-observations profile, when a
+ * dip separates them (the segments are not joined across it). */
+function familiesSentence(A, S) {
+  const P = A.points.filter((p) => !p.reference && p.dlnl != null);
+  const segs = profileSegments(P);
+  const dips = segs.filter((s) => s.length === 1 && s !== segs[0] && s !== segs.at(-1)).map((s) => s[0]);
+  if (!dips.length) return "";
+  const low = segs[0], main = segs.find((s) => s.length > 1 && s[0].a_au > dips[0].a_au);
+  const lowP = low[low.length - 1];
+  return `The all-observations curve is not joined across the dip at ${dips.map((p) => p.a_au).join(" and ")} AU ` +
+    `(Δ ln {i:L} ${fmt(dips[0].dlnl, 0)}), which separates two families of solutions: at ` +
+    `${low.map((p) => p.a_au).join(" and ")} AU a low-distance, high-eccentricity planet ` +
+    `({i:e} on its ${S.e_max} bound, longitude ${fmt(lowP.galle_lon_deg, 1)}°), the family the ` +
+    `eccentricity run's low-distance solution ({i:a} < 25 AU, Fig. 6) belongs to, and from ` +
+    `${main[0].a_au} AU on the main branch. `;
+}
+
 /** § 5's paragraph on the profile likelihood in a (M9) and the captions of Figs. 7 and 8. */
 export function profileText(M) {
   const A = M.datasets.all, B = M.datasets.post1781, S = M.settings, Cn = M.corner;
@@ -484,8 +503,8 @@ export function profileText(M) {
       `${S.n_random + S.n_posterior} starts polished with the full model. The horizontal line is the ` +
       `reading rule's threshold, Δ ln {i:L} = ${fmt(S.reading.dlnl, 0)}. {N@fig-7} Neptune's {i:a} ` +
       `(${fmt(nep.a_au, 2)} AU) and {L@fig-7} Le Verrier's (${fmt(lv.a_au, 2)} AU), on the ` +
-      `all-observations curve. Reading: ${read(A)} with all observations, ${read(B)} without the ` +
-      `pre-1781 ones.`,
+      `all-observations curve. ${familiesSentence(A, S)}Reading: ${read(A)} with all observations, ` +
+      `${read(B)} without the pre-1781 ones.`,
     cap_fig_8: `Mass against semi-major axis in the headline posterior, made after the fact (not ` +
       `pre-registered): ${drv(Cn.samples.length, "posterior samples drawn")} posterior samples and the ` +
       `contours holding 68 % and 95 % of the probability. {N@fig-8} Neptune (JPL: ` +
@@ -583,9 +602,20 @@ export function availability(D) {
     cite_version: cite(z.version_doi, true),
     avail_p2: `The code and documentation are at github.com/atishaypahadiya/neptune-fork under ` +
       `the MIT License; the files in the repository's data/historical/ folder, which hold the ` +
-      `transcription, are under CC0 1.0. Every number on this page is read from the site's data ` +
-      `files, which the repository's scripts regenerate.`,
+      `transcription, are under CC0 1.0. This page is release ${D.release.tag} of the code ` +
+      `(${dateOfStr(D.release.date_released, { time: false })}); ${archiveSentence(D.release)} ` +
+      `Every number on this page is read from the site's data files, which the repository's ` +
+      `scripts regenerate.`,
   };
+}
+
+/** The archived copy of the code: its DOI once Zenodo has minted it, pending before. */
+function archiveSentence(R) {
+  if (R.software_doi) {
+    return `its archived copy on Zenodo is doi:${R.software_doi}` +
+      (R.software_concept_doi ? ` (all versions: doi:${R.software_concept_doi}).` : ".");
+  }
+  return "its archived copy on Zenodo is pending: the DOI is minted when the release is archived.";
 }
 
 /* ---------- § 8 References ---------- */

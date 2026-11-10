@@ -324,3 +324,25 @@ function s1Outcome(arbiter) {
 
 /** Panel 5: the dataset (m7_dataset.json). */
 export const loadDataset = () => loadJSON("m7_dataset.json");
+
+/**
+ * Fig. 7: the grid points of a profile grouped into the runs drawn as one line. A point more
+ * than `dip` below both its neighbours in Δ ln L is a dip between two families of solutions
+ * (M9.md, the 26 AU re-polish) and stands alone; the runs on either side are separate.
+ */
+export function profileSegments(points, dip = 5) {
+  const out = [];
+  let run = [];
+  points.forEach((p, i) => {
+    const l = points[i - 1]?.dlnl, r = points[i + 1]?.dlnl;
+    if (l != null && r != null && p.dlnl < l - dip && p.dlnl < r - dip) {
+      if (run.length) out.push(run);
+      out.push([p]);
+      run = [];
+    } else {
+      run.push(p);
+    }
+  });
+  if (run.length) out.push(run);
+  return out;
+}

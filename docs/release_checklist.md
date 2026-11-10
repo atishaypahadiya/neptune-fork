@@ -1,7 +1,8 @@
 # Release checklist: v1.0.0
 
-**No tag before M6 is complete.** The current version is `0.9.0`, covering M0–M5b plus the M6
-data and observation model. `v1.0.0` is tagged only when M6 is complete. Versions follow
+**No tag before M6 is complete.** The version was `0.9.0` through M0–M5b and the M6 data and
+observation model; `1.0.0` was set on 2026-11-10 with M6 complete (M6d, M6e and the variant
+fits deferred, below) for the v1.0.0 tag. Versions follow
 semver: the tag is `vX.Y.Z`, and `pyproject.toml` and `CITATION.cff` hold `X.Y.Z`.
 `.zenodo.json` has no `version`: Zenodo takes it from the release tag (decided 2026-11-09).
 
@@ -79,17 +80,22 @@ semver: the tag is `vX.Y.Z`, and `pyproject.toml` and `CITATION.cff` hold `X.Y.Z
 
 ## Metadata
 
-- [ ] Version set to `1.0.0` in `pyproject.toml`, then `uv lock`, and the same value in
-  `CITATION.cff` and `.zenodo.json`.
+- [x] Version set to `1.0.0` in `pyproject.toml`, then `uv lock`, and the same value in
+  `CITATION.cff` and `.zenodo.json`. 2026-11-10: `pyproject.toml` and `CITATION.cff` say
+  `1.0.0`, `uv.lock` records `fork` 1.0.0; `.zenodo.json` carries no version (Zenodo takes it
+  from the tag, decided 2026-11-09).
 - [x] ORCID placeholder replaced in both files (2026-11-07):
   - `CITATION.cff` had `https://orcid.org/0000-0000-0000-0000`, now `https://orcid.org/0009-0004-1264-1662`;
   - `.zenodo.json` had `PLACEHOLDER-ORCID-replace-before-release`, now `0009-0004-1264-1662`.
 
   `grep -n "0000-0000-0000-0000\|PLACEHOLDER" CITATION.cff .zenodo.json` must print nothing.
-- [ ] `CITATION.cff`: add `date-released: YYYY-MM-DD` and validate with
-  `uvx cffconvert --validate`.
-- [ ] `.zenodo.json` is valid JSON and agrees with `CITATION.cff`. Zenodo uses `.zenodo.json`
-  over `CITATION.cff` when both exist.
+- [x] `CITATION.cff`: add `date-released: YYYY-MM-DD` and validate with
+  `uvx cffconvert --validate`. 2026-11-10: `date-released: "2026-11-10"`; "Citation metadata
+  are valid according to schema version 1.2.0".
+- [x] `.zenodo.json` is valid JSON and agrees with `CITATION.cff`. Zenodo uses `.zenodo.json`
+  over `CITATION.cff` when both exist. 2026-11-10: parses; same title, creator, ORCID,
+  affiliation, description text, dataset DOI and Whitmore reference; licence MIT with the CC0
+  note, as decided.
 - [x] Zenodo GitHub integration enabled for `atishaypahadiya/neptune-fork`. This has to happen
   **before** the GitHub release is published, or no DOI is minted. 2026-11-09: the repository
   has an active webhook to `zenodo.org/api/hooks/receivers/github` on `release` events

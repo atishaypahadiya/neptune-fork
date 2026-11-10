@@ -1,5 +1,5 @@
-# Version follows semver; it becomes 1.0.0 (with date-released and the Zenodo DOI) when
-# M6 is complete and v1.0.0 is tagged. See docs/release_checklist.md.
+# Version follows semver. 1.0.0 was tagged on 2026-11-10 (docs/release_checklist.md); the
+# software DOI is added once Zenodo mints it for the release.
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
@@ -27,7 +27,8 @@ repository-code: "https://github.com/atishaypahadiya/neptune-fork"
 license:
   - MIT
   - CC0-1.0
-version: "0.9.0"
+version: "1.0.0"
+date-released: "2026-11-10"
 keywords:
   - celestial mechanics
   - Neptune
