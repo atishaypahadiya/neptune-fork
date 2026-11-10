@@ -1,54 +1,298 @@
-# neptune-fork site design (M7)
+# Site design (M7): a paper illustrated with plates
 
-Mockups: a private mockup board (not public); artboards Scene1–Scene4 are the approved direction, the others are rejected explorations, keep them out.
+Written 2026-11-09. This replaces the earlier spec (42df69f), which described dark three.js
+scenes. That direction is retired. The visual reference is `design-ref/neptune-fork site
+directions.html`, which is local only, excluded from git, never committed, and only its
+"Cyanotype" page is used. The reference sets the look. Its numbers and words are placeholders,
+and none of them is used. Only its copy structure carries over: a plate label, a section mark,
+a title that says what was done, prose that refers to lettered points, and a standalone caption.
 
-## The language in one line
-Scenes, not interfaces: black space, a glowing horizon, perspective geometry, soft light against hairline lines, annotations like a pilot's manual, real equations as type. Greyscale only.
+## Concept
 
-## Rules
-- **One idea per scene, drawn as geometry.** The drift is the gap between two paths. The pull is a bent grid. Time is stacked planes. The answer is converging lines. Never a plain chart if geometry can carry it.
-- **Every number is real.** Values come from `site/data/*.json` produced by the pipeline. Anything not yet computed shows a visible placeholder like `[M5B]`, never an invented value.
-- **Every equation is real and belongs to its scene.** No decorative maths.
-- **Greyscale only.** No accent color. Emphasis comes from brightness, weight and line style (solid = observed/true, dashed = predicted/assumed).
-- **UI rule (project):** any pattern is allowed if it adds real value, visual or functional. Each scene must still pass a self-audit listing what it uses and why.
+The site reads like a scientific paper illustrated with 19th-century astronomical plates. It
+has two layers, and they never mix:
 
-## Tokens
-| Token | Value |
-|---|---|
-| Background | `#000000` (Scene 4 flips to a vertical black→`#EFEFEC` horizon gradient) |
-| Ink on dark | `#FFFFFF` lines, `#EDEDED` text, `#B5B5B5` secondary, `#8F8F8F` tertiary |
-| Ink on light | `#151515` lines/text, `#3A3A38` secondary |
-| Labels | Barlow Condensed 500, caps, letter-spacing 0.12–0.22em, 13–15px |
-| Headlines | Barlow Condensed 300, 60–64px, line-height 1.02, sentence case, no trailing period |
-| Body | Barlow Condensed 400, 18px, line-height 1.45, max ~31rem |
-| Equations | EB Garamond italic, 18–22px |
-| Hairlines | 0.6–0.8px; main paths 2px solid; predicted 1.2px dash 6/6 |
-| Grain | fractal noise (baseFrequency 0.9) over everything, opacity 0.10–0.14 |
-| Glow | blurred radial ellipse on the horizon (stdDeviation ~18–24) |
+- **The archive layer (figures):** cyanotype ground, grain, dust and glow. Every figure is a
+  plate: white line on blue.
+- **The journal layer (text):** clean, sharp, flat paper, no texture. That covers the title
+  block, prose, captions, Table 1, references and controls.
 
-## Components (shared by every scene)
-- **Stage annotation:** 8px solid square on the point → 0.7px leader line → caps title (15px) + one or two secondary lines (13px). Pilot-manual style.
-- **Readout (top right):** three stacked caps lines, tabular numbers; the most important one in full white.
-- **Vertical edge title:** right edge, `writing-mode: vertical-rl`, letter-spacing 0.4em: `NEPTUNE-FORK — REDISCOVERING 1846`.
-- **Chapter label (top left):** `0N · NAME` above the headline and a two-to-three sentence body.
-- **Registration marks:** small `+` crosses scattered in empty sky, opacity ~0.55.
-- **Legend + next (bottom right):** line samples (solid/dashed) and `NEXT · … →`.
-- **Shaded sphere:** radial gradient white → mid grey → black with a dashed halo ring; light source matches the scene.
+Texture is applied only to a figure's ground group. Labels, letters and numbers inside a figure
+sit above the texture and stay sharp.
 
-## Scenes
-1. **Something unseen.** Perspective grid of the ecliptic plane to a glowing horizon. Observed vs predicted Uranus paths diverging (gap = residual, exaggerated and labelled as such). Stages 1690 / 1781 / 1822 / 1846. Unseen shaded sphere with a cone of lines onto the 1822 point. Equations: Kepler III, Newton, Le Verrier's disturbing function. Data: `residuals.json`.
-2. **The pull.** Same grid, sinking into a 1/r gravity-well dish under the sphere. Observed path bends toward the well, predicted runs straight. Readout: 1822 separation ≈ 10.9 AU, pull ≈ 2.6 × 10⁻⁹ m/s². Equation: the planetary N-body equation of motion. Data: integrator states.
-3. **Time as layers.** Isometric wireframe box on a dark base slab; 16 translucent planes 1690→1846; residual point on each plane joined into a rising curve; dashed zero wall. Equations: Δλ and χ². Data: `residuals.json`.
-4. **The answer.** Inverted palette: black sky over a bright horizon. Sphere lit from below, cone of lines converging on Neptune's true 1846 position (diamond). Sky strip: free-distance posterior as a soft glow + crisp line, fixed-38.4 AU posterior dashed and narrow. Equation: Bayes. Data: `skymap_1846.json`, `m5a_profile.json`, M5b summary.
+## The one rule
+
+**No number or mark on the page that doesn't come from `site/data/` or a cited source.**
+- Every number is read from a JSON file at load time and formatted in code. Nothing numeric is
+  typed into HTML or CSS.
+- A cited constant, such as Le Verrier's published elements, comes from a JSON field that
+  carries its citation. The citation is shown in the caption or in the references.
+- Every mark (an orbit, a point, a stipple dot, a tick) is drawn from data. Decorative marks are
+  limited to the ground textures, which encode nothing and are named as texture in the code.
+- A pending value says it is pending, taken from the JSON status (as now: `m8b.json`,
+  `m8_arbiter.json`).
+- **Check:** the screenshot script collects every number in the rendered text and fails on any
+  that is not in an allowlist built from the loaded JSON and the citation list.
+
+## Palette (cyanotype)
+
+| token | hex | used for |
+|---|---|---|
+| `--deep` | #0f2a6b | darkest ground in figures; body text on paper |
+| `--prussian` | #1c3f94 | figure ground base; links, Table 1 values |
+| `--mid` | #2f62b8 | the light cloud layer in the ground only |
+| `--wash` | #9db8dc | vignette at plate edges; the light wash clouds |
+| `--paper` | #eef1f3 | journal ground |
+| `--line` | #f4f7fb | every line, point, stipple and label in figures |
+
+- **Contrast:** text on paper uses `--deep` (about 12:1) and `--prussian` for captions and
+  values (about 8:1). Text on a plate is `--line` and is never placed over a `--wash` area.
+- **Opacity in figures:** three steps only. 1 for data lines and points, 0.6 for secondary
+  marks (the 95 % band edge, dotted orbits), 0.3 for context (the frame, gridlines in Fig. 3).
+- **No other colours.** There is no status colour: pending and provisional are said in words
+  and shown as dashed lines.
+
+## Type
+
+- **GFS Didot:** titles (the h1 on Plate I and the section h2s) and large numerals (the year
+  on Plate III). Nothing else.
+- **Source Serif 4** (optical sizes, roman and italic): everything else. That includes prose,
+  captions, Table 1, figure labels, the labels along orbits and the controls.
+- **Small caps:** only for "Plate", "Fig.", "Table" and "§". The reference also sets Table 1's
+  source names in small caps; that is not carried over.
+- **Italic:** the point letters (in figures and prose), mathematical variables, and titles of
+  works in the references. Not captions, not emphasis.
+- **Sizes, from the reference at 1280 px:**
+  - title 112 px Didot;
+  - h2 40/42 px Didot;
+  - body 18/28 px;
+  - captions 14/21 px;
+  - Table 1 cells 20 px;
+  - labels along orbits 13 px with 1.2 px letter spacing;
+  - point letters 16–20 px italic;
+  - plate label 18 px small caps with 2 px letter spacing.
+
+  Phones scale these down with `clamp()`.
+- **Handwriting:** only as faint texture, and only as an image of a real manuscript, with its
+  source text cited beside it (archive, shelfmark, date, transcription). The reference's script
+  is a modern typeface (Monsieur La Doulaise), not 19th-century handwriting, so it is not used.
+  Until a scan with a citation and a usable licence is confirmed, there is no handwriting on
+  the page.
+
+## Figures
+
+- **Medium:** SVG, drawn with D3 (pinned, from jsDelivr). three.js is removed.
+- **Ground:** a stack of SVG filters with fixed seeds, so every load looks the same:
+  - a dark low-frequency `feTurbulence` mottle;
+  - a light cloud layer (`--mid`/`--wash`);
+  - fine grain;
+  - sparse dust specks;
+  - a radial `--wash` vignette toward the plate edges;
+  - a hairline plate mark inset from the edge (Plate I only).
+- **Glow:** a small Gaussian blur under the bodies on Plate III and the highlighted point, and
+  nowhere else.
+- **Line:** white line `--line`.
+  - Orbits are dotted (round caps, short dash).
+  - Sightlines and the pull line are solid hairlines.
+  - Model curves are 2 px solid.
+  - Bodies are stippled: a cluster of dots, never a filled disc. The Sun's stipple is texture
+    and encodes nothing. The perturber's stipple encodes the posterior (below).
+- **Points lettered in italic:** *S* Sun, *U* Uranus, *N* Neptune (JPL), *C* the 1821
+  conjunction, *L* Le Verrier's planet. Any other letter is defined in its caption.
+  - The prose refers to points by letter. Each letter in the prose is a focusable element
+    linked to its point; hover or focus highlights the point (glow, label at full weight).
+  - The link works by keyboard and is announced (`aria-describedby` points to the caption).
+- **Labels along orbits** (SVG `textPath`) carry only data text: observer names and years from
+  the CSV, and fitted values from the JSON.
+- **Captions:** every figure has a numbered caption ("Plate II.", "Fig. 3.") that stands alone.
+  It states:
+  - what is drawn;
+  - which run (for example, the M6c replacement posterior);
+  - the settings that matter (cells, nlive, frames);
+  - the scale ("to scale", or "not to scale" with the factor);
+  - any exaggeration factor, read from the JSON.
+- **Posterior stipple (Plate II):** one dot per posterior sample at *C*. `m6c_conjunction.json`
+  holds quantiles and histograms, not samples, so the restyle adds the samples' heliocentric
+  longitudes at *C*. A script in `docs/notes/scripts/` reads the published M6c replacement
+  posterior; `src/` is not changed. A seeded subsample of 600 is enough to read the density.
+
+## Voice
+
+A scientific paper.
+- Titles say what was done. Every number carries its interval, or says why it has none.
+- The verbs are "we find", "consistent with" and "we did not test". No promotional language,
+  no rhetorical questions, no exclamation marks.
+
+**Structure.** Sections are numbered, because the text cross-references them ("§ 4.2"):
+1. Abstract (on Plate I)
+2. Data: Table 1, observations by source; Fig. 1, the observations over time; the double
+   entry and the spot check.
+3. Method:
+   - Fig. 2, the pre-registration timeline;
+   - Plate III with Fig. 3, the perturbation;
+   - the observation model, likelihood and priors in prose.
+4. Results:
+   - 4.1, the posterior on Galle's night (Fig. 4);
+   - 4.2, the conjunction of 1821 (Plate II);
+   - 4.3, the window in which Le Verrier's planet stays within the 68 % band (Fig. 5).
+5. Robustness: Fig. 6, the repeatability correction and S1–S3, with the S1 verdict pending
+   the arbiter.
+6. Limitations: A6a, A6b, the provisional 95 % interval, S1 pending, the unchecked rows.
+7. Data availability: the DOIs, CC0, the citations and the code licence.
+8. References, with DOIs where they exist.
+
+**Copy to rewrite.** The site's current copy and README.md are rewritten in this voice. The
+numbers stay JSON-driven, and the claims stay the same as in A6.md, M6.md and M8.md.
+
+## Plate I: title
+
+- **Title block** (journal layer, over the plate):
+  - a title that says what was done, drafted at the restyle from the project's own description;
+  - the byline: author, year, the repository and the version DOI;
+  - the abstract follows in § 1.
+- **Figure:** *S*, Uranus's orbit and the outer orbit band:
+  - the Uranus orbit (dotted) carries, along a `textPath`, the observers and years from the
+    CSV;
+  - the outer band shows the 68 % range of the perturber's longitude on Galle's night
+    (`m6c_replacement.json`);
+  - *N* is JPL's Neptune; *L* is Le Verrier's planet from his published elements (the cited
+    sources in `m6c_conjunction.json`).
+  - The caption states the frame, the epoch and that radii are not to scale, with the factor.
+
+## Plate II: the conjunction of 1821 (§ 4.2)
+
+From `m6c_conjunction.json`, heliocentric, ecliptic of date, at its stated epoch:
+- *S*, *U* on its orbit, and the line *SU* produced to *C*;
+- the posterior stipple at *C* (68 % and 95 % read from the JSON);
+- *L* (Le Verrier's planet at the same epoch) and *N* (JPL's Neptune);
+- the angle *CSL*, labelled with its value from the JSON;
+- the dotted orbits.
+
+The paragraph's numbers and the caption ("not to scale; radii ×…") come from the same file. The
+file says it is an after-the-fact diagnostic, not pre-registered, and the caption says so too.
+
+## Table 1: observations by source (§ 2)
+
+- One row per source: Flamsteed, Bradley, Mayer, Le Monnier, Greenwich meridian
+  observations, Paris 1801–1827 and Paris 1835–1845. The rows follow the CSV's `observer` and
+  `observatory`, and the eras follow the error groups.
+- **Columns:** source; observatory; years; observations (rows) and measurements (RA, Dec);
+  median |O − JPL| in arcseconds, with N.
+- **Built by** `docs/notes/scripts/m7_table1.py` → `site/data/m7_table1.json`, from
+  `data/historical/leverrier_1846.csv`. The per-source |O − JPL| values come from
+  `fork.data.calibration`, which the script imports; `src/` is not changed.
+- **Footer row:** totals; "28 rows checked by hand (A6a)"; the licence (CC0) and the version
+  DOI from `m7_dataset.json`.
+- **Caption:** "Table 1." in small caps, then what the residual is measured against.
+- The values are typeset in Source Serif 4 tabular figures, with no rules except one hairline
+  above the totals.
+
+## Plate III: the pull on Uranus (§ 3), with Fig. 3
+
+**Integration** (`docs/notes/scripts/m7_motion.py` → `site/data/m7_motion.json`):
+- **Code:** REBOUND, IAS15. REBOUND stays a dev dependency, and the lint rule bans it only from
+  `src/`, which this script is not in.
+- **Bodies:** the Sun and all eight planets (Mercury, Venus, the Earth–Moon barycentre, Mars,
+  Jupiter, Saturn, Uranus, Neptune).
+- **Initial states:** JPL Horizons via `fork.data.horizons` (the cache), at 1781-03-13.0 TDB
+  (Herschel's discovery; `A1_EPOCH_JD_TDB`). Masses come from `fork.model.bodies`, with its
+  citations.
+- **Two runs:** with Neptune, and with Neptune massless (it still moves, as a test particle).
+- **Output:** every 0.1 yr, 1781–1850:
+  - the heliocentric ecliptic x, y of *U*, *N* and the massless-run Uranus;
+  - Neptune's heliocentric acceleration on Uranus, with its along-track sign;
+  - the heliocentric longitude difference of Uranus (with minus without), in arcseconds;
+  - the conjunction date, found from the run and checked against `m6c_conjunction.json`'s JPL
+    date.
+- **Validation:** the run with Neptune is compared with Horizons' Uranus in 1850, and the
+  difference is recorded in the JSON and in M7.md.
+
+**Drawing:**
+- *S*, the dotted orbits of *U* and *N*, and the trail of *U*.
+- The pull line *UN*, labelled with its along-track sign: "drawn ahead" or "held back".
+- The massless-run Uranus as an open circle, its offset multiplied by a factor stored in the
+  JSON and stated in the caption.
+- *C* marked on the line from *S*.
+- **Fig. 3:** the longitude difference in arcseconds against year, with a cursor at the current
+  year and *C* marked.
+- **Controls:** play/pause (a 44 px button) and a year scrubber (a range input, with arrow keys).
+  The year is shown in Didot numerals.
+- **Reduced motion:** starts paused at the conjunction year.
+
+## Interaction
+
+- **Letter highlight:** text ↔ figure, as above.
+- **Plate III:** the controls above.
+- **Hover:** a quiet probe on Figs. 1, 4, 5 and 6, showing values from the JSON. Nothing appears
+  only on hover: every number a reader needs is in the text, the caption or the table.
+
+## Layout
+
+- **Desktop:** a plate is a full-bleed or half-bleed figure, with its text column on paper
+  beside it (as in the reference's Plate II and Plate III). Sections scroll; there is no scroll
+  snapping.
+- **Phone (≤ 720 px):** the figure comes first, then the text. Labels along orbits are reduced
+  to the outer one. Plate III's Fig. 3 goes below the plate, with the controls fixed under it
+  while the plate is in view.
+
+## Accessibility
+
+- **Contrast:** as above.
+- **Each figure:** an `aria-label` and a hidden long description built from the same JSON (as
+  now).
+- **Interaction:** focus rings on the letters and controls, and reduced motion respected.
+- **Table 1:** a real `<table>` with a `<caption>` and header cells.
+
+## Archival quotes
+
+None is on the page until it is confirmed. The candidates, each with its exact source, are
+listed in the restyle review. The reference's quotes are placeholders and are not used as
+sources.
+
+## UI-rule audit (global rule), planned use
+
+- **Small caps:** used only for "Plate", "Fig.", "Table" and "§". They are the period's
+  labelling convention and mark cross-reference targets.
+- **Section numbering:** used, because the prose cross-references sections.
+- **Eyebrow:** the "§ 4.2" line above an h2 is the section number. It is the only eyebrow.
+- **Italics:** used only for point letters, variables and titles of works, because the letters
+  are the link between text and figure.
+- **Gradient:** the radial vignette on plates is the cyanotype's uneven exposure, and it raises
+  the bar for everything else. No other gradient, except a fade from a plate into paper if a
+  confirmed quote band is added.
+- **Several shades and opacities:** six palette colours and three line opacities, fixed above.
+- **Grain, dust and cloud texture** (close to "dithering"): used on figure grounds only. They
+  are the concept (the archive layer); text never carries them.
+- **Bordered containers:** none. The hairline plate mark on Plate I is the plate's edge, not a
+  box.
+- **Periods:** "Plate II." and "Fig. 3." keep the period as the label convention. Titles have
+  none.
+- **Not used:** tags or pills, Instrument Serif, negative kerning, dividers (one hairline above
+  the Table 1 totals only), monospace, ALL CAPS, code breadcrumbs, ASCII images, squircles,
+  over-detailed diagrams (one idea per plate).
 
 ## Build
-- Static site in `site/`, deployed by the existing Pages workflow.
-- Scenes 1, 2 and 4 in **three.js** (real 3D: orbit the camera slightly on scroll/drag, animate the observed path drawing in). Scene 3 may stay SVG isometric if three.js adds nothing.
-- Interaction, in priority order: (1) a time scrubber that moves Uranus along the path and updates the readout; (2) toggle free vs fixed distance in Scene 4; (3) hover a stack plane in Scene 3 to show that year's numbers.
-- One scene per viewport; scroll or `NEXT` advances. No long scrolling page.
-- Respect `prefers-reduced-motion`. Phone layout: scenes stack, labels shrink, the vertical edge title is hidden.
 
-## Acceptance (adds to A5)
-- All four scenes render from `site/data/` with no hard-coded science numbers.
-- Self-audit per scene committed to `docs/notes/M7.md`.
-- Lighthouse accessibility ≥ 90; every scene has a text alternative describing what it shows.
+- Static, no build step, `site/` only. ES modules; an importmap pins D3 at an exact version
+  from jsDelivr; fonts come from Google Fonts with serif fallbacks.
+- **Kept from the current site:** `data.js` (loaders, the 95 % status, number formatting) and
+  the per-panel error and pending states. Removed: the three.js scenes, `lanes.js` and the dark
+  styles.
+- **New data files:** `m7_table1.json`, `m7_motion.json`, plus Plate II's posterior samples
+  (added to a new `m7_conjunction_samples.json`, so `m6c_conjunction.json` is not changed).
+  Each is written by a script in `docs/notes/scripts/` and described in M7.md.
+
+## Acceptance
+
+1. **Number audit:** no number on the rendered page outside the allowlist (the one rule).
+2. **Layout:** desktop 1440 × 900 and phone 390 × 844 screenshots for every plate and figure,
+   with no overflow and no overlapping labels. Saved to `docs/notes/`.
+3. **Interaction:** every point letter in the prose highlights its point. Plate III plays,
+   pauses, scrubs and respects reduced motion.
+4. **Plate III:** the run with Neptune matches Horizons' Uranus in 1850 (the difference is
+   reported), and the conjunction date agrees with `m6c_conjunction.json`'s JPL date (the
+   difference is reported).
+5. **Pending states:** while M8b and the arbiter have not reported, the provisional 95 % and
+   the pending S1 verdict read as such.
+6. **Guards:** no change to `src/`, `release/`, the pre-registered files or M8b; the
+   design-ref file is never staged.
