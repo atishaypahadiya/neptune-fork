@@ -321,6 +321,9 @@ export function conjText(D) {
     conj_p2: `The date of {C@plate-ii} is the median, over the ${c.n_samples} posterior samples, of ` +
       `the date on which each sample's planet and Uranus share a heliocentric longitude (ecliptic ` +
       `of date); 68 % of those dates fall within ${c.epoch.sample_conjunction_years_68_width} yr. ` +
+      `That the time of this conjunction can be read from Uranus's residuals alone is the ` +
+      `classical result of Lyttleton (1958); the posterior puts a number on it, and that spread ` +
+      `is its uncertainty here. ` +
       `The same rule applied to JPL's Uranus and Neptune gives ` +
       `${dateOfStr(c.epoch.jpl_uranus_neptune_conjunction_date_tdb)}, ${fmt(days, 1)} days ` +
       `earlier, well inside that spread. This comparison was made after the fact; it was not ` +
@@ -345,7 +348,10 @@ export function windowText(D) {
   const [a, b] = w.in68[0] ?? [NaN, NaN];
   const miss = (k) => deg(Math.abs(m[k].le_verrier_minus_jpl_deg));
   return {
-    win_p1: `Hold Le Verrier's published orbit fixed and carry it through time. Every longitude ` +
+    win_p1: `Uranus's residuals fix the time of the conjunction of § 4.2 (Lyttleton 1958); away ` +
+      `from that date the planet's place depends on its orbit, and this section measures how ` +
+      `far Le Verrier's departs from ours. Hold his published orbit fixed and carry it through ` +
+      `time. Every longitude ` +
       `and difference in this section is heliocentric, ecliptic of date. His planet crosses our ` +
       `posterior median once, at ${fmt(w.zero[0], 2)}, and stays inside the 68 % band from ` +
       `${fmt(a, 2)} to ${fmt(b, 2)}. On Galle's night it was ${miss("galle_night")} from ` +
