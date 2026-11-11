@@ -368,3 +368,12 @@ RGO 6/96a, RGO 36/2/70 and RGO 7/247.
    Sampson (E III, E VII, B VIII), for the dated solutions; ask whether a digitised copy exists.
 4. Leibniz-Institut für Astrophysik Potsdam library (or Cambridge University Library's copy): a scan
    of Argelander's Hora XXII sheet, for the chart's limits and the stars plotted near 21h 57m, −13°.
+
+## Addendum, step 1 (2026-11-10)
+
+- The "six solutions" marked [U] in § 2 are primary via Sampson (1904), Memoirs RAS 54, 143 ff.,
+  whose Table (p. 151) lists six determinations at epoch 1810.328 with dates for five of them. They
+  are transcribed in `data/historical/adams_challis/adams_solutions.csv`; see
+  `P1B_adams_solutions.md`.
+- The 2 September 1846 figure of 315° 20′ is primary but is an extrapolation, not a solution; the
+  verdict on the "~315⅓°, ~12° from Neptune" claim is in `P1B_adams_solutions.md`.

@@ -53,3 +53,12 @@ Also in the cache, not sources: saved catalogue pages (`cul_*.html`, `cudl_rgo6.
 `hathi_000552896.html`), `memoirs_scandata.xml` (archive.org leaf-to-page map used for the mapping above), and
 low-resolution page renders used for the page checks (`memoirs_pdfpage_*.png`, `pamphlet_page_*.png`,
 `sampson_p*.png`).
+
+## Derived tables (committed, step 1)
+
+- `adams_solutions.csv`: one row per dated solution (S1–S8), every value primary unless its cell says
+  derived; sources and page references in the row.
+- `adams_solutions_statements.csv`: the 44 printed statements the rows rest on, each with its page
+  image name (renders in `data/cache/adams_challis/renders/`, made from the PDFs above with pymupdf).
+- Transcription passes and reconciliation: `docs/notes/adams_solutions_pass1.csv`,
+  `docs/notes/adams_solutions_pass2.csv`, `docs/notes/adams_solutions_reconciliation.md`.
