@@ -168,10 +168,11 @@ condition, so the 95 % interval stays provisional.
   above) covers all versions; cite it for the dataset in general.
 - Version DOI [10.5281/zenodo.24044792](https://doi.org/10.5281/zenodo.24044792) is v1.0.0;
   cite it for exact reproduction.
-- The code of release v1.0.0 is archived on Zenodo as well: version DOI
-  [10.5281/zenodo.24121060](https://doi.org/10.5281/zenodo.24121060), concept DOI
+- The code of release v1.1.0 is archived on Zenodo as well: version DOI
+  [10.5281/zenodo.24122940](https://doi.org/10.5281/zenodo.24122940), concept DOI
   [10.5281/zenodo.24121059](https://doi.org/10.5281/zenodo.24121059) for all versions
-  (`CITATION.cff` carries both).
+  (v1.0.0: [10.5281/zenodo.24121060](https://doi.org/10.5281/zenodo.24121060);
+  `CITATION.cff` carries all three).
 
 ## Limitations
 

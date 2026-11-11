@@ -27,6 +27,7 @@ unchanged.
   model; the near side rests on Flamsteed's measurements). Every number is read from
   `site/data/m10_profile.json`.
 - Compute ledger: 1090 CPU-hours (M10: 3.1).
+- Code DOI 10.5281/zenodo.24122940 (concept 10.5281/zenodo.24121059).
 - Deferred from v1.1 to v1.2: the Peirce shape-model comparison (M6d), the held-out
   precoveries (M6e), the Bouvard and Adams data variants, the 1846 reduction track, the
   Le Verrier shape model, and the resolution of the eccentricity test's low-distance cell.

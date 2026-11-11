@@ -150,8 +150,13 @@ Released on the user's explicit go-ahead ("Release v1.1.0"). What it adds to v1.
   (41f7a12), which closes that item of the list above.
 - Still deferred, now to v1.2: M6d, M6e, the M6c variant fits, the S1 cell-0 resolution
   (`site/data/m7_timeline.json` "deferred" says 1.2).
-- Steps: version 1.1.0 in `pyproject.toml`, `uv.lock` and `CITATION.cff` (its `doi:` removed
-  until Zenodo mints the new version DOI; the concept DOI stays); `CHANGELOG.md` added; checks
-  (pytest, ruff, prerender audit, layout check) green; CI green on the prepared commit; tag
-  `v1.1.0`; GitHub release with notes in the paper's voice; then the follow-up commit with the
-  version DOI in `CITATION.cff`, `README.md` and `site/data/release.json`.
+- Steps, all done 2026-11-10 (PST): version 1.1.0 in `pyproject.toml`, `uv.lock` and
+  `CITATION.cff` (its `doi:` removed until Zenodo minted the new version DOI; the concept DOI
+  stayed); `CHANGELOG.md` added; checks green (346 fast tests, ruff, prerender audit 0
+  unmatched, layout check at 360–1440 px and print); CI (test and pages) green on ad5ada0; tag
+  `v1.1.0` on ad5ada0; GitHub release published 2026-11-11 01:41:22 UTC (17:41 PST), not a
+  draft, notes in the paper's voice; Zenodo minted version DOI 10.5281/zenodo.24122940 within
+  10 minutes (https://zenodo.org/records/24122940; the record's publication date is the UTC
+  day, 2026-11-11), and the concept DOI 10.5281/zenodo.24121059 resolves to that record;
+  follow-up commit with the DOI in `CITATION.cff` (`doi:` and a v1.1.0 identifier beside
+  v1.0.0's), `README.md` and `site/data/release.json`.
