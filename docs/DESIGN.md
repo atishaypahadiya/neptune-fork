@@ -392,3 +392,24 @@ Review of the localhost page (2026-11-09):
 - Both read `site/data/m9_profile.json`; axis ticks are derived values. UI-rule audit: no new
   pattern. The figure pair is a grid, not bordered containers; no new colour, opacity step,
   gradient, divider, pill or eyebrow.
+
+## Figs. 7 and 9 after M10 (2026-11-10)
+
+- **Fig. 7 now has two panels** at the figure width (one above the other below 600 px of canvas):
+  left the M9 profile on Gaussian errors, right the M10 profile on Student-t errors, each with
+  the all-observations curve (2 px) over the from-1781-on curve (1 px), the dots, the threshold
+  line, *N* and *L* as open marks (ids N and L on the left panel, Nt and Lt on the right, so the
+  caption's letters light the left pair). One y axis, labelled on the left panel only; the
+  panel titles are 14 px text above the plot area. Tooltip: the panel under the pointer and
+  its nearest grid value.
+- **Fig. 9, the leave-one-out profiles** (beside Fig. 8 in the two-column grid): four panels,
+  one per pre-1781 observer removed, each the Student-t profile without that observer (2 px)
+  over the all-observations curve (1 px). The y axis stops at −6 so that the −2 threshold and
+  the shape near the maximum are legible in a 240 × 170 px panel; a point below −6 (the 26 AU
+  dip) is drawn as an open circle on the bottom edge, and the caption says so.
+- Both read `site/data/m10_profile.json` (Fig. 7's left panel still `m9_profile.json`); axis
+  ticks and the −6 floor are derived values. The row-gap between panel rows is 68 px so that a
+  panel title never meets the x labels of the row above (the layout check caught 50 px).
+- UI-rule audit: no new pattern. Small multiples replace a four-curve overlay; no new colour,
+  opacity step, dash, gradient, divider, pill or eyebrow; the panel titles are plain text, not
+  eyebrows over headings.

@@ -134,14 +134,15 @@ figure[data-fig] > figcaption { margin-top: 10px; max-width: var(--measure); }
 .fig-4 .canvas { height: 420px; }
 .fig-5 .canvas { height: 420px; }
 .fig-6 .canvas { height: 400px; }
-/* Figs. 7 and 8 side by side at the figure width; one above the other below 900 px */
+.fig-7 .canvas { height: 400px; }
+/* Figs. 8 and 9 side by side at the figure width; one above the other below 900 px */
 main > section > .pair {
   display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px 32px;
   width: min(calc(100vw - 2 * var(--gutter)), 1040px); margin: 36px 0 36px 50%;
   transform: translateX(-50%);
 }
 .pair > figure[data-fig] { margin: 0; min-width: 0; }
-.fig-7 .canvas, .fig-8 .canvas { height: 400px; }
+.fig-8 .canvas, .fig-9 .canvas { height: 400px; }
 
 /* ---------- archival quotes (journal layer) ---------- */
 .quote { margin: 8px 0 28px; padding-left: 1.6em; }
@@ -228,7 +229,9 @@ input[type="range"] { flex: 1; min-width: 0; margin: 0; accent-color: var(--prus
   .fig-2 .canvas { height: 520px; }
   .fig-4 .canvas, .fig-5 .canvas { height: 340px; }
   .fig-6 .canvas { height: 400px; }
-  .fig-7 .canvas, .fig-8 .canvas { height: 360px; }
+  .fig-7 .canvas { height: 640px; }
+  .fig-8 .canvas { height: 360px; }
+  .fig-9 .canvas { height: 460px; }
   .sec { margin-top: 64px; }
   th, td { padding-right: 6px; }
   #table-1 .obs { display: none; }

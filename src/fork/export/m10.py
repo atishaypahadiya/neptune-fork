@@ -913,8 +913,55 @@ def interpret(data: dict, m9_out: dict) -> dict:
                                                         "not used.")}}  # fmt: skip
 
 
-def report(cache: Path = CACHE, out_json: Path = OUT_JSON, out_png: Path | None = OUT_PNG) -> dict:
-    """docs/notes/M10_profile.json (and the figure) from the cached runs of the six data sets."""
+SITE_OUT_NAME = "m10_profile.json"
+ERROR_MODEL = "Student-t errors (ν = 4) with the scales of the Student-t sensitivity run"
+
+
+def _site_points(ds: dict) -> list[dict]:
+    keys = ("a_au", "dlnl", "dlnl_marginal", "mass_earth", "e", "inc_deg", "galle_lon_deg",
+            "active_bounds", "reference", "name", "status", "u_flagged")  # fmt: skip
+    return [{k: p.get(k) for k in keys} for p in ds["points"]]
+
+
+def site_payload(out: dict) -> dict:
+    """The compact site copy of the report: what the page's § 5 text and Figs. 7 and 9 read."""
+    ds = {}
+    for name, d in out["datasets"].items():
+        if d is None:
+            continue
+        ds[name] = {"label": d["label"], "observer": OBSERVER.get(name),
+                    "measurements_removed": (out["datasets"]["all"]["n_measurements"]
+                                             - d["n_measurements"]),
+                    "n_measurements": d["n_measurements"],
+                    "n_observations": d["n_observations"], "points": _site_points(d),
+                    "reading": d["reading"], "reading_marginal": d["reading_marginal"]["reading"],
+                    "marginal_minus_q_spread": d["marginal_minus_q"]["spread"],
+                    "a_max": d["a_max"], "parabola": d["parabola"], "intervals": d["intervals"],
+                    "reference_points": d["reference_points"],
+                    "failed_points": d["failed_points"],
+                    "convergence": d["convergence"]}  # fmt: skip
+    marg = out["s3_posterior_marginal_a"]
+    return {"description": "M10, the pre-registered profile likelihood in the semi-major axis "
+            "under Student-t errors (docs/notes/M10.md): the site's copy of "
+            "docs/notes/M10_profile.json. Q is on the χ² scale; Δ ln L = −ΔQ/2.",
+            "pre_registration": "docs/notes/M10.md", "code_commit": out["code_commit"],
+            "settings": out["settings"], "error_model": ERROR_MODEL, "datasets": ds,
+            "leave_one_out": [ds_ for ds_ in DATASETS if ds_ in OBSERVER],
+            "s3_posterior_marginal_a": {k: marg[k] for k in (
+                "a_au", "width_95_au", "tightness", "tight_below_au", "borderline_au",
+                "published_a_au")},
+            "profile_vs_s3_posterior": out.get("profile_vs_s3_posterior"),
+            "comparison_with_m9": out["comparison_with_m9"],
+            "interpretation": out.get("interpretation"),
+            "neptune_osculating_a_1781_au": out["neptune_osculating_a_1781_au"],
+            "ledger": out["ledger"]}  # fmt: skip
+
+
+def report(cache: Path = CACHE, out_json: Path = OUT_JSON, out_png: Path | None = OUT_PNG,
+           site: bool = True) -> dict:  # fmt: skip
+    """docs/notes/M10_profile.json (and the figure) from the cached runs of the six data sets,
+    and the site's copy ``site/data/m10_profile.json`` once every data set is in."""
+    from fork.export.to_json import write_json
     from fork.inference.priors import PRIOR_LOG10_M_EARTH
     from fork.model.observation import GROUPS
 
@@ -985,6 +1032,8 @@ def report(cache: Path = CACHE, out_json: Path = OUT_JSON, out_png: Path | None 
                      for r in ledger_rows]  # fmt: skip
     out_json.parent.mkdir(parents=True, exist_ok=True)
     out_json.write_text(json.dumps(out, indent=1, default=float))
+    if site and all(data.values()):
+        write_json(SITE_OUT_NAME, site_payload(out))
     if out_png is not None:
         from fork.export.m10_plot import draw
 

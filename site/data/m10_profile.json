@@ -1,0 +1,2181 @@
+{
+ "description": "M10, the pre-registered profile likelihood in the semi-major axis under Student-t errors (docs/notes/M10.md): the site's copy of docs/notes/M10_profile.json. Q is on the χ² scale; Δ ln L = −ΔQ/2.",
+ "pre_registration": "docs/notes/M10.md",
+ "code_commit": "024cfcf474e23905fed23726b62b1552b5763fe7",
+ "settings": {
+  "nu": 4.0,
+  "t_scales_arcsec": {
+   "ancient:ra": 4.796290870292983,
+   "ancient:dec": 3.5839039120149563,
+   "greenwich:ra": 1.784467381343655,
+   "greenwich:dec": 2.0951553074817726,
+   "paris_1801_1827:ra": 2.2172733776603373,
+   "paris_1801_1827:dec": 2.184365851696839,
+   "paris_1835_1845:ra": 1.3663203766005372,
+   "paris_1835_1845:dec": 1.0761893561922167
+  },
+  "seed_namespace": [
+   2026,
+   10
+  ],
+  "datasets": [
+   "all",
+   "post1781",
+   "no_flamsteed",
+   "no_bradley",
+   "no_mayer",
+   "no_lemonnier"
+  ],
+  "grid_au": [
+   24.0,
+   26.0,
+   28.0,
+   29.0,
+   29.5,
+   30.0,
+   30.5,
+   31.0,
+   32.0,
+   34.0,
+   36.0,
+   40.0,
+   44.0
+  ],
+  "reference_au": {
+   "neptune": 30.07,
+   "le_verrier": 36.15
+  },
+  "n_random": 32,
+  "n_posterior": 8,
+  "n_nearest": 200,
+  "n_rerun": 40,
+  "e_max": 0.3,
+  "log10_m_range": [
+   0.0,
+   2.0
+  ],
+  "inc_max_deg": 10.0,
+  "continuation_tol_q": 0.01,
+  "polish_window_q": 4.0,
+  "max_polish": 3,
+  "max_rounds": 4,
+  "distinct": {
+   "galle_lon_deg": 2.0,
+   "e": 0.03
+  },
+  "reading": {
+   "dlnl": -2.0,
+   "x_au": 4.0,
+   "flat_range_au": [
+    26.0,
+    44.0
+   ]
+  },
+  "marginal_spread_tolerance": 1.0,
+  "borderline_au": 0.2,
+  "status_codes": {
+   "-1": "improper input parameters",
+   "0": "the maximum number of function evaluations was reached (not converged)",
+   "1": "gtol satisfied: the scaled gradient is below 1e-10",
+   "2": "ftol satisfied: the relative change of the cost in the last step is below 1e-10",
+   "3": "xtol satisfied: the relative step is below 1e-10",
+   "4": "ftol and xtol both satisfied"
+  }
+ },
+ "error_model": "Student-t errors (ν = 4) with the scales of the Student-t sensitivity run",
+ "datasets": {
+  "all": {
+   "label": "A, all observations",
+   "observer": null,
+   "measurements_removed": 0,
+   "n_measurements": 529,
+   "n_observations": 279,
+   "points": [
+    {
+     "a_au": 24.0,
+     "dlnl": -4.735188859457651,
+     "dlnl_marginal": -4.666939001832134,
+     "mass_earth": 18.832262500534164,
+     "e": 0.29999999999999993,
+     "inc_deg": 2.69772513987349,
+     "galle_lon_deg": 317.22583346709894,
+     "active_bounds": [
+      "e_max"
+     ],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 26.0,
+     "dlnl": -16.61022026169553,
+     "dlnl_marginal": -16.51291378934411,
+     "mass_earth": 20.399424720291144,
+     "e": 0.29999999999999993,
+     "inc_deg": 4.3203636030191435,
+     "galle_lon_deg": 312.1641753673575,
+     "active_bounds": [
+      "e_max"
+     ],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 28.0,
+     "dlnl": -3.4886003371594256,
+     "dlnl_marginal": -3.4677448821844337,
+     "mass_earth": 15.875740291570994,
+     "e": 0.1162349818936221,
+     "inc_deg": 1.0076107197075441,
+     "galle_lon_deg": 333.4807188082125,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 29.0,
+     "dlnl": -1.3025861956562608,
+     "dlnl_marginal": -1.2974583307391185,
+     "mass_earth": 16.41907212653752,
+     "e": 0.05703967865574007,
+     "inc_deg": 1.2772269121298443,
+     "galle_lon_deg": 329.3769738857458,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 29.5,
+     "dlnl": -0.7284252788109029,
+     "dlnl_marginal": -0.726850459157049,
+     "mass_earth": 16.720820693026866,
+     "e": 0.03125467743655629,
+     "inc_deg": 1.4212579396885345,
+     "galle_lon_deg": 327.7234548256036,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 30.0,
+     "dlnl": -0.3642994273571958,
+     "dlnl_marginal": -0.36463107160420805,
+     "mass_earth": 17.005416494922724,
+     "e": 0.00843938098466447,
+     "inc_deg": 1.566652874624354,
+     "galle_lon_deg": 326.28141805185805,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 30.5,
+     "dlnl": -0.1470076671967604,
+     "dlnl_marginal": -0.14810127428063424,
+     "mass_earth": 17.31001045031203,
+     "e": 0.01729083858617234,
+     "inc_deg": 1.7053957727462399,
+     "galle_lon_deg": 325.01231504738286,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 31.0,
+     "dlnl": -0.03281407823118343,
+     "dlnl_marginal": -0.033943357660518814,
+     "mass_earth": 17.62171144980091,
+     "e": 0.03779366312200144,
+     "inc_deg": 1.850158283216741,
+     "galle_lon_deg": 323.88122924583024,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 32.0,
+     "dlnl": 0.0,
+     "dlnl_marginal": -0.0,
+     "mass_earth": 18.21883741833437,
+     "e": 0.07630463379459453,
+     "inc_deg": 2.123037595364573,
+     "galle_lon_deg": 321.9776999156094,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 34.0,
+     "dlnl": -0.2957463620265912,
+     "dlnl_marginal": -0.29110951138045493,
+     "mass_earth": 19.39288377990845,
+     "e": 0.14182478148061153,
+     "inc_deg": 2.603527732204762,
+     "galle_lon_deg": 319.1649283049393,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 36.0,
+     "dlnl": -0.7249760352195267,
+     "dlnl_marginal": -0.715319711023767,
+     "mass_earth": 20.495115918440337,
+     "e": 0.1962183643250215,
+     "inc_deg": 3.0389008544538414,
+     "galle_lon_deg": 317.2039796642646,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 40.0,
+     "dlnl": -1.5330189853649472,
+     "dlnl_marginal": -1.5138864113237105,
+     "mass_earth": 22.48533656282343,
+     "e": 0.2826890472110142,
+     "inc_deg": 3.746052064654022,
+     "galle_lon_deg": 314.67494476518186,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 44.0,
+     "dlnl": -4.905115880755943,
+     "dlnl_marginal": -4.8148391021768475,
+     "mass_earth": 27.144343464155163,
+     "e": 0.29999999999999993,
+     "inc_deg": 3.5229398137371084,
+     "galle_lon_deg": 313.55646594757565,
+     "active_bounds": [
+      "e_max"
+     ],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 30.07,
+     "dlnl": -0.3261855345591016,
+     "dlnl_marginal": -0.3266446039353923,
+     "mass_earth": 17.05620998723716,
+     "e": 0.006479035127167624,
+     "inc_deg": 1.5843772685671187,
+     "galle_lon_deg": 326.09396896431684,
+     "active_bounds": [],
+     "reference": true,
+     "name": "neptune",
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 36.15,
+     "dlnl": -0.7576745639989895,
+     "dlnl_marginal": -0.7476653898693257,
+     "mass_earth": 20.57607020721923,
+     "e": 0.1999289359581435,
+     "inc_deg": 3.0796221744818753,
+     "galle_lon_deg": 317.0797135073534,
+     "active_bounds": [],
+     "reference": true,
+     "name": "le_verrier",
+     "status": "pass",
+     "u_flagged": false
+    }
+   ],
+   "reading": {
+    "reading": "partial",
+    "a_max_au": 32.0,
+    "clauses": {
+     "a_max_not_at_grid_end": true,
+     "falls_below_within_x_left": true,
+     "falls_below_within_x_right": false,
+     "no_second_branch": false,
+     "flat_26_44": false
+    },
+    "failed": [
+     "falls_below_within_x_right",
+     "no_second_branch",
+     "flat_26_44"
+    ],
+    "where": {
+     "second_branch_points": [
+      40.0
+     ],
+     "below_threshold_in_26_44": [
+      26.0,
+      28.0,
+      44.0
+     ]
+    },
+    "thresholds": {
+     "dlnl": -2.0,
+     "x_au": 4.0,
+     "flat_range_au": [
+      26.0,
+      44.0
+     ]
+    },
+    "missing_points": []
+   },
+   "reading_marginal": "partial",
+   "marginal_minus_q_spread": 0.19687150356139682,
+   "a_max": {
+    "a_au": 32.0,
+    "mass_earth": 18.21883741833437
+   },
+   "parabola": {
+    "a_au": 31.772410559286687,
+    "dlnl": 0.003119683189886757
+   },
+   "intervals": {
+    "dlnl_minus_0p5": [
+     29.813662539886906,
+     34.95172189030649
+    ],
+    "dlnl_minus_2": [
+     28.680965556854,
+     40.553935464041174
+    ]
+   },
+   "reference_points": {
+    "neptune": {
+     "a_au": 30.07,
+     "dlnl": -0.3261855345591016,
+     "dlnl_marginal": -0.3266446039353923,
+     "above_grid_maximum": false,
+     "mass_earth": 17.05620998723716,
+     "galle_lon_deg": 326.09396896431684,
+     "e": 0.006479035127167624
+    },
+    "le_verrier": {
+     "a_au": 36.15,
+     "dlnl": -0.7576745639989895,
+     "dlnl_marginal": -0.7476653898693257,
+     "above_grid_maximum": false,
+     "mass_earth": 20.57607020721923,
+     "galle_lon_deg": 317.0797135073534,
+     "e": 0.1999289359581435
+    }
+   },
+   "failed_points": [],
+   "convergence": {
+    "n_polishes": 16,
+    "n_repolished": 0,
+    "max_last5_change": 0.006373246463340365,
+    "all_converged": true
+   }
+  },
+  "post1781": {
+   "label": "B, the observations from 1781 on",
+   "observer": null,
+   "measurements_removed": 37,
+   "n_measurements": 492,
+   "n_observations": 260,
+   "points": [
+    {
+     "a_au": 24.0,
+     "dlnl": -0.5895270318677603,
+     "dlnl_marginal": -0.5883640937408927,
+     "mass_earth": 1.4819893350951614,
+     "e": 0.11223631610440246,
+     "inc_deg": 0.8549968576762916,
+     "galle_lon_deg": 346.53120928196483,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 26.0,
+     "dlnl": -0.4615910299862662,
+     "dlnl_marginal": -0.4607982271115816,
+     "mass_earth": 2.458659981454393,
+     "e": 0.13692451846732884,
+     "inc_deg": 1.0236499179314114,
+     "galle_lon_deg": 342.0960348273417,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 28.0,
+     "dlnl": -0.3522510570173836,
+     "dlnl_marginal": -0.35174933326266,
+     "mass_earth": 3.1731657907013417,
+     "e": 0.17024779185339642,
+     "inc_deg": 1.0884939019663273,
+     "galle_lon_deg": 340.0913526618119,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 29.0,
+     "dlnl": -0.3059239082099907,
+     "dlnl_marginal": -0.30559586389631477,
+     "mass_earth": 3.702113248248022,
+     "e": 0.18461623670958516,
+     "inc_deg": 1.1559611560174514,
+     "galle_lon_deg": 338.6176376810861,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 29.5,
+     "dlnl": -0.28208132141480746,
+     "dlnl_marginal": -0.2817984478992912,
+     "mass_earth": 3.6063889336105572,
+     "e": 0.19806056972728778,
+     "inc_deg": 1.1127816116642664,
+     "galle_lon_deg": 339.21262142832296,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 30.0,
+     "dlnl": -0.2615803798101979,
+     "dlnl_marginal": -0.2613728502117283,
+     "mass_earth": 3.9671514676380957,
+     "e": 0.2030002606594148,
+     "inc_deg": 1.155301640180831,
+     "galle_lon_deg": 338.302463232105,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 30.5,
+     "dlnl": -0.23959281196584925,
+     "dlnl_marginal": -0.23944182354421173,
+     "mass_earth": 3.8724688539398846,
+     "e": 0.21643346430882657,
+     "inc_deg": 1.1163588662079456,
+     "galle_lon_deg": 338.8460256900966,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 31.0,
+     "dlnl": -0.21762606648337623,
+     "dlnl_marginal": -0.21754292414152587,
+     "mass_earth": 3.7107197412766704,
+     "e": 0.23124988643458327,
+     "inc_deg": 1.0650377844495076,
+     "galle_lon_deg": 339.6169474061068,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 32.0,
+     "dlnl": -0.18266003727984526,
+     "dlnl_marginal": -0.18270682775391833,
+     "mass_earth": 4.365868468145453,
+     "e": 0.24164781975709376,
+     "inc_deg": 1.14768845728916,
+     "galle_lon_deg": 337.9590691406365,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 34.0,
+     "dlnl": -0.12222443085943269,
+     "dlnl_marginal": -0.12246636517807019,
+     "mass_earth": 5.778253107816394,
+     "e": 0.2613944424632009,
+     "inc_deg": 1.296135064300606,
+     "galle_lon_deg": 335.06542033759445,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 36.0,
+     "dlnl": -0.0602948697883221,
+     "dlnl_marginal": -0.06078526354554015,
+     "mass_earth": 5.816628341472946,
+     "e": 0.29999999999999993,
+     "inc_deg": 1.2171178630362638,
+     "galle_lon_deg": 335.9694692720402,
+     "active_bounds": [
+      "e_max"
+     ],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 40.0,
+     "dlnl": -0.0066087812667774415,
+     "dlnl_marginal": -0.007080034913542477,
+     "mass_earth": 12.23185917820963,
+     "e": 0.3,
+     "inc_deg": 1.7850311424128575,
+     "galle_lon_deg": 326.6630356298954,
+     "active_bounds": [
+      "e_max"
+     ],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 44.0,
+     "dlnl": 0.0,
+     "dlnl_marginal": -0.0,
+     "mass_earth": 22.04707882433693,
+     "e": 0.3,
+     "inc_deg": 2.385297257833693,
+     "galle_lon_deg": 318.68820062228133,
+     "active_bounds": [
+      "e_max"
+     ],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 30.07,
+     "dlnl": -0.2588253439143955,
+     "dlnl_marginal": -0.25864342393583684,
+     "mass_earth": 3.997371744200641,
+     "e": 0.20423712997823498,
+     "inc_deg": 1.162080293403971,
+     "galle_lon_deg": 338.19899476875446,
+     "active_bounds": [],
+     "reference": true,
+     "name": "neptune",
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 36.15,
+     "dlnl": -0.05758742557395635,
+     "dlnl_marginal": -0.05808533342724331,
+     "mass_earth": 6.009956883063508,
+     "e": 0.3,
+     "inc_deg": 1.241311627090151,
+     "galle_lon_deg": 335.5658802257711,
+     "active_bounds": [
+      "e_max"
+     ],
+     "reference": true,
+     "name": "le_verrier",
+     "status": "pass",
+     "u_flagged": true
+    }
+   ],
+   "reading": {
+    "reading": "flat",
+    "a_max_au": 44.0,
+    "clauses": {
+     "a_max_not_at_grid_end": false,
+     "falls_below_within_x_left": false,
+     "falls_below_within_x_right": false,
+     "no_second_branch": false,
+     "flat_26_44": true
+    },
+    "failed": [],
+    "where": {
+     "second_branch_points": [
+      24.0,
+      26.0,
+      28.0,
+      29.0,
+      29.5,
+      30.0,
+      30.5,
+      31.0,
+      32.0,
+      34.0,
+      36.0
+     ],
+     "below_threshold_in_26_44": []
+    },
+    "thresholds": {
+     "dlnl": -2.0,
+     "x_au": 4.0,
+     "flat_range_au": [
+      26.0,
+      44.0
+     ]
+    },
+    "missing_points": []
+   },
+   "reading_marginal": "flat",
+   "marginal_minus_q_spread": 0.0033066637681713473,
+   "a_max": {
+    "a_au": 44.0,
+    "mass_earth": 22.04707882433693
+   },
+   "parabola": null,
+   "intervals": {
+    "dlnl_minus_0p5": [
+     25.399559632177475,
+     null
+    ],
+    "dlnl_minus_2": [
+     null,
+     null
+    ]
+   },
+   "reference_points": {
+    "neptune": {
+     "a_au": 30.07,
+     "dlnl": -0.2588253439143955,
+     "dlnl_marginal": -0.25864342393583684,
+     "above_grid_maximum": false,
+     "mass_earth": 3.997371744200641,
+     "galle_lon_deg": 338.19899476875446,
+     "e": 0.20423712997823498
+    },
+    "le_verrier": {
+     "a_au": 36.15,
+     "dlnl": -0.05758742557395635,
+     "dlnl_marginal": -0.05808533342724331,
+     "above_grid_maximum": false,
+     "mass_earth": 6.009956883063508,
+     "galle_lon_deg": 335.5658802257711,
+     "e": 0.3
+    }
+   },
+   "failed_points": [],
+   "convergence": {
+    "n_polishes": 33,
+    "n_repolished": 2,
+    "max_last5_change": 0.004240608895770492,
+    "all_converged": true
+   }
+  },
+  "no_flamsteed": {
+   "label": "A − Flamsteed",
+   "observer": "Flamsteed",
+   "measurements_removed": 10,
+   "n_measurements": 519,
+   "n_observations": 274,
+   "points": [
+    {
+     "a_au": 24.0,
+     "dlnl": -2.0635468106053736,
+     "dlnl_marginal": -2.053565592480709,
+     "mass_earth": 18.46443416271057,
+     "e": 0.3,
+     "inc_deg": 2.444919139831946,
+     "galle_lon_deg": 316.832311133996,
+     "active_bounds": [
+      "e_max"
+     ],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 26.0,
+     "dlnl": -1.0533267879676487,
+     "dlnl_marginal": -1.046945404218377,
+     "mass_earth": 22.196503955926108,
+     "e": 0.29999999999999993,
+     "inc_deg": 3.4118030855296135,
+     "galle_lon_deg": 311.0499364455998,
+     "active_bounds": [
+      "e_max"
+     ],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 28.0,
+     "dlnl": -0.7789422944778153,
+     "dlnl_marginal": -0.7724363661759526,
+     "mass_earth": 24.541490047437005,
+     "e": 0.30000000000000004,
+     "inc_deg": 4.03951736459611,
+     "galle_lon_deg": 308.49424335854997,
+     "active_bounds": [
+      "e_max"
+     ],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 29.0,
+     "dlnl": -0.7128772307978011,
+     "dlnl_marginal": -0.7069612193865851,
+     "mass_earth": 23.173693877885608,
+     "e": 0.23292248923693626,
+     "inc_deg": 3.3923762043755388,
+     "galle_lon_deg": 311.44919972885555,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 29.5,
+     "dlnl": -0.6716001891415999,
+     "dlnl_marginal": -0.6662724206641997,
+     "mass_earth": 23.026306714515194,
+     "e": 0.21239640790817343,
+     "inc_deg": 3.2390321489788305,
+     "galle_lon_deg": 312.2236482134875,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 30.0,
+     "dlnl": -0.6306906408597115,
+     "dlnl_marginal": -0.6257016342365205,
+     "mass_earth": 23.219200702747038,
+     "e": 0.20283326581743683,
+     "inc_deg": 3.212868199996434,
+     "galle_lon_deg": 312.412184575391,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 30.5,
+     "dlnl": -0.591159839646366,
+     "dlnl_marginal": -0.586665689920892,
+     "mass_earth": 23.311540288729024,
+     "e": 0.19048921083503198,
+     "inc_deg": 3.131832901819578,
+     "galle_lon_deg": 312.8097723468211,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 31.0,
+     "dlnl": -0.5532835151605013,
+     "dlnl_marginal": -0.5491407283252556,
+     "mass_earth": 23.521371789035854,
+     "e": 0.18143491587355778,
+     "inc_deg": 3.08828071762443,
+     "galle_lon_deg": 313.04701930496486,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 32.0,
+     "dlnl": -0.48283167733814025,
+     "dlnl_marginal": -0.4794359771622112,
+     "mass_earth": 23.957565687535826,
+     "e": 0.16773432551865644,
+     "inc_deg": 3.009829215891704,
+     "galle_lon_deg": 313.4684739454449,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 34.0,
+     "dlnl": -0.3613308567950071,
+     "dlnl_marginal": -0.3589681847429347,
+     "mass_earth": 25.168139579788644,
+     "e": 0.16157548707012107,
+     "inc_deg": 2.944009353433035,
+     "galle_lon_deg": 313.7382639995472,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 36.0,
+     "dlnl": -0.26188672866192064,
+     "dlnl_marginal": -0.26021101166543303,
+     "mass_earth": 26.5149362237689,
+     "e": 0.17132356344653105,
+     "inc_deg": 2.9135406326615216,
+     "galle_lon_deg": 313.7660919229042,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 40.0,
+     "dlnl": -0.11012582423973072,
+     "dlnl_marginal": -0.10953786343611682,
+     "mass_earth": 29.07960961881327,
+     "e": 0.20885823287560223,
+     "inc_deg": 2.862599134347993,
+     "galle_lon_deg": 313.89740804171976,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 44.0,
+     "dlnl": 0.0,
+     "dlnl_marginal": -0.0,
+     "mass_earth": 31.604700791855905,
+     "e": 0.25585750432327525,
+     "inc_deg": 2.852779183287159,
+     "galle_lon_deg": 313.78132897897103,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 30.07,
+     "dlnl": -0.6250286688468805,
+     "dlnl_marginal": -0.620167079394605,
+     "mass_earth": 23.187953349742642,
+     "e": 0.19959965180060268,
+     "inc_deg": 3.188838346362951,
+     "galle_lon_deg": 312.54870345363383,
+     "active_bounds": [],
+     "reference": true,
+     "name": "neptune",
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 36.15,
+     "dlnl": -0.25513133880753003,
+     "dlnl_marginal": -0.25356917070075724,
+     "mass_earth": 26.580131404571734,
+     "e": 0.17178775660951562,
+     "inc_deg": 2.912867508970964,
+     "galle_lon_deg": 313.82099792617856,
+     "active_bounds": [],
+     "reference": true,
+     "name": "le_verrier",
+     "status": "pass",
+     "u_flagged": true
+    }
+   ],
+   "reading": {
+    "reading": "flat",
+    "a_max_au": 44.0,
+    "clauses": {
+     "a_max_not_at_grid_end": false,
+     "falls_below_within_x_left": false,
+     "falls_below_within_x_right": false,
+     "no_second_branch": false,
+     "flat_26_44": true
+    },
+    "failed": [],
+    "where": {
+     "second_branch_points": [
+      26.0,
+      28.0,
+      29.0,
+      29.5,
+      30.0,
+      30.5,
+      31.0,
+      32.0,
+      34.0,
+      36.0
+     ],
+     "below_threshold_in_26_44": []
+    },
+    "thresholds": {
+     "dlnl": -2.0,
+     "x_au": 4.0,
+     "flat_range_au": [
+      26.0,
+      44.0
+     ]
+    },
+    "missing_points": []
+   },
+   "reading_marginal": "flat",
+   "marginal_minus_q_spread": 0.01996243624944327,
+   "a_max": {
+    "a_au": 44.0,
+    "mass_earth": 31.604700791855905
+   },
+   "parabola": null,
+   "intervals": {
+    "dlnl_minus_0p5": [
+     31.756311216392277,
+     null
+    ],
+    "dlnl_minus_2": [
+     24.12580786201297,
+     null
+    ]
+   },
+   "reference_points": {
+    "neptune": {
+     "a_au": 30.07,
+     "dlnl": -0.6250286688468805,
+     "dlnl_marginal": -0.620167079394605,
+     "above_grid_maximum": false,
+     "mass_earth": 23.187953349742642,
+     "galle_lon_deg": 312.54870345363383,
+     "e": 0.19959965180060268
+    },
+    "le_verrier": {
+     "a_au": 36.15,
+     "dlnl": -0.25513133880753003,
+     "dlnl_marginal": -0.25356917070075724,
+     "above_grid_maximum": false,
+     "mass_earth": 26.580131404571734,
+     "galle_lon_deg": 313.82099792617856,
+     "e": 0.17178775660951562
+    }
+   },
+   "failed_points": [],
+   "convergence": {
+    "n_polishes": 20,
+    "n_repolished": 0,
+    "max_last5_change": 0.003517575125897565,
+    "all_converged": true
+   }
+  },
+  "no_bradley": {
+   "label": "A − Bradley",
+   "observer": "Bradley",
+   "measurements_removed": 1,
+   "n_measurements": 528,
+   "n_observations": 278,
+   "points": [
+    {
+     "a_au": 24.0,
+     "dlnl": -4.771053245493647,
+     "dlnl_marginal": -4.694207805697715,
+     "mass_earth": 18.81171332207243,
+     "e": 0.29999999999999993,
+     "inc_deg": 2.692605995783915,
+     "galle_lon_deg": 317.242858607453,
+     "active_bounds": [
+      "e_max"
+     ],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 26.0,
+     "dlnl": -16.65571407624668,
+     "dlnl_marginal": -16.553832223281916,
+     "mass_earth": 20.41476856532875,
+     "e": 0.29999999999999993,
+     "inc_deg": 4.33156088120608,
+     "galle_lon_deg": 312.1469830526274,
+     "active_bounds": [
+      "e_max"
+     ],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 28.0,
+     "dlnl": -3.5419605218148718,
+     "dlnl_marginal": -3.518247006328693,
+     "mass_earth": 15.88434149965406,
+     "e": 0.11638451437783753,
+     "inc_deg": 1.0095336489616005,
+     "galle_lon_deg": 333.4779921580462,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 29.0,
+     "dlnl": -1.3504150304256655,
+     "dlnl_marginal": -1.344042769373118,
+     "mass_earth": 16.44711668735683,
+     "e": 0.057264279002904137,
+     "inc_deg": 1.2805673092646759,
+     "galle_lon_deg": 329.35647911657435,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 29.5,
+     "dlnl": -0.7691844654213469,
+     "dlnl_marginal": -0.7667973682603133,
+     "mass_earth": 16.74757611743708,
+     "e": 0.03136486715884459,
+     "inc_deg": 1.424961131326103,
+     "galle_lon_deg": 327.6980906616686,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 30.0,
+     "dlnl": -0.3970506153848419,
+     "dlnl_marginal": -0.3968685113125048,
+     "mass_earth": 17.06030692430599,
+     "e": 0.008882691663113004,
+     "inc_deg": 1.5691437800596408,
+     "galle_lon_deg": 326.24575580614,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 30.5,
+     "dlnl": -0.17127179908271728,
+     "dlnl_marginal": -0.17211441234780978,
+     "mass_earth": 17.359981459780823,
+     "e": 0.01711372260506175,
+     "inc_deg": 1.714378545880175,
+     "galle_lon_deg": 324.9695863484242,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 31.0,
+     "dlnl": -0.048661017872746015,
+     "dlnl_marginal": -0.049725110479585055,
+     "mass_earth": 17.666755827811194,
+     "e": 0.03771356056156072,
+     "inc_deg": 1.85586435915971,
+     "galle_lon_deg": 323.83768117661606,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 32.0,
+     "dlnl": 0.0,
+     "dlnl_marginal": -0.0,
+     "mass_earth": 18.27812454487277,
+     "e": 0.07607869059931113,
+     "inc_deg": 2.1270029297486097,
+     "galle_lon_deg": 321.92803651590856,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 34.0,
+     "dlnl": -0.26915781708038367,
+     "dlnl_marginal": -0.2646140471313174,
+     "mass_earth": 19.46322309093164,
+     "e": 0.14165090886598705,
+     "inc_deg": 2.618125139893298,
+     "galle_lon_deg": 319.1011738499947,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 36.0,
+     "dlnl": -0.6784302640776332,
+     "dlnl_marginal": -0.6686211539674787,
+     "mass_earth": 20.584570120690582,
+     "e": 0.19592886357630124,
+     "inc_deg": 3.0566898650006538,
+     "galle_lon_deg": 317.12779371425484,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 40.0,
+     "dlnl": -1.4601699982528658,
+     "dlnl_marginal": -1.4406336555641701,
+     "mass_earth": 22.586935144927192,
+     "e": 0.2825406418702031,
+     "inc_deg": 3.7594832860229745,
+     "galle_lon_deg": 314.5803448517571,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 44.0,
+     "dlnl": -4.886073177597098,
+     "dlnl_marginal": -4.789749203825522,
+     "mass_earth": 27.2470597585959,
+     "e": 0.3,
+     "inc_deg": 3.5349311648737354,
+     "galle_lon_deg": 313.45345725606717,
+     "active_bounds": [
+      "e_max"
+     ],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 30.07,
+     "dlnl": -0.35787836820088614,
+     "dlnl_marginal": -0.357872643278597,
+     "mass_earth": 17.10606565527715,
+     "e": 0.006800418278118374,
+     "inc_deg": 1.5876197157067091,
+     "galle_lon_deg": 326.05783924508324,
+     "active_bounds": [],
+     "reference": true,
+     "name": "neptune",
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 36.15,
+     "dlnl": -0.7098681252218739,
+     "dlnl_marginal": -0.699761115515912,
+     "mass_earth": 20.661193662179148,
+     "e": 0.19972553175823496,
+     "inc_deg": 3.088101080011354,
+     "galle_lon_deg": 317.00408130731296,
+     "active_bounds": [],
+     "reference": true,
+     "name": "le_verrier",
+     "status": "pass",
+     "u_flagged": false
+    }
+   ],
+   "reading": {
+    "reading": "partial",
+    "a_max_au": 32.0,
+    "clauses": {
+     "a_max_not_at_grid_end": true,
+     "falls_below_within_x_left": true,
+     "falls_below_within_x_right": false,
+     "no_second_branch": false,
+     "flat_26_44": false
+    },
+    "failed": [
+     "falls_below_within_x_right",
+     "no_second_branch",
+     "flat_26_44"
+    ],
+    "where": {
+     "second_branch_points": [
+      40.0
+     ],
+     "below_threshold_in_26_44": [
+      26.0,
+      28.0,
+      44.0
+     ]
+    },
+    "thresholds": {
+     "dlnl": -2.0,
+     "x_au": 4.0,
+     "flat_range_au": [
+      26.0,
+      44.0
+     ]
+    },
+    "missing_points": []
+   },
+   "reading_marginal": "partial",
+   "marginal_minus_q_spread": 0.20589189114321016,
+   "a_max": {
+    "a_au": 32.0,
+    "mass_earth": 18.27812454487277
+   },
+   "parabola": {
+    "a_au": 31.898338551198847,
+    "dlnl": 0.0006312646110444575
+   },
+   "intervals": {
+    "dlnl_minus_0p5": [
+     29.861676941502285,
+     35.12806119548608
+    ],
+    "dlnl_minus_2": [
+     28.70359503276267,
+     40.63029218689183
+    ]
+   },
+   "reference_points": {
+    "neptune": {
+     "a_au": 30.07,
+     "dlnl": -0.35787836820088614,
+     "dlnl_marginal": -0.357872643278597,
+     "above_grid_maximum": false,
+     "mass_earth": 17.10606565527715,
+     "galle_lon_deg": 326.05783924508324,
+     "e": 0.006800418278118374
+    },
+    "le_verrier": {
+     "a_au": 36.15,
+     "dlnl": -0.7098681252218739,
+     "dlnl_marginal": -0.699761115515912,
+     "above_grid_maximum": false,
+     "mass_earth": 20.661193662179148,
+     "galle_lon_deg": 317.00408130731296,
+     "e": 0.19972553175823496
+    }
+   },
+   "failed_points": [],
+   "convergence": {
+    "n_polishes": 16,
+    "n_repolished": 1,
+    "max_last5_change": 0.009102783694743266,
+    "all_converged": true
+   }
+  },
+  "no_mayer": {
+   "label": "A − Mayer",
+   "observer": "Mayer",
+   "measurements_removed": 2,
+   "n_measurements": 527,
+   "n_observations": 278,
+   "points": [
+    {
+     "a_au": 24.0,
+     "dlnl": -4.738498237210138,
+     "dlnl_marginal": -4.661544377441942,
+     "mass_earth": 18.797745195467062,
+     "e": 0.29999999999999993,
+     "inc_deg": 2.735002297268896,
+     "galle_lon_deg": 317.24962482098783,
+     "active_bounds": [
+      "e_max"
+     ],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 26.0,
+     "dlnl": -16.645163430378773,
+     "dlnl_marginal": -16.535976869993647,
+     "mass_earth": 20.378654224344018,
+     "e": 0.3,
+     "inc_deg": 4.331415674984007,
+     "galle_lon_deg": 312.1830699519318,
+     "active_bounds": [
+      "e_max"
+     ],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 28.0,
+     "dlnl": -3.384039435126681,
+     "dlnl_marginal": -3.366010703320626,
+     "mass_earth": 15.805962876050888,
+     "e": 0.1161664646549015,
+     "inc_deg": 1.009385527393516,
+     "galle_lon_deg": 333.5520921511394,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 29.0,
+     "dlnl": -1.2520874861021412,
+     "dlnl_marginal": -1.249036419237882,
+     "mass_earth": 16.371545983253128,
+     "e": 0.05704425717949069,
+     "inc_deg": 1.2844835858446062,
+     "galle_lon_deg": 329.4272438760392,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 29.5,
+     "dlnl": -0.6939450997449512,
+     "dlnl_marginal": -0.694066608617959,
+     "mass_earth": 16.667035850963813,
+     "e": 0.031051623857411732,
+     "inc_deg": 1.4327875389824531,
+     "galle_lon_deg": 327.7714296390482,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 30.0,
+     "dlnl": -0.34151877453848556,
+     "dlnl_marginal": -0.34314853587716243,
+     "mass_earth": 16.980674152827692,
+     "e": 0.008457628129925138,
+     "inc_deg": 1.5820044916636107,
+     "galle_lon_deg": 326.3172444603283,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 30.5,
+     "dlnl": -0.1327352243383757,
+     "dlnl_marginal": -0.134814148421583,
+     "mass_earth": 17.27928203923175,
+     "e": 0.01719258723169199,
+     "inc_deg": 1.72265673417618,
+     "galle_lon_deg": 325.0447473849029,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 31.0,
+     "dlnl": -0.024810840997588457,
+     "dlnl_marginal": -0.026561922236169266,
+     "mass_earth": 17.58975800457736,
+     "e": 0.037795464177733926,
+     "inc_deg": 1.8613886499357875,
+     "galle_lon_deg": 323.9134336092055,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 32.0,
+     "dlnl": 0.0,
+     "dlnl_marginal": -0.0,
+     "mass_earth": 18.19576367130445,
+     "e": 0.07630977419257662,
+     "inc_deg": 2.1360847141370263,
+     "galle_lon_deg": 322.0001920972592,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 34.0,
+     "dlnl": -0.30169680943174626,
+     "dlnl_marginal": -0.2960547048949138,
+     "mass_earth": 19.38307567403814,
+     "e": 0.14175398544520668,
+     "inc_deg": 2.6251722145542837,
+     "galle_lon_deg": 319.17934224969787,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 36.0,
+     "dlnl": -0.7310646395710592,
+     "dlnl_marginal": -0.7193927843457004,
+     "mass_earth": 20.504681088340423,
+     "e": 0.19595543930619813,
+     "inc_deg": 3.0527992894911566,
+     "galle_lon_deg": 317.2095585897691,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 40.0,
+     "dlnl": -1.5341162489658586,
+     "dlnl_marginal": -1.5120883200215758,
+     "mass_earth": 22.50513519918037,
+     "e": 0.28251969255882625,
+     "inc_deg": 3.7802267848052957,
+     "galle_lon_deg": 314.663262201573,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 44.0,
+     "dlnl": -4.87330245160706,
+     "dlnl_marginal": -4.774646163329862,
+     "mass_earth": 27.147846724018308,
+     "e": 0.29999999999999993,
+     "inc_deg": 3.561034432104839,
+     "galle_lon_deg": 313.5478947512378,
+     "active_bounds": [
+      "e_max"
+     ],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 30.07,
+     "dlnl": -0.3047895718141831,
+     "dlnl_marginal": -0.30647569751613446,
+     "mass_earth": 17.02084184541036,
+     "e": 0.006324540530061654,
+     "inc_deg": 1.5922319643831115,
+     "galle_lon_deg": 326.1310811415675,
+     "active_bounds": [],
+     "reference": true,
+     "name": "neptune",
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 36.15,
+     "dlnl": -0.7636390689441441,
+     "dlnl_marginal": -0.751654141347899,
+     "mass_earth": 20.58231002544839,
+     "e": 0.19974022272199046,
+     "inc_deg": 3.092926245756932,
+     "galle_lon_deg": 317.08461722647934,
+     "active_bounds": [],
+     "reference": true,
+     "name": "le_verrier",
+     "status": "pass",
+     "u_flagged": false
+    }
+   ],
+   "reading": {
+    "reading": "partial",
+    "a_max_au": 32.0,
+    "clauses": {
+     "a_max_not_at_grid_end": true,
+     "falls_below_within_x_left": true,
+     "falls_below_within_x_right": false,
+     "no_second_branch": false,
+     "flat_26_44": false
+    },
+    "failed": [
+     "falls_below_within_x_right",
+     "no_second_branch",
+     "flat_26_44"
+    ],
+    "where": {
+     "second_branch_points": [
+      40.0
+     ],
+     "below_threshold_in_26_44": [
+      26.0,
+      28.0,
+      44.0
+     ]
+    },
+    "thresholds": {
+     "dlnl": -2.0,
+     "x_au": 4.0,
+     "flat_range_au": [
+      26.0,
+      44.0
+     ]
+    },
+    "missing_points": []
+   },
+   "reading_marginal": "partial",
+   "marginal_minus_q_spread": 0.22253096893678048,
+   "a_max": {
+    "a_au": 32.0,
+    "mass_earth": 18.19576367130445
+   },
+   "parabola": {
+    "a_au": 31.711866226256504,
+    "dlnl": 0.0048611396036193355
+   },
+   "intervals": {
+    "dlnl_minus_0p5": [
+     29.775156941853492,
+     34.92369840797767
+    ],
+    "dlnl_minus_2": [
+     28.64918885050854,
+     40.55808058941504
+    ]
+   },
+   "reference_points": {
+    "neptune": {
+     "a_au": 30.07,
+     "dlnl": -0.3047895718141831,
+     "dlnl_marginal": -0.30647569751613446,
+     "above_grid_maximum": false,
+     "mass_earth": 17.02084184541036,
+     "galle_lon_deg": 326.1310811415675,
+     "e": 0.006324540530061654
+    },
+    "le_verrier": {
+     "a_au": 36.15,
+     "dlnl": -0.7636390689441441,
+     "dlnl_marginal": -0.751654141347899,
+     "above_grid_maximum": false,
+     "mass_earth": 20.58231002544839,
+     "galle_lon_deg": 317.08461722647934,
+     "e": 0.19974022272199046
+    }
+   },
+   "failed_points": [],
+   "convergence": {
+    "n_polishes": 17,
+    "n_repolished": 1,
+    "max_last5_change": 0.007828284587617418,
+    "all_converged": true
+   }
+  },
+  "no_lemonnier": {
+   "label": "A − Le Monnier",
+   "observer": "Le Monnier",
+   "measurements_removed": 24,
+   "n_measurements": 505,
+   "n_observations": 267,
+   "points": [
+    {
+     "a_au": 24.0,
+     "dlnl": -2.0669141331877654,
+     "dlnl_marginal": -2.112694276506545,
+     "mass_earth": 18.52768046255866,
+     "e": 0.29999999999999993,
+     "inc_deg": 2.054325391943128,
+     "galle_lon_deg": 317.63776480318745,
+     "active_bounds": [
+      "e_max"
+     ],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 26.0,
+     "dlnl": -15.04183140248108,
+     "dlnl_marginal": -14.838131717858005,
+     "mass_earth": 20.217709228342976,
+     "e": 0.29999999999999993,
+     "inc_deg": 3.439579764487946,
+     "galle_lon_deg": 312.47910146749655,
+     "active_bounds": [
+      "e_max"
+     ],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": true
+    },
+    {
+     "a_au": 28.0,
+     "dlnl": -2.6881600880474252,
+     "dlnl_marginal": -2.739118491582076,
+     "mass_earth": 15.551807005605447,
+     "e": 0.11303911132394952,
+     "inc_deg": 1.046581443590726,
+     "galle_lon_deg": 333.63214428714656,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 29.0,
+     "dlnl": -0.9143056007059158,
+     "dlnl_marginal": -0.9517079757310967,
+     "mass_earth": 16.17999844275919,
+     "e": 0.05410541065598913,
+     "inc_deg": 1.2349744093647763,
+     "galle_lon_deg": 329.46920108245183,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 29.5,
+     "dlnl": -0.46951079322479927,
+     "dlnl_marginal": -0.4978815887834571,
+     "mass_earth": 16.511109040696873,
+     "e": 0.02845983871362482,
+     "inc_deg": 1.3532101787419353,
+     "galle_lon_deg": 327.7941511821472,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 30.0,
+     "dlnl": -0.2022817545887392,
+     "dlnl_marginal": -0.22085415838364497,
+     "mass_earth": 16.841945600796357,
+     "e": 0.007428272417103062,
+     "inc_deg": 1.4863951564599913,
+     "galle_lon_deg": 326.3218363581781,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 30.5,
+     "dlnl": -0.0582586240940941,
+     "dlnl_marginal": -0.06783054202128369,
+     "mass_earth": 17.165023220590253,
+     "e": 0.020257679635734646,
+     "inc_deg": 1.6195720753433958,
+     "galle_lon_deg": 325.0367948387901,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 31.0,
+     "dlnl": 0.0,
+     "dlnl_marginal": -0.0,
+     "mass_earth": 17.501503584940515,
+     "e": 0.040724966697849196,
+     "inc_deg": 1.7483899477880631,
+     "galle_lon_deg": 323.8847382214566,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 32.0,
+     "dlnl": -0.0440346345625926,
+     "dlnl_marginal": -0.026817407991075015,
+     "mass_earth": 18.14561706978992,
+     "e": 0.07905041274635927,
+     "inc_deg": 2.010072354805052,
+     "galle_lon_deg": 321.9482075244373,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 34.0,
+     "dlnl": -0.41792954677339367,
+     "dlnl_marginal": -0.3709372748799069,
+     "mass_earth": 19.390977944054534,
+     "e": 0.14443996035485743,
+     "inc_deg": 2.4938611228576946,
+     "galle_lon_deg": 319.0762173191223,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 36.0,
+     "dlnl": -0.8826102832738343,
+     "dlnl_marginal": -0.8124212622615232,
+     "mass_earth": 20.542333153613377,
+     "e": 0.19879488656684952,
+     "inc_deg": 2.925616275978252,
+     "galle_lon_deg": 317.07631026583846,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 40.0,
+     "dlnl": -1.7234528871684347,
+     "dlnl_marginal": -1.618497121554583,
+     "mass_earth": 22.5864106873457,
+     "e": 0.28545724188137983,
+     "inc_deg": 3.6250145001087,
+     "galle_lon_deg": 314.4951280517562,
+     "active_bounds": [],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 44.0,
+     "dlnl": -5.10685727659552,
+     "dlnl_marginal": -4.8625944285863625,
+     "mass_earth": 26.944940225553474,
+     "e": 0.3,
+     "inc_deg": 3.324258486877742,
+     "galle_lon_deg": 313.8919176980335,
+     "active_bounds": [
+      "e_max"
+     ],
+     "reference": false,
+     "name": null,
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 30.07,
+     "dlnl": -0.17570860376235942,
+     "dlnl_marginal": -0.19332817992221862,
+     "mass_earth": 16.87836707829336,
+     "e": 0.006576633168822114,
+     "inc_deg": 1.5001646961932684,
+     "galle_lon_deg": 326.1384825852098,
+     "active_bounds": [],
+     "reference": true,
+     "name": "neptune",
+     "status": "pass",
+     "u_flagged": false
+    },
+    {
+     "a_au": 36.15,
+     "dlnl": -0.9171723965052365,
+     "dlnl_marginal": -0.8450658130691409,
+     "mass_earth": 20.62849680812609,
+     "e": 0.2025142567788327,
+     "inc_deg": 2.958516691393381,
+     "galle_lon_deg": 316.9466549889015,
+     "active_bounds": [],
+     "reference": true,
+     "name": "le_verrier",
+     "status": "pass",
+     "u_flagged": false
+    }
+   ],
+   "reading": {
+    "reading": "partial",
+    "a_max_au": 31.0,
+    "clauses": {
+     "a_max_not_at_grid_end": true,
+     "falls_below_within_x_left": true,
+     "falls_below_within_x_right": false,
+     "no_second_branch": false,
+     "flat_26_44": false
+    },
+    "failed": [
+     "falls_below_within_x_right",
+     "no_second_branch",
+     "flat_26_44"
+    ],
+    "where": {
+     "second_branch_points": [
+      36.0,
+      40.0
+     ],
+     "below_threshold_in_26_44": [
+      26.0,
+      28.0,
+      44.0
+     ]
+    },
+    "thresholds": {
+     "dlnl": -2.0,
+     "x_au": 4.0,
+     "flat_range_au": [
+      26.0,
+      44.0
+     ]
+    },
+    "missing_points": []
+   },
+   "reading_marginal": "partial",
+   "marginal_minus_q_spread": 0.5904425030876155,
+   "a_max": {
+    "a_au": 31.0,
+    "mass_earth": 17.501503584940515
+   },
+   "parabola": {
+    "a_au": 31.294297174495366,
+    "dlnl": 0.009270354218699595
+   },
+   "intervals": {
+    "dlnl_minus_0p5": [
+     29.46572666062823,
+     34.35323372276926
+    ],
+    "dlnl_minus_2": [
+     28.387946188911343,
+     40.326945385181574
+    ]
+   },
+   "reference_points": {
+    "neptune": {
+     "a_au": 30.07,
+     "dlnl": -0.17570860376235942,
+     "dlnl_marginal": -0.19332817992221862,
+     "above_grid_maximum": false,
+     "mass_earth": 16.87836707829336,
+     "galle_lon_deg": 326.1384825852098,
+     "e": 0.006576633168822114
+    },
+    "le_verrier": {
+     "a_au": 36.15,
+     "dlnl": -0.9171723965052365,
+     "dlnl_marginal": -0.8450658130691409,
+     "above_grid_maximum": false,
+     "mass_earth": 20.62849680812609,
+     "galle_lon_deg": 316.9466549889015,
+     "e": 0.2025142567788327
+    }
+   },
+   "failed_points": [],
+   "convergence": {
+    "n_polishes": 17,
+    "n_repolished": 0,
+    "max_last5_change": 0.00797778618857592,
+    "all_converged": true
+   }
+  }
+ },
+ "leave_one_out": [
+  "no_flamsteed",
+  "no_bradley",
+  "no_mayer",
+  "no_lemonnier"
+ ],
+ "s3_posterior_marginal_a": {
+  "a_au": {
+   "median": 30.404964958374457,
+   "lo68": 29.745844188682806,
+   "hi68": 33.08026414599726,
+   "lo95": 29.07222601353931,
+   "hi95": 37.05990766272483
+  },
+  "width_95_au": 7.987681649185522,
+  "tightness": "borderline",
+  "tight_below_au": 8.0,
+  "borderline_au": 0.2,
+  "published_a_au": {
+   "median": 30.405,
+   "lo68": 29.746,
+   "hi68": 33.083,
+   "lo95": 29.072,
+   "hi95": 37.062
+  }
+ },
+ "profile_vs_s3_posterior": {
+  "profile": "partial",
+  "posterior_tight": false,
+  "posterior_95": [
+   29.07222601353931,
+   37.05990766272483
+  ],
+  "profile_dlnl_minus_2": [
+   28.680965556854,
+   40.553935464041174
+  ],
+  "reading": "partial: no reading beyond the curves",
+  "posterior_tightness": "borderline"
+ },
+ "comparison_with_m9": {
+  "gaussian_m9": {
+   "all": {
+    "reading": "constrained",
+    "a_max_au": 30.0,
+    "mass_at_a_max": 17.25550003000136,
+    "dlnl_minus_2": [
+     27.980768143201495,
+     33.99235258149115
+    ],
+    "dlnl_minus_0p5": [
+     28.848545588759563,
+     31.379540781201673
+    ],
+    "dlnl_neptune": -0.008389353436598412,
+    "dlnl_le_verrier": -3.153054233089847,
+    "dlnl_26": -17.962414340145244
+   },
+   "post1781": {
+    "reading": "flat",
+    "a_max_au": 30.0,
+    "mass_at_a_max": 1.0000000000020248,
+    "dlnl_minus_2": [
+     null,
+     null
+    ],
+    "dlnl_minus_0p5": [
+     28.0864686356559,
+     31.53693197254585
+    ],
+    "dlnl_neptune": 0.014979346744382838,
+    "dlnl_le_verrier": -0.9915031701169141,
+    "dlnl_26": -1.0894876551512311
+   }
+  },
+  "student_t_m10": {
+   "all": {
+    "reading": "partial",
+    "a_max_au": 32.0,
+    "mass_at_a_max": 18.21883741833437,
+    "dlnl_minus_2": [
+     28.680965556854,
+     40.553935464041174
+    ],
+    "dlnl_minus_0p5": [
+     29.813662539886906,
+     34.95172189030649
+    ],
+    "dlnl_neptune": -0.3261855345591016,
+    "dlnl_le_verrier": -0.7576745639989895,
+    "dlnl_26": -16.61022026169553
+   },
+   "post1781": {
+    "reading": "flat",
+    "a_max_au": 44.0,
+    "mass_at_a_max": 22.04707882433693,
+    "dlnl_minus_2": [
+     null,
+     null
+    ],
+    "dlnl_minus_0p5": [
+     25.399559632177475,
+     null
+    ],
+    "dlnl_neptune": -0.2588253439143955,
+    "dlnl_le_verrier": -0.05758742557395635,
+    "dlnl_26": -0.4615910299862662
+   },
+   "no_flamsteed": {
+    "reading": "flat",
+    "a_max_au": 44.0,
+    "mass_at_a_max": 31.604700791855905,
+    "dlnl_minus_2": [
+     24.12580786201297,
+     null
+    ],
+    "dlnl_minus_0p5": [
+     31.756311216392277,
+     null
+    ],
+    "dlnl_neptune": -0.6250286688468805,
+    "dlnl_le_verrier": -0.25513133880753003,
+    "dlnl_26": -1.0533267879676487
+   },
+   "no_bradley": {
+    "reading": "partial",
+    "a_max_au": 32.0,
+    "mass_at_a_max": 18.27812454487277,
+    "dlnl_minus_2": [
+     28.70359503276267,
+     40.63029218689183
+    ],
+    "dlnl_minus_0p5": [
+     29.861676941502285,
+     35.12806119548608
+    ],
+    "dlnl_neptune": -0.35787836820088614,
+    "dlnl_le_verrier": -0.7098681252218739,
+    "dlnl_26": -16.65571407624668
+   },
+   "no_mayer": {
+    "reading": "partial",
+    "a_max_au": 32.0,
+    "mass_at_a_max": 18.19576367130445,
+    "dlnl_minus_2": [
+     28.64918885050854,
+     40.55808058941504
+    ],
+    "dlnl_minus_0p5": [
+     29.775156941853492,
+     34.92369840797767
+    ],
+    "dlnl_neptune": -0.3047895718141831,
+    "dlnl_le_verrier": -0.7636390689441441,
+    "dlnl_26": -16.645163430378773
+   },
+   "no_lemonnier": {
+    "reading": "partial",
+    "a_max_au": 31.0,
+    "mass_at_a_max": 17.501503584940515,
+    "dlnl_minus_2": [
+     28.387946188911343,
+     40.326945385181574
+    ],
+    "dlnl_minus_0p5": [
+     29.46572666062823,
+     34.35323372276926
+    ],
+    "dlnl_neptune": -0.17570860376235942,
+    "dlnl_le_verrier": -0.9171723965052365,
+    "dlnl_26": -15.04183140248108
+   }
+  }
+ },
+ "interpretation": {
+  "readings": {
+   "all": "partial",
+   "post1781": "flat",
+   "no_flamsteed": "flat",
+   "no_bradley": "partial",
+   "no_mayer": "partial",
+   "no_lemonnier": "partial"
+  },
+  "a_gaussian": "constrained",
+  "rows": [
+   {
+    "row": null,
+    "text": "A is partial or missing under Student-t: no row is used; the curves and the failed clause are reported."
+   },
+   {
+    "row": null,
+    "text": "A is not constrained under Student-t: (iii)/(iv) are not read; the leave-one-out sets are reported as curves only."
+   }
+  ],
+  "a_x_b_student_t": {
+   "a": "partial",
+   "b": "flat",
+   "text": "A profile is partial: the table is not used."
+  }
+ },
+ "neptune_osculating_a_1781_au": 30.223384182057853,
+ "ledger": [
+  {
+   "job": "m10/profile/all",
+   "n_likelihood_calls": 1445138,
+   "n_integrations": 2441,
+   "wall_s": 537.8,
+   "cpu_s": 1360.0,
+   "n_workers": 12
+  },
+  {
+   "job": "m10/profile/post1781",
+   "n_likelihood_calls": 3095017,
+   "n_integrations": 28449,
+   "wall_s": 723.2,
+   "cpu_s": 2462.8,
+   "n_workers": 12
+  },
+  {
+   "job": "m10/profile/no_flamsteed",
+   "n_likelihood_calls": 1946430,
+   "n_integrations": 5226,
+   "wall_s": 603.0,
+   "cpu_s": 1799.5,
+   "n_workers": 12
+  },
+  {
+   "job": "m10/profile/no_bradley",
+   "n_likelihood_calls": 1859103,
+   "n_integrations": 2487,
+   "wall_s": 614.8,
+   "cpu_s": 1755.9,
+   "n_workers": 12
+  },
+  {
+   "job": "m10/profile/no_mayer",
+   "n_likelihood_calls": 1972394,
+   "n_integrations": 4805,
+   "wall_s": 664.4,
+   "cpu_s": 1849.0,
+   "n_workers": 12
+  },
+  {
+   "job": "m10/profile/no_lemonnier",
+   "n_likelihood_calls": 1927152,
+   "n_integrations": 2293,
+   "wall_s": 584.0,
+   "cpu_s": 1772.2,
+   "n_workers": 12
+  }
+ ]
+}

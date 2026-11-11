@@ -135,3 +135,23 @@ semver: the tag is `vX.Y.Z`, and `pyproject.toml` and `CITATION.cff` hold `X.Y.Z
   `site/data/release.json`.
 - [x] The Pages site still deploys from `main`. 2026-11-10: the pages workflow deployed 1ac45a3
   and the live page carries the release byline ("code v1.0.0").
+
+## v1.1.0 (2026-11-10)
+
+Released on the user's explicit go-ahead ("Release v1.1.0"). What it adds to v1.0.0:
+
+- **M10**, the pre-registered profile likelihood in the semi-major axis under Student-t errors
+  (`docs/notes/M10.md`, results appended 2026-11-10): the v1.0.0 distance claim held only under
+  the Gaussian error model. The abstract's distance sentences, § 5 (Fig. 7 with both error
+  models, Fig. 9 with the leave-one-out profiles) and Limitations are updated; every number is
+  read from `site/data/m10_profile.json`.
+- The two pre-run changes M10 recorded: the Uranus-only box centred on the better of two
+  starts (1c192e2) and the cache-only ephemeris fetcher, `FORK_HORIZONS_CACHE_ONLY=1`
+  (41f7a12), which closes that item of the list above.
+- Still deferred, now to v1.2: M6d, M6e, the M6c variant fits, the S1 cell-0 resolution
+  (`site/data/m7_timeline.json` "deferred" says 1.2).
+- Steps: version 1.1.0 in `pyproject.toml`, `uv.lock` and `CITATION.cff` (its `doi:` removed
+  until Zenodo mints the new version DOI; the concept DOI stays); `CHANGELOG.md` added; checks
+  (pytest, ruff, prerender audit, layout check) green; CI green on the prepared commit; tag
+  `v1.1.0`; GitHub release with notes in the paper's voice; then the follow-up commit with the
+  version DOI in `CITATION.cff`, `README.md` and `site/data/release.json`.

@@ -1,5 +1,5 @@
-# Version follows semver. 1.0.0 was tagged on 2026-11-10 (docs/release_checklist.md); the
-# software DOI is added once Zenodo mints it for the release.
+# Version follows semver. 1.0.0 and 1.1.0 were tagged on 2026-11-10 (docs/release_checklist.md);
+# each release's software DOI (doi:) is added once Zenodo mints it; the concept DOI covers all.
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
@@ -27,9 +27,8 @@ repository-code: "https://github.com/atishaypahadiya/neptune-fork"
 license:
   - MIT
   - CC0-1.0
-version: "1.0.0"
+version: "1.1.0"
 date-released: "2026-11-10"
-doi: "10.5281/zenodo.24121060"
 identifiers:
   - type: doi
     value: "10.5281/zenodo.24121059"

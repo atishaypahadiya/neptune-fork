@@ -185,3 +185,33 @@ def test_comparison_table_reads_the_frozen_m9_results():
     assert g["all"]["a_max_au"] == 30.0 and abs(g["all"]["dlnl_le_verrier"] + 3.15) < 0.01
     assert abs(g["all"]["dlnl_26"] + 17.96) < 0.01 and g["post1781"]["dlnl_minus_2"] == [None, None]
     assert all(v is None for v in t["student_t_m10"].values())
+
+
+def test_site_payload_is_compact_and_matches_the_report():
+    import json
+
+    out = json.loads(m10.OUT_JSON.read_text())
+    site = m10.site_payload(out)
+    assert set(site["datasets"]) == set(m10.DATASETS)
+    assert site["leave_one_out"] == ["no_flamsteed", "no_bradley", "no_mayer", "no_lemonnier"]
+    for name, d in site["datasets"].items():
+        full = out["datasets"][name]
+        assert len(d["points"]) == len(full["points"])
+        assert d["reading"]["reading"] == full["reading"]["reading"]
+        assert "candidates" not in d["points"][0] and "diagnostics" not in d["points"][0]
+        assert d["measurements_removed"] == 529 - d["n_measurements"]
+        assert (d["observer"] is None) == (name in ("all", "post1781"))
+    assert site["s3_posterior_marginal_a"]["tightness"] in ("tight", "borderline", "not tight")
+    assert site["comparison_with_m9"]["gaussian_m9"]["all"]["reading"] == "constrained"
+    assert len(json.dumps(site)) < 200_000
+
+
+def test_committed_site_payload_is_current():
+    """site/data/m10_profile.json must equal site_payload(docs/notes/M10_profile.json)."""
+    import json
+
+    from fork.export.to_json import SITE_DATA
+
+    out = json.loads(m10.OUT_JSON.read_text())
+    committed = json.loads((SITE_DATA / m10.SITE_OUT_NAME).read_text())
+    assert committed == json.loads(json.dumps(m10.site_payload(out), default=float))

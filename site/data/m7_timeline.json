@@ -1,6 +1,6 @@
 {
  "description": "Pre-registration timeline: when each pre-registration was committed and first pushed (public), and when its runs launched, finished and were first summarized. Times are PST (UTC-8). Built by docs/notes/scripts/m7_timeline.py from git, GitHub's repository activity API and the run logs.",
- "generated": "2026-11-09T23:26:01-08:00",
+ "generated": "2026-11-10T17:31:18-08:00",
  "sources": {
   "committed": "git committer date",
   "pushed": "GitHub repository activity API: first push whose head is the commit or a descendant",
@@ -230,8 +230,8 @@
   }
  ],
  "deferred": {
-  "source": "docs/release_checklist.md, Deferred to v1.1 (2026-11-09)",
-  "to_version": "1.1",
+  "source": "docs/release_checklist.md, Deferred to v1.1 (2026-11-09); carried to v1.2 at v1.1.0",
+  "to_version": "1.2",
   "fitted": "Le Verrier's data choice on the modern reduction track",
   "m6c_fits": [
    {

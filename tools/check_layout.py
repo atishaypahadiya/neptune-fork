@@ -316,7 +316,7 @@ PRINT = r"""() => {
     if ((p === "sticky" || p === "fixed") && e.getClientRects().length) out.sticky.push(`${e.tagName}.${e.className}`);
   }
   const pairs = [["plate-i", "cap-plate-i"], ["plate-ii", "cap-plate-ii"], ["plate-iii", "cap-plate-iii"],
-    ...["fig-1", "fig-2", "fig-3", "fig-4", "fig-5", "fig-6", "fig-7", "fig-8"].map((f) => [f, `cap-${f}`])];
+    ...["fig-1", "fig-2", "fig-3", "fig-4", "fig-5", "fig-6", "fig-7", "fig-8", "fig-9"].map((f) => [f, `cap-${f}`])];
   for (const [f, c] of pairs) {
     const fe = document.querySelector(`[data-fig="${f}"]`);
     const fb = (fe.querySelector(":scope > .canvas") ?? fe).getBoundingClientRect();
@@ -369,7 +369,7 @@ def plate_iii_controls(page: Page) -> list[str]:
 SHOTS = [("plate-i", "header"), ("table-1", "#table-1"), ("fig-1", "#fig-1"), ("fig-2", "#fig-2"),
          ("plate-iii", "#plate-iii"), ("plate-iii-side", "#plate-iii .side"), ("fig-4", "#fig-4"),
          ("plate-ii", "#plate-ii"), ("fig-5", "#fig-5"), ("fig-6", "#fig-6"), ("fig-7", "#fig-7"),
-         ("fig-8", "#fig-8"), ("refs", "#s7")]  # fmt: skip
+         ("fig-8", "#fig-8"), ("fig-9", "#fig-9"), ("refs", "#s7")]  # fmt: skip
 
 
 def check(out: Path, engine: str, shots: Path | None, widths: list[tuple[int, int]]) -> list[str]:

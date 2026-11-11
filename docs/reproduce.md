@@ -7,7 +7,7 @@ Ledger CPU-hours add up across jobs. Wall times are per job: many jobs ran side 
 14-core Apple Silicon machine, so summed wall time overstates the elapsed time. Jobs the ledger
 does not cover took seconds to a few minutes and are marked "not in ledger".
 
-**Ledger total so far: 1087 CPU-hours** (1004 timed live, 83 estimated), 1141 million likelihood
+**Ledger total so far: 1090 CPU-hours** (1007 timed live, 83 estimated), 1153 million likelihood
 calls, 624 million of them N-body integrations over 1690–1846 (the rest are the fast linearized
 likelihood of M8), or 96 billion simulated planet-years.
 
@@ -28,7 +28,8 @@ the commands below use these identifiers.
 | the fast-likelihood rerun | M8 A8f rerun | `docs/notes/M8.md` |
 | the higher-resolution reruns | M8b | `docs/notes/M8.md` |
 | the full-likelihood check of the eccentricity test | A8d(S1) arbiter (`m8_arbiter`) | `docs/notes/M8.md` |
-| the profile likelihood in the semi-major axis (Figs. 7 and 8) | M9 (`fork.export.m9`) | `docs/notes/M9.md` |
+| the profile likelihood in the semi-major axis under Gaussian errors (Fig. 7 left, Fig. 8) | M9 (`fork.export.m9`) | `docs/notes/M9.md` |
+| the profile likelihood under Student-t errors, six data sets (Fig. 7 right, Fig. 9) | M10 (`fork.export.m10`) | `docs/notes/M10.md` |
 | the 95 % stability condition | `std_95_bounds_le_0p4` (rule_95 in `m8b.json`) | `docs/notes/M8.md` |
 | the convergence gates; the agreement with the headline fit; the seed-agreement condition | `gates_headline_and_single_seed_fits`; `a8b_a8c`; `a8f_headline_cells` | `docs/notes/M8.md` |
 | the transcription check | A6a | `docs/notes/A6.md` |
@@ -178,6 +179,20 @@ uv run python docs/notes/scripts/m9_mass_a.py # the after-the-fact corner plot, 
 Pre-registered in `docs/notes/M9.md` (code hash and relaunch recorded there); ledger rows
 `m9/profile/*`. Resumable per grid point from `data/cache/m9/`; a run that dies loses at most one
 point's 40 fits.
+
+## M10: profile likelihood under Student-t errors
+
+```sh
+FORK_HORIZONS_CACHE_ONLY=1 uv run python -m fork.export.m10 profile --dataset all --n-workers 12   # 9.0 min wall, 0.38 CPU-h
+# likewise post1781 (12.1 min, 0.68), no_flamsteed (10.0, 0.50), no_bradley (10.2, 0.49),
+# no_mayer (11.1, 0.51), no_lemonnier (9.7, 0.49)
+uv run python -m fork.export.m10 report       # docs/notes/M10_profile.{json,png} and site/data/m10_profile.json
+uv run python docs/notes/scripts/m9_mass_a.py --variant s3_t4   # the Student-t posterior's mass–a plot, after the fact
+```
+
+Pre-registered in `docs/notes/M10.md` (amendment, code hashes and the relaunch recorded there);
+ledger rows `m10/profile/*`, 3.1 CPU-h in all. `FORK_HORIZONS_CACHE_ONLY=1` makes a cache miss
+raise instead of fetching. Resumable per grid point from `data/cache/m10/`.
 
 ## Toy example (not a result)
 

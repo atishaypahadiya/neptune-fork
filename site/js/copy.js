@@ -23,6 +23,7 @@ export function dateOfStr(s, { time = true } = {}) {
   return `${d} ${MONTHS[m - 1]} ${y}${time && hm && hm !== "00:00" ? `, ${hm} TDB` : time ? ", 0h TDB" : ""}`;
 }
 const deg = (x, n = 1) => `${fmt(x, n)}°`;
+const neg = (x, n = 1) => fmt(x, n).replace(/^-/, "−");
 const rng = (lo, hi, n = 1) => `${range(lo, hi, n)}°`;
 const yr = (x) => String(drv(Math.floor(x), "calendar year of a decimal year"));
 
@@ -76,18 +77,22 @@ export function abstract(D) {
       `published orbit gives a geocentric longitude of ${deg(h.leVerrier, 2)} that night, inside ` +
       `the 68 % range. In heliocentric longitude (ecliptic of date) his planet lies outside the ` +
       `95 % range at the conjunction of ${yr(w.marks.conjunction.year)} (§ 4.2) and stays within ` +
-      `the 68 % band only from ${fmt(a, 2)} to ${fmt(b, 2)} (§ 4.3). ${distanceSentence(D.m9)}`,
+      `the 68 % band only from ${fmt(a, 2)} to ${fmt(b, 2)} (§ 4.3). ${distanceSentence(D.m9, D.m10)}`,
   };
 }
 
-/** The abstract's sentence on where the distance comes from (M9, docs/notes/M9.md). */
-export function distanceSentence(M) {
-  const A = M.datasets.all, lv = A.reference_points.le_verrier;
-  const [lo, hi] = A.intervals.dlnl_minus_2, [f0, f1] = M.settings.reading.flat_range_au;
-  return `The distance comes from the pre-1781 observations: with them the data alone place the ` +
-    `planet at ${fmt(lo)}–${fmt(hi)} AU and prefer Neptune's distance over Le Verrier's ` +
-    `${fmt(lv.a_au, 0)} AU by Δ ln {i:L} = ${fmt(Math.abs(lv.dlnl), 2)}; without them any ` +
-    `distance from ${f0} to ${f1} AU fits.`;
+/** The abstract's sentences on the distance, from the two pre-registered profiles in a: M9 on
+ * Gaussian errors (docs/notes/M9.md) and M10 on Student-t errors (docs/notes/M10.md). */
+export function distanceSentence(M, T) {
+  const G = M.datasets.all, S = T.datasets.all, lv = S.reference_points.le_verrier;
+  const [gLo, gHi] = G.intervals.dlnl_minus_2, [tLo, tHi] = S.intervals.dlnl_minus_2;
+  const near = drv(Math.round((gLo + tLo)) / 2, "mean of the two Δ ln L = −2 lower bounds, to the nearest 0.5 AU");
+  return `The observations before 1781, chiefly Flamsteed's, rule out distances below about ` +
+    `${fmt(near)} AU under either error model (Δ ln {i:L} = ${neg(M.settings.reading.dlnl, 0)} at ` +
+    `${fmt(gLo)} and ${fmt(tLo)} AU). Under Gaussian errors they also exclude distances beyond ` +
+    `${fmt(gHi)} AU; under the Student-t errors the evidence favours, the far side opens to ` +
+    `${fmt(tHi)} AU and Le Verrier's ${fmt(lv.a_au, 0)} AU is not disfavoured ` +
+    `(Δ ln {i:L} = ${neg(lv.dlnl, 2)}).`;
 }
 
 export function capPlateI(D) {
@@ -445,27 +450,31 @@ export function robustText(D) {
       `provisional. ${v.s1_e05.unresolved ? "Open dot and dashed lines: the verdict is unresolved. " : ""}` +
       `{N@fig-6} Neptune (JPL Horizons). Reading rules: ${k.rulesSource}.`,
     ...profileText(D.m9),
+    ...studentProfileText(D.m10, D.m9),
   };
 }
 
-/** Fig. 7's sentence on the two families of solutions in the all-observations profile, when a
- * dip separates them (the segments are not joined across it). */
-function familiesSentence(A, S) {
+/** Fig. 7's sentence on the two families of solutions in the all-observations profiles, when a
+ * dip separates them (the segments are not joined across it). `A2` is the same data set under
+ * the other error model, whose dip value is given beside the first. */
+function familiesSentence(A, S, A2) {
   const P = A.points.filter((p) => !p.reference && p.dlnl != null);
   const segs = profileSegments(P);
   const dips = segs.filter((s) => s.length === 1 && s !== segs[0] && s !== segs.at(-1)).map((s) => s[0]);
   if (!dips.length) return "";
   const low = segs[0], main = segs.find((s) => s.length > 1 && s[0].a_au > dips[0].a_au);
   const lowP = low[low.length - 1];
-  return `The all-observations curve is not joined across the dip at ${dips.map((p) => p.a_au).join(" and ")} AU ` +
-    `(Δ ln {i:L} ${fmt(dips[0].dlnl, 0)}), which separates two families of solutions: at ` +
+  const d2 = A2?.points.find((p) => !p.reference && p.a_au === dips[0].a_au);
+  return `The all-observations curves are not joined across the dip at ${dips.map((p) => p.a_au).join(" and ")} AU ` +
+    `(Δ ln {i:L} ${neg(dips[0].dlnl, 0)}${d2 ? ` and ${neg(d2.dlnl, 0)}` : ""}), which separates two families of solutions: at ` +
     `${low.map((p) => p.a_au).join(" and ")} AU a low-distance, high-eccentricity planet ` +
     `({i:e} on its ${S.e_max} bound, longitude ${fmt(lowP.galle_lon_deg, 1)}°), the family the ` +
     `eccentricity run's low-distance solution ({i:a} < 25 AU, Fig. 6) belongs to, and from ` +
     `${main[0].a_au} AU on the main branch. `;
 }
 
-/** § 5's paragraph on the profile likelihood in a (M9) and the captions of Figs. 7 and 8. */
+/** § 5's paragraph on the profile likelihood in a under Gaussian errors (M9) and the caption of
+ * Fig. 8. */
 export function profileText(M) {
   const A = M.datasets.all, B = M.datasets.post1781, S = M.settings, Cn = M.corner;
   const grid = S.grid_au, n = drv(grid.length, "grid points");
@@ -494,17 +503,9 @@ export function profileText(M) {
       `${fmt(10 ** S.log10_m_range[0], 0)} Earth mass up to ${fmt(Math.max(...massFloor), 0)} AU and the ` +
       `eccentricity on its ${S.e_max} bound from ${fmt(Math.min(...eBound))} AU on: it reads as ${read(B)}. ` +
       `By the rule committed beforehand, ${because.charAt(0).toLowerCase()}${because.slice(1)}. ` +
-      `The profile uses ${M.error_model}; nothing in the headline changes.` +
+      `This profile uses ${M.error_model} (Fig. 7, left); nothing in the headline changes.` +
       (eBoundA.length ? ` On the all-observations curve the eccentricity bound is active at ` +
         `${eBoundA.join(" and ")} AU.` : ""),
-    cap_fig_7: `The profile likelihood in the semi-major axis: Δ ln {i:L} against the held {i:a}, for all ` +
-      `observations (thick line) and for the observations from 1781 on (thin line), from the ` +
-      `pre-registered M9 run on ${M.error_model}. Dots: the ${n} grid values, each the best of ` +
-      `${S.n_random + S.n_posterior} starts polished with the full model. The horizontal line is the ` +
-      `reading rule's threshold, Δ ln {i:L} = ${fmt(S.reading.dlnl, 0)}. {N@fig-7} Neptune's {i:a} ` +
-      `(${fmt(nep.a_au, 2)} AU) and {L@fig-7} Le Verrier's (${fmt(lv.a_au, 2)} AU), on the ` +
-      `all-observations curve. ${familiesSentence(A, S)}Reading: ${read(A)} with all observations, ` +
-      `${read(B)} without the pre-1781 ones.`,
     cap_fig_8: `Mass against semi-major axis in the headline posterior, made after the fact (not ` +
       `pre-registered): ${drv(Cn.samples.length, "posterior samples drawn")} posterior samples and the ` +
       `contours holding 68 % and 95 % of the probability. {N@fig-8} Neptune (JPL: ` +
@@ -514,12 +515,76 @@ export function profileText(M) {
   };
 }
 
+/** § 5's paragraph on the same profile under Student-t errors (M10, docs/notes/M10.md), the
+ * caption of Fig. 7 (both error models) and the caption of Fig. 9 (the leave-one-out sets). */
+export function studentProfileText(T, M) {
+  const A = T.datasets.all, B = T.datasets.post1781, G = M.datasets.all, S = T.settings;
+  const grid = S.grid_au, n = drv(grid.length, "grid points"), X = S.reading.x_au;
+  const lv = A.reference_points.le_verrier, glv = G.reference_points.le_verrier, nep = A.reference_points.neptune;
+  const [lo2, hi2] = A.intervals.dlnl_minus_2, [gLo, gHi] = G.intervals.dlnl_minus_2;
+  const at = (ds, a) => ds.points.find((p) => !p.reference && p.a_au === a);
+  const read = (ds) => ds.reading.reading;
+  const F = T.datasets.no_flamsteed;
+  const loo = T.leave_one_out.map((k) => T.datasets[k]), others = loo.filter((d) => d !== F);
+  const flat = S.reading.flat_range_au;
+  const inFlat = (p) => !p.reference && p.a_au >= flat[0] && p.a_au <= flat[1];
+  const bMin = drv(Math.min(...B.points.filter(inFlat).map((p) => p.dlnl)), "lowest Δ ln L of the post-1781 Student-t profile from 26 to 44 AU");
+  const fMin = drv(Math.min(...F.points.filter(inFlat).map((p) => p.dlnl)), "lowest Δ ln L of the profile without Flamsteed from 26 to 44 AU");
+  const branch = A.reading.where.second_branch_points;
+  const far = at(A, grid[grid.indexOf(A.a_max.a_au) + 2]);
+  const a30 = grid.includes(30) ? 30 : A.a_max.a_au;
+  const dip = Math.min(...[A, ...others].map((d) => at(d, 26).dlnl));
+  return {
+    rob_p4: `The same profile was then pre-registered under ${T.error_model}, the model the ` +
+      `evidence favours (§ 4), on six data sets: all observations, the observations from 1781 on, ` +
+      `and all observations less each pre-1781 observer's measurements in turn. With all ` +
+      `observations the maximum moves to ${fmt(A.a_max.a_au, 0)} AU and the curve falls ` +
+      `${fmt(-S.reading.dlnl, 0)} in ln {i:L} below it at ${fmt(lo2)} AU on the near side, but ` +
+      `not within ${fmt(X, 0)} AU on the far side (${neg(far.dlnl, 2)} at ${far.a_au} AU), and it is ` +
+      `still within ${fmt(-S.reading.dlnl, 0)} at ${andList(branch.map(String))} AU: by the rule committed beforehand ` +
+      `it reads as ${read(A)}, and no conclusion is drawn from it. What the curves show, as ` +
+      `description rather than a reading of the rule: the near side is the same under both error ` +
+      `models (Δ ln {i:L} = ${neg(S.reading.dlnl, 0)} at ${fmt(gLo)} and ${fmt(lo2)} AU; at 26 AU ` +
+      `${neg(at(G, 26).dlnl, 1)} against ${neg(at(A, 26).dlnl, 1)}), while the far side depends on it: the ` +
+      `crossing moves from ${fmt(gHi)} to ${fmt(hi2)} AU and Le Verrier's ${fmt(lv.a_au, 2)} AU from ` +
+      `${neg(glv.dlnl, 2)} to ${neg(lv.dlnl, 2)} below the maximum (Neptune's ${fmt(nep.a_au, 2)} AU is at ` +
+      `${neg(nep.dlnl, 2)}). Without the pre-1781 observations the curve again reads as ${read(B)}, ` +
+      `within ${fmt(Math.abs(bMin))} of its maximum from ${flat[0]} to ${flat[1]} AU. Without ` +
+      `Flamsteed's ${F.measurements_removed} measurements alone it reads as ${read(F)} too, within ` +
+      `${fmt(Math.abs(fMin))} over the same range, and the fit changes family: at ${a30} AU the planet ` +
+      `points to ${fmt(at(F, a30).galle_lon_deg, 1)}° on Galle's night with ` +
+      `${fmt(at(F, a30).mass_earth, 0)} Earth masses, against ${fmt(at(A, a30).galle_lon_deg, 1)}° and ` +
+      `${fmt(at(A, a30).mass_earth, 0)} with all observations. Without ${andList(others.map((d) => `${d.observer}'s ` +
+      `${d.measurements_removed}`))} the curve is almost unchanged (${sameOr(others.map(read))}, maxima at ` +
+      `${andList(others.map((d) => fmt(d.a_max.a_au, 0)))} AU). The near side of the distance rests on Flamsteed's ` +
+      `measurements. The rule reads the leave-one-out sets only when the all-observations profile ` +
+      `is constrained, so this is a description of the curves, not a reading.`,
+    cap_fig_7: `The profile likelihood in the semi-major axis under the two error models: Δ ln {i:L} ` +
+      `against the held {i:a}, for all observations (thick line) and for the observations from 1781 ` +
+      `on (thin line). Left, the pre-registered M9 run on ${M.error_model}; right, the pre-registered ` +
+      `M10 run on ${T.error_model}. Dots: the ${n} grid values, each the best of ` +
+      `${S.n_random + S.n_posterior} starts polished with the full model. The horizontal line is the ` +
+      `reading rule's threshold, Δ ln {i:L} = ${neg(S.reading.dlnl, 0)}. {N@fig-7} Neptune's {i:a} ` +
+      `(${fmt(nep.a_au, 2)} AU) and {L@fig-7} Le Verrier's (${fmt(lv.a_au, 2)} AU), on the ` +
+      `all-observations curves. ${familiesSentence(G, M.settings, A)}Readings: ${read(G)} and ` +
+      `${read(M.datasets.post1781)} under Gaussian errors, ${read(A)} and ${read(B)} under Student-t errors.`,
+    cap_fig_9: `The Student-t profile with all observations (thin line, as in Fig. 7) and with one ` +
+      `pre-1781 observer's measurements removed (thick line): ${andList(loo.map((d) => `${d.observer}'s ` +
+      `${d.measurements_removed}`))}. The horizontal line is the threshold, Δ ln {i:L} = ${neg(S.reading.dlnl, 0)}; ` +
+      `the axis stops at ${neg(-6, 0)}, and a point below it (26 AU, where the two families of solutions ` +
+      `meet, down to ${neg(dip, 0)}) is drawn open at the bottom edge. Readings by the pre-registered rule: ` +
+      `${loo.map((d) => `without ${d.observer} ${read(d)}`).join(", ")}.`,
+  };
+}
+
 /* ---------- § 6 Limitations ---------- */
 
 /** "a", "a and b", "a, b and c" (no serial comma, as in the README). */
 const andList = (xs) => (xs.length < 2 ? xs.join("") : `${xs.slice(0, -1).join(", ")} and ${xs.at(-1)}`);
+/** "all partial" when every reading agrees, the list otherwise. */
+const sameOr = (xs) => (new Set(xs).size === 1 ? `all ${xs[0]}` : andList(xs));
 
-/** The spec's M6c fits deferred to v1.1 (m7_timeline.json "deferred", from the release checklist). */
+/** The spec's M6c fits deferred to a later release (m7_timeline.json "deferred", from the release checklist). */
 function deferredFits(d) {
   const variants = d.m6c_fits.filter((f) => f.kind === "variant").map((f) => f.name);
   const rest = d.m6c_fits.filter((f) => f.kind !== "variant").map((f) => `the ${f.name}`);
@@ -558,13 +623,20 @@ export function limits(D) {
       `posterior weight that the current runs do not determine (${fmt(s1.p, 3)} to about ` +
       `${fmt(s1.arbP[1], 1)}).`);
   }
-  const M = D.m9;
+  const M = D.m9, T = D.m10, G = M.datasets.all, A = T.datasets.all, F = T.datasets.no_flamsteed;
+  const loo = T.leave_one_out.map((k) => T.datasets[k]).filter((d) => d !== F);
   out.push(
-    `The distance result (§ 5) rests on the ${M.ancient_measurements_removed} measurements by ` +
+    `The near side of the distance (§ 5) rests on the ${M.ancient_measurements_removed} measurements by ` +
       `four observers before 1781 (${M.ancient_observers.slice(0, -1).join(", ")} and ` +
-      `${M.ancient_observers.at(-1)}): their reduction and transcription matter most.`,
-    `The profile in {i:a} uses ${M.error_model}; a Student-t profile is deferred to ` +
-      `v${D.timeline.deferred.to_version}.`,
+      `${M.ancient_observers.at(-1)}), and chiefly on Flamsteed's ${F.measurements_removed}: without ` +
+      `them the Student-t profile reads as ${F.reading.reading}, while without ` +
+      `${andList(loo.map((d) => `${d.observer}'s`))} it is almost unchanged. Their reduction and ` +
+      `transcription matter most.`,
+    `The far side of the distance depends on the error model: Δ ln {i:L} = ${neg(M.settings.reading.dlnl, 0)} at ` +
+      `${fmt(G.intervals.dlnl_minus_2[1])} AU under Gaussian errors and ${fmt(A.intervals.dlnl_minus_2[1])} AU ` +
+      `under Student-t errors; Le Verrier's ${fmt(A.reference_points.le_verrier.a_au, 2)} AU is ` +
+      `${fmt(Math.abs(G.reference_points.le_verrier.dlnl), 2)} below the maximum under the first and ` +
+      `${fmt(Math.abs(A.reference_points.le_verrier.dlnl), 2)} under the second.`,
     deferredFits(D.timeline.deferred),
     `Error model: the evidence favours Student-t errors (ln B = ` +
       `${signed(D.checks.fits.s3_t4.vs_headline.ln_b, 1)}), but the Gaussian error model was ` +

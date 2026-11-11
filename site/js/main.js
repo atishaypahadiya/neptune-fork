@@ -9,23 +9,24 @@ import {
 import * as C from "./copy.js";
 import { fill, fail } from "./plate.js";
 import { plateI, plateII, plateIII } from "./plates.js";
-import { fig1, fig2, fig4, fig5, fig6, fig7, fig8 } from "./figs.js";
+import { fig1, fig2, fig4, fig5, fig6, fig7, fig8, fig9 } from "./figs.js";
 
 async function load() {
   const [head, conjL, window_, timeline, checks, rep, conj, m6, dataset, table1, plates, motion, refs,
-    quotes, parallax, m9, release] =
+    quotes, parallax, m9, m10, release] =
     await Promise.all([
       loadHeadline(), loadConjunction(), loadWindow(), loadTimeline(), loadChecks(),
       loadJSON("m6c_replacement.json"), loadJSON("m6c_conjunction.json"), loadJSON("m6_fits.json"),
       loadJSON("m7_dataset.json"), loadJSON("m7_table1.json"), loadJSON("m7_plates.json"),
       loadJSON("m7_motion.json"), loadJSON("m7_references.json"), loadJSON("m7_quotes.json"),
-      loadJSON("m7_parallax.json"), loadJSON("m9_profile.json"), loadJSON("release.json"),
+      loadJSON("m7_parallax.json"), loadJSON("m9_profile.json"), loadJSON("m10_profile.json"),
+      loadJSON("release.json"),
     ]);
   // The plates' posterior must be the published one (the script checks this too).
   const q = plates.plate_ii_conjunction.posterior.lon_deg, want = conj.conjunction_helio.all;
   if (Math.abs(q.median - want.median) > 1e-3) throw new Error("m7_plates.json does not match m6c_conjunction.json");
   return { head, conjL, window: window_, timeline, checks, rep, conj, m6, dataset, table1, plates, motion, refs,
-    quotes, parallax, m9, release };
+    quotes, parallax, m9, m10, release };
 }
 
 function setSlots(values) {
@@ -180,6 +181,7 @@ async function main() {
   guard('[data-fig="fig-6"]', (el) => fig6(el, D));
   guard('[data-fig="fig-7"]', (el) => fig7(el, D));
   guard('[data-fig="fig-8"]', (el) => fig8(el, D));
+  guard('[data-fig="fig-9"]', (el) => fig9(el, D));
   // Controls that only work with JS (Plate III's play and scrub, Copy) are hidden in the HTML.
   for (const el of document.querySelectorAll("[data-js]")) el.hidden = false;
   document.documentElement.dataset.ready = "1";

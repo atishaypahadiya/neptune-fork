@@ -290,48 +290,88 @@ export function fig6(fig, D) {
 
 /* ---------------- Fig. 7: the profile likelihood in a (M9) ---------------- */
 
-export function fig7(fig, D) {
-  const M = D.m9, A = M.datasets.all, B = M.datasets.post1781, S = M.settings;
+/** One panel of a profile in a: the gridlines, the reading rule's threshold, the x axis, the
+ * thin context curve (B) under the thick one (A), the dots, a title, and N and L as open marks
+ * on A when `letters` gives their ids. A `floor` clips the y axis: a point below it is drawn
+ * open at the bottom edge (Fig. 9). */
+function profilePanel(g, { x, y, A, B, S, left, right, top, bottom, title, letters, yLabels,
+                           floor = -Infinity, sparse }) {
   const grid = S.grid_au;
+  const pts = (ds) => ds.points.filter((p) => !p.reference && p.dlnl != null);
+  const yv = (p) => y(Math.max(p.dlnl, floor));
+  for (const t of y.ticks(5)) {
+    drv(t, "axis tick");
+    g.append("path").attr("class", "ln ctx yield").attr("d", L([[left, y(t)], [right, y(t)]]));
+    if (yLabels) {
+      g.append("text").attr("class", "tick").attr("x", left - 8).attr("y", y(t) + 4).attr("text-anchor", "end").text(minus(t));
+    }
+  }
+  g.append("path").attr("class", "ln sec yield").attr("d", L([[left, y(S.reading.dlnl)], [right, y(S.reading.dlnl)]]));
+  xAxis(g, x, bottom, grid.filter((v) => Number.isInteger(v) && (!sparse || v % 4 === 0)));
+  // Each run of grid points is one line; a dip between two families of solutions (the 26 AU
+  // point of the all-observations profiles) is left unjoined, so the low-distance branch at
+  // 24 AU and the main branch from 28 AU on are separate segments.
+  const curve = (ds, cls) => {
+    const P = pts(ds);
+    for (const seg of profileSegments(P)) {
+      if (seg.length > 1) g.append("path").attr("class", `ln ${cls}`).attr("d", L(seg.map((p) => [x(p.a_au), yv(p)])));
+    }
+    g.selectAll(null).data(P).join("circle").attr("class", (p) => (p.dlnl < floor ? "open" : "dot"))
+      .attr("cx", (p) => x(p.a_au)).attr("cy", yv).attr("r", 2.6);
+  };
+  if (B) curve(B, "sec");
+  curve(A, "model");
+  if (title) g.append("text").attr("class", "lbl row").attr("x", left).attr("y", top - 12).text(title);
+  if (letters) {
+    for (const [name, letter, dy] of [["neptune", "N", -13], ["le_verrier", "L", 13]]) {
+      const r = A.reference_points[name];
+      point(g, { id: letters[letter], x: x(r.a_au), y: y(r.dlnl), letter, mark: "open", dx: 9, dy });
+    }
+  }
+}
+
+/** The panel under the pointer and the nearest grid value in it. */
+function panelAt(panels, grid, px, py) {
+  const P = panels.find((q) => px >= q.left - 20 && px <= q.right + 20 && py >= q.top - 20 && py <= q.bottom + 20)
+    ?? panels[0];
+  const a = grid[d3.bisector((v) => v).center(grid, P.x.invert(px))];
+  return { P, a };
+}
+
+/* ---------------- Fig. 7: the profile likelihood in a under both error models ---------------- */
+
+export function fig7(fig, D) {
+  const M = D.m9, T = D.m10, S = M.settings, grid = S.grid_au;
+  const spec = [
+    { A: M.datasets.all, B: M.datasets.post1781, title: "Gaussian errors", letters: { N: "N", L: "L" } },
+    { A: T.datasets.all, B: T.datasets.post1781, title: "Student-t errors", letters: { N: "Nt", L: "Lt" } },
+  ];
   const pts = (ds) => ds.points.filter((p) => !p.reference && p.dlnl != null);
   const at = (ds, a) => ds.points.find((p) => !p.reference && p.a_au === a);
   const tip = probe(fig);
   mount(fig, (svg, w, h) => {
-    const phone = w < 600;
-    const mg = { l: 54, r: phone ? 22 : 36, t: 34, b: 38 };
-    const x = d3.scaleLinear().domain([grid[0] - 1, grid.at(-1) + 1]).range([mg.l, w - mg.r]);
-    const low = d3.min([...pts(A), ...pts(B)], (p) => p.dlnl);
-    const y = d3.scaleLinear().domain([Math.min(low, S.reading.dlnl) - 0.5, 0.8]).nice(5).range([h - mg.b, mg.t]);
+    const stacked = w < 600;
+    const mg = { l: 54, r: stacked ? 16 : 28, t: 34, b: 38 }, gap = stacked ? 68 : 36;
+    const low = d3.min(spec.flatMap((q) => [...pts(q.A), ...pts(q.B)]), (p) => p.dlnl);
+    const y0 = Math.min(low, S.reading.dlnl) - 0.5;
     const g = svg.append("g");
-    for (const t of y.ticks(5)) {
-      drv(t, "axis tick");
-      g.append("path").attr("class", "ln ctx yield").attr("d", L([[mg.l, y(t)], [w - mg.r, y(t)]]));
-      g.append("text").attr("class", "tick").attr("x", mg.l - 8).attr("y", y(t) + 4).attr("text-anchor", "end").text(minus(t));
-    }
-    // the reading rule's threshold
-    g.append("path").attr("class", "ln sec yield").attr("d", L([[mg.l, y(S.reading.dlnl)], [w - mg.r, y(S.reading.dlnl)]]));
-    xAxis(g, x, h - mg.b, grid.filter((v) => Number.isInteger(v) && (!phone || v % 4 === 0)));
-    // Each run of grid points is one line; a dip between two families of solutions (the 26 AU
-    // point of the all-observations profile) is left unjoined, so the low-distance branch at
-    // 24 AU and the main branch from 28 AU on are separate segments.
-    const curve = (ds, cls) => {
-      const P = pts(ds);
-      for (const seg of profileSegments(P)) {
-        if (seg.length > 1) g.append("path").attr("class", `ln ${cls}`).attr("d", L(seg.map((p) => [x(p.a_au), y(p.dlnl)])));
-      }
-      g.selectAll(null).data(P).join("circle").attr("class", "dot").attr("cx", (p) => x(p.a_au)).attr("cy", (p) => y(p.dlnl)).attr("r", 2.6);
-    };
-    curve(B, "sec");
-    curve(A, "model");
-    for (const [name, letter, dy] of [["neptune", "N", -13], ["le_verrier", "L", 13]]) {
-      const r = A.reference_points[name];
-      point(g, { id: letter, x: x(r.a_au), y: y(r.dlnl), letter, mark: "open", dx: 9, dy });
-    }
+    const panels = spec.map((q, i) => {
+      const box = stacked
+        ? { left: mg.l, right: w - mg.r, top: mg.t + i * ((h - mg.t - mg.b - gap) / 2 + gap),
+            bottom: mg.t + i * ((h - mg.t - mg.b - gap) / 2 + gap) + (h - mg.t - mg.b - gap) / 2 }
+        : { left: mg.l + i * ((w - mg.l - mg.r - gap) / 2 + gap),
+            right: mg.l + i * ((w - mg.l - mg.r - gap) / 2 + gap) + (w - mg.l - mg.r - gap) / 2,
+            top: mg.t, bottom: h - mg.b };
+      const x = d3.scaleLinear().domain([grid[0] - 1, grid.at(-1) + 1]).range([box.left, box.right]);
+      const y = d3.scaleLinear().domain([y0, 0.8]).nice(5).range([box.bottom, box.top]);
+      profilePanel(g, { ...q, ...box, x, y, S, yLabels: stacked || i === 0, sparse: box.right - box.left < 400 });
+      return { ...q, ...box, x, y };
+    });
     svg.on("pointermove pointerdown", (e) => {
-      const [px] = d3.pointer(e);
-      const a = grid[d3.bisector((v) => v).center(grid, x.invert(px))];
-      const pa = at(A, a), pb = at(B, a);
-      tip.show(x(a), y(pa.dlnl), `${a} AU: all observations Δ ln L ${minus(fmt(pa.dlnl, 2))}, ` +
+      const [px, py] = d3.pointer(e);
+      const { P, a } = panelAt(panels, grid, px, py);
+      const pa = at(P.A, a), pb = at(P.B, a);
+      tip.show(P.x(a), P.y(pa.dlnl), `${P.title}, ${a} AU: all observations Δ ln L ${minus(fmt(pa.dlnl, 2))}, ` +
         `mass ${fmt(pa.mass_earth)} M⊕, longitude ${fmt(pa.galle_lon_deg, 1)}°; from 1781 on ` +
         `${minus(fmt(pb.dlnl, 2))}, ${fmt(pb.mass_earth)} M⊕, ${fmt(pb.galle_lon_deg, 1)}°`);
     }).on("pointerleave", leave(tip));
@@ -374,5 +414,38 @@ export function fig8(fig, D) {
     svg.on("pointermove pointerdown", () => tip.show(x(qa.median), y(qm.median),
       `Posterior median a ${fmt(qa.median)} AU (68 %: ${fmt(qa.lo68)}–${fmt(qa.hi68)}), ` +
       `mass ${fmt(qm.median)} M⊕ (${fmt(qm.lo68)}–${fmt(qm.hi68)})`)).on("pointerleave", leave(tip));
+  });
+}
+
+/* ---------------- Fig. 9: the Student-t profile without one pre-1781 observer ---------------- */
+
+export function fig9(fig, D) {
+  const T = D.m10, S = T.settings, grid = S.grid_au, A = T.datasets.all;
+  const FLOOR = drv(-6, "Fig. 9's y-axis floor");
+  const sets = T.leave_one_out.map((k) => T.datasets[k]);
+  const at = (ds, a) => ds.points.find((p) => !p.reference && p.a_au === a);
+  const tip = probe(fig);
+  mount(fig, (svg, w, h) => {
+    const mg = { l: 46, r: 12, t: 30, b: 34 }, gx = 26, gy = 68;
+    const pw = (w - mg.l - mg.r - gx) / 2, ph = (h - mg.t - mg.b - gy) / 2;
+    const g = svg.append("g");
+    const panels = sets.map((ds, i) => {
+      const col = i % 2, row = Math.floor(i / 2);
+      const box = { left: mg.l + col * (pw + gx), right: mg.l + col * (pw + gx) + pw,
+                    top: mg.t + row * (ph + gy), bottom: mg.t + row * (ph + gy) + ph };
+      const x = d3.scaleLinear().domain([grid[0] - 1, grid.at(-1) + 1]).range([box.left, box.right]);
+      const y = d3.scaleLinear().domain([FLOOR, 0.8]).range([box.bottom, box.top]);
+      const title = `without ${ds.observer}`;
+      profilePanel(g, { A: ds, B: A, S, ...box, x, y, title, yLabels: col === 0, floor: FLOOR, sparse: true });
+      return { A: ds, B: A, title, ...box, x, y };
+    });
+    svg.on("pointermove pointerdown", (e) => {
+      const [px, py] = d3.pointer(e);
+      const { P, a } = panelAt(panels, grid, px, py);
+      const pa = at(P.A, a), pb = at(P.B, a);
+      tip.show(P.x(a), P.y(Math.max(pa.dlnl, FLOOR)), `${P.title}, ${a} AU: Δ ln L ${minus(fmt(pa.dlnl, 2))}, ` +
+        `mass ${fmt(pa.mass_earth)} M⊕, longitude ${fmt(pa.galle_lon_deg, 1)}°; all observations ` +
+        `${minus(fmt(pb.dlnl, 2))}, ${fmt(pb.mass_earth)} M⊕, ${fmt(pb.galle_lon_deg, 1)}°`);
+    }).on("pointerleave", leave(tip));
   });
 }
