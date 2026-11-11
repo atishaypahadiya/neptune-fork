@@ -267,3 +267,25 @@ Interpretation table (pre-registered; rows apply only where the reading rule's c
 - `docs/notes/P1B_adams_fit.json`, `docs/notes/P1B_adams_fit.png`, results appended to this note
   below the amendment line in the order of § 5 and § 6; ledger rows; `docs/reproduce.md` commands
   and the new ledger total.
+
+## Amendment (2026-11-10, on approval; before any step-3 code)
+
+The plan above is approved with four amendments. Nothing above this line is edited.
+
+1. **Inclination:** as planned. The perturber keeps the headline's prior (i ≤ 10° relative to
+   Uranus's plane); Adams's in-plane assumption stays listed as a difference (D10).
+2. **LV-June:** before the launch, Le Verrier's paper in the *Comptes rendus* of 1 June 1846
+   (vol. 22) is sought from Gallica, once, online; its URL and SHA-256 are recorded in
+   `data/historical/adams_challis/MANIFEST.md`. If obtained, LV-June uses its printed value, marked
+   P; if not, Airy's summary as planned, marked as the fallback. LV-June remains comparison only.
+3. **Statement 3** gains a middle band: −2 < Δ ln L ≤ −0.5 reads "weakly disfavoured; reported, no
+   statement". So: Δ ln L ≤ −2 disfavoured; −2 < Δ ln L ≤ −0.5 weakly disfavoured, no statement;
+   above −0.5 not distinguished.
+4. **Interpretation table**, two additions. (i) Statement 2 = marginal (a solution between the 68 %
+   and 95 % intervals of its fixed-a posterior): reported as "at the edge of what his data allowed
+   under his assumption"; no row of the table is applied and no statement about his method is made.
+   (ii) S5 and S6 disagreeing (one inside, the other outside or marginal): the reading is reported
+   per solution, and no single statement about "his solutions" is made.
+
+The pre-run changes (a)–(c), the hash records, the smoke run and the detached launch follow this
+commit, in § 7–8's order.
