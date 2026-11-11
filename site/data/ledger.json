@@ -13,12 +13,12 @@
  ],
  "totals": {
   "all": {
-   "n_rows": 265,
-   "n_likelihood_calls": 1140989595,
-   "n_integrations": 623778089,
-   "sim_years": 96031873751.6,
-   "wall_s": 1279514.4,
-   "cpu_s": 3911626.6,
+   "n_rows": 271,
+   "n_likelihood_calls": 1153234829,
+   "n_integrations": 623823790,
+   "sim_years": 96036067114.4,
+   "wall_s": 1283241.6,
+   "cpu_s": 3922626.0,
    "n_rows_missing": {
     "n_likelihood_calls": 10,
     "n_integrations": 12,
@@ -26,15 +26,15 @@
     "wall_s": 3,
     "cpu_s": 9
    },
-   "cpu_hours": 1086.56
+   "cpu_hours": 1089.62
   },
   "measured": {
-   "n_rows": 234,
-   "n_likelihood_calls": 1104856738,
-   "n_integrations": 586060389,
-   "sim_years": 90250470618.9,
-   "wall_s": 1174534.4,
-   "cpu_s": 3612641.0,
+   "n_rows": 240,
+   "n_likelihood_calls": 1117101972,
+   "n_integrations": 586106090,
+   "sim_years": 90254663981.7,
+   "wall_s": 1178261.6,
+   "cpu_s": 3623640.4,
    "n_rows_missing": {
     "n_likelihood_calls": 3,
     "n_integrations": 5,
@@ -42,7 +42,7 @@
     "wall_s": 0,
     "cpu_s": 0
    },
-   "cpu_hours": 1003.51
+   "cpu_hours": 1006.57
   },
   "estimated": {
    "n_rows": 31,
@@ -124,12 +124,12 @@
     }
    },
    "profile": {
-    "n_rows": 3,
-    "n_likelihood_calls": 1491796,
-    "n_integrations": 48529,
-    "sim_years": 3257700.2,
-    "wall_s": 12624.3,
-    "cpu_s": 562.3,
+    "n_rows": 9,
+    "n_likelihood_calls": 13737030,
+    "n_integrations": 94230,
+    "sim_years": 7451063.0,
+    "wall_s": 16351.5,
+    "cpu_s": 11561.7,
     "n_rows_missing": {
      "n_likelihood_calls": 1,
      "n_integrations": 1,
@@ -137,7 +137,7 @@
      "wall_s": 0,
      "cpu_s": 1
     },
-    "cpu_hours": 0.16
+    "cpu_hours": 3.21
    },
    "reweight": {
     "n_rows": 3,
@@ -4205,6 +4205,90 @@
    "recorded": "2026-11-10T06:18:32",
    "n_perturbative": 390876,
    "n_exact": 47136
+  },
+  {
+   "job": "m10/profile/all",
+   "kind": "profile",
+   "n_likelihood_calls": 1445138,
+   "n_integrations": 2441,
+   "sim_years": 377755.9,
+   "wall_s": 537.8,
+   "cpu_s": 1360.0,
+   "n_workers": 12,
+   "estimated": false,
+   "recorded": "2026-11-10T16:00:51",
+   "n_perturbative": 1442697,
+   "n_exact": 2441
+  },
+  {
+   "job": "m10/profile/post1781",
+   "kind": "profile",
+   "n_likelihood_calls": 3095017,
+   "n_integrations": 28449,
+   "sim_years": 1836080.2,
+   "wall_s": 723.2,
+   "cpu_s": 2462.8,
+   "n_workers": 12,
+   "estimated": false,
+   "recorded": "2026-11-10T16:12:55",
+   "n_perturbative": 3066568,
+   "n_exact": 28449
+  },
+  {
+   "job": "m10/profile/no_flamsteed",
+   "kind": "profile",
+   "n_likelihood_calls": 1946430,
+   "n_integrations": 5226,
+   "sim_years": 496204.2,
+   "wall_s": 603.0,
+   "cpu_s": 1799.5,
+   "n_workers": 12,
+   "estimated": false,
+   "recorded": "2026-11-10T16:22:59",
+   "n_perturbative": 1941204,
+   "n_exact": 5226
+  },
+  {
+   "job": "m10/profile/no_bradley",
+   "kind": "profile",
+   "n_likelihood_calls": 1859103,
+   "n_integrations": 2487,
+   "sim_years": 384874.6,
+   "wall_s": 614.8,
+   "cpu_s": 1755.9,
+   "n_workers": 12,
+   "estimated": false,
+   "recorded": "2026-11-10T16:33:15",
+   "n_perturbative": 1856616,
+   "n_exact": 2487
+  },
+  {
+   "job": "m10/profile/no_mayer",
+   "kind": "profile",
+   "n_likelihood_calls": 1972394,
+   "n_integrations": 4805,
+   "sim_years": 743595.7,
+   "wall_s": 664.4,
+   "cpu_s": 1849.0,
+   "n_workers": 12,
+   "estimated": false,
+   "recorded": "2026-11-10T16:44:20",
+   "n_perturbative": 1967589,
+   "n_exact": 4805
+  },
+  {
+   "job": "m10/profile/no_lemonnier",
+   "kind": "profile",
+   "n_likelihood_calls": 1927152,
+   "n_integrations": 2293,
+   "sim_years": 354852.2,
+   "wall_s": 584.0,
+   "cpu_s": 1772.2,
+   "n_workers": 12,
+   "estimated": false,
+   "recorded": "2026-11-10T16:54:05",
+   "n_perturbative": 1924859,
+   "n_exact": 2293
   }
  ]
 }
