@@ -228,3 +228,22 @@ screenshots of every plate and figure at each width. Without Google Chrome, run
 ```
 uv run python docs/notes/scripts/p1b_neptune_on_challis_dates.py   # data/historical/adams_challis/neptune_*.csv (cache only, seconds)
 ```
+
+### Step 3: the Adams-variant fit (pre-registered in `docs/notes/P1B_adams_fit.md`)
+
+```sh
+uv run python -m fork.data.horizons --fetch          # once, online: Earth and Neptune at the report epochs (pre-run change (a))
+uv run python tests/fixtures/build_horizons_fixture.py   # CI fixture with the same epochs
+uv run pytest -q tests/test_p1b_adams.py              # data set D's counts, the held-a space, seeds, targets, reading rule
+uv run python -m fork.export.p1b_adams plan           # the 16 jobs, their nlive, workers and seeds
+FORK_HORIZONS_CACHE_ONLY=1 uv run python -m fork.export.p1b_adams job h1_g/c0 --n-workers 4 --maxiter 400   # smoke run, not saved
+# the launch (detached: own process session, nohup, caffeinate -is); variants in § 8's order, cells in parallel on 12 workers
+mkdir -p data/cache/p1b_adams
+FORK_HORIZONS_CACHE_ONLY=1 nohup caffeinate -is uv run python -m fork.export.p1b_adams run --n-workers 12 \
+    > data/cache/p1b_adams/run.out 2>&1 &
+FORK_HORIZONS_CACHE_ONLY=1 uv run python -m fork.export.p1b_adams summarize   # docs/notes/P1B_adams_fit.{json,png}
+```
+
+Progress in `data/cache/p1b_adams/progress.log`, the driver's log in `driver.log`, one ledger row
+per job (`p1b_adams/<variant>/c<k>`); resumable per job from its `.ckpt`. `FORK_HORIZONS_CACHE_ONLY=1`
+makes a cache miss raise instead of fetching.

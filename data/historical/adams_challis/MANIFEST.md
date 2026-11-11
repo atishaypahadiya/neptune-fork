@@ -72,3 +72,17 @@ low-resolution page renders used for the page checks (`memoirs_pdfpage_*.png`, `
   by `docs/notes/scripts/p1b_neptune_on_challis_dates.py` (no fetch).
 - Passes and reconciliation: `docs/notes/challis_sweeps_pass1.csv`, `challis_sweeps_pass2.csv`,
   `challis_sweeps_reconciliation.md`.
+
+## Primary printings (added in step 3, amendment 2)
+
+Gallica refused every request on 2026-11-10 (HTTP 403 on the SRU search, the periodical's date
+page and the IIIF manifests, four identifiers tried), so the volume was taken from archive.org
+instead, once, online, before the launch.
+
+| file (cache) | source | printed pages | PDF pages | text layer | SHA-256 |
+|---|---|---|---|---|---|
+| `cr22/comptesrendusheb22acad.pdf` | archive.org `comptesrendusheb22acad` (Comptes rendus hebdomadaires des séances de l'Académie des sciences, t. 22, janvier–juin 1846; contributor Natural History Museum Library, London; no licence field in the item metadata, an 1846 printing); https://archive.org/download/comptesrendusheb22acad/comptesrendusheb22acad.pdf | Le Verrier, "Recherches sur les mouvements d'Uranus", séance du 1er juin 1846, 907–918; the longitude statement at 917 (PDF 931): "en assignant 325 degrés de longitude héliocentrique à la planète, au 1er janvier 1847, on ne commet pas une erreur de 10 degrés", and the formula ν = 314°,5 + 12°,25 α + (1/m){20°,82 − 10°,79 α − 1°,14 α²} | whole volume, 1228; printed 907 = PDF 921 (checked on the page image) | yes (OCR) | `555936e73efaca9448b38ecd9c7f4aa62f405d232c44e582a637f92aa693dac9` |
+
+The LV-June target of `docs/notes/P1B_adams_fit.md` therefore uses the printed value, marked P;
+Airy's summary (MNRAS 7, 131–132) is no longer the fallback. Page renders in
+`data/cache/adams_challis/renders/cr22_p921.png` … `cr22_p933.png`.

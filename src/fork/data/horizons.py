@@ -224,12 +224,24 @@ A1_EPOCH_ISO_TDB = "1781-03-13T00:00:00"  # Herschel's discovery of Uranus; A1 i
 # Galle's discovery night, Berlin: the search ran around local midnight (≈ 23 h UT). Given in TDB;
 # the ~6 s ΔT is irrelevant (Neptune moves ~1e-4″ in 6 s).
 GALLE_EPOCH_ISO_TDB = "1846-09-23T23:00:00"
+# Phase 1b step 3 report epochs (docs/notes/P1B_adams_fit.md § 4, pre-run change (a)): the
+# nights Challis observed (23:30 UT, given as TDB; the ~1 min of ΔT and TDB−UT is irrelevant at
+# the arcminute level of that comparison), 1 October 1846, and 30 September 1845 for S4.
+P1B_REPORT_EPOCHS_ISO_TDB = (
+    "1845-09-30T23:30:00",
+    "1846-07-29T23:30:00",
+    "1846-07-30T23:30:00",
+    "1846-08-04T23:30:00",
+    "1846-08-12T23:30:00",
+    "1846-09-29T23:30:00",
+    "1846-10-01T23:30:00",
+)
 
 
 def default_fetch_plan() -> dict[str, np.ndarray]:
     """Epochs fetched by ``--fetch``: the A1 epoch for every body, a yearly 1690–1846 grid
-    (Jan 1.0 TDB) for Uranus, Neptune and Earth, and Galle's discovery epoch (M5) for Earth,
-    Neptune and the inner planets."""
+    (Jan 1.0 TDB) for Uranus, Neptune and Earth, and Galle's discovery epoch (M5) and the
+    Phase 1b report epochs for Earth, Neptune and the inner planets."""
     from fork.data.frames import jd_tdb_from_iso
 
     a1 = np.array([jd_tdb_from_iso(A1_EPOCH_ISO_TDB)])
@@ -238,8 +250,9 @@ def default_fetch_plan() -> dict[str, np.ndarray]:
     for name in ("uranus", "neptune", "earth"):
         plan[name] = np.union1d(a1, yearly)
     galle = jd_tdb_from_iso(GALLE_EPOCH_ISO_TDB)
+    report = np.asarray(jd_tdb_from_iso(list(P1B_REPORT_EPOCHS_ISO_TDB)))
     for name in ("earth", "neptune", *(b.name for b in INNER_BODIES)):
-        plan[name] = np.union1d(plan[name], [galle])
+        plan[name] = np.union1d(plan[name], np.append(report, galle))
     return plan
 
 
