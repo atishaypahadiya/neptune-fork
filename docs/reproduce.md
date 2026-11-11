@@ -222,3 +222,9 @@ also run the layout check in WebKit, the engine of Safari on iPhones
 screenshots of every plate and figure at each width. Without Google Chrome, run
 `uv run --group site playwright install chromium` first. To preview, serve `_site/` (or
 `site/`, which renders everything client-side) with any static server.
+
+## Phase 1b
+
+```
+uv run python docs/notes/scripts/p1b_neptune_on_challis_dates.py   # data/historical/adams_challis/neptune_*.csv (cache only, seconds)
+```

@@ -62,3 +62,13 @@ low-resolution page renders used for the page checks (`memoirs_pdfpage_*.png`, `
   image name (renders in `data/cache/adams_challis/renders/`, made from the PDFs above with pymupdf).
 - Transcription passes and reconciliation: `docs/notes/adams_solutions_pass1.csv`,
   `docs/notes/adams_solutions_pass2.csv`, `docs/notes/adams_solutions_reconciliation.md`.
+
+## Derived tables (committed, step 2)
+
+- `challis_sweeps.csv`: one row per observing session with the plan and the total; verdicts on
+  Neptune's presence marked D where they rest on the computation.
+- `challis_sweeps_statements.csv`: the 111 printed statements behind them, with page images.
+- `neptune_on_challis_dates.csv`, `neptune_track_1846.csv`: computed from the cached Horizons states
+  by `docs/notes/scripts/p1b_neptune_on_challis_dates.py` (no fetch).
+- Passes and reconciliation: `docs/notes/challis_sweeps_pass1.csv`, `challis_sweeps_pass2.csv`,
+  `challis_sweeps_reconciliation.md`.

@@ -377,3 +377,15 @@ RGO 6/96a, RGO 36/2/70 and RGO 7/247.
   `P1B_adams_solutions.md`.
 - The 2 September 1846 figure of 315° 20′ is primary but is an extrapolation, not a solution; the
   verdict on the "~315⅓°, ~12° from Neptune" claim is in `P1B_adams_solutions.md`.
+
+## Addendum, step 2 (2026-11-10)
+
+- Correction to § 4, "Berlin chart, Hora XXII": the remark that Challis's 4 and 12 August places
+  (21h 58m 15s and 21h 57m 26s) "fall on the sheet" compared right ascensions of date with limits
+  stated for the equinox of 1800. In the equinox of 1800 those places are 21h 55m 43s and
+  21h 54m 54s, both west of the 21h 56m edge of Hora XXII (with the secondary 4-minute overlap); the
+  planet left the sheet on 2–3 August 1846. See `P1B_challis_sweeps.md`, "The Berlin charts". The
+  limits remain [S].
+- The search log is reconstructed in `data/historical/adams_challis/challis_sweeps.csv`; what the
+  printed record cannot give (zone boundaries, the dates between 12 August and 28 September) is listed
+  in `P1B_challis_sweeps.md`.
