@@ -1457,3 +1457,260 @@ def sensitivity_table(m: Memoir, hyp: int, step: float = 0.0005) -> dict:
             "dL_per_step": _wrap(r["mean_lon_1846"] - base["mean_lon_1846"]),
         }
     return out
+
+
+# ------------------------------------------------------- stage D1/D2: his model, solved directly
+
+UNIT_YR = 3.0362  # his unit of time, years (the interval between modern normal places)
+EPOCH_YEAR = 1810.328  # t = 0
+REPORT_YEAR = 1846.762  # ε′ + 12 n′: the comparison epoch of the whole step
+POLES = {"3:1": 3.0 ** (-2.0 / 3.0), "2:1": 2.0 ** (-2.0 / 3.0)}  # α where n′ = n/3, n/2
+PARAMS = ("de", "dn", "dx1", "dy1", "theta", "m_prime", "e_prime_units", "beta_prime")
+
+
+@dataclass(frozen=True)
+class Setup:
+    """Everything his model needs at one α: the theory (constants and argument rates), the § 28
+    forms, the § 22 relations, Uranus's β, ε and the precession to 1846.762."""
+
+    hyp: int
+    th: Theory
+    k: dict[str, float]
+    r_cos: float
+    r_sin: float
+    R: dict[str, float]
+    beta: float
+    eps: float
+    n_prime_deg: float  # per unit of time
+    prec: float
+
+    @property
+    def alpha(self) -> float:
+        return self.th.alpha
+
+
+def setup_from_print(m: Memoir, hyp: int, k_source: str = "print") -> Setup:
+    th, _S, _e, beta, k, r_cos, r_sin, R, eps, n_prime, prec = _setup(m, hyp, k_source)
+    return Setup(hyp, th, k, r_cos, r_sin, R, beta, eps, n_prime, prec)
+
+
+def rates_at(n_deg: float, n_prime_deg: float) -> dict[str, float]:
+    """His arguments (§ 13) for any n′: δx, δy at n and 2n; h_i, k_i at i(n − n′); p_i, q_i at
+    n′, n − 2n′, 2n − 3n′ (the e′ terms of the i-th order carry (i − 1)n − i n′)."""
+    n, n1 = n_deg, n_prime_deg
+    return {
+        "dx1": n, "dy1": n, "dx2": 2 * n, "dy2": 2 * n,
+        "h1": n - n1, "k1": n - n1, "h2": 2 * (n - n1), "k2": 2 * (n - n1),
+        "h3": 3 * (n - n1), "k3": 3 * (n - n1),
+        "p1": n1, "q1": n1, "p2": n - 2 * n1, "q2": n - 2 * n1,
+        "p3": 2 * n - 3 * n1, "q3": 2 * n - 3 * n1,
+    }  # fmt: skip
+
+
+def second_order_at(m: Memoir, c: dict[str, float], drop: bool = False) -> dict[str, float]:
+    """The two second-order constants of § 12 (e² and e e′ terms of the third argument: +0.57,
+    −1.08 at α = 0.5; +0.40, −0.74 at 0.515), which § 11 does not give. They are carried as the
+    printed Hypothesis I values scaled by c_p3e(α)/c_p3e(0.5), the small-divisor factor the
+    printed pairs follow within 2 % (0.682 against 0.70 and 0.685); ``drop`` sets them to 0 for
+    the sensitivity profile. Not derived: a choice, stated in the results."""
+    if drop:
+        return {"c_sin3_e2": 0.0, "c_sin3_e2e": 0.0}
+    f = c["c_p3e"] / m.const(1, 12, "c_p3e")
+    return {"c_sin3_e2": f * m.const(1, 12, "c_sin3_e2"),
+            "c_sin3_e2e": f * m.const(1, 12, "c_sin3_e2e")}  # fmt: skip
+
+
+def setup_at_alpha(m: Memoir, alpha: float, hyp: int = 1, drop_second_order: bool = False) -> Setup:
+    """His model rebuilt at α: B1–B2 recomputed, n′ = n α^{3/2}, the § 28 forms derived, the
+    § 22 relations from his e and β, the arguments from :func:`rates_at`. Rates stay in degrees
+    per his unit of time with t in that unit, which is the same as degrees per year with t in
+    years (D2's wording); the dates are the fixed ones either way."""
+    e = m.const(1, 22, "e")
+    beta = m.angle(1, 22, "eps_minus_varpi")
+    n = m.angle(1, 13, "n")
+    ratio = alpha**1.5
+    n1 = n * ratio
+    c = series_constants(alpha, ratio, e)
+    c = c | second_order_at(m, c, drop=drop_second_order)
+    k = hkpq_constants(c)
+    r = k.pop("k_dh3_r")
+    b = math.radians(beta)
+    th = Theory(alpha, ratio, c, rates_at(n, n1), n)
+    sec = 30 if hyp == 1 else 47
+    eps = ang(m.sol(hyp, sec, "eps"))
+    prec = ang(m.sol(hyp, sec, "precession")) / 60.0
+    return Setup(hyp, th, k, r * math.cos(b), r * math.sin(b), relations(e, beta), beta, eps, n1,
+                 prec)  # fmt: skip
+
+
+def hkpq_from_elements(
+    theta: float, m_prime: float, e_units: float, beta_prime: float, s: Setup
+) -> tuple[dict[str, float], float, float]:
+    """h, k, p, q from (θ, m′, e′, β′) through P = p₃/m′ and Q = q₃/m′ (the inverse of § 30)."""
+    A, B = s.th.c["c_p3"], s.th.c["c_p3e"]
+    t3 = math.radians(3 * theta - s.beta)
+    t3p = math.radians(3 * theta - beta_prime)
+    P = A * math.sin(t3) + B * e_units * math.sin(t3p)
+    Q = A * math.cos(t3) + B * e_units * math.cos(t3p)
+    over_m = hkpq_over_m(theta, P, Q, s.beta, s.k, s.r_cos, s.r_sin)
+    return {u: m_prime * v for u, v in over_m.items()}, P, Q
+
+
+def place_rows(m: Memoir, s: Setup, oc: dict[int, float] | None = None, drop_1690: bool = True):
+    """(year, kind, t, equation) for his normal places with the arguments of ``s``; ``oc``
+    replaces the § 9 residuals (synthetic data), keyed by year."""
+    out = []
+    for p in m.places:
+        if drop_1690 and p["year"] == 1690:
+            continue
+        t = float(p[f"t_h{s.hyp}"])
+        c = p["oc_mean"] if oc is None else oc[p["year"]]
+        out.append((p["year"], p["kind"], t, condition_equation(t, c, s.th)))
+    return out
+
+
+def model_value(eq: dict[str, float], t: float, x: np.ndarray, s: Setup) -> float:
+    de, dn, dx1, dy1, theta, mp, eu, bp = x
+    dx2 = s.R["r11"] * dx1 + s.R["r12"] * dy1
+    dy2 = s.R["r21"] * dx1 + s.R["r22"] * dy1
+    hk, _, _ = hkpq_from_elements(theta, mp, eu, bp, s)
+    v = de + t * dn + eq["dx1"] * dx1 + eq["dx2"] * dx2 + eq["dy1"] * dy1 + eq["dy2"] * dy2
+    return v + sum(eq[u] * hk[u] for u in HKPQ)
+
+
+def weights_for(m: Memoir, hyp: int, scheme: str, rows) -> np.ndarray:
+    """(a) unit weights; (b) modern only (ancient weight 0); (c) 1/RMS² of his printed § 52
+    residuals for the modern and the ancient places (conditioned on his own solution)."""
+    kinds = [r[1] for r in rows]
+    if scheme == "a":
+        return np.ones(len(rows))
+    if scheme == "b":
+        return np.array([1.0 if k == "modern" else 0.0 for k in kinds])
+    col = f"residual_h{hyp}"
+    rms = {}
+    for kind in ("modern", "ancient"):
+        v = [p[col] for p in m.places if p["kind"] == kind and p[col] is not None]
+        rms[kind] = math.sqrt(sum(r * r for r in v) / len(v))
+    return np.array([1.0 / rms[k] ** 2 for k in kinds])
+
+
+def residual_rms(m: Memoir, hyp: int) -> dict[str, float]:
+    col = f"residual_h{hyp}"
+    out = {}
+    for kind in ("modern", "ancient"):
+        v = [p[col] for p in m.places if p["kind"] == kind and p[col] is not None]
+        out[kind] = math.sqrt(sum(r * r for r in v) / len(v))
+    return out
+
+
+def _starts(printed: dict[str, float] | None) -> list[np.ndarray]:
+    starts = []
+    if printed is not None:
+        starts.append(np.array([0.0, 0.0, 0.0, 0.0, printed["theta"], printed["m_prime"],
+                                printed["e_prime_units"], printed["beta_prime"]]))  # fmt: skip
+    for th in range(0, 360, 30):
+        for bp in range(0, 360, 90):
+            starts.append(np.array([0.0, 0.0, 0.0, 0.0, float(th), 0.8, 2.0, float(bp)]))
+    return starts
+
+
+def solve_least_squares(
+    rows, w: np.ndarray, s: Setup, printed: dict[str, float] | None = None
+) -> dict:
+    """His 29 equations and his model as one weighted nonlinear least-squares problem in the
+    eight parameters, from a θ × β′ grid of starts (and his printed solution when given);
+    m′ ≥ 0 and e′ ≤ 1 enforced. Returns the solution, the formal 1σ with σ² scaled to χ²/dof,
+    χ², the RMS per group and every start's end point."""
+    from scipy.optimize import least_squares
+
+    keep = w > 0
+    R = [r for r, k in zip(rows, keep, strict=True) if k]
+    sw = np.sqrt(w[keep])
+    lhs = np.array([r[3]["lhs"] for r in R])
+
+    def fun(x):
+        return sw * (lhs - np.array([model_value(r[3], r[2], x, s) for r in R]))
+
+    lo = np.array([-np.inf, -np.inf, -np.inf, -np.inf, -np.inf, 0.0, 0.0, -np.inf])
+    hi = np.array([np.inf, np.inf, np.inf, np.inf, np.inf, 50.0, 20.0, np.inf])
+    best, ends = None, []
+    for x0 in _starts(printed):
+        try:
+            sol = least_squares(fun, x0, bounds=(lo, hi), method="trf", x_scale="jac",
+                                xtol=1e-12, ftol=1e-12, gtol=1e-12, max_nfev=4000)  # fmt: skip
+        except ValueError:
+            continue
+        chi2 = float(np.sum(sol.fun**2))
+        ends.append({"start_theta": float(x0[4]), "start_beta_prime": float(x0[7]),
+                     "theta": float(sol.x[4] % 360.0), "chi2": chi2,
+                     "m_prime": float(sol.x[5])})  # fmt: skip
+        if best is None or chi2 < best[0] - 1e-9:
+            best = (chi2, sol)
+    chi2, sol = best
+    x = sol.x.copy()
+    x[4] %= 360.0
+    x[7] %= 360.0
+    dof = len(R) - len(x)
+    J = sol.jac
+    try:
+        cov = np.linalg.inv(J.T @ J) * chi2 / dof
+        sig = np.sqrt(np.clip(np.diag(cov), 0.0, None))
+    except np.linalg.LinAlgError:
+        sig = np.full(len(x), float("nan"))
+    hk, P, Q = hkpq_from_elements(x[4], x[5], x[6], x[7], s)
+    eps_prime = (s.eps - x[4]) % 360.0
+    solution = Solution(s.hyp, float(x[4]), P, Q, float(x[6]), float(x[7]), float(x[5]), s.eps,
+                        eps_prime, (eps_prime + 12.0 * s.n_prime_deg + s.prec) % 360.0,
+                        (s.eps - x[7]) % 360.0, (s.eps - x[7] + s.prec) % 360.0, hk)  # fmt: skip
+    resid = lhs - np.array([model_value(r[3], r[2], x, s) for r in R])
+    rms = {}
+    for kind in ("modern", "ancient"):
+        v = [float(d) for d, r in zip(resid, R, strict=True) if r[1] == kind]
+        rms[kind] = math.sqrt(sum(q * q for q in v) / len(v)) if v else None
+    return {
+        "x": dict(zip(PARAMS, (float(v) for v in x), strict=True)),
+        "sigma": dict(zip(PARAMS, (float(v) for v in sig), strict=True)),
+        "solution": solution,
+        "chi2": chi2,
+        "dof": dof,
+        "n_rows": len(R),
+        "rms_arcsec": rms,
+        "residuals": [
+            {"year": r[0], "kind": r[1], "t": r[2], "residual": float(d)}
+            for r, d in zip(R, resid, strict=True)
+        ],
+        "true_lon_1846": true_longitude(
+            solution.mean_lon_1846, solution.eccentricity, solution.varpi_prime_1846
+        ),
+        "starts": ends,
+        "n_distinct_minima": len({round(e["chi2"], 3) for e in ends}),
+    }
+
+
+def chi2_of(rows, w: np.ndarray, s: Setup, x: np.ndarray) -> float:
+    keep = w > 0
+    return float(sum(wi * (r[3]["lhs"] - model_value(r[3], r[2], x, s)) ** 2
+                     for r, wi, k in zip(rows, w, keep, strict=True) if k))  # fmt: skip
+
+
+def x_of(sol: Solution, corr: dict[str, float]) -> np.ndarray:
+    """The eight parameters of a chain solution with its § 50 corrections."""
+    return np.array([corr["de"], corr["dn"], corr["dx1"], corr["dy1"], sol.theta, sol.m_prime,
+                     sol.e_prime_units, sol.beta_prime])  # fmt: skip
+
+
+def alpha_grid(lo: float = 0.40, hi: float = 0.60, step: float = 0.01) -> list[float]:
+    n = round((hi - lo) / step)
+    return [round(lo + i * step, 4) for i in range(n + 1)]
+
+
+def alpha_flags(alpha: float) -> list[str]:
+    """D2's bands: truncation-limited at α ≥ 0.58 (the plan); pole-limited within 0.015 of the
+    3:1 commensurability at α = 0.4807, where the i = 3 eccentric terms' divisor n − 3n′
+    vanishes (found when the grid ran, reported, not pre-registered)."""
+    flags = []
+    if alpha >= 0.58 - 1e-9:
+        flags.append("truncation_limited")
+    if abs(alpha - POLES["3:1"]) <= 0.015:
+        flags.append("pole_limited_3_1")
+    return flags
