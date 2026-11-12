@@ -511,3 +511,13 @@ on his branch are the draws where the multistart kept the warm-start solution.
 
 The ledger row `p1b_adams_noise/draws` is in the local compute ledger only. The site is
 untouched. Nothing in step 3b's note was edited.
+
+### 2026-11-12: binned shifts for the companion page (nothing above edited; `P1B_adams_noise.json` not edited)
+
+`docs/notes/P1B_adams_noise_hist.json` (sha256 `a0ca3937bd9ce47ddcd2cb5d62584587dfc51ac073a677c70aabc12493dbfa95`), written by
+`uv run python -m fork.export.p1b_adams_noise hist` from the cached draws: the shift toward
+Neptune of the multistart solution on every draw, wrapped to −180° to 180° and binned at 5°,
+for Hypotheses I and II under noise models (a) and (b). The command checks, per cell, that the
+number of draws at or above Δ_obs on the unwrapped statistic equals the summary's count
+(1826, 742, 1822, 842) before it writes. It adds no reading; it is the data of the companion
+page's Fig. 2.

@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import hashlib
 import json
 import math
 import os
@@ -1213,6 +1214,49 @@ def draw_branches(out: dict, pre: dict, path: Path) -> None:
     plt.close(fig)
 
 
+HIST_JSON = R.NOTES / "P1B_adams_noise_hist.json"
+HIST_BIN_DEG = 5.0
+
+
+def hist() -> dict:
+    """The shift toward Neptune over the noise draws, binned on the circle (−180° to 180°), per
+    hypothesis and noise model (a) and (b), from the cached draws and the summary's baselines.
+    Written beside the summary; the summary is not edited."""
+    summary = json.loads(OUT_JSON.read_text())
+    t_ecl = summary["truth"]["ecl_j2000"]
+    edges = np.arange(-180.0, 180.0 + HIST_BIN_DEG, HIST_BIN_DEG)
+    out = {
+        "description": "Step 3c: the shift of the least-squares solution's true longitude in "
+        "1846 toward Neptune, relative to the noise-free solution, over the noise draws "
+        "(12-start multistart on every draw), wrapped to −180°..180° and binned.",
+        "source": {"summary": "docs/notes/P1B_adams_noise.json",
+                   "summary_sha256": hashlib.sha256(OUT_JSON.read_bytes()).hexdigest(),
+                   "draws": "data/cache/p1b_adams_noise/draws_h<hyp>_<model>.npz (not tracked)"},
+        "bin_deg": HIST_BIN_DEG,
+        "edges_deg": edges.tolist(),
+        "cells": {},
+    }  # fmt: skip
+    for hyp in (1, 2):
+        base = summary["multistart_baselines"][f"H{hyp}"]
+        d_obs = base["delta_obs"]["primary"]
+        for model in ("a", "b"):
+            multi = np.load(draws_path(hyp, model))["multi"]
+            ok = _col(multi, "converged") > 0.5
+            lin = (_col(multi, "true_lon")[ok] - t_ecl + 180.0) % 360.0 - 180.0 - base["clean"]["O"]
+            n_exc = int(np.sum(lin >= d_obs))
+            want = summary["results"][f"H{hyp}/{model}"]["d1c"]["P"]["primary"]["n_exceeding"]
+            if n_exc != want:
+                raise RuntimeError(f"H{hyp}/{model}: {n_exc} exceeding, the summary has {want}")
+            wrapped = (lin + 180.0) % 360.0 - 180.0
+            counts, _ = np.histogram(wrapped, bins=edges)
+            out["cells"][f"H{hyp}/{model}"] = {
+                "n": int(ok.sum()), "delta_obs_deg": d_obs, "counts": counts.tolist(),
+                "n_exceeding_linear_statistic": n_exc,
+            }  # fmt: skip
+    R._dump(HIST_JSON, out)
+    return out
+
+
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -1223,11 +1267,14 @@ def main(argv: list[str] | None = None) -> None:
     p_d.add_argument("--n-draws", type=int, default=N_DRAWS, help="smoke runs only")
     p_s = sub.add_parser("summarize")
     p_s.add_argument("--no-png", action="store_true")
+    sub.add_parser("hist")
     args = ap.parse_args(argv)
     if args.cmd == "prerun":
         prerun()
     elif args.cmd == "draws":
         run_draws(args.n_workers, args.multistart_all, args.n_draws)
+    elif args.cmd == "hist":
+        hist()
     else:
         summarize(png=not args.no_png)
 
