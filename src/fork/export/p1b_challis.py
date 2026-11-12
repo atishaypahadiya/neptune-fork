@@ -638,6 +638,17 @@ def summarize() -> dict:
         for j, b in enumerate(C.CASES[1:], start=1):
             if i < j:
                 pairs[f"{a} minus {b}"] = _stats(m["t1"][0, i, :, 0] - m["t1"][0, j, :, 0])
+    # post hoc (identified after reading; description only): paired differences between
+    # counterfactuals on the shared draws, with the share of draws on each side
+    post_hoc = {}
+    for a_, b_ in (("C1a", "C1b"), ("C1a", "C4b"), ("C3_S4_prompt", "C1a")):
+        diff = m["t1"][0, C.CASES.index(a_), :, 0] - m["t1"][0, C.CASES.index(b_), :, 0]
+        post_hoc[f"{a_} minus {b_}"] = {
+            **_stats(diff),
+            "share_above_0": float((diff > 1e-12).mean()),
+            "share_below_0": float((diff < -1e-12).mean()),
+            "share_equal": float((np.abs(diff) <= 1e-12).mean()),
+        }
     mean_curve = m["curve"].mean(axis=1)
     c1_dates = {}
     for case in ("C1a", "C1b", "C1a_7d", "C1b_7d"):
@@ -680,6 +691,7 @@ def summarize() -> dict:
         "c2_combined_reading_row": c2,
         "tornado": {"n_draws": tor["n_draws"], "ranking": ranking},
         "pairs_between_counterfactuals_not_read": pairs,
+        "post_hoc_pairs_description_only": post_hoc,
         "c1_completion": c1_dates,
         "posterior_against_prior": post,
         "compute": {"wall_s": round(timing["wall_s"], 1), "cpu_s": round(timing["cpu_s"], 1),

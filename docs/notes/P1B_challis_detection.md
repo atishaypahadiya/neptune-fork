@@ -705,3 +705,45 @@ and the eight earlier recordings by others both point low. It does not show what
 ought to have done, and it is not a probability for the British search as a whole. Every
 number is conditional on the printed record standing in for the observing books (N2), and
 the chart case on the limits of a sheet not yet examined (N1).
+
+## After review, 2026-11-12 (results above not edited)
+
+### Deviation: the paired-difference rule is uninformative under the held reading
+
+Identified after reading the results. Under the reading with the realised events held, A0 is
+0 before 23 September by construction, so the pre-registered rule of § 7 ("Cᵢ improves on A0"
+when the 5 % to 95 % range of P(Cᵢ) − P(A0) excludes 0) tests only whether the case's own
+5 % point is above 0. The statements of R3 stand as the rule gives them and carry no
+information beyond R2.
+
+**Post hoc, description only, not read against any rule:** paired differences between
+counterfactuals on the shared accepted draws (held reading, before 23 September).
+
+| pair | mean | 5 % to 95 % | draws above 0 | below 0 | equal |
+|---|---|---|---|---|---|
+| C1a minus C1b (the two comparisons) | +0.43 | 0.00 to +0.96 | 0.59 | 0.02 | 0.39 |
+| C1a minus C4b (comparison against looking from 29 July) | +0.37 | −0.27 to +0.85 | 0.82 | 0.18 | 0.00 |
+| C3 from S4 with prompt comparison minus C1a | +0.08 | −0.50 to +0.37 | 0.86 | 0.14 | 0.00 |
+
+In words: carrying the 12 August comparison through beats the 4 August comparison in 59 % of
+draws and ties in 39 % (the draws where neither zone setting matters or both flag alike); it
+beats the 29 September procedure started in July in 82 % of draws; a start from S4 with
+prompt comparison is ahead of it in 86 % of draws by a small margin and behind by a large
+one in the rest, so the mean difference is +0.08 with a range that spans 0. The shares and
+ranges are in the JSON under `post_hoc_pairs_description_only`; the JSON's sha256 is now
+`eeb8f4e8bfbd7bb52d85d77e2479bf6106a8808cff67b45d6ad193f441e70079`, the earlier figures in it unchanged.
+
+### Prior-width check (§ 6.5): the rows that changed
+
+Three readings change row when every interval of § 4's table is halved about its centre, and
+are marked **prior-dependent**:
+
+| case | row, full priors | range | row, halved priors | range |
+|---|---|---|---|---|
+| C2 chart, RA of date | depends on | 0.77 to 1.00 | would very probably have | 0.87 to 0.98 |
+| C3 from S4 | depends on | 0.04 to 0.81 | an open chance | 0.33 to 0.71 |
+| C4a Le Verrier June | depends on | 0.04 to 0.81 | an open chance | 0.32 to 0.71 |
+
+No other reading changes row. Two limits of the check as run: the zone priors (the
+declination setting and the branch weight) were not halved, and the check used 20,000
+accepted draws. The tornado of § 6.4 used the first 10,000 accepted draws.
