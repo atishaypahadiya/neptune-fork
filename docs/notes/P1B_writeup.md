@@ -40,12 +40,13 @@ their reduction, not in his method or his distance.
 **Finding 4 (step 3c). Whether noise alone accounts for the nearness is not settled.** With
 independent noise added to the noise-free places, 10,000 draws per noise model, the
 pre-registered statistic (the share of draws that move toward Neptune by at least his 11.2°)
-is 0.183 and 0.074 under the first hypothesis, which the pre-registered rule reads "noise
-suffices". Deviation: the statistic treated the shift as a number on a line. The least-squares
+is, by hypothesis and noise model, H I: 0.183 (a), 0.074 (b); H II: 0.182 (a), 0.084 (b),
+which the pre-registered rule reads "noise suffices". Model (a) is the scatter of his own
+printed residuals; model (b) is the scatter of the project's data carried to his normal places. Deviation: the statistic treated the shift as a number on a line. The least-squares
 problem has a second minimum (eccentricity 0.45, 165° from Neptune, 6.9 in χ² above the best),
 and 92 % of the draws counted as exceeding his shift are jumps to it. Post hoc, among draws
-whose solution stays within 30° of the real-data solution, the probability is 0.017 and 0.011
-(first hypothesis) and 0.046 and 0.037 (second): "weak" by the same thresholds, below 0.05 and
+whose solution stays within 30° of the real-data solution, the probability is H I: 0.017 (a), 0.011 (b);
+H II: 0.046 (a), 0.037 (b): "weak" by the same thresholds, below 0.05 and
 above 0.003. Neither luck nor a systematic cause is established. Bouvard's tables, on which
 his reductions rested, are the route to an attribution; they were not transcribed.
 

@@ -562,7 +562,8 @@ palette: white line on the cyanotype ground, with the lower line opacity in the 
   and Schönfeld 1886 from the Crossref records of *Astronomische Nachrichten*
   (10.1002/asna.18500301706, 10.1002/asna.18861140406), Mauvais 1847 from the heading on
   p. 666 of the scanned volume (archive.org, `comptesrendusheb24acad`). ADS, the intended
-  source, did not serve its records to a script.
+  source, did not serve its records to a script. Mallama and Hilton's page range (10–24) is
+  from its Crossref record (10.1016/j.ascom.2018.08.002).
 - The companion page's link preview uses the main page's Plate I image.
 - Screenshots (390 and 1440 px, Chromium and WebKit) are written to `docs/notes/p1b_site/`
   by `tools/check_layout.py --shots` and are not tracked: the folder is in `.gitignore`.

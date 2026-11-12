@@ -220,7 +220,7 @@ REFERENCES = [
     ["lv-aug", "Le Verrier, U. J. 1846. Sur la planète qui produit les anomalies observées dans "
      "le mouvement d'Uranus. ", "{Comptes rendus}", " 23, 428–438 (31 August)."],
     ["mallama", "Mallama, A. and Hilton, J. L. 2018. Computing apparent planetary magnitudes "
-     "for The Astronomical Almanac. ", "{Astronomy and Computing}", " 25, 10."],
+     "for The Astronomical Almanac. ", "{Astronomy and Computing}", " 25, 10–24."],
     ["mauvais", "Mauvais, V. 1847. Sur une observation inédite de la nouvelle planète. ",
      "{Comptes rendus}", " 24, 666–669."],
     ["schonfeld", "Schönfeld, E. 1886. Notiz über eine Beobachtung des Neptun in den "

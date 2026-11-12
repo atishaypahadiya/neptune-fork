@@ -109,6 +109,10 @@ export function abstract(D) {
   const R = K.range_percent;
   // The share of the draws that flag the planet in which the comparison is done by 16 August.
   const by = D.challis.sources.c1a_p_by_0816.at(-1);
+  // The same mark as Table 1's, where the JSON marks both readings prior-dependent.
+  const both = W.C3_S4_prior_dependent && W.C4a_prior_dependent;
+  const dep = both ? " (both prior-dependent, † in Table 1)"
+    : W.C3_S4_prior_dependent || W.C4a_prior_dependent ? " (one prior-dependent, † in Table 1)" : "";
   const share = drv(Math.round((100 * W.c1a_p_by_0816) / W.C1a_mean), "percent of flags by a date");
   return {
     abstract: `We put two questions to the British search for Neptune of ` +
@@ -136,7 +140,7 @@ export function abstract(D) {
       `that he treats an unmatched star as a candidate, which the record does not inform: ` +
       `its prior mean of ${p2(W.p_follow_prior_mean)} is ${p2(W.p_follow_posterior_mean)} ` +
       `after the conditioning. Zones laid from Adams's first place or from Le ` +
-      `Verrier's give ${p2(W.C3_S4_mean)} and ${p2(W.C4a_mean)}, or ` +
+      `Verrier's give ${p2(W.C3_S4_mean)} and ${p2(W.C4a_mean)}${dep}, or ` +
       `${p2(W.C3_S4_prompt_mean)} and ${p2(W.C4a_prompt_mean)} with prompt comparison. Each ` +
       `depends on an input the record does not fix, and none reaches the pre-registered ` +
       `reading "very probably".`,
@@ -169,6 +173,9 @@ export function adamsText(D) {
   const { A, K, printed, fit } = facts(D);
   const f1 = fit("H1"), f2 = fit("H2"), F = K.fit_ranges_percent, T = K.noise_thresholds;
   const P = (x) => fmt(x, 3);
+  // Every probability named by hypothesis and noise model.
+  const four = (kind) => `Hypothesis I: ${P(A[`H1_${kind}_P_a`])} (a), ${P(A[`H1_${kind}_P_b`])} (b); ` +
+    `Hypothesis II: ${P(A[`H2_${kind}_P_a`])} (a), ${P(A[`H2_${kind}_P_b`])} (b)`;
   return {
     a31_p1: `Adams did not solve for the planet's distance; he assumed it. His first ` +
       `hypothesis put the mean distance at ${fmt(A.S5_a_au)} AU and his second at ` +
@@ -207,10 +214,12 @@ export function adamsText(D) {
       `{R@fig-1}) are nearer Neptune than a noise-free Neptune allows.`,
     a34_p1: `Is that nearness luck? We added independent noise to the noise-free places, ` +
       `${count(A.noise_n_draws)} times per noise model, and asked how often the solution moves ` +
-      `toward Neptune by as much as his did (${fmt(A.H1_delta_obs)}° under the first ` +
-      `hypothesis, {D@fig-2}). The pre-registered statistic gives ${P(A.H1_prereg_P_a)} and ` +
-      `${P(A.H1_prereg_P_b)} under the two noise models, which the pre-registered rule reads ` +
-      `as "${A.H1_prereg_verdict}" (above ${T.suffices}).`,
+      `toward Neptune by as much as his did (${fmt(A.H1_delta_obs)}° under Hypothesis I, ` +
+      `{D@fig-2}). The two noise models are (a) the scatter of his own printed residuals and ` +
+      `(b) the scatter of the project's data carried to his normal places. The ` +
+      `pre-registered statistic gives ${four("prereg")}, which the pre-registered rule reads ` +
+      `as "${A.H1_prereg_verdict}" under both hypotheses (above ${T.suffices} under both ` +
+      `models).`,
     a34_p2: `That reading does not mean what it says, and we report it as a deviation. The ` +
       `statistic treated the shift as a number on a line, and it is an angle. His ` +
       `least-squares problem has a second minimum, at an eccentricity of ` +
@@ -221,12 +230,11 @@ export function adamsText(D) {
       `the edges). The pre-registered number measures how often noise switches minimum.`,
     a34_p3: `Post hoc, and labelled so wherever it appears: among the draws that stay on the ` +
       `minimum of the real data (${A.post_hoc_definition.split("among ")[1]}), a shift as ` +
-      `large as his occurs with probability ${P(A.H1_post_hoc_P_a)} and ` +
-      `${P(A.H1_post_hoc_P_b)} under the first hypothesis and ${P(A.H2_post_hoc_P_a)} and ` +
-      `${P(A.H2_post_hoc_P_b)} under the second. By the same thresholds that is ` +
-      `"${A.H1_post_hoc_verdict}": below ${T.suffices}, above ${T.systematic}. Neither luck ` +
-      `nor a systematic cause is established. The tables of Bouvard that his reductions ` +
-      `rested on are the route to an attribution, and we did not take it.`,
+      `large as his occurs with probability ${four("post_hoc")}. By the same thresholds ` +
+      `that is "${A.H1_post_hoc_verdict}" under both hypotheses: below ${T.suffices}, above ` +
+      `${T.systematic}. Neither luck nor a systematic cause is established. The tables of ` +
+      `Bouvard that his reductions rested on are the route to an attribution, and we did ` +
+      `not take it.`,
   };
 }
 
@@ -281,7 +289,7 @@ export function challisText(D) {
       `inputs the first ${count(W.tornado_n_draws)}.`,
     c42_p4: `Outside the pre-registered reading: if every event is drawn afresh, his ` +
       `procedure taken as a plan, the actual procedure's probability is ` +
-      `${p2(W.replay_a0)} (cases.A0.replay.primary.mean in P1B_challis_detection.json); the ` +
+      `${p2(W.replay_a0)} (data reference in § 6); the ` +
       `note carries the rest. Paired differences between the cases are post hoc and are in ` +
       `the note only.`,
     c43_p1: `The cheapest change is the one he began. Carrying the ` +
@@ -295,7 +303,7 @@ export function challisText(D) {
       `Adams's second place the zones do not reach the planet in time ({B@fig-3}). The ` +
       `chart he had helps only if its limits are read one way: the case ` +
       `${W.c2_combined}.`,
-    table_note: `† Prior-dependent: the reading changes row when every prior interval is ` +
+    table_note: `† Prior-dependent: the row's reading changes when every prior interval is ` +
       `halved. A delay of a week before either comparison leaves its probability unchanged.`,
   };
 }
@@ -324,6 +332,9 @@ export function caseRows(D) {
 export function captions(D) {
   const { A, W, K } = facts(D);
   const F = K.fit_ranges_percent, R = K.range_percent, E = K.events;
+  const prob = (kind) => `Hypothesis I: ${fmt(A[`H1_${kind}_P_a`], 3)} (a), ` +
+    `${fmt(A[`H1_${kind}_P_b`], 3)} (b); Hypothesis II: ${fmt(A[`H2_${kind}_P_a`], 3)} (a), ` +
+    `${fmt(A[`H2_${kind}_P_b`], 3)} (b)`;
   return {
     cap_fig_1: `True heliocentric longitude on Galle's night minus Neptune's ({N@fig-1}), ` +
       `per solution. {P@fig-1}, {Q@fig-1}: Adams's printed solutions under his first and ` +
@@ -334,11 +345,12 @@ export function captions(D) {
       `line are single solutions.`,
     cap_fig_2: `The shift of the least-squares solution toward Neptune over ` +
       `${count(A.noise_n_draws)} noise draws, on the circle, in bins of ` +
-      `${A.hist_bin_deg}°. Heavy line: noise scaled to his own residuals; light line: the ` +
-      `second noise model. {D@fig-2}: the shift of his real data. The clusters near the ` +
-      `edges are draws on the second minimum. The on-branch probabilities quoted in § 3.4 ` +
-      `are post hoc; the pre-registered values are ${fmt(A.H1_prereg_P_a, 3)} and ` +
-      `${fmt(A.H2_prereg_P_a, 3)} for the heavy lines.`,
+      `${A.hist_bin_deg}°. Heavy line: noise model (a), the scatter of his own residuals; ` +
+      `light line: model (b), the scatter of the project's data carried to his normal ` +
+      `places. {D@fig-2}: the shift of his real data under Hypothesis I; the unlettered line ` +
+      `is the same under Hypothesis II. The clusters near the edges are draws on the second ` +
+      `minimum. Pre-registered probabilities of a shift at least as large: ` +
+      `${prob("prereg")}. Post hoc, on the branch of the real data: ${prob("post_hoc")}.`,
     cap_fig_3: `The search on the sky, to scale; right ascension increases to the left. ` +
       `Dotted: Neptune from ${dayOf(E.search_start)} to ${dayOf(E.track_end)}, with ` +
       `{N@fig-3} its place on ${dayOf(D.challis.map_night)}. The band is the ` +
@@ -387,7 +399,8 @@ export function availability(D) {
     avail_p1: `The study is ${D.page.status}. Its plans, results and deviations are in the ` +
       `repository under docs/notes/: ${D.page.notes.join(", ")}. The numbers on this page are ` +
       `read from site/data/p1b_adams.json and p1b_challis.json, which copy named fields of ` +
-      `the notes' JSON files.`,
+      `the notes' JSON files. The replay value quoted in § 4.2 is ` +
+      `${D.challis.sources.replay_a0.slice(1).join(".")} in ${D.challis.sources.replay_a0[0]}.`,
     avail_p2: "The observations of Uranus and the code are those of the main paper, under " +
       "its licences and DOIs.",
     repo_url: repo,
