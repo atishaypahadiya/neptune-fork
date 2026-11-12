@@ -1,0 +1,8 @@
+file,pdf_page,note
+pass1,p19,p19 (printed 13) § 23: δε has no printed coefficient (implicit 1); recorded as de 1.
+pass1,p23,"p23 (printed 17) § 29: the four bracketed terms are {p3/m' cosθ − q3/m' sinθ}, {p3/m' sinθ + q3/m' cosθ}, {p3/m' cos2θ − q3/m' sin2θ}, {p3/m' sin2θ + q3/m' cos2θ}: all in p3, q3, not p1/p2; spec names P1c-Q1s… kept in order of appearance."
+pass1,p23,p23 (printed 17) § 28: h3/m' and k3/m' carry the terms 0.007460 p3/m' + 0.008974 q3/m' and −0.008974 p3/m' + 0.007460 q3/m' (the § 22 relation numbers).
+pass1,p27,"p27 (printed 21) § 39: rel2 and rel4 have δy1, δy2 on the left (spec names lhs_dx1/lhs_dx2 do not fit); recorded as lhs_dy1, lhs_dy2."
+pass1,p25–27,p25–27 (printed 19–21): archive.org renders are 367×599; re-rendered at 220 dpi in halves from the PDF (embedded scans 551×900) for the read.
+pass1,p29,"p29 (printed 23) § 43: the two relation lines have four terms on the left (δx1, δy1, δx2, δy2); recorded as lhs_dx1, lhs_dy1, lhs_dx2, lhs_dy2."
+pass1,p30,"p30 (printed 24) § 46 and p23 § 29: the bracket terms are p3/m', q3/m' combinations (see § 29 note)."

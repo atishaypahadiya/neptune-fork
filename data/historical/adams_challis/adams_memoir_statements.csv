@@ -1,0 +1,57 @@
+id,pdf_page,printed_page,section,statement
+S1,12,6,8,residual differences Observation−Theory in heliocentric true longitude: 9 ancient and 21 modern normal places
+S2,13,7,9,"the same converted to corrections of mean longitude by the factor r²/(ab); ""These numbers form the basis of the subsequent investigations"""
+S3,13,7,10,correction of the mean longitude from δε δn δe δϖ; δx₂ and δy₂ in terms of δx₁ δy₁ with the factor e/4
+S4,14,8,11,Pontécoulant form of the perturbations of mean longitude; F_i G_i H_i as functions of z = i(n−n′)
+S5,14,8,12,"α = sin 30° = 0.5: the twelve logarithms of b_i, α db_i/dα, α² d²b_i/dα²"
+S6,15,9,12,"the eleven coefficients of the principal inequalities (m′ in units of 1/5000 of the Sun, e′ of 1/20); the h k p q form"
+S7,15,9,13,"epoch 1810.328, unit 3.0362 yr, anomaly rate 13°0′.5, n = 13°0′.6, n′ = 4°36′.0; the modern equation of condition with its arguments; t = −10…+10"
+S8,16,10,14,rule for the normal equations and the closed-form sums
+S9,16,10,15,"first-group normal equations (ε), (x), (h₁), (h₂), (h₃)"
+S10,17,11,15,"first-group normal equations (p₂), (p₃)"
+S11,17,11,16,"δε eliminated by (ε): (x), (h₁), (h₂), (h₃), (p₂), (p₃)"
+S12,17,11,17,"δx₁ eliminated by (x): (h₁), (h₂), (h₃), (p₂), (p₃)"
+S13,17,11,18,"second-group normal equations (n), (y)"
+S14,18,12,18,"second-group normal equations (k₁), (k₂), (k₃), (q₂), (q₃)"
+S15,18,12,19,"δn eliminated by (n): (y), (k₁), (k₂), (k₃), (q₂), (q₃)"
+S16,18,12,20,"δy₁ eliminated by (y): (k₁), (k₂), (k₃), (q₂), (q₃)"
+S17,19,13,21,the two summed equations of the groups
+S18,19,13,22,"e = 0.046679, ε−ϖ = 50°15′.8; δx₂ δy₂ relations; the multipliers of (x) and (y); equations (1) and (2)"
+S19,19,13,23,ancient equation of condition 1690
+S20,20,14,23,ancient equations of condition 1712–1771
+S21,20,14,24,ancient equation 1690 after eliminating δε δn δx₁ δy₁
+S22,21,15,24,ancient equations 1712–1771 after the elimination
+S23,22,16,25,multipliers for p₃ and q₃ (1690 set aside); the combined equations
+S24,22,16,26,equations (3) and (4)
+S25,22,16,27,"(2), (3), (4) with left sides eliminated by (1)"
+S26,23,17,28,"h k p q in θ, β, β′, m′, e′"
+S27,23,17,29,"the three logarithmic equations, β = 50°15′.8"
+S28,24,18,30,"solution: θ, p₃/m′, q₃/m′, ε′, motion, precession, mean longitude 1846.762, e′, β′, ϖ′, m′"
+S29,24,18,31,Hypothesis I elements
+S30,25,19,33,α = sin 31° = 0.515: the twelve logarithms and eleven coefficients
+S31,25,19,34,n′ = 4°48′.5 and the arguments; the equation of condition
+S32,26,20,35,"first-group normal equations (ε), (x), (h₁), (h₂), (h₃)"
+S33,26,20,36,"second-group normal equations (n), (y), (k₁), (k₂), (k₃)"
+S34,27,21,37,"(p₂), (p₃), (q₂), (q₃) not formed; the two combined equations"
+S35,27,21,38,"δε and δn eliminated: (x), (y) and the combined equations"
+S36,27,21,39,"the four relation lines, the multipliers, equations (1) and (2)"
+S37,28,22,40,ancient equations of condition 1690–1771
+S38,29,23,41,multipliers; the combined equations for p₃ and q₃
+S39,29,23,42,δε and δn eliminated from the combined equations
+S40,29,23,43,"the two relation lines, the multipliers, equation (3)"
+S41,30,24,43,equation (4)
+S42,30,24,44,"(2), (3), (4) with left sides eliminated by (1)"
+S43,30,24,45,"h k p q in θ, β, β′, m′, e′"
+S44,31,25,46,the three logarithmic equations
+S45,31,25,47,"solution: θ, p₃/m′, q₃/m′, ε′, motion, precession, mean longitude 1846.762, e′, β′, ϖ′, m′"
+S46,31,25,48,Hypothesis II elements
+S47,32,26,49,h k p q values per hypothesis
+S48,32,26,50,"δε δn δx₁ δy₁ δx₂ δy₂ and δa/a, δe, eδϖ per hypothesis"
+S49,33,27,51,theoretical corrections split into elements and perturbation per normal place and hypothesis
+S50,34,28,52,residuals Observation−Theory per normal place and hypothesis
+S51,34,28,53,errors of 1843 1844 1845 per hypothesis
+S52,35,29,53,ratio 5 to 4; α = sin 35° = 0.574 inferred in the letter of 2 September 1846
+S53,35,29,55,Flamsteed 1690 errors +44″.5 and +50″.0
+S54,36,30,57,"radius-vector corrections (a = 19.191, two cosine series): not transcribed (outside §§ 8–55)"
+S55,36,30,58,"δζ and dδζ/dt for 1834, 1840, 1846: not transcribed (outside §§ 8–55)"
+S56,37,31,59,radius-vector correction tables: not transcribed; §§ 60–61 contain no numbers

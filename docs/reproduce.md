@@ -251,3 +251,15 @@ makes a cache miss raise instead of fetching.
 Run of 2026-11-10/11: 70.6 CPU-h over the 16 jobs (held-a variants 6.8–7.3 CPU-h each, free-a 20.7
 and 21.8), 7 h 53 min wall on 12 workers, 51.9 M likelihood calls; results in
 `docs/notes/P1B_adams_fit.md`. The ledger rows are in the local ledger only until the site step.
+
+## Phase 1b step 3b, stage A (transcription)
+
+No compute. Two transcription passes of the memoir (`docs/notes/adams_memoir_passes/`), compared by
+
+```
+python3 -I docs/notes/scripts/p1b_adams_memoir_compare.py   # run from docs/notes/adams_memoir_passes/
+```
+
+(the script expects `pass1/` and `pass2/` beside it); reconciliation in
+`docs/notes/adams_memoir_reconciliation.md`, final tables in `data/historical/adams_challis/
+adams_memoir_*.csv`. Hi-res renders for the decisions: see `MANIFEST.md`.
