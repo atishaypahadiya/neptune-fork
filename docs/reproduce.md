@@ -471,3 +471,16 @@ of N1 and the search for Bouvard's 1821 tables are in `data/historical/adams_cha
 Bouvard's tables were obtained by hand on 12 November 2026 (hash in the same manifest); their
 structure and the cost of a transcription are in `docs/notes/P1B_bouvard_1821.md`. Page images:
 `uv run --with pymupdf python` over the cached PDF at 200 dpi, leaves 8 to 39, 62, 63, 82, 124 to 151.
+
+## v1.3 preparation (drafts; nothing here is a result)
+
+```sh
+uv run python docs/notes/scripts/p1b_spotcheck.py select            # docs/review/p1b_spotcheck_rows.csv, seed 20261112
+uv run --with pymupdf python docs/notes/scripts/p1b_spotcheck.py kit --out DIR   # the review kit, outside the repository
+uv run python docs/notes/scripts/p1b_spotcheck.py template          # docs/review/p1b_spotcheck_results_template.json
+uv run python docs/notes/scripts/p1b_spotcheck.py check FILE        # read an exported result
+uv run pytest -q tests/test_v13.py                                  # 9 fast tests; the smoke test with -m slow
+FORK_HORIZONS_CACHE_ONLY=1 uv run python -m fork.export.v13 smoke   # synthetic data only, about 1 min, nothing saved
+```
+
+The draft plans are in `docs/notes/V13_drafts.md`. No run on Table 77 exists for them.
