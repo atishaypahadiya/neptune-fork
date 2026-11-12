@@ -498,3 +498,15 @@ uv run pytest -q tests/test_phase2_identifiability.py         # 3 tests
 
 Progress in `data/cache/phase2/validation/progress.log`; a rerun skips the checks already
 written unless `--fresh` is given. Output: `docs/phase2/validation.json`. No ledger row.
+
+## Phase 2 data: Newcomb's contact times (transcription only; nothing is fitted)
+
+```sh
+curl -L -o data/cache/mercury/astronomicalpap00newcgoog.pdf \
+  https://archive.org/download/astronomicalpap00newcgoog/astronomicalpap00newcgoog.pdf
+shasum -a 256 data/cache/mercury/astronomicalpap00newcgoog.pdf      # against data/historical/mercury/MANIFEST.md
+uv run --with pymupdf --with pillow python -I docs/phase2/scripts/mercury_crops.py   # the page bands
+uv run pytest -q tests/test_mercury_transcription.py                # the two entries agree; the table's own checks
+```
+
+The method and the counts are in `docs/phase2/transcription.md`.
