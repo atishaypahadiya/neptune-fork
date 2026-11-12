@@ -56,7 +56,7 @@ GALLICA_VIEW_OFFSET = 467  # Gallica view f468 is PDF page 1 (views 468-725 = PD
 REVIEW_DIR = tr.ROOT / "docs" / "review"
 HTML_FILE = REVIEW_DIR / "spotcheck.html"
 HUMAN_HTML_FILE = REVIEW_DIR / "spotcheck_human.html"
-RESULTS_FILE = REVIEW_DIR / "spotcheck_results.json"  # automated spot check (2026-11-06)
+RESULTS_FILE = REVIEW_DIR / "spotcheck_results.json"  # the first spot check (2026-11-06)
 HUMAN_RESULTS_FILE = REVIEW_DIR / "spotcheck_human_results.json"
 SELECTION_FILE = REVIEW_DIR / "spotcheck_rows.csv"
 CROP_DIR = REVIEW_DIR / "crops"
@@ -459,7 +459,7 @@ def render_html(
             "<p><strong>Human review.</strong> Judge each cell from the image (or the "
             "full-resolution Gallica link), not from memory of the earlier review. Don't open "
             f"<code>{RESULTS_FILE.name}</code> or the transcription notes until you have "
-            "exported: this check is meant to be independent of the automated one. Export saves "
+            "exported: this check is meant to be independent of the first one. Export saves "
             f"<code>{HUMAN_RESULTS_FILE.name}</code>.</p>",
             '<p><label>Your name <input id="reviewer-name" type="text" '
             'autocomplete="name"></label></p>',

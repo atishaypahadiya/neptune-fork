@@ -92,7 +92,7 @@ def _record(name):
 
 
 def test_spotcheck_records_are_complete_for_this_table():
-    """The automated record: the reviewed sample, every cell, this table, no mismatch, and not
+    """The first check's record: the reviewed sample, every cell, this table, no mismatch, and not
     marked human. The human record, once present, must pass the same check as human."""
     table = tr.read_pass(rel.RELEASE / "leverrier_1846_table77.csv")
     picks = sc.read_selection(rel.RELEASE / "spotcheck_rows.csv")
@@ -195,19 +195,20 @@ def test_transit_check_covers_every_row_as_the_readme_says():
     assert max(resid.values()) <= 3.6
 
 
-def test_reserved_doi_is_recorded_consistently_and_never_fetched():
-    """The reserved Zenodo DOI (it resolves only after publication, so nothing here fetches
-    it) is the same in CITATION.cff (doi + identifiers), the README's How to cite section and
-    the Data Package id. It is NOT in .zenodo.json: Zenodo assigns it to the draft itself.
-    There is no placeholder left. No file of the release package carries a badge: the package
-    is frozen with the published record (the project README, outside the package, has one)."""
-    doi = "10.5281/zenodo.24044792"
-    assert rel.DOI == doi
+def test_doi_is_recorded_consistently_and_never_fetched():
+    """From v1.0.1 the package cites the concept DOI (all versions) with the version number: a
+    version's own DOI exists only once Zenodo has the files, which are frozen by then. The same
+    DOI is in CITATION.cff (doi + identifiers, with v1.0.0's version DOI beside it), the README's
+    How to cite section and the Data Package id. It is NOT in .zenodo.json. Nothing here
+    fetches it. No file of the release package carries a badge: the package is frozen with
+    the published record (the project README, outside the package, has one)."""
+    doi = "10.5281/zenodo.24044791"
+    assert rel.DOI == doi and rel.DOI_V1_0_0 == "10.5281/zenodo.24044792"
     cff = yaml.safe_load((rel.RELEASE / "CITATION.cff").read_text(encoding="utf-8"))
     assert cff["doi"] == doi
-    assert {"type": "doi", "value": doi} in [
-        {k: i[k] for k in ("type", "value")} for i in cff["identifiers"]
-    ]
+    ids = [{k: i[k] for k in ("type", "value")} for i in cff["identifiers"]]
+    assert {"type": "doi", "value": doi} in ids
+    assert {"type": "doi", "value": rel.DOI_V1_0_0} in ids
     assert json.loads(PKG.read_text(encoding="utf-8"))["id"] == f"https://doi.org/{doi}"
     readme = (rel.RELEASE / "README.md").read_text(encoding="utf-8")
     how = readme.split("## How to cite", 1)[1].split("\n## ", 1)[0]
@@ -216,20 +217,23 @@ def test_reserved_doi_is_recorded_consistently_and_never_fetched():
         if p.suffix in ("", ".md", ".cff", ".json"):
             assert "badge" not in p.read_text(encoding="utf-8").lower(), p.name
     zen = (rel.RELEASE / ".zenodo.json").read_text(encoding="utf-8")
-    assert "doi" not in json.loads(zen) and "24044792" not in zen
+    assert "doi" not in json.loads(zen) and "2404479" not in zen
+    assert "v1.0.1 rewords descriptive strings in spotcheck_results.json" in readme
     for p in rel.RELEASE.iterdir():
         if p.suffix in ("", ".md", ".cff", ".json"):
             assert "XXXXXXX" not in p.read_text(encoding="utf-8"), p.name
 
 
-# MD5 of every file in Zenodo record 24044792 (version 1.0.0, published 2026-11-07), as the
-# record lists them. The package is frozen: a change to any of these files needs a new Zenodo
-# version (and new values here), never an edit in place.
+# MD5 of every file of version 1.0.1. PROVISIONAL until the Zenodo record of v1.0.1 is published:
+# these are the MD5s of the files as built for the upload (2026-11-12); once the record exists
+# they are compared with the MD5s it lists and this comment names the record. The package is
+# frozen: a change to any of these files needs a new Zenodo version (and new values here),
+# never an edit in place. Version 1.0.0 is Zenodo record 24044792 (published 2026-11-07).
 PUBLISHED_MD5 = {
-    ".zenodo.json": "836e27b107ad346a7b2e249ef434eae0",
-    "CITATION.cff": "2779f2beeab3038ebc8f874fa1894f69",
-    "DATA_DICTIONARY.md": "4cd05d9bd6263877eaf0989f9f4fb64d",
-    "datapackage.json": "b5ce212a53caee858c31aab1934e427b",
+    ".zenodo.json": "fc450ae2d7119c6097fe03a5ef61d2aa",
+    "CITATION.cff": "17c571e4551bb5fc375fa527a2cd707f",
+    "DATA_DICTIONARY.md": "b7c65478a7b426711895bb0b414be7c4",
+    "datapackage.json": "cd7b52fc1cf8af07529d164a8fb5a137",
     "leverrier_1846.csv": "39532d973859330c1818097d20054958",
     "leverrier_1846_misprints.csv": "712fc6c34df3cbb463bc908433fc2ea5",
     "leverrier_1846_pass1.csv": "45a261923cb0eaac392f4dc02cf568a2",
@@ -237,10 +241,10 @@ PUBLISHED_MD5 = {
     "leverrier_1846_resolution_log.csv": "b5104ab9f6e8b8d439f1f82191259ef1",
     "leverrier_1846_table77.csv": "a35258c41b7444e26e35daec711ada51",
     "LICENSE": "968a9a067b63eb6e76f8d076c00f31be",
-    "MANIFEST.md": "9801fda02cc122f5787d0be814919fa9",
-    "README.md": "5f0c143e7627c7adcc66d448aebfd885",
+    "MANIFEST.md": "aff5d209ba337b985ee010e9c347a655",
+    "README.md": "be9604d649e875d528e4f3473e92f930",
     "spotcheck_human_results.json": "ddc60e3b7e3897244b329b10d7a925a8",
-    "spotcheck_results.json": "81b9048f8f9b91f957cf08b2fe80cb73",
+    "spotcheck_results.json": "840ebd9a98589eedf965fccc885afc6a",
     "spotcheck_rows.csv": "70e9f2c07a09796d7bda4b666955c9bc",
 }
 

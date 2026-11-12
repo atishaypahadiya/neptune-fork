@@ -10,8 +10,9 @@ exactly as printed. Each step that produced it is recorded: two independent pass
 witness for every disagreement, an arithmetic check of every row, a log of misprints in the
 source, and a spot check.
 
-**Read this first:** the transcription and the reconciliation were machine-assisted (an AI
-model), not done by an independent human. The dataset was then spot-checked by a
+**Read this first:** the table was transcribed twice, each pass without access to the other,
+and the two were reconciled; none of that was done by an independent human. The dataset was
+then spot-checked by a
 human against the Gallica scan (28 rows, 336 cells, 0 discrepancies). That check was done by
 the dataset author, and the other 251 rows have had no human check. See
 [Limitations](#limitations).
@@ -24,7 +25,7 @@ the dataset author, and the other 251 rows have had no human check. See
 | `leverrier_1846_misprints.csv` | 7 cells that are wrong in the print itself, with the argument for each |
 | `leverrier_1846_resolution_log.csv` | The 14 cells where the two passes disagreed, and how each was resolved |
 | `leverrier_1846_pass1.csv`, `leverrier_1846_pass2.csv` | The two independent passes, before reconciliation |
-| `spotcheck_rows.csv`, `spotcheck_results.json` | The spot-check sample and the automated spot check: 28 rows, 336 cells |
+| `spotcheck_rows.csv`, `spotcheck_results.json` | The spot-check sample and the first spot check: 28 rows, 336 cells |
 | `spotcheck_human_results.json` | The human spot check of the same 28 rows: 336 cells, 0 discrepancies |
 | `leverrier_1846.csv` | Derived: 529 RA and Dec measurements in degrees, with Julian Dates and observatories. Contains inferences |
 | `DATA_DICTIONARY.md` | Every column: meaning, units, sign conventions, formats |
@@ -98,7 +99,7 @@ appeared in. All three are public domain.
 
 ## How it was made
 
-1. **Two independent passes.** Two separate machine-assisted transcriptions each covered the whole table.
+1. **Two independent passes.** Two separate transcriptions, each made without access to the other, each covered the whole table.
    - Each worked from the page images of one scan: pass 1 from archive.org, pass 2 from
      Lille.
    - Neither used the scan's embedded OCR, and neither saw the other scan or the other pass.
@@ -155,11 +156,11 @@ appeared in. All three are public domain.
    twice.
    - The sample is stratified with a fixed seed: every resolution-log row, the misprint rows
      known at review time, at least two ancient rows, every page, then random rows.
-   - **First, an automated spot check:** 336 cells, 0 mismatches (`spotcheck_results.json`).
+   - **First, a spot check against the Gallica images only:** 336 cells, 0 mismatches (`spotcheck_results.json`).
    - **Then by a human, the dataset author:** the dataset was spot-checked by a human against
      the Gallica scan (28 rows, 336 cells, 0 discrepancies) (`spotcheck_human_results.json`,
      2026-11-07).
-   - The human review page did not show the automated check's results, and nothing on it was pre-ticked.
+   - The human review page did not show the first check's results, and nothing on it was pre-ticked.
    - Neither review used the "all match" shortcut: every cell was ticked individually.
    - **What the reviews were:** verification, not blind re-transcription. Each reviewer saw
      the transcribed value beside its scan crop and judged whether they matched. The known
@@ -182,19 +183,19 @@ the 1771 misprint was found.
 
 ## Limitations
 
-- **Machine-assisted transcription; human check of a sample only.**
-  - Both passes, the reconciliation and the automated spot check were machine-assisted, in
-    separate sessions and from different scans, but by one AI model family.
-  - Errors that model makes systematically are not independent between passes. Reading the
+- **One method for both passes; human check of a sample only.**
+  - Both passes, the reconciliation and the first spot check were made separately and from
+    different scans, but by one method.
+  - Errors that method makes systematically are not independent between passes. Reading the
     same ambiguous glyph the same way in both passes is the main risk. Such a cell produces no
-    disagreement, so it never reaches the third witness, and the automated spot check may share the
+    disagreement, so it never reaches the third witness, and the first spot check may share the
     same bias.
   - The dataset was spot-checked by a human against the Gallica scan (28 rows, 336 cells, 0
     discrepancies). That check guards against such errors only in the rows it covers.
   - It is verification, not blind re-transcription: the reviewer saw each transcribed value
     beside its scan crop. Its known weakness is anchoring, that is, reading the expected digit
     in an unclear glyph.
-  - It covers the same 28 rows as the automated check. **The other 251 rows have had no human
+  - It covers the same 28 rows as the first check. **The other 251 rows have had no human
     check.**
   - **What covers the other 251 rows instead.** The per-row arithmetic check (step 4) is
     independent of any visual check, and it covers every row with these exceptions:
@@ -275,14 +276,17 @@ The project repository runs the same validation in its tests, together with the 
 
 ## How to cite
 
-**DOI: [10.5281/zenodo.24044792](https://doi.org/10.5281/zenodo.24044792)** (Zenodo, version 1.0.0)
+**DOI: [10.5281/zenodo.24044791](https://doi.org/10.5281/zenodo.24044791)** (Zenodo, all versions; this is version 1.0.1)
+
+v1.0.1 rewords descriptive strings in spotcheck_results.json and the documentation; no table value or check result changes.
+Version 1.0.0 is [10.5281/zenodo.24044792](https://doi.org/10.5281/zenodo.24044792).
 
 The dataset is in the public domain (see [Licence](#licence)), but please cite it, and cite
 Le Verrier's memoir for the observations themselves:
 
 > Pahadiya, A. (2026). *Le Verrier (1846), Table n° 77: 279 observations of Uranus,
-> 1690–1845, transcribed and reconciled* (Version 1.0.0) [Data set]. Zenodo.
-> https://doi.org/10.5281/zenodo.24044792
+> 1690–1845, transcribed and reconciled* (Version 1.0.1) [Data set]. Zenodo.
+> https://doi.org/10.5281/zenodo.24044791
 
 > Le Verrier, U. J. (1846). Recherches sur les mouvements de la planète Herschel (dite Uranus).
 > *Connaissance des Temps pour l'an 1849*, Additions, 3–254. Paris: Bachelier.
@@ -296,9 +300,9 @@ BibTeX:
                transcribed and reconciled},
   year      = {2026},
   publisher = {Zenodo},
-  version   = {1.0.0},
-  doi       = {10.5281/zenodo.24044792},
-  url       = {https://doi.org/10.5281/zenodo.24044792}
+  version   = {1.0.1},
+  doi       = {10.5281/zenodo.24044791},
+  url       = {https://doi.org/10.5281/zenodo.24044791}
 }
 
 @article{leverrier_1846_uranus,
@@ -312,8 +316,9 @@ BibTeX:
 }
 ```
 
-Machine-readable citation metadata is in `CITATION.cff`. Cite the version you used: the DOI
-above is for version 1.0.0.
+Machine-readable citation metadata is in `CITATION.cff`. Cite the version you used. The DOI
+above covers all versions and resolves to the latest; with the version number it identifies
+this one, and each version's own DOI is on its Zenodo page.
 
 ## Licence
 
@@ -323,7 +328,7 @@ and its documentation are dedicated to the public domain under
 copy, modify and redistribute them without asking.
 
 **Please cite anyway.** CC0 removes the legal requirement, not the scholarly one. If you use
-this dataset, cite it by its DOI (https://doi.org/10.5281/zenodo.24044792; see [How to cite](#how-to-cite),
+this dataset, cite it by its DOI (https://doi.org/10.5281/zenodo.24044791; see [How to cite](#how-to-cite),
 or `CITATION.cff`), and cite Le Verrier (1846) for the observations. Citing the version you
 used also tells readers which transcription and which checks stand behind your numbers.
 

@@ -166,7 +166,7 @@ The spot-check record. It is JSON, not a table.
 | `seed` | Sampling seed |
 | `table77_sha256` | SHA-256 of the `leverrier_1846_table77.csv` that was checked. It equals the file in this package |
 | `exported` | Time of the export (UTC) |
-| `reviewer` | Who checked: "automated spot check, against Gallica scan only; not an independent human check" |
+| `reviewer` | Who checked: "first spot check, against Gallica scan only; not an independent human check" |
 | `all_match_rows` | Rows confirmed with the review page's "all match" shortcut. Empty: every cell was ticked individually |
 | `rows[]` | One object per sampled row: `page`, `line`, `reason`, `flagged` (drawn because of the log or the misprint table), `used_all_match`, `cells` (for each of the 12 data columns, the `value` checked and `matches`), and `notes` |
 
@@ -179,11 +179,11 @@ scan (28 rows, 336 cells, 0 discrepancies).
 - It covers the same 28 rows as `spotcheck_results.json`.
 - The reviewer was the dataset author, on 2026-11-07.
 - Every cell was ticked individually; the "all match" shortcut was not used.
-- The review page did not show the automated check's results, and its ticks were stored apart from that
+- The review page did not show the first check's results, and its ticks were stored apart from that
   review's, so nothing was pre-ticked.
 - **Method caveat:** this is verification, not blind re-transcription. The reviewer saw each
   transcribed value beside its scan crop. Its known weakness is anchoring, that is, reading
-  the expected digit in an unclear glyph. The automated spot check had the same design.
+  the expected digit in an unclear glyph. The first spot check had the same design.
 - **The other 251 rows** have had no human check. What covers them is the per-row arithmetic
   check, which is independent of any visual check:
   - The printed C − O equals computed − observed seconds exactly, to the last printed digit,

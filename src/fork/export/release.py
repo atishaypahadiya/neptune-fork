@@ -31,10 +31,12 @@ TITLE = (
     "Le Verrier (1846), Table n° 77: 279 observations of Uranus, 1690–1845, "
     "transcribed and reconciled"
 )
-VERSION = "1.0.0"
-# Zenodo DOI of version 1.0.0, reserved 2026-11-07 (it resolves once the record is published;
-# nothing here fetches it). Data Package v1 reserves `id` for a global identifier such as a DOI.
-DOI = "10.5281/zenodo.24044792"
+VERSION = "1.0.1"
+# The concept DOI (all versions; it resolves to the latest). From v1.0.1 the package cites it with
+# the version number: a version's own DOI exists only once Zenodo has the files, and the files
+# are frozen by then. Data Package v1 reserves `id` for a global identifier such as a DOI.
+DOI = "10.5281/zenodo.24044791"
+DOI_V1_0_0 = "10.5281/zenodo.24044792"
 LICENSE = {
     "name": "CC0-1.0",
     "path": "https://creativecommons.org/publicdomain/zero/1.0/",
@@ -235,8 +237,8 @@ RESOURCES = [
            "The 28 rows checked cell by cell against the Gallica scan.", SPOTCHECK_FIELDS,
            ["page", "line"], _TO_TABLE),
     {"name": "spotcheck_results", "path": "spotcheck_results.json",
-     "title": "Spot-check results (automated)",
-     "description": "Per-cell result of the automated spot check (336 cells), with the "
+     "title": "Spot-check results (first check)",
+     "description": "Per-cell result of the first spot check (336 cells), with the "
                     "reviewer and the SHA-256 of the table checked.",
      "format": "json", "mediatype": "application/json", "encoding": "utf-8"},
     _table("observations", "leverrier_1846.csv", "Derived: one row per measured quantity",
@@ -290,9 +292,9 @@ def sha256(path: Path) -> str:
 def descriptor() -> dict:
     """The datapackage.json descriptor for the files currently in ``RELEASE``."""
     review = (
-        f"with an automated spot check; then {VERIFIED}"
+        f"with a first spot check against the scan; then {VERIFIED}"
         if human_checked()
-        else "with an automated spot check; a human spot check is pending"
+        else "with a first spot check against the scan; a human spot check is pending"
     )
     resources_ = []
     for r in resources():
@@ -308,8 +310,8 @@ def descriptor() -> dict:
             "de la planète Herschel (dite Uranus)', Connaissance des Temps pour 1849, "
             "Additions, pp. 129–136 (Paris, 1846): the observed apparent right ascensions and "
             "declinations of Uranus that Le Verrier compared with theory before predicting "
-            f"Neptune, with his computed values and residuals. Machine-assisted transcription and "
-            f"reconciliation (an AI model), {review}. "
+            "Neptune, with his computed values and residuals. Transcribed twice, each pass "
+            f"without access to the other, and reconciled, {review}. "
             "See README.md."
         ),
         "version": VERSION,

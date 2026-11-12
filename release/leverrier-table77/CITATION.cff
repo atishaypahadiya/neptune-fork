@@ -4,13 +4,16 @@ message: >-
   observations themselves.
 type: dataset
 title: "Le Verrier (1846), Table n° 77: 279 observations of Uranus, 1690–1845, transcribed and reconciled"
-version: 1.0.0
-doi: 10.5281/zenodo.24044792
+version: 1.0.1
+doi: 10.5281/zenodo.24044791
 identifiers:
   - type: doi
+    value: 10.5281/zenodo.24044791
+    description: "Concept DOI of this dataset on Zenodo: all versions"
+  - type: doi
     value: 10.5281/zenodo.24044792
-    description: "Zenodo record of this dataset, version 1.0.0"
-date-released: 2026-11-07
+    description: "Zenodo record of version 1.0.0"
+date-released: 2026-11-12
 authors:
   - family-names: Pahadiya
     given-names: Atishay
@@ -26,8 +29,8 @@ abstract: >-
   transcription passes, the resolution log for their 14 disagreements (resolved against a
   third witness (the Gallica scan of the Connaissance des Temps volume)), a table of 7 misprints in the source with the argument for each, 
   spot-check records for the same 28 rows, and a derived file of 529 measurements in degrees with Julian
-  Dates. The transcription and reconciliation were machine-assisted (an AI model), not done
-  by an independent human. The dataset was then spot-checked by a human against the Gallica scan (28 rows, 336 cells, 0 discrepancies), by the dataset author.
+  Dates. The table was transcribed twice, each pass without access to the other, and
+  reconciled; none of that was done by an independent human. The dataset was then spot-checked by a human against the Gallica scan (28 rows, 336 cells, 0 discrepancies), by the dataset author.
 keywords:
   - Le Verrier
   - Uranus

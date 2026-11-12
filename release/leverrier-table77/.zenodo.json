@@ -1,14 +1,14 @@
 {
   "upload_type": "dataset",
   "title": "Le Verrier (1846), Table n° 77: 279 observations of Uranus, 1690–1845, transcribed and reconciled",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "creators": [
     {
       "name": "Pahadiya, Atishay",
       "orcid": "0009-0004-1264-1662"
     }
   ],
-  "description": "<p>Transcription of Table n° 77 of U. J. Le Verrier, <em>Recherches sur les mouvements de la planète Herschel (dite Uranus)</em>, Connaissance des Temps pour l'an 1849, Additions, pp. 129–136 (Paris, 1846). This is the table of 279 observed apparent right ascensions and declinations of Uranus, 1690–1845, that Le Verrier compared with the theory of his day before predicting Neptune. Beside each observation it gives his computed values and his computed-minus-observed residuals in RA, Dec, geocentric longitude and latitude.</p><p>Every cell is kept exactly as printed. The package contains:</p><ul><li>the reconciled table;</li><li>the two independent transcription passes, from two scans of the 1846 offprint;</li><li>the resolution log for their 14 disagreements, each resolved against a third witness (the Gallica scan of the Connaissance des Temps volume);</li><li>a table of 7 misprints in the source, each with an argument from the table itself;</li><li>two spot-check records of the same 28 rows (336 cells): an automated spot check and a human one;</li><li>a derived file of 529 measurements in degrees with Julian Dates and observatories;</li><li>a data dictionary and a Frictionless Data Package descriptor.</li></ul><p><strong>The transcription and the reconciliation were machine-assisted (an AI model), not done by an independent human. The dataset was then spot-checked by a human against the Gallica scan (28 rows, 336 cells, 0 discrepancies).</strong> The human check was done by the dataset author, and the other 251 rows have had no human check. See README.md for the method and its limitations.</p>",
+  "description": "<p>Transcription of Table n° 77 of U. J. Le Verrier, <em>Recherches sur les mouvements de la planète Herschel (dite Uranus)</em>, Connaissance des Temps pour l'an 1849, Additions, pp. 129–136 (Paris, 1846). This is the table of 279 observed apparent right ascensions and declinations of Uranus, 1690–1845, that Le Verrier compared with the theory of his day before predicting Neptune. Beside each observation it gives his computed values and his computed-minus-observed residuals in RA, Dec, geocentric longitude and latitude.</p><p>Every cell is kept exactly as printed. The package contains:</p><ul><li>the reconciled table;</li><li>the two independent transcription passes, from two scans of the 1846 offprint;</li><li>the resolution log for their 14 disagreements, each resolved against a third witness (the Gallica scan of the Connaissance des Temps volume);</li><li>a table of 7 misprints in the source, each with an argument from the table itself;</li><li>two spot-check records of the same 28 rows (336 cells): a first spot check against the scan and a human one;</li><li>a derived file of 529 measurements in degrees with Julian Dates and observatories;</li><li>a data dictionary and a Frictionless Data Package descriptor.</li></ul><p><strong>The table was transcribed twice, each pass without access to the other, and reconciled; none of that was done by an independent human. The dataset was then spot-checked by a human against the Gallica scan (28 rows, 336 cells, 0 discrepancies).</strong> The human check was done by the dataset author, and the other 251 rows have had no human check. See README.md for the method and its limitations.</p><p>Version 1.0.1 rewords descriptive strings in spotcheck_results.json and the documentation; no table value or check result changes.</p>",
   "access_right": "open",
   "license": "cc0-1.0",
   "language": "eng",
@@ -24,7 +24,7 @@
     "transcription",
     "celestial mechanics"
   ],
-  "notes": "Machine-assisted transcription and reconciliation (an AI model) and an automated first spot check, under the direction of the creator. Then spot-checked by a human against the Gallica scan (28 rows, 336 cells, 0 discrepancies), by the creator. The 1846 source is in the public domain; the page scans used are not redistributed (URLs and SHA-256 hashes in MANIFEST.md).",
+  "notes": "Double-entry transcription, reconciliation and a first spot check, which share one method, so their errors may be correlated. Then spot-checked by a human against the Gallica scan (28 rows, 336 cells, 0 discrepancies), by the creator. The 1846 source is in the public domain; the page scans used are not redistributed (URLs and SHA-256 hashes in MANIFEST.md).",
   "related_identifiers": [
     {
       "identifier": "https://github.com/atishaypahadiya/neptune-fork",

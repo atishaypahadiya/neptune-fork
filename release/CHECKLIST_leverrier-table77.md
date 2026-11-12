@@ -36,7 +36,7 @@ not matching`. The record's SHA-256 is in `leverrier-table77/MANIFEST.md`.
   - Tick each cell that matches the print. Judge from the row image, or from the
     full-resolution Gallica link when an image is unclear.
   - Leave a cell unticked if it does not match, and say why in that row's notes.
-  - Don't open `spotcheck_results.json` (the automated spot check) or the transcription notes until
+  - Don't open `spotcheck_results.json` (the first spot check) or the transcription notes until
     you have exported.
   - "All match" is disabled on the 16 logged rows, so tick those cell by cell.
 - [x] **Export.** Click **Export results**. The browser downloads
@@ -66,7 +66,7 @@ not matching`. The record's SHA-256 is in `leverrier-table77/MANIFEST.md`.
   - `leverrier-table77/MANIFEST.md`: add a row for `spotcheck_human_results.json`.
 
   `datapackage.json` updates itself. Keep stating that transcription and reconciliation were
-  machine-assisted (an AI model), not done by an independent human.
+  not done by an independent human, and that both passes share one method.
 - [x] **Test and commit.** Run `uv run pytest -q tests/test_release.py tests/test_spotcheck.py`.
   Then commit `docs/review/spotcheck_human_results.json`, `docs/review/spotcheck_human.html`
   and the release folder.

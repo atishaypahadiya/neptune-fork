@@ -10,7 +10,7 @@
 | `leverrier_1846_pass1.csv` | Pass 1 as transcribed (archive.org scan), before reconciliation |
 | `leverrier_1846_pass2.csv` | Pass 2 as transcribed (Lille scan), before reconciliation |
 | `spotcheck_rows.csv` | The 28-row spot-check sample and why each row was drawn |
-| `spotcheck_results.json` | The automated spot-check result, cell by cell (336 cells) |
+| `spotcheck_results.json` | The first spot-check result, cell by cell (336 cells) |
 | `spotcheck_human_results.json` | The human spot-check result of the same 28 rows, cell by cell (336 cells, 0 discrepancies) |
 | `leverrier_1846.csv` | Derived convenience file: one row per measured RA or Dec, in degrees, with epochs |
 | `datapackage.json` | Frictionless Data Package descriptor: schemas, SHA-256 and size of every data file |
@@ -23,12 +23,16 @@ The SHA-256 of each data file is in `datapackage.json` (`resources[].hash`).
 
 ## Verification records
 
+Version 1.0.1 rewords descriptive strings in `spotcheck_results.json` (its `reviewer` field and the
+28 `notes`) and the documentation; no table value or check result changes, so that file's
+SHA-256 below differs from version 1.0.0's (`51b1d1c3986ccf0d1a537c0e7de8e454510a680baaafea5db90a6aa8624f2567`).
+
 Both spot checks reviewed the same 28 rows of `leverrier_1846_table77.csv` (SHA-256
 `897f3cde1564998ac1aa1036c8665d91b24dda142d686e2fdf1ec5902e419127`) against the Gallica scan.
 
 | record | reviewer | date | result | SHA-256 |
 |---|---|---|---|---|
-| `spotcheck_results.json` | automated spot check | 2026-11-06 | 336 cells, 0 mismatches | `51b1d1c3986ccf0d1a537c0e7de8e454510a680baaafea5db90a6aa8624f2567` |
+| `spotcheck_results.json` | first spot check, against the Gallica scan only | 2026-11-06 | 336 cells, 0 mismatches | `7411a132538e5d4c58068e88770cd0faaf5a0f0e8f1b349b11e43529388608b4` |
 | `spotcheck_human_results.json` | human: Atishay Pahadiya (dataset author) | 2026-11-07 | 336 cells, 0 discrepancies | `777515a11d0e2586767d3103835ef80b2beb0b73fa432650d9262bc1d1ff7a2e` |
 
 ## Source
