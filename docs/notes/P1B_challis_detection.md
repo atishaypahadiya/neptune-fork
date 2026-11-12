@@ -468,3 +468,240 @@ August zone beyond the July zone's extent). In the branch where the planet enter
 declination edge, the July zone lies within the August one at a setting uniform over the
 possible ones, and the planet sits at 49 over the session's stars along the August zone. The
 smoke record predates this and has C1a without the exception.
+
+---
+
+## Results (2026-11-12; pre-run d754436, rulings e6889d4; draws 00:27–00:47 PST on one core; nothing above the lines edited)
+
+Order of events: the pre-run was frozen in d754436; the rulings on its open choices were
+decided and implemented before the launch, written into the note about two minutes after it,
+and committed alone and pushed as e6889d4 before any result was read. The results below were
+read after that push.
+
+Files: `docs/notes/P1B_challis_detection.json` (sha256 `54d15eafd18ca979729d9c3e7787816a5fc85a5c6440644ad89538909473b947`),
+`P1B_challis_detection.png` (probability by date per case), `P1B_challis_detection_posterior.png`
+(inputs before and after the abduction), `P1B_challis_detection_tornado.png`.
+`uv run python -m fork.export.p1b_challis draws` then `summarize` reproduce them from the
+frozen pre-run; the draws resume per chunk and log to `data/cache/p1b_challis/progress.log`.
+
+### Summary
+
+With the events of his own record held, Challis's actual procedure could not have recognised
+the planet before 23 September: that is 0 by construction of the reading, and is stated as
+such, not found. Four changes of procedure raise the probability with a range that excludes
+0: carrying the 12 August comparison with 30 July through (0.71, range 0.50 to 0.97), a start
+from Adams's S4 place (0.41, or 0.79 with prompt comparison), a start from Le Verrier's June
+place (0.41, or 0.85 with prompt comparison), and the 29 September procedure adopted on
+29 July (0.35). None of them reaches the row "very probably": every range crosses 0.2 or 0.8,
+so each reads "depends on" its top input, which is p_follow for the comparisons and
+p_disc_routine for the changes of start place. A start from S5 gives 0, by timing. The
+Berlin sheet he had gives 0 if its limits are for the equinox of 1800 and 0.92 if they are
+applied to right ascension of date: the chart case depends on the sheet's limits.
+
+### R1. Abduction and checks (§ 6)
+
+- **Acceptance** 0.0996 (100,000 of 1,003,853), above the 1 % stop. Conditions 2 and 3
+  together 0.320; condition 4 alone 0.309. The independent priors are compatible with
+  the record: about a third of prior draws reproduce the August silences and the September
+  disc, and about a third the count of stars.
+- **Condition 1 under an unrestricted zone prior:** a 9′ zone set uniformly in Airy's 10° of
+  latitude contains the planet on 12 August in 0.015 of settings, and also excludes it on
+  30 July by the declination edge in 0.012. This is arithmetic on the band, not a draw.
+- **A0 after 29 September (§ 6.2):** held reading, T2 by 1 October is 0 in every draw. The
+  disc was noted on 29 September and 30 September was lost to the Moon, which agrees with
+  the fact that he did not confirm before the news arrived. Replay reading: 0.34, all of it
+  from discs noted in August.
+- **Geometry (§ 6.3):** inside on 4 and 12 August and 29 September, outside on 30 July, in
+  every draw; asserted in a test on the frozen pre-run.
+- **Closed form against 1,000 inner event draws** per draw, case and reading: worst mean
+  difference 0.00007; worst single draw 4.8 standard errors, among 2.8 million comparisons.
+
+Posterior against prior, mean (5 % to 95 %):
+
+| input | prior | posterior |
+|---|---|---|
+| p disc routine | 0.25 (0.0249 to 0.475) | 0.197 (0.0146 to 0.448) |
+| p disc looking | 0.55 (0.145 to 0.955) | 0.674 (0.247 to 0.975) |
+| p follow | 0.75 (0.525 to 0.975) | 0.75 (0.525 to 0.975) |
+| p recorded | 0.95 (0.905 to 0.995) | 0.95 (0.905 to 0.995) |
+| stars per hour | 65 (42.5 to 87.5) | 70.6 (51.1 to 87.9) |
+| moving extent factor | 1.25 (0.575 to 1.92) | 1.25 (0.575 to 1.93) |
+| weather | 0.45 (0.315 to 0.585) | 0.453 (0.318 to 0.585) |
+| desk hours per pair | 3.5 (1.25 to 5.75) | 3.5 (1.25 to 5.75) |
+| desk hours per day | 1.75 (0.625 to 2.88) | 1.75 (0.625 to 2.88) |
+| n unknown sessions | 14.8 (8 to 22) | 16.2 (11 to 22) |
+| hours per session mean | 2.25 (1.97 to 2.53) | 2.27 (2.01 to 2.54) |
+| hours total | 45.8 (30.6 to 63.6) | 49.1 (37.7 to 63.7) |
+| stars total | 3.05e+03 (1.76e+03 to 4.75e+03) | 3.44e+03 (3.04e+03 to 3.93e+03) |
+| extent jul30 deg | 42.2 (14.9 to 81.7) | 42.6 (15 to 82.1) |
+| extent aug12 deg | 33.8 (16.9 to 50.6) | 34.1 (17 to 50.7) |
+
+The record moves the two disc probabilities (routine down, looking up), the rate, and the
+session count and hours through the count of stars. As the plan stated, p_follow, the desk
+hours and the extents keep their priors: the record carries no information on them.
+
+### R2. The reading (§ 7): realised events held, primary outcome before 23 September
+
+Mean and 5 % to 95 % range over the posterior of the judgement inputs.
+
+| case | P before 23 Sep | row of § 7 | top input | T2 before 23 Sep | T1 by 1 Oct | T2 by 1 Oct | range with priors halved |
+|---|---|---|---|---|---|---|---|
+| A0 actual procedure | 0.00 (0.00 to 0.00) | would very probably not have | none | 0.00 | 1.00 | 0.00 | 0.00 to 0.00 |
+| C1a 12 Aug against 30 Jul | 0.71 (0.50 to 0.97) | depends on | p follow | 0.71 | 1.00 | 0.71 | 0.64 to 0.86 |
+| C1b 4 Aug against 12 Aug | 0.28 (0.00 to 0.93) | depends on | p follow | 0.28 | 1.00 | 0.28 | 0.00 to 0.84 |
+| C1a, 7-day delay | 0.71 (0.50 to 0.97) | depends on | p follow | 0.71 | 1.00 | 0.71 | 0.64 to 0.86 |
+| C1b, 7-day delay | 0.28 (0.00 to 0.93) | depends on | p follow | 0.28 | 1.00 | 0.28 | 0.00 to 0.84 |
+| C2 chart, equinox 1800 | 0.00 (0.00 to 0.00) | would very probably not have | none | 0.00 | 1.00 | 0.00 | 0.00 to 0.00 |
+| C2 chart, RA of date | 0.92 (0.77 to 1.00) | depends on | p follow | 0.92 | 1.00 | 0.92 | 0.87 to 0.98, prior-dependent |
+| C3 from S4 | 0.41 (0.04 to 0.81) | depends on | p disc routine | 0.40 | 1.00 | 0.42 | 0.33 to 0.71, prior-dependent |
+| C3 from S4, prompt | 0.79 (0.22 to 0.99) | depends on | n unknown sessions | 0.76 | 1.00 | 0.84 | 0.77 to 0.95 |
+| C3 from S5 | 0.00 (0.00 to 0.00) | would very probably not have | none | 0.00 | 1.00 | 0.00 | 0.00 to 0.00 |
+| C3 from S5, prompt | 0.00 (0.00 to 0.00) | would very probably not have | none | 0.00 | 1.00 | 0.00 | 0.00 to 0.00 |
+| C4a Le Verrier June | 0.41 (0.04 to 0.81) | depends on | p disc routine | 0.41 | 1.00 | 0.41 | 0.32 to 0.71, prior-dependent |
+| C4a, prompt | 0.85 (0.63 to 0.99) | depends on | p follow | 0.85 | 1.00 | 0.85 | 0.78 to 0.95 |
+| C4b looking from 29 Jul | 0.35 (0.02 to 0.90) | depends on | c4b breadth arcmin | 0.35 | 1.00 | 0.35 | 0.13 to 0.72 |
+
+Readings, as the rule gives them:
+
+- **A0 actual procedure:** would very probably not have; 0 in every draw, no input moves it; conditional on the printed record and the priors of § 4 (N2's fallback).
+- **C1a 12 Aug against 30 Jul:** depends on p_follow; conditional on the printed record and the priors of § 4 (N2's fallback).
+- **C1b 4 Aug against 12 Aug:** depends on p_follow; conditional on the printed record and the priors of § 4 (N2's fallback).
+- **C1a, 7-day delay:** depends on p_follow; conditional on the printed record and the priors of § 4 (N2's fallback).
+- **C1b, 7-day delay:** depends on p_follow; conditional on the printed record and the priors of § 4 (N2's fallback).
+- **C2 chart, equinox 1800:** would very probably not have; 0 in every draw, no input moves it; conditional on N1's first fallback (the sheet's limits for the equinox of 1800).
+- **C2 chart, RA of date:** depends on p_follow; conditional on N1's second fallback (the sheet's limits applied to right ascension of date).
+- **C3 from S4:** depends on p_disc_routine; conditional on N3's fallback (zones alternating outward from the start place) and N2's.
+- **C3 from S4, prompt:** depends on n_unknown_sessions; conditional on N3's fallback (zones alternating outward from the start place) and N2's.
+- **C3 from S5:** would very probably not have; 0 in every draw, no input moves it; conditional on N3's fallback (zones alternating outward from the start place) and N2's.
+- **C3 from S5, prompt:** would very probably not have; 0 in every draw, no input moves it; conditional on N3's fallback (zones alternating outward from the start place) and N2's.
+- **C4a Le Verrier June:** depends on p_disc_routine; conditional on N3's fallback (zones alternating outward from the start place) and N2's.
+- **C4a, prompt:** depends on p_follow; conditional on N3's fallback (zones alternating outward from the start place) and N2's.
+- **C4b looking from 29 Jul:** depends on c4b_breadth_arcmin; conditional on N3's fallback (zones alternating outward from the start place) and N2's.
+- **C2 over the versions of N1:** depends on the Berlin sheet's limits.
+
+T1 by 1 October is 1 in every case under this reading, because the 29 September sweep and
+its noted disc are held. It is reported and not read.
+
+Prior-dependent (§ 6.5, 20,000 accepted draws with every interval of § 4 halved, acceptance
+0.183): C2 chart, RA of date, C3 from S4, C4a Le Verrier June. With the priors halved the chart case under right ascension of date moves
+to "very probably", and the two starts without prompt comparison to "an open chance".
+
+### R3. Paired differences against A0 (held reading)
+
+| case | P(C) − P(A0) | statement |
+|---|---|---|
+| C1a 12 Aug against 30 Jul | 0.71 (0.50 to 0.97) | improves on A0 |
+| C1b 4 Aug against 12 Aug | 0.28 (0.00 to 0.93) | no difference established |
+| C1a, 7-day delay | 0.71 (0.50 to 0.97) | improves on A0 |
+| C1b, 7-day delay | 0.28 (0.00 to 0.93) | no difference established |
+| C2 chart, equinox 1800 | 0.00 (0.00 to 0.00) | no difference established |
+| C2 chart, RA of date | 0.92 (0.77 to 1.00) | improves on A0 |
+| C3 from S4 | 0.41 (0.04 to 0.81) | improves on A0 |
+| C3 from S4, prompt | 0.79 (0.22 to 0.99) | improves on A0 |
+| C3 from S5 | 0.00 (0.00 to 0.00) | no difference established |
+| C3 from S5, prompt | 0.00 (0.00 to 0.00) | no difference established |
+| C4a Le Verrier June | 0.41 (0.04 to 0.81) | improves on A0 |
+| C4a, prompt | 0.85 (0.63 to 0.99) | improves on A0 |
+| C4b looking from 29 Jul | 0.35 (0.02 to 0.90) | improves on A0 |
+
+Since A0 is 0 under this reading, each difference equals the case's own probability, and
+"improves" means only that the case's 5 % point is above 0. C1b has a third of its draws at
+0, where the 12 August zone does not cover the 4 August place. The differences between
+counterfactuals are in the JSON (`pairs_between_counterfactuals_not_read`), tabulated and
+not read.
+
+### R4. C1's completion date
+
+Mean over draws of the probability that the comparison has flagged the planet by the date:
+
+| case | 13 Aug | 14 Aug | 16 Aug | 20 Aug | 22 Sep | 95 % of the flags by |
+|---|---|---|---|---|---|---|
+| C1a 12 Aug against 30 Jul | 0.50 | 0.66 | 0.71 | 0.71 | 0.71 | 1846-08-15 |
+| C1b 4 Aug against 12 Aug | 0.16 | 0.23 | 0.27 | 0.28 | 0.28 | 1846-08-16 |
+| C1a, 7-day delay | 0.00 | 0.00 | 0.00 | 0.66 | 0.71 | 1846-08-21 |
+| C1b, 7-day delay | 0.00 | 0.00 | 0.00 | 0.23 | 0.28 | 1846-08-22 |
+
+The desk work is short against the six weeks available: a comparison begun the next day is
+done by 16 August in nearly every draw, and a 7-day delay moves the date by a week and the
+probability before 23 September not at all.
+
+### R5. Tornado (§ 6.4), top three inputs per case
+
+Change in the mean probability before 23 September, input from its posterior 5 % to 95 %
+value; (c) marks an input read by conditioning.
+
+| case | first | second | third |
+|---|---|---|---|
+| C1a 12 Aug against 30 Jul | p follow +0.43 | moving extent factor +0.10 | branch ra +0.07 (c) |
+| C1b 4 Aug against 12 Aug | p follow +0.17 | weather +0.02 (c) | hours per session mean -0.02 (c) |
+| C1a, 7-day delay | p follow +0.43 | moving extent factor +0.10 | branch ra +0.07 (c) |
+| C1b, 7-day delay | p follow +0.17 | weather +0.02 (c) | hours per session mean -0.02 (c) |
+| C2 chart, RA of date | p follow +0.22 | hours per session mean -0.00 (c) | weather +0.00 (c) |
+| C3 from S4 | p disc routine +0.75 | n unknown sessions +0.06 (c) | hours per session mean -0.05 (c) |
+| C3 from S4, prompt | n unknown sessions +0.29 (c) | p disc routine +0.24 | p follow +0.23 |
+| C4a Le Verrier June | p disc routine +0.76 | p recorded +0.03 | hours per session mean -0.03 (c) |
+| C4a, prompt | p follow +0.26 | p disc routine +0.19 | p recorded +0.02 |
+| C4b looking from 29 Jul | c4b breadth arcmin -0.46 | p disc routine +0.33 | p disc looking +0.18 |
+
+A0, the chart under the equinox of 1800 and the two S5 cases are 0 in every draw and have no
+ranking.
+
+### R6. Secondary, reported and not read: his procedure as a plan (every event redrawn)
+
+| case | P before 23 Sep | T1 by 1 Oct | T2 before 23 Sep | P(C) − P(A0) |
+|---|---|---|---|---|
+| A0 actual procedure | 0.34 (0.03 to 0.70) | 0.78 | 0.34 | 0.00 (0.00 to 0.00) |
+| C1a 12 Aug against 30 Jul | 0.81 (0.56 to 0.98) | 0.94 | 0.81 | 0.47 (0.15 to 0.83) |
+| C1b 4 Aug against 12 Aug | 0.52 (0.05 to 0.96) | 0.84 | 0.52 | 0.19 (0.00 to 0.73) |
+| C1a, 7-day delay | 0.81 (0.56 to 0.98) | 0.94 | 0.81 | 0.47 (0.15 to 0.83) |
+| C1b, 7-day delay | 0.52 (0.05 to 0.96) | 0.84 | 0.52 | 0.19 (0.00 to 0.73) |
+| C2 chart, equinox 1800 | 0.34 (0.03 to 0.70) | 0.78 | 0.34 | 0.00 (0.00 to 0.00) |
+| C2 chart, RA of date | 0.94 (0.83 to 1.00) | 0.98 | 0.94 | 0.61 (0.28 to 0.92) |
+| C3 from S4 | 0.41 (0.04 to 0.81) | 0.81 | 0.40 | 0.07 (-0.02 to 0.14) |
+| C3 from S4, prompt | 0.79 (0.22 to 0.99) | 0.95 | 0.76 | 0.45 (-0.02 to 0.82) |
+| C3 from S5 | 0.00 (0.00 to 0.00) | 0.67 | 0.00 | -0.34 (-0.70 to -0.03) |
+| C3 from S5, prompt | 0.00 (0.00 to 0.00) | 0.67 | 0.00 | -0.34 (-0.70 to -0.03) |
+| C4a Le Verrier June | 0.41 (0.04 to 0.81) | 0.81 | 0.41 | 0.07 (-0.01 to 0.14) |
+| C4a, prompt | 0.85 (0.63 to 0.99) | 0.95 | 0.85 | 0.51 (0.24 to 0.83) |
+| C4b looking from 29 Jul | 0.35 (0.02 to 0.90) | 0.77 | 0.35 | 0.01 (-0.26 to 0.64) |
+
+Under the replay A0 is 0.34: the chance that a disc is noted on one of two routine recordings,
+1 − (1 − p_disc_routine)², on draws that were kept because no disc was noted. The starts
+from S4, S5 and Le Verrier's place are the same under both readings before 23 September,
+since they share no recording with the history before 29 September.
+
+### R7. Declared choices and deviations
+
+1. **Tornado.** Run on the first 10,000 accepted draws. Inputs that are a number on the draw
+   are set to their posterior 5 % and 95 % values with everything else as drawn. Inputs that
+   shape the sessions (weather, the number of sessions, mean hours per session) cannot be set
+   without redrawing the sessions, so they are read by conditioning: the mean over the
+   lowest tenth against the highest tenth of the draws. The zone order (north or south
+   first) is set; the zone branch (declination edge or right-ascension end) is conditioned.
+   Conditioned rows carry the other inputs' correlations with them.
+2. **Prior width.** 20,000 accepted draws, not 100,000. The zone priors and the branch
+   weight are not halved; every interval of § 4's table and the C4b breadth is.
+3. **p_follow is drawn once per draw and applied independently to each comparison.** Where a
+   case has two comparisons that can flag the planet (the chart case under right ascension
+   of date; a prompt comparison on two zones), the chance is 1 − (1 − p_follow)².
+4. **Event seeds** are `[2026, 11, 4, 2, case, chunk]`, so that a resumed run reproduces the
+   inner draws chunk by chunk.
+5. **Compute:** 20 min on one core against the plan's "seconds" and the pre-run's
+   estimate of 6 min. The estimate covered one reading with inner draws; the run had two
+   readings, the prior-width run and the tornado. One ledger row `p1b_challis/draws`, local
+   only. The site is untouched.
+6. **The paired statement is weak by construction.** With A0 at 0, "improves on A0" does not
+   distinguish a case at 0.35 from one at 0.85; the rows of R2 do.
+
+### R8. What this does and does not show
+
+It shows which of the named changes could have mattered and what each rests on. The
+comparison he began and broke off at No. 39 is the cheapest: no new observation, a few days
+of desk work, and its probability is p_follow times the chance that the July zone reached
+the planet's August place. The start place matters less than the method: from S4 or from
+Le Verrier's June place the planet is recorded within weeks, but a routine recording is
+recognised only through a noted disc, on which the record itself (two recordings, no disc)
+and the eight earlier recordings by others both point low. It does not show what Challis
+ought to have done, and it is not a probability for the British search as a whole. Every
+number is conditional on the printed record standing in for the observing books (N2), and
+the chart case on the limits of a sheet not yet examined (N1).

@@ -79,14 +79,25 @@ class Draw:
     extra: dict = field(default_factory=dict)
 
 
-def _u(rng, name: str) -> float:
-    lo, hi = PRIORS[name]
-    return float(rng.uniform(lo, hi))
+def halved(priors: dict) -> dict:
+    """Every interval halved about its centre (§ 6.5); the session count to whole numbers."""
+    out = {}
+    for k, (lo, hi) in priors.items():
+        c, h = (lo + hi) / 2.0, (hi - lo) / 4.0
+        out[k] = (math.ceil(c - h), math.floor(c + h)) if k == "n_unknown_sessions" else (
+            c - h, c + h)  # fmt: skip
+    return out
 
 
-def draw(rng: np.random.Generator, geo: dict) -> Draw:
+def draw(rng: np.random.Generator, geo: dict, priors: dict | None = None) -> Draw:
     """One draw of § 4's priors. ``geo``: per-night arrays ``ra_h``, ``dec_deg`` of Neptune,
     ``moon_excluded`` and the targets' ``ra_h``/``dec_deg``."""
+    pri = PRIORS if priors is None else priors
+
+    def _u(rng: np.random.Generator, name: str) -> float:
+        lo, hi = pri[name]
+        return float(rng.uniform(lo, hi))
+
     dec30, dec12 = geo["dec_deg"][JUL30], geo["dec_deg"][AUG12]
     half = ZONE_ARCMIN / 60.0
     if rng.random() < 0.5:
@@ -102,7 +113,7 @@ def draw(rng: np.random.Generator, geo: dict) -> Draw:
     usable[list(KNOWN)] = True
     usable[AUG4 + 1 : AUG12] = False  # moonlight and weather, 4 to 12 August (primary)
     usable[SEP30] = False  # "the moon being in the way" (primary)
-    lo, hi = PRIORS["n_unknown_sessions"]
+    lo, hi = pri["n_unknown_sessions"]
     n = int(rng.integers(lo, hi + 1))
     cand = np.flatnonzero(usable[UNKNOWN_FIRST : UNKNOWN_LAST + 1]) + UNKNOWN_FIRST
     unknown = sorted(rng.choice(cand, size=min(n, cand.size), replace=False).tolist())
@@ -164,10 +175,26 @@ def _aug12_fraction(d: Draw) -> float:
     return min(1.0, PLANET_NUMBER_AUG12 / (d.rate * d.hours[AUG12]))
 
 
-def _history(d: Draw) -> list[Group]:
-    """What the record fixes: recorded on 4 and 12 August (routine) and 29 September (looking)."""
-    return [Group([(AUG4, 1.0, d.p_r)]), Group([(AUG12, 1.0, d.p_r)]),
-            Group([(SEP29, 1.0, d.p_l)])]  # fmt: skip
+def _history(d: Draw, held: bool) -> list[Group]:
+    """What the record fixes: recorded on 4 and 12 August (routine) and 29 September (looking).
+    ``held``: the realised outcomes are kept (no disc noted in August, a disc noted on
+    29 September); otherwise the events are drawn afresh."""
+    pr, pl = (0.0, 1.0) if held else (d.p_r, d.p_l)
+    return [Group([(AUG4, 1.0, pr)]), Group([(AUG12, 1.0, pr)]), Group([(SEP29, 1.0, pl)])]
+
+
+def jul30_extent_covers_aug12_place(d: Draw) -> bool:
+    """C1a: did the 30 July zone's extent in right ascension reach the planet's place of
+    12 August? The August zone was the longer and included the whole of the July one; where
+    the July zone lay within it is not printed and is uniform over the possible settings."""
+    if d.branch == "ra":
+        return True  # the July zone's east end lay east of the August place
+    l30, l12 = d.hours[JUL30] * d.f_mov, d.hours[AUG12]
+    if l30 >= l12:
+        return True
+    x = _aug12_fraction(d) * l12
+    start = float(d.u_zone[1]) * (l12 - l30)
+    return start <= x <= start + l30
 
 
 def _zone_covers(d: Draw, geo: dict, night_of_place: int) -> bool:
@@ -184,7 +211,7 @@ def _sweeps(d: Draw) -> list[int]:
 
 def _layout_groups(
     d: Draw, geo: dict, target: str, prompt: bool, delay: int,
-    breadth_arcmin: float = ZONE_ARCMIN, looking: bool = False,
+    breadth_arcmin: float = ZONE_ARCMIN, looking: bool = False, held: bool = False,
 ) -> list[Group]:  # fmt: skip
     """C3, C4: zones laid out from ``target``'s place, declination intervals outward from the
     centre, each swept twice (fixed, then moving) before the next; the 4 August sector sweep
@@ -212,7 +239,7 @@ def _layout_groups(
     inside = (abs(geo["dec_deg"][AUG4] - tdec[AUG4]) <= SECTOR_HALF_ARCMIN / 60.0
               and abs(geo["ra_h"][AUG4] - tra[AUG4]) <= d.hours[AUG4] / 2.0)  # fmt: skip
     out.append(Group([(AUG4, d.p_rec if inside else 0.0, d.p_r)]))
-    out.append(Group([(SEP29, 1.0, d.p_l)]))
+    out.append(Group([(SEP29, 1.0, 1.0 if held else d.p_l)]))  # the sweep of the record
     return out
 
 
@@ -220,14 +247,16 @@ CASES = ("A0", "C1a", "C1b", "C1a_7d", "C1b_7d", "C2_1800", "C2_date", "C3_S4", 
          "C3_S5", "C3_S5_prompt", "C4a", "C4a_prompt", "C4b")  # fmt: skip
 
 
-def groups(d: Draw, geo: dict, case: str) -> list[Group]:
+def groups(d: Draw, geo: dict, case: str, held: bool = False) -> list[Group]:
+    """The events of ``case``. ``held``: a recording the case shares with the history (same
+    night, same sweep, same mode) keeps its realised outcome; all other events are drawn."""
     if case == "A0":
-        return _history(d)
+        return _history(d, held)
     if case.startswith("C1"):
         delay = 7 if case.endswith("_7d") else 1
-        g4, g12, g29 = _history(d)
+        g4, g12, g29 = _history(d, held)
         if case.startswith("C1a"):  # 12 August against 30 July, carried through No. 49
-            if _zone_covers(d, geo, AUG12):
+            if _zone_covers(d, geo, AUG12) and jul30_extent_covers_aug12_place(d):
                 g12.pc = d.p_f
                 g12.tc = AUG12 + delay + desk_days(d, _aug12_fraction(d)) - 1
         else:  # the 4 August sector stars against the 12 August zone
@@ -237,17 +266,17 @@ def groups(d: Draw, geo: dict, case: str) -> list[Group]:
         return [g4, g12, g29]
     if case.startswith("C2"):
         key = "on_chart_1800" if case == "C2_1800" else "on_chart_date"
-        g4, g12, g29 = _history(d)
+        g4, g12, g29 = _history(d, held)
         for g, n, u in ((g4, AUG4, d.u_zone[0]), (g12, AUG12, _aug12_fraction(d))):
             if geo[key][n]:
                 g.pc, g.tc = d.p_f, n + 1 + desk_days(d, float(u)) - 1
         return [g4, g12, g29]
     if case.startswith("C3"):
-        return _layout_groups(d, geo, case.split("_")[1], case.endswith("prompt"), 1)
+        return _layout_groups(d, geo, case.split("_")[1], case.endswith("prompt"), 1, held=held)
     if case.startswith("C4a"):
-        return _layout_groups(d, geo, "LVJ", case.endswith("prompt"), 1)
+        return _layout_groups(d, geo, "LVJ", case.endswith("prompt"), 1, held=held)
     if case == "C4b":
-        return _layout_groups(d, geo, "LVJ", False, 1, d.c4b_breadth, looking=True)
+        return _layout_groups(d, geo, "LVJ", False, 1, d.c4b_breadth, looking=True, held=held)
     raise ValueError(case)
 
 
@@ -299,3 +328,23 @@ def sample(d: Draw, gs: list[Group], rng: np.random.Generator, n: int) -> np.nda
             flag = any_rec & (rng.random(n) < g.pc)
             t1 = np.where(flag, np.minimum(t1, g.tc), t1)
     return t1
+
+
+def reading(q05: float, q95: float) -> str:
+    """§ 7's rows on the 5–95 % range of the primary outcome."""
+    if q05 >= 0.8:
+        return "would very probably have recognised the planet before Galle's night"
+    if q95 <= 0.2:
+        return "would very probably not have"
+    if q05 >= 0.2 and q95 <= 0.8:
+        return "an open chance"
+    return "depends on"
+
+
+def paired_reading(q05: float, q95: float) -> str:
+    """§ 7's statement on a paired difference P(C) − P(A0)."""
+    if q05 > 0.0:
+        return "improves on A0"
+    if q95 < 0.0:
+        return "does worse than A0"
+    return "no difference established"

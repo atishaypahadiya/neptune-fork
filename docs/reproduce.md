@@ -64,6 +64,7 @@ the commands below use these identifiers.
 | Phase 1b: the memoir transcription | step 3b stage A | `docs/notes/P1B_adams_reproduction.md` |
 | Phase 1b: the reproduction of Adams's own solution | step 3b stages B–D (`fork.export.p1b_adams_repro`; ledger `p1b_adams_repro/cheap`, `p1b_adams_repro/d3iii/c<k>`) | `docs/notes/P1B_adams_reproduction.md` |
 | Phase 1b: noise against systematic | step 3c (`fork.export.p1b_adams_noise`; ledger `p1b_adams_noise/draws`) | `docs/notes/P1B_adams_noise.md` |
+| Phase 1b: Challis's search as a detection model | step 4 (`fork.export.p1b_challis`; ledger `p1b_challis/draws`) | `docs/notes/P1B_challis_detection.md` |
 
 ## Setup
 
@@ -332,3 +333,17 @@ the truth; `draws` and `summarize` need only `prerun.json` and the memoir tables
 Run of 2026-11-11: 24.5 CPU-h and 2 h 06 min wall on 12 workers for the full run, 0.3 CPU-h for
 three recomputed chunks of sensitivity (c). A first full run was stopped after 2 h 06 min with
 nothing saved (at most 25 CPU-h, not in the ledger); see Totals.
+
+### Step 4: Challis's search as a detection model (pre-registered in `docs/notes/P1B_challis_detection.md`)
+
+```sh
+uv run pytest -q tests/test_p1b_challis.py                                   # 26 tests
+FORK_HORIZONS_CACHE_ONLY=1 uv run python -m fork.export.p1b_challis prerun   # docs/notes/P1B_challis_prerun.json: Neptune per night, the start places, the Moon rule
+FORK_HORIZONS_CACHE_ONLY=1 uv run python -m fork.export.p1b_challis draws    # 100,000 accepted draws, both readings, the prior-width run and the tornado; about 20 min on one core
+FORK_HORIZONS_CACHE_ONLY=1 uv run python -m fork.export.p1b_challis summarize # docs/notes/P1B_challis_detection.json and three figures
+```
+
+Progress in `data/cache/p1b_challis/progress.log`, one line per chunk of 5,000 accepted draws;
+a rerun of `draws` skips the chunks already in `data/cache/p1b_challis/main/` and `halved/`.
+One ledger row `p1b_challis/draws` (0.33 CPU-h), in the local ledger and not in the totals
+above. `smoke` writes to the cache; the smoke record in `docs/notes/` is the pre-run's.

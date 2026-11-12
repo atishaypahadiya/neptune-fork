@@ -1,0 +1,3585 @@
+{
+ "plan": "docs/notes/P1B_challis_detection.md",
+ "prerun_sha256": "5d2dfad0842d164712014a526c1ee8b191cd2d59e06d21e963f9d06f89a1aba5",
+ "n_accepted": 100000,
+ "seeds": {
+  "draws": [
+   2026,
+   11,
+   4,
+   1
+  ],
+  "events": [
+   2026,
+   11,
+   4,
+   2,
+   "case",
+   "chunk"
+  ]
+ },
+ "readings": {
+  "held": "realised events held (read)",
+  "replay": "his procedure as a plan: every event redrawn (reported, not read)"
+ },
+ "acceptance": {
+  "n_drawn": 1003853,
+  "n_accepted": 100000,
+  "all": 0.09961617886284148,
+  "conditions_2_3": 0.3203726043554186,
+  "condition_4": 0.30897850581708675
+ },
+ "acceptance_halved_priors": {
+  "n_drawn": 109239,
+  "n_accepted": 20000,
+  "all": 0.18308479572313918,
+  "conditions_2_3": 0.3158853523009182,
+  "condition_4": 0.5788225816787045
+ },
+ "condition_1_unrestricted": {
+  "band_arcmin": 600.0,
+  "fraction_containing_planet_12_aug": 0.015,
+  "fraction_also_excluding_30_jul_by_declination": 0.012043674538059611,
+  "note": "a 9′ zone set uniformly in Airy's 10° of latitude"
+ },
+ "checks": {
+  "a0_t2_by_1_october_held": {
+   "mean": 0.0,
+   "q05": 0.0,
+   "q95": 0.0
+  },
+  "a0_t2_by_1_october_replay": {
+   "mean": 0.33594461585071944,
+   "q05": 0.029008181781618677,
+   "q95": 0.6954722074875169
+  },
+  "a0_primary_held_max": 0.0
+ },
+ "cases": {
+  "A0": {
+   "label": "A0 actual procedure",
+   "conditional_on": "the printed record and the priors of § 4 (N2's fallback)",
+   "top_input": null,
+   "held": {
+    "primary": {
+     "mean": 0.0,
+     "q05": 0.0,
+     "q95": 0.0
+    },
+    "by_1_october": {
+     "mean": 1.0,
+     "q05": 1.0,
+     "q95": 1.0
+    },
+    "t2_primary": {
+     "mean": 0.0,
+     "q05": 0.0,
+     "q95": 0.0
+    },
+    "t2_by_1_october": {
+     "mean": 0.0,
+     "q05": 0.0,
+     "q95": 0.0
+    },
+    "paired_minus_A0": {
+     "mean": 0.0,
+     "q05": 0.0,
+     "q95": 0.0
+    },
+    "inner_minus_exact_mean": 0.0,
+    "inner_minus_exact_max_abs_in_se": 0.0
+   },
+   "replay": {
+    "primary": {
+     "mean": 0.33594461585071944,
+     "q05": 0.029008181781618677,
+     "q95": 0.6954722074875169
+    },
+    "by_1_october": {
+     "mean": 0.7836535259992964,
+     "q05": 0.43363069570277096,
+     "q95": 0.9855699135030213
+    },
+    "t2_primary": {
+     "mean": 0.33594461585071944,
+     "q05": 0.029008181781618677,
+     "q95": 0.6954722074875169
+    },
+    "t2_by_1_october": {
+     "mean": 0.33594461585071944,
+     "q05": 0.029008181781618677,
+     "q95": 0.6954722074875169
+    },
+    "paired_minus_A0": {
+     "mean": 0.0,
+     "q05": 0.0,
+     "q95": 0.0
+    },
+    "inner_minus_exact_mean": -8.185850719414515e-06,
+    "inner_minus_exact_max_abs_in_se": 3.7974496097553128
+   },
+   "reading_row": "would very probably not have",
+   "halved_priors": {
+    "primary": {
+     "mean": 0.0,
+     "q05": 0.0,
+     "q95": 0.0
+    },
+    "reading_row": "would very probably not have"
+   },
+   "prior_dependent": false,
+   "reading": "would very probably not have; 0 in every draw, no input moves it; conditional on the printed record and the priors of § 4 (N2's fallback)",
+   "paired_reading": null
+  },
+  "C1a": {
+   "label": "C1a 12 Aug against 30 Jul",
+   "conditional_on": "the printed record and the priors of § 4 (N2's fallback)",
+   "top_input": "p_follow",
+   "held": {
+    "primary": {
+     "mean": 0.7144044757329789,
+     "q05": 0.5014618801996444,
+     "q95": 0.9739144846200573
+    },
+    "by_1_october": {
+     "mean": 1.0,
+     "q05": 1.0,
+     "q95": 1.0
+    },
+    "t2_primary": {
+     "mean": 0.7144044757329789,
+     "q05": 0.5014618801996444,
+     "q95": 0.9739144846200573
+    },
+    "t2_by_1_october": {
+     "mean": 0.7144044757329789,
+     "q05": 0.5014618801996444,
+     "q95": 0.9739144846200573
+    },
+    "paired_minus_A0": {
+     "mean": 0.7144044757329789,
+     "q05": 0.5014618801996444,
+     "q95": 0.9739144846200573
+    },
+    "inner_minus_exact_mean": -1.7557329788832376e-06,
+    "inner_minus_exact_max_abs_in_se": 4.078059708848913
+   },
+   "replay": {
+    "primary": {
+     "mean": 0.8103021569579917,
+     "q05": 0.5585515103177509,
+     "q95": 0.9845986707239541
+    },
+    "by_1_october": {
+     "mean": 0.9381460749634402,
+     "q05": 0.793924630255916,
+     "q95": 0.9985554477143307
+    },
+    "t2_primary": {
+     "mean": 0.8103021569579917,
+     "q05": 0.5585515103177509,
+     "q95": 0.9845986707239541
+    },
+    "t2_by_1_october": {
+     "mean": 0.8103021569579917,
+     "q05": 0.5585515103177509,
+     "q95": 0.9845986707239541
+    },
+    "paired_minus_A0": {
+     "mean": 0.47435754110727235,
+     "q05": 0.14549498540481243,
+     "q95": 0.8287906205458129
+    },
+    "inner_minus_exact_mean": -1.5246957991737822e-05,
+    "inner_minus_exact_max_abs_in_se": 4.187645732839785
+   },
+   "reading_row": "depends on",
+   "halved_priors": {
+    "primary": {
+     "mean": 0.7471119730057145,
+     "q05": 0.6368174142151987,
+     "q95": 0.8630275879113576
+    },
+    "reading_row": "depends on"
+   },
+   "prior_dependent": false,
+   "reading": "depends on p_follow; conditional on the printed record and the priors of § 4 (N2's fallback)",
+   "paired_reading": "improves on A0"
+  },
+  "C1b": {
+   "label": "C1b 4 Aug against 12 Aug",
+   "conditional_on": "the printed record and the priors of § 4 (N2's fallback)",
+   "top_input": "p_follow",
+   "held": {
+    "primary": {
+     "mean": 0.28349934904819846,
+     "q05": 0.0,
+     "q95": 0.9346235819196149
+    },
+    "by_1_october": {
+     "mean": 1.0,
+     "q05": 1.0,
+     "q95": 1.0
+    },
+    "t2_primary": {
+     "mean": 0.28349934904819846,
+     "q05": 0.0,
+     "q95": 0.9346235819196149
+    },
+    "t2_by_1_october": {
+     "mean": 0.28349934904819846,
+     "q05": 0.0,
+     "q95": 0.9346235819196149
+    },
+    "paired_minus_A0": {
+     "mean": 0.28349934904819846,
+     "q05": 0.0,
+     "q95": 0.9346235819196149
+    },
+    "inner_minus_exact_mean": -7.77904819847296e-06,
+    "inner_minus_exact_max_abs_in_se": 3.8241328989341548
+   },
+   "replay": {
+    "primary": {
+     "mean": 0.5238419407353411,
+     "q05": 0.046081798688399705,
+     "q95": 0.9615804785950853
+    },
+    "by_1_october": {
+     "mean": 0.8448249098700247,
+     "q05": 0.49429937800619533,
+     "q95": 0.9963211823232766
+    },
+    "t2_primary": {
+     "mean": 0.5238419407353411,
+     "q05": 0.046081798688399705,
+     "q95": 0.9615804785950853
+    },
+    "t2_by_1_october": {
+     "mean": 0.5238419407353411,
+     "q05": 0.046081798688399705,
+     "q95": 0.9615804785950853
+    },
+    "paired_minus_A0": {
+     "mean": 0.18789732488462174,
+     "q05": 0.0,
+     "q95": 0.7284663694665877
+    },
+    "inner_minus_exact_mean": 7.208926465884033e-05,
+    "inner_minus_exact_max_abs_in_se": 4.614431788182699
+   },
+   "reading_row": "depends on",
+   "halved_priors": {
+    "primary": {
+     "mean": 0.2795536457344016,
+     "q05": 0.0,
+     "q95": 0.8398696947996303
+    },
+    "reading_row": "depends on"
+   },
+   "prior_dependent": false,
+   "reading": "depends on p_follow; conditional on the printed record and the priors of § 4 (N2's fallback)",
+   "paired_reading": "no difference established"
+  },
+  "C1a_7d": {
+   "label": "C1a, 7-day delay",
+   "conditional_on": "the printed record and the priors of § 4 (N2's fallback)",
+   "top_input": "p_follow",
+   "held": {
+    "primary": {
+     "mean": 0.7144044757329789,
+     "q05": 0.5014618801996444,
+     "q95": 0.9739144846200573
+    },
+    "by_1_october": {
+     "mean": 1.0,
+     "q05": 1.0,
+     "q95": 1.0
+    },
+    "t2_primary": {
+     "mean": 0.7144044757329789,
+     "q05": 0.5014618801996444,
+     "q95": 0.9739144846200573
+    },
+    "t2_by_1_october": {
+     "mean": 0.7144044757329789,
+     "q05": 0.5014618801996444,
+     "q95": 0.9739144846200573
+    },
+    "paired_minus_A0": {
+     "mean": 0.7144044757329789,
+     "q05": 0.5014618801996444,
+     "q95": 0.9739144846200573
+    },
+    "inner_minus_exact_mean": -3.5255732978883095e-05,
+    "inner_minus_exact_max_abs_in_se": 3.949391555217415
+   },
+   "replay": {
+    "primary": {
+     "mean": 0.8103021569579917,
+     "q05": 0.5585515103177509,
+     "q95": 0.9845986707239541
+    },
+    "by_1_october": {
+     "mean": 0.9381460749634402,
+     "q05": 0.793924630255916,
+     "q95": 0.9985554477143307
+    },
+    "t2_primary": {
+     "mean": 0.8103021569579917,
+     "q05": 0.5585515103177509,
+     "q95": 0.9845986707239541
+    },
+    "t2_by_1_october": {
+     "mean": 0.8103021569579917,
+     "q05": 0.5585515103177509,
+     "q95": 0.9845986707239541
+    },
+    "paired_minus_A0": {
+     "mean": 0.47435754110727235,
+     "q05": 0.14549498540481243,
+     "q95": 0.8287906205458129
+    },
+    "inner_minus_exact_mean": -1.2026957991737826e-05,
+    "inner_minus_exact_max_abs_in_se": 4.219135337588874
+   },
+   "reading_row": "depends on",
+   "halved_priors": {
+    "primary": {
+     "mean": 0.7471119730057145,
+     "q05": 0.6368174142151987,
+     "q95": 0.8630275879113576
+    },
+    "reading_row": "depends on"
+   },
+   "prior_dependent": false,
+   "reading": "depends on p_follow; conditional on the printed record and the priors of § 4 (N2's fallback)",
+   "paired_reading": "improves on A0"
+  },
+  "C1b_7d": {
+   "label": "C1b, 7-day delay",
+   "conditional_on": "the printed record and the priors of § 4 (N2's fallback)",
+   "top_input": "p_follow",
+   "held": {
+    "primary": {
+     "mean": 0.28349934904819846,
+     "q05": 0.0,
+     "q95": 0.9346235819196149
+    },
+    "by_1_october": {
+     "mean": 1.0,
+     "q05": 1.0,
+     "q95": 1.0
+    },
+    "t2_primary": {
+     "mean": 0.28349934904819846,
+     "q05": 0.0,
+     "q95": 0.9346235819196149
+    },
+    "t2_by_1_october": {
+     "mean": 0.28349934904819846,
+     "q05": 0.0,
+     "q95": 0.9346235819196149
+    },
+    "paired_minus_A0": {
+     "mean": 0.28349934904819846,
+     "q05": 0.0,
+     "q95": 0.9346235819196149
+    },
+    "inner_minus_exact_mean": 1.5250951801527188e-05,
+    "inner_minus_exact_max_abs_in_se": 4.519549263786837
+   },
+   "replay": {
+    "primary": {
+     "mean": 0.5238419407353411,
+     "q05": 0.046081798688399705,
+     "q95": 0.9615804785950853
+    },
+    "by_1_october": {
+     "mean": 0.8448249098700247,
+     "q05": 0.49429937800619533,
+     "q95": 0.9963211823232766
+    },
+    "t2_primary": {
+     "mean": 0.5238419407353411,
+     "q05": 0.046081798688399705,
+     "q95": 0.9615804785950853
+    },
+    "t2_by_1_october": {
+     "mean": 0.5238419407353411,
+     "q05": 0.046081798688399705,
+     "q95": 0.9615804785950853
+    },
+    "paired_minus_A0": {
+     "mean": 0.18789732488462174,
+     "q05": 0.0,
+     "q95": 0.7284663694665877
+    },
+    "inner_minus_exact_mean": -2.246073534115963e-05,
+    "inner_minus_exact_max_abs_in_se": 4.213061162821194
+   },
+   "reading_row": "depends on",
+   "halved_priors": {
+    "primary": {
+     "mean": 0.2795536457344016,
+     "q05": 0.0,
+     "q95": 0.8398696947996303
+    },
+    "reading_row": "depends on"
+   },
+   "prior_dependent": false,
+   "reading": "depends on p_follow; conditional on the printed record and the priors of § 4 (N2's fallback)",
+   "paired_reading": "no difference established"
+  },
+  "C2_1800": {
+   "label": "C2 chart, equinox 1800",
+   "conditional_on": "N1's first fallback (the sheet's limits for the equinox of 1800)",
+   "top_input": null,
+   "held": {
+    "primary": {
+     "mean": 0.0,
+     "q05": 0.0,
+     "q95": 0.0
+    },
+    "by_1_october": {
+     "mean": 1.0,
+     "q05": 1.0,
+     "q95": 1.0
+    },
+    "t2_primary": {
+     "mean": 0.0,
+     "q05": 0.0,
+     "q95": 0.0
+    },
+    "t2_by_1_october": {
+     "mean": 0.0,
+     "q05": 0.0,
+     "q95": 0.0
+    },
+    "paired_minus_A0": {
+     "mean": 0.0,
+     "q05": 0.0,
+     "q95": 0.0
+    },
+    "inner_minus_exact_mean": 0.0,
+    "inner_minus_exact_max_abs_in_se": 0.0
+   },
+   "replay": {
+    "primary": {
+     "mean": 0.33594461585071944,
+     "q05": 0.029008181781618677,
+     "q95": 0.6954722074875169
+    },
+    "by_1_october": {
+     "mean": 0.7836535259992964,
+     "q05": 0.43363069570277096,
+     "q95": 0.9855699135030213
+    },
+    "t2_primary": {
+     "mean": 0.33594461585071944,
+     "q05": 0.029008181781618677,
+     "q95": 0.6954722074875169
+    },
+    "t2_by_1_october": {
+     "mean": 0.33594461585071944,
+     "q05": 0.029008181781618677,
+     "q95": 0.6954722074875169
+    },
+    "paired_minus_A0": {
+     "mean": 0.0,
+     "q05": 0.0,
+     "q95": 0.0
+    },
+    "inner_minus_exact_mean": 2.8234149280585222e-05,
+    "inner_minus_exact_max_abs_in_se": 4.3836057473453875
+   },
+   "reading_row": "would very probably not have",
+   "halved_priors": {
+    "primary": {
+     "mean": 0.0,
+     "q05": 0.0,
+     "q95": 0.0
+    },
+    "reading_row": "would very probably not have"
+   },
+   "prior_dependent": false,
+   "reading": "would very probably not have; 0 in every draw, no input moves it; conditional on N1's first fallback (the sheet's limits for the equinox of 1800)",
+   "paired_reading": "no difference established"
+  },
+  "C2_date": {
+   "label": "C2 chart, RA of date",
+   "conditional_on": "N1's second fallback (the sheet's limits applied to right ascension of date)",
+   "top_input": "p_follow",
+   "held": {
+    "primary": {
+     "mean": 0.916714839003403,
+     "q05": 0.7742020810217533,
+     "q95": 0.9993792055951611
+    },
+    "by_1_october": {
+     "mean": 1.0,
+     "q05": 1.0,
+     "q95": 1.0
+    },
+    "t2_primary": {
+     "mean": 0.916714839003403,
+     "q05": 0.7742020810217533,
+     "q95": 0.9993792055951611
+    },
+    "t2_by_1_october": {
+     "mean": 0.916714839003403,
+     "q05": 0.7742020810217533,
+     "q95": 0.9993792055951611
+    },
+    "paired_minus_A0": {
+     "mean": 0.916714839003403,
+     "q05": 0.7742020810217533,
+     "q95": 0.9993792055951611
+    },
+    "inner_minus_exact_mean": 4.600996597006666e-06,
+    "inner_minus_exact_max_abs_in_se": 3.7733000965557553
+   },
+   "replay": {
+    "primary": {
+     "mean": 0.9447185712679463,
+     "q05": 0.8301470267500793,
+     "q95": 0.9996222294161116
+    },
+    "by_1_october": {
+     "mean": 0.9819724830823366,
+     "q05": 0.9288136322719286,
+     "q95": 0.9999453177576345
+    },
+    "t2_primary": {
+     "mean": 0.9447185712679463,
+     "q05": 0.8301470267500793,
+     "q95": 0.9996222294161116
+    },
+    "t2_by_1_october": {
+     "mean": 0.9447185712679463,
+     "q05": 0.8301470267500793,
+     "q95": 0.9996222294161116
+    },
+    "paired_minus_A0": {
+     "mean": 0.608773955417227,
+     "q05": 0.2768944390977421,
+     "q95": 0.9230916447711437
+    },
+    "inner_minus_exact_mean": -3.423126794637923e-05,
+    "inner_minus_exact_max_abs_in_se": 4.2132957365110695
+   },
+   "reading_row": "depends on",
+   "halved_priors": {
+    "primary": {
+     "mean": 0.9321905302244633,
+     "q05": 0.868728548761366,
+     "q95": 0.9812457576660403
+    },
+    "reading_row": "would very probably have recognised the planet before Galle's night"
+   },
+   "prior_dependent": true,
+   "reading": "depends on p_follow; conditional on N1's second fallback (the sheet's limits applied to right ascension of date)",
+   "paired_reading": "improves on A0"
+  },
+  "C3_S4": {
+   "label": "C3 from S4",
+   "conditional_on": "N3's fallback (zones alternating outward from the start place) and N2's",
+   "top_input": "p_disc_routine",
+   "held": {
+    "primary": {
+     "mean": 0.40872367574917634,
+     "q05": 0.03729786149530766,
+     "q95": 0.8078202989161122
+    },
+    "by_1_october": {
+     "mean": 1.0,
+     "q05": 1.0,
+     "q95": 1.0
+    },
+    "t2_primary": {
+     "mean": 0.39894580702912447,
+     "q05": 0.03539079122900067,
+     "q95": 0.8037491720484675
+    },
+    "t2_by_1_october": {
+     "mean": 0.42004997601468813,
+     "q05": 0.040153100555717657,
+     "q95": 0.8115323456358412
+    },
+    "paired_minus_A0": {
+     "mean": 0.40872367574917634,
+     "q05": 0.03729786149530766,
+     "q95": 0.8078202989161122
+    },
+    "inner_minus_exact_mean": 1.2964250823687176e-05,
+    "inner_minus_exact_max_abs_in_se": 4.059530356053075
+   },
+   "replay": {
+    "primary": {
+     "mean": 0.40872367574917634,
+     "q05": 0.03729786149530766,
+     "q95": 0.8078202989161122
+    },
+    "by_1_october": {
+     "mean": 0.8110973620400389,
+     "q05": 0.46903261808233737,
+     "q95": 0.9889821555128837
+    },
+    "t2_primary": {
+     "mean": 0.39894580702912447,
+     "q05": 0.03539079122900067,
+     "q95": 0.8037491720484675
+    },
+    "t2_by_1_october": {
+     "mean": 0.42004997601468813,
+     "q05": 0.040153100555717657,
+     "q95": 0.8115323456358412
+    },
+    "paired_minus_A0": {
+     "mean": 0.07277905989845691,
+     "q05": -0.02039458572507424,
+     "q95": 0.13824357533582787
+    },
+    "inner_minus_exact_mean": 6.35942508236873e-05,
+    "inner_minus_exact_max_abs_in_se": 4.668421262600513
+   },
+   "reading_row": "depends on",
+   "halved_priors": {
+    "primary": {
+     "mean": 0.5202651630306615,
+     "q05": 0.3323545723185452,
+     "q95": 0.7136149895938085
+    },
+    "reading_row": "an open chance"
+   },
+   "prior_dependent": true,
+   "reading": "depends on p_disc_routine; conditional on N3's fallback (zones alternating outward from the start place) and N2's",
+   "paired_reading": "improves on A0"
+  },
+  "C3_S4_prompt": {
+   "label": "C3 from S4, prompt",
+   "conditional_on": "N3's fallback (zones alternating outward from the start place) and N2's",
+   "top_input": "n_unknown_sessions",
+   "held": {
+    "primary": {
+     "mean": 0.7895055462533884,
+     "q05": 0.22220451119292506,
+     "q95": 0.9854139273862077
+    },
+    "by_1_october": {
+     "mean": 1.0,
+     "q05": 1.0,
+     "q95": 1.0
+    },
+    "t2_primary": {
+     "mean": 0.7640092341427205,
+     "q05": 0.1432260374916502,
+     "q95": 0.9847805995963537
+    },
+    "t2_by_1_october": {
+     "mean": 0.8430300764469839,
+     "q05": 0.6090747806402834,
+     "q95": 0.9870810554110562
+    },
+    "paired_minus_A0": {
+     "mean": 0.7895055462533884,
+     "q05": 0.22220451119292506,
+     "q95": 0.9854139273862077
+    },
+    "inner_minus_exact_mean": 1.820374661145513e-05,
+    "inner_minus_exact_max_abs_in_se": 4.26196479472931
+   },
+   "replay": {
+    "primary": {
+     "mean": 0.7895055462533884,
+     "q05": 0.22220451119292506,
+     "q95": 0.9854139273862077
+    },
+    "by_1_october": {
+     "mean": 0.9493897718254131,
+     "q05": 0.8252510581073857,
+     "q95": 0.9987506146855039
+    },
+    "t2_primary": {
+     "mean": 0.7640092341427205,
+     "q05": 0.1432260374916502,
+     "q95": 0.9847805995963537
+    },
+    "t2_by_1_october": {
+     "mean": 0.8430300764469839,
+     "q05": 0.6090747806402834,
+     "q95": 0.9870810554110562
+    },
+    "paired_minus_A0": {
+     "mean": 0.4535609304026691,
+     "q05": -0.01666114968958093,
+     "q95": 0.8229829591587262
+    },
+    "inner_minus_exact_mean": 7.460374661145525e-05,
+    "inner_minus_exact_max_abs_in_se": 4.839043726907921
+   },
+   "reading_row": "depends on",
+   "halved_priors": {
+    "primary": {
+     "mean": 0.8656885779035851,
+     "q05": 0.7712557384459734,
+     "q95": 0.9458119967052475
+    },
+    "reading_row": "depends on"
+   },
+   "prior_dependent": false,
+   "reading": "depends on n_unknown_sessions; conditional on N3's fallback (zones alternating outward from the start place) and N2's",
+   "paired_reading": "improves on A0"
+  },
+  "C3_S5": {
+   "label": "C3 from S5",
+   "conditional_on": "N3's fallback (zones alternating outward from the start place) and N2's",
+   "top_input": null,
+   "held": {
+    "primary": {
+     "mean": 0.0,
+     "q05": 0.0,
+     "q95": 0.0
+    },
+    "by_1_october": {
+     "mean": 1.0,
+     "q05": 1.0,
+     "q95": 1.0
+    },
+    "t2_primary": {
+     "mean": 0.0,
+     "q05": 0.0,
+     "q95": 0.0
+    },
+    "t2_by_1_october": {
+     "mean": 0.0,
+     "q05": 0.0,
+     "q95": 0.0
+    },
+    "paired_minus_A0": {
+     "mean": 0.0,
+     "q05": 0.0,
+     "q95": 0.0
+    },
+    "inner_minus_exact_mean": 0.0,
+    "inner_minus_exact_max_abs_in_se": 0.0
+   },
+   "replay": {
+    "primary": {
+     "mean": 0.0,
+     "q05": 0.0,
+     "q95": 0.0
+    },
+    "by_1_october": {
+     "mean": 0.6741546564474399,
+     "q05": 0.2467124540037767,
+     "q95": 0.9751718533386083
+    },
+    "t2_primary": {
+     "mean": 0.0,
+     "q05": 0.0,
+     "q95": 0.0
+    },
+    "t2_by_1_october": {
+     "mean": 0.0,
+     "q05": 0.0,
+     "q95": 0.0
+    },
+    "paired_minus_A0": {
+     "mean": -0.33594461585071944,
+     "q05": -0.6954722074875169,
+     "q95": -0.029008181781618857
+    },
+    "inner_minus_exact_mean": 0.0,
+    "inner_minus_exact_max_abs_in_se": 0.0
+   },
+   "reading_row": "would very probably not have",
+   "halved_priors": {
+    "primary": {
+     "mean": 0.0,
+     "q05": 0.0,
+     "q95": 0.0
+    },
+    "reading_row": "would very probably not have"
+   },
+   "prior_dependent": false,
+   "reading": "would very probably not have; 0 in every draw, no input moves it; conditional on N3's fallback (zones alternating outward from the start place) and N2's",
+   "paired_reading": "no difference established"
+  },
+  "C3_S5_prompt": {
+   "label": "C3 from S5, prompt",
+   "conditional_on": "N3's fallback (zones alternating outward from the start place) and N2's",
+   "top_input": null,
+   "held": {
+    "primary": {
+     "mean": 0.0,
+     "q05": 0.0,
+     "q95": 0.0
+    },
+    "by_1_october": {
+     "mean": 1.0,
+     "q05": 1.0,
+     "q95": 1.0
+    },
+    "t2_primary": {
+     "mean": 0.0,
+     "q05": 0.0,
+     "q95": 0.0
+    },
+    "t2_by_1_october": {
+     "mean": 0.0,
+     "q05": 0.0,
+     "q95": 0.0
+    },
+    "paired_minus_A0": {
+     "mean": 0.0,
+     "q05": 0.0,
+     "q95": 0.0
+    },
+    "inner_minus_exact_mean": 0.0,
+    "inner_minus_exact_max_abs_in_se": 0.0
+   },
+   "replay": {
+    "primary": {
+     "mean": 0.0,
+     "q05": 0.0,
+     "q95": 0.0
+    },
+    "by_1_october": {
+     "mean": 0.6741546564474399,
+     "q05": 0.2467124540037767,
+     "q95": 0.9751718533386083
+    },
+    "t2_primary": {
+     "mean": 0.0,
+     "q05": 0.0,
+     "q95": 0.0
+    },
+    "t2_by_1_october": {
+     "mean": 0.0,
+     "q05": 0.0,
+     "q95": 0.0
+    },
+    "paired_minus_A0": {
+     "mean": -0.33594461585071944,
+     "q05": -0.6954722074875169,
+     "q95": -0.029008181781618857
+    },
+    "inner_minus_exact_mean": 0.0,
+    "inner_minus_exact_max_abs_in_se": 0.0
+   },
+   "reading_row": "would very probably not have",
+   "halved_priors": {
+    "primary": {
+     "mean": 0.0,
+     "q05": 0.0,
+     "q95": 0.0
+    },
+    "reading_row": "would very probably not have"
+   },
+   "prior_dependent": false,
+   "reading": "would very probably not have; 0 in every draw, no input moves it; conditional on N3's fallback (zones alternating outward from the start place) and N2's",
+   "paired_reading": "no difference established"
+  },
+  "C4a": {
+   "label": "C4a Le Verrier June",
+   "conditional_on": "N3's fallback (zones alternating outward from the start place) and N2's",
+   "top_input": "p_disc_routine",
+   "held": {
+    "primary": {
+     "mean": 0.4104969162075146,
+     "q05": 0.03862607030482735,
+     "q95": 0.8057189395408964
+    },
+    "by_1_october": {
+     "mean": 1.0,
+     "q05": 1.0,
+     "q95": 1.0
+    },
+    "t2_primary": {
+     "mean": 0.4103958766581548,
+     "q05": 0.03861356014501636,
+     "q95": 0.8056740519439326
+    },
+    "t2_by_1_october": {
+     "mean": 0.4105094701612917,
+     "q05": 0.03862607030482735,
+     "q95": 0.8057189395408964
+    },
+    "paired_minus_A0": {
+     "mean": 0.4104969162075146,
+     "q05": 0.03862607030482735,
+     "q95": 0.8057189395408964
+    },
+    "inner_minus_exact_mean": -2.347620751461826e-05,
+    "inner_minus_exact_max_abs_in_se": 4.198813198279237
+   },
+   "replay": {
+    "primary": {
+     "mean": 0.4104969162075146,
+     "q05": 0.03862607030482735,
+     "q95": 0.8057189395408964
+    },
+    "by_1_october": {
+     "mean": 0.807876020416507,
+     "q05": 0.4642200053082606,
+     "q95": 0.9887000147712275
+    },
+    "t2_primary": {
+     "mean": 0.4103958766581548,
+     "q05": 0.03861356014501636,
+     "q95": 0.8056740519439326
+    },
+    "t2_by_1_october": {
+     "mean": 0.4105094701612917,
+     "q05": 0.03862607030482735,
+     "q95": 0.8057189395408964
+    },
+    "paired_minus_A0": {
+     "mean": 0.0745523003567952,
+     "q05": -0.01478808512553739,
+     "q95": 0.1380407949380567
+    },
+    "inner_minus_exact_mean": -1.0166207514617993e-05,
+    "inner_minus_exact_max_abs_in_se": 4.119940258211456
+   },
+   "reading_row": "depends on",
+   "halved_priors": {
+    "primary": {
+     "mean": 0.5115956555933665,
+     "q05": 0.3243362842459565,
+     "q95": 0.7120749560687875
+    },
+    "reading_row": "an open chance"
+   },
+   "prior_dependent": true,
+   "reading": "depends on p_disc_routine; conditional on N3's fallback (zones alternating outward from the start place) and N2's",
+   "paired_reading": "improves on A0"
+  },
+  "C4a_prompt": {
+   "label": "C4a, prompt",
+   "conditional_on": "N3's fallback (zones alternating outward from the start place) and N2's",
+   "top_input": "p_follow",
+   "held": {
+    "primary": {
+     "mean": 0.8478602283228711,
+     "q05": 0.6267534247959425,
+     "q95": 0.9860911019698204
+    },
+    "by_1_october": {
+     "mean": 1.0,
+     "q05": 1.0,
+     "q95": 1.0
+    },
+    "t2_primary": {
+     "mean": 0.8468572841084017,
+     "q05": 0.624739678400059,
+     "q95": 0.98606174703851
+    },
+    "t2_by_1_october": {
+     "mean": 0.8488645843503451,
+     "q05": 0.6286913725804442,
+     "q95": 0.9861238385769883
+    },
+    "paired_minus_A0": {
+     "mean": 0.8478602283228711,
+     "q05": 0.6267534247959425,
+     "q95": 0.9860911019698204
+    },
+    "inner_minus_exact_mean": -3.2683228711060174e-06,
+    "inner_minus_exact_max_abs_in_se": 4.5719125646993595
+   },
+   "replay": {
+    "primary": {
+     "mean": 0.8478602283228711,
+     "q05": 0.6267534247959425,
+     "q95": 0.9860911019698204
+    },
+    "by_1_october": {
+     "mean": 0.9506607569299043,
+     "q05": 0.8312988503323129,
+     "q95": 0.9986850794679833
+    },
+    "t2_primary": {
+     "mean": 0.8468572841084017,
+     "q05": 0.624739678400059,
+     "q95": 0.98606174703851
+    },
+    "t2_by_1_october": {
+     "mean": 0.8488645843503451,
+     "q05": 0.6286913725804442,
+     "q95": 0.9861238385769883
+    },
+    "paired_minus_A0": {
+     "mean": 0.5119156124721517,
+     "q05": 0.24043707297420416,
+     "q95": 0.8309253968420224
+    },
+    "inner_minus_exact_mean": 4.7961677128893826e-05,
+    "inner_minus_exact_max_abs_in_se": 3.955424763822567
+   },
+   "reading_row": "depends on",
+   "halved_priors": {
+    "primary": {
+     "mean": 0.8743447961563221,
+     "q05": 0.7810714307638608,
+     "q95": 0.945372567669398
+    },
+    "reading_row": "depends on"
+   },
+   "prior_dependent": false,
+   "reading": "depends on p_follow; conditional on N3's fallback (zones alternating outward from the start place) and N2's",
+   "paired_reading": "improves on A0"
+  },
+  "C4b": {
+   "label": "C4b looking from 29 Jul",
+   "conditional_on": "N3's fallback (zones alternating outward from the start place) and N2's",
+   "top_input": "c4b_breadth_arcmin",
+   "held": {
+    "primary": {
+     "mean": 0.346508346581276,
+     "q05": 0.019966957846866893,
+     "q95": 0.8967679563088726
+    },
+    "by_1_october": {
+     "mean": 1.0,
+     "q05": 1.0,
+     "q95": 1.0
+    },
+    "t2_primary": {
+     "mean": 0.346508346581276,
+     "q05": 0.019966957846866893,
+     "q95": 0.8967679563088726
+    },
+    "t2_by_1_october": {
+     "mean": 0.346508346581276,
+     "q05": 0.019966957846866893,
+     "q95": 0.8967679563088726
+    },
+    "paired_minus_A0": {
+     "mean": 0.346508346581276,
+     "q05": 0.019966957846866893,
+     "q95": 0.8967679563088726
+    },
+    "inner_minus_exact_mean": -1.408658127600167e-05,
+    "inner_minus_exact_max_abs_in_se": 4.399975978471732
+   },
+   "replay": {
+    "primary": {
+     "mean": 0.346508346581276,
+     "q05": 0.019966957846866893,
+     "q95": 0.8967679563088726
+    },
+    "by_1_october": {
+     "mean": 0.7746185362624635,
+     "q05": 0.3969507311533625,
+     "q95": 0.9943650468725411
+    },
+    "t2_primary": {
+     "mean": 0.346508346581276,
+     "q05": 0.019966957846866893,
+     "q95": 0.8967679563088726
+    },
+    "t2_by_1_october": {
+     "mean": 0.346508346581276,
+     "q05": 0.019966957846866893,
+     "q95": 0.8967679563088726
+    },
+    "paired_minus_A0": {
+     "mean": 0.010563730730556588,
+     "q05": -0.2647834862896508,
+     "q95": 0.6368267086118805
+    },
+    "inner_minus_exact_mean": -2.4265812760019846e-06,
+    "inner_minus_exact_max_abs_in_se": 3.914511144203126
+   },
+   "reading_row": "depends on",
+   "halved_priors": {
+    "primary": {
+     "mean": 0.29845544983711914,
+     "q05": 0.12928420921438555,
+     "q95": 0.72471256566618
+    },
+    "reading_row": "depends on"
+   },
+   "prior_dependent": false,
+   "reading": "depends on c4b_breadth_arcmin; conditional on N3's fallback (zones alternating outward from the start place) and N2's",
+   "paired_reading": "improves on A0"
+  }
+ },
+ "c2_combined_reading_row": "depends on the Berlin sheet's limits",
+ "tornado": {
+  "n_draws": 10000,
+  "ranking": {
+   "A0": [
+    {
+     "input": "weather",
+     "how": "conditioned",
+     "low": 0.3354975481514287,
+     "high": 0.5697056569773875,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "stars_per_hour",
+     "how": "set",
+     "low": 51.31556790870408,
+     "high": 87.90925118564601,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "p_recorded",
+     "how": "set",
+     "low": 0.904849062191244,
+     "high": 0.9951887002674106,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "p_follow",
+     "how": "set",
+     "low": 0.52589943724269,
+     "high": 0.9743572537124846,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "p_disc_routine",
+     "how": "set",
+     "low": 0.014880443146159193,
+     "high": 0.4503252260093749,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "p_disc_looking",
+     "how": "set",
+     "low": 0.24513789689550147,
+     "high": 0.9774523558373056,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "north_first",
+     "how": "set",
+     "low": 0.0,
+     "high": 1.0,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "n_unknown_sessions",
+     "how": "conditioned",
+     "low": 12.0,
+     "high": 21.0,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "moving_extent_factor",
+     "how": "set",
+     "low": 0.5780464409194163,
+     "high": 1.9211704611647322,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "hours_per_session_mean",
+     "how": "conditioned",
+     "low": 2.0686944392684374,
+     "high": 2.4777431305438262,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "desk_hours_per_pair",
+     "how": "set",
+     "low": 1.2636056253968881,
+     "high": 5.745069462655746,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "desk_hours_per_day",
+     "how": "set",
+     "low": 0.630691968543385,
+     "high": 2.876330177173459,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "c4b_breadth_arcmin",
+     "how": "set",
+     "low": 34.49893349584426,
+     "high": 115.62788927768088,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "branch_ra",
+     "how": "conditioned",
+     "low": 0.0,
+     "high": 1.0,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    }
+   ],
+   "C1a": [
+    {
+     "input": "p_follow",
+     "how": "set",
+     "low": 0.52589943724269,
+     "high": 0.9743572537124846,
+     "p_low": 0.5014451134108212,
+     "p_high": 0.9290496414149063,
+     "change": 0.4276045280040851
+    },
+    {
+     "input": "moving_extent_factor",
+     "how": "set",
+     "low": 0.5780464409194163,
+     "high": 1.9211704611647322,
+     "p_low": 0.6420340874228199,
+     "p_high": 0.7468240608986434,
+     "change": 0.10478997347582353
+    },
+    {
+     "input": "branch_ra",
+     "how": "conditioned",
+     "low": 0.0,
+     "high": 1.0,
+     "p_low": 0.6825464590281496,
+     "p_high": 0.7494344148227159,
+     "change": 0.0668879557945663
+    },
+    {
+     "input": "stars_per_hour",
+     "how": "set",
+     "low": 51.31556790870408,
+     "high": 87.90925118564601,
+     "p_low": 0.7274172242027268,
+     "p_high": 0.7054933014880709,
+     "change": 0.02192392271465593
+    },
+    {
+     "input": "hours_per_session_mean",
+     "how": "conditioned",
+     "low": 2.0686944392684374,
+     "high": 2.4777431305438262,
+     "p_low": 0.7292230591581289,
+     "p_high": 0.715695366357457,
+     "change": 0.013527692800671898
+    },
+    {
+     "input": "weather",
+     "how": "conditioned",
+     "low": 0.3354975481514287,
+     "high": 0.5697056569773875,
+     "p_low": 0.7057977381005612,
+     "p_high": 0.7164698861357727,
+     "change": 0.010672148035211437
+    },
+    {
+     "input": "n_unknown_sessions",
+     "how": "conditioned",
+     "low": 12.0,
+     "high": 21.0,
+     "p_low": 0.7089876040110927,
+     "p_high": 0.7186780710771822,
+     "change": 0.009690467066089448
+    },
+    {
+     "input": "p_recorded",
+     "how": "set",
+     "low": 0.904849062191244,
+     "high": 0.9951887002674106,
+     "p_low": 0.7156426195553002,
+     "p_high": 0.7156426195553002,
+     "change": 0.0
+    },
+    {
+     "input": "p_disc_routine",
+     "how": "set",
+     "low": 0.014880443146159193,
+     "high": 0.4503252260093749,
+     "p_low": 0.7156426195553002,
+     "p_high": 0.7156426195553002,
+     "change": 0.0
+    },
+    {
+     "input": "p_disc_looking",
+     "how": "set",
+     "low": 0.24513789689550147,
+     "high": 0.9774523558373056,
+     "p_low": 0.7156426195553002,
+     "p_high": 0.7156426195553002,
+     "change": 0.0
+    },
+    {
+     "input": "north_first",
+     "how": "set",
+     "low": 0.0,
+     "high": 1.0,
+     "p_low": 0.7156426195553002,
+     "p_high": 0.7156426195553002,
+     "change": 0.0
+    },
+    {
+     "input": "desk_hours_per_pair",
+     "how": "set",
+     "low": 1.2636056253968881,
+     "high": 5.745069462655746,
+     "p_low": 0.7156426195553002,
+     "p_high": 0.7156426195553002,
+     "change": 0.0
+    },
+    {
+     "input": "desk_hours_per_day",
+     "how": "set",
+     "low": 0.630691968543385,
+     "high": 2.876330177173459,
+     "p_low": 0.7156426195553002,
+     "p_high": 0.7156426195553002,
+     "change": 0.0
+    },
+    {
+     "input": "c4b_breadth_arcmin",
+     "how": "set",
+     "low": 34.49893349584426,
+     "high": 115.62788927768088,
+     "p_low": 0.7156426195553002,
+     "p_high": 0.7156426195553002,
+     "change": 0.0
+    }
+   ],
+   "C1b": [
+    {
+     "input": "p_follow",
+     "how": "set",
+     "low": 0.52589943724269,
+     "high": 0.9743572537124846,
+     "p_low": 0.20094617497044637,
+     "p_high": 0.37230190664357415,
+     "change": 0.1713557316731278
+    },
+    {
+     "input": "weather",
+     "how": "conditioned",
+     "low": 0.3354975481514287,
+     "high": 0.5697056569773875,
+     "p_low": 0.2774461815603176,
+     "p_high": 0.3005560555118983,
+     "change": 0.023109873951580706
+    },
+    {
+     "input": "hours_per_session_mean",
+     "how": "conditioned",
+     "low": 2.0686944392684374,
+     "high": 2.4777431305438262,
+     "p_low": 0.3214484605488037,
+     "p_high": 0.2983979936706569,
+     "change": 0.023050466878146825
+    },
+    {
+     "input": "n_unknown_sessions",
+     "how": "conditioned",
+     "low": 12.0,
+     "high": 21.0,
+     "p_low": 0.2892698877520566,
+     "p_high": 0.29188047031105985,
+     "change": 0.0026105825590032605
+    },
+    {
+     "input": "branch_ra",
+     "how": "conditioned",
+     "low": 0.0,
+     "high": 1.0,
+     "p_low": 0.2871707052291005,
+     "p_high": 0.28559704894620863,
+     "change": 0.0015736562828918554
+    },
+    {
+     "input": "stars_per_hour",
+     "how": "set",
+     "low": 51.31556790870408,
+     "high": 87.90925118564601,
+     "p_low": 0.28639206010032564,
+     "p_high": 0.28639206010032564,
+     "change": 0.0
+    },
+    {
+     "input": "p_recorded",
+     "how": "set",
+     "low": 0.904849062191244,
+     "high": 0.9951887002674106,
+     "p_low": 0.28639206010032564,
+     "p_high": 0.28639206010032564,
+     "change": 0.0
+    },
+    {
+     "input": "p_disc_routine",
+     "how": "set",
+     "low": 0.014880443146159193,
+     "high": 0.4503252260093749,
+     "p_low": 0.28639206010032564,
+     "p_high": 0.28639206010032564,
+     "change": 0.0
+    },
+    {
+     "input": "p_disc_looking",
+     "how": "set",
+     "low": 0.24513789689550147,
+     "high": 0.9774523558373056,
+     "p_low": 0.28639206010032564,
+     "p_high": 0.28639206010032564,
+     "change": 0.0
+    },
+    {
+     "input": "north_first",
+     "how": "set",
+     "low": 0.0,
+     "high": 1.0,
+     "p_low": 0.28639206010032564,
+     "p_high": 0.28639206010032564,
+     "change": 0.0
+    },
+    {
+     "input": "moving_extent_factor",
+     "how": "set",
+     "low": 0.5780464409194163,
+     "high": 1.9211704611647322,
+     "p_low": 0.28639206010032564,
+     "p_high": 0.28639206010032564,
+     "change": 0.0
+    },
+    {
+     "input": "desk_hours_per_pair",
+     "how": "set",
+     "low": 1.2636056253968881,
+     "high": 5.745069462655746,
+     "p_low": 0.28639206010032564,
+     "p_high": 0.28639206010032564,
+     "change": 0.0
+    },
+    {
+     "input": "desk_hours_per_day",
+     "how": "set",
+     "low": 0.630691968543385,
+     "high": 2.876330177173459,
+     "p_low": 0.28639206010032564,
+     "p_high": 0.28639206010032564,
+     "change": 0.0
+    },
+    {
+     "input": "c4b_breadth_arcmin",
+     "how": "set",
+     "low": 34.49893349584426,
+     "high": 115.62788927768088,
+     "p_low": 0.28639206010032564,
+     "p_high": 0.28639206010032564,
+     "change": 0.0
+    }
+   ],
+   "C1a_7d": [
+    {
+     "input": "p_follow",
+     "how": "set",
+     "low": 0.52589943724269,
+     "high": 0.9743572537124846,
+     "p_low": 0.5014451134108212,
+     "p_high": 0.9290496414149063,
+     "change": 0.4276045280040851
+    },
+    {
+     "input": "moving_extent_factor",
+     "how": "set",
+     "low": 0.5780464409194163,
+     "high": 1.9211704611647322,
+     "p_low": 0.6420340874228199,
+     "p_high": 0.7468240608986434,
+     "change": 0.10478997347582353
+    },
+    {
+     "input": "branch_ra",
+     "how": "conditioned",
+     "low": 0.0,
+     "high": 1.0,
+     "p_low": 0.6825464590281496,
+     "p_high": 0.7494344148227159,
+     "change": 0.0668879557945663
+    },
+    {
+     "input": "stars_per_hour",
+     "how": "set",
+     "low": 51.31556790870408,
+     "high": 87.90925118564601,
+     "p_low": 0.7274172242027268,
+     "p_high": 0.7054933014880709,
+     "change": 0.02192392271465593
+    },
+    {
+     "input": "hours_per_session_mean",
+     "how": "conditioned",
+     "low": 2.0686944392684374,
+     "high": 2.4777431305438262,
+     "p_low": 0.7292230591581289,
+     "p_high": 0.715695366357457,
+     "change": 0.013527692800671898
+    },
+    {
+     "input": "weather",
+     "how": "conditioned",
+     "low": 0.3354975481514287,
+     "high": 0.5697056569773875,
+     "p_low": 0.7057977381005612,
+     "p_high": 0.7164698861357727,
+     "change": 0.010672148035211437
+    },
+    {
+     "input": "n_unknown_sessions",
+     "how": "conditioned",
+     "low": 12.0,
+     "high": 21.0,
+     "p_low": 0.7089876040110927,
+     "p_high": 0.7186780710771822,
+     "change": 0.009690467066089448
+    },
+    {
+     "input": "p_recorded",
+     "how": "set",
+     "low": 0.904849062191244,
+     "high": 0.9951887002674106,
+     "p_low": 0.7156426195553002,
+     "p_high": 0.7156426195553002,
+     "change": 0.0
+    },
+    {
+     "input": "p_disc_routine",
+     "how": "set",
+     "low": 0.014880443146159193,
+     "high": 0.4503252260093749,
+     "p_low": 0.7156426195553002,
+     "p_high": 0.7156426195553002,
+     "change": 0.0
+    },
+    {
+     "input": "p_disc_looking",
+     "how": "set",
+     "low": 0.24513789689550147,
+     "high": 0.9774523558373056,
+     "p_low": 0.7156426195553002,
+     "p_high": 0.7156426195553002,
+     "change": 0.0
+    },
+    {
+     "input": "north_first",
+     "how": "set",
+     "low": 0.0,
+     "high": 1.0,
+     "p_low": 0.7156426195553002,
+     "p_high": 0.7156426195553002,
+     "change": 0.0
+    },
+    {
+     "input": "desk_hours_per_pair",
+     "how": "set",
+     "low": 1.2636056253968881,
+     "high": 5.745069462655746,
+     "p_low": 0.7156426195553002,
+     "p_high": 0.7156426195553002,
+     "change": 0.0
+    },
+    {
+     "input": "desk_hours_per_day",
+     "how": "set",
+     "low": 0.630691968543385,
+     "high": 2.876330177173459,
+     "p_low": 0.7156426195553002,
+     "p_high": 0.7156426195553002,
+     "change": 0.0
+    },
+    {
+     "input": "c4b_breadth_arcmin",
+     "how": "set",
+     "low": 34.49893349584426,
+     "high": 115.62788927768088,
+     "p_low": 0.7156426195553002,
+     "p_high": 0.7156426195553002,
+     "change": 0.0
+    }
+   ],
+   "C1b_7d": [
+    {
+     "input": "p_follow",
+     "how": "set",
+     "low": 0.52589943724269,
+     "high": 0.9743572537124846,
+     "p_low": 0.20094617497044637,
+     "p_high": 0.37230190664357415,
+     "change": 0.1713557316731278
+    },
+    {
+     "input": "weather",
+     "how": "conditioned",
+     "low": 0.3354975481514287,
+     "high": 0.5697056569773875,
+     "p_low": 0.2774461815603176,
+     "p_high": 0.3005560555118983,
+     "change": 0.023109873951580706
+    },
+    {
+     "input": "hours_per_session_mean",
+     "how": "conditioned",
+     "low": 2.0686944392684374,
+     "high": 2.4777431305438262,
+     "p_low": 0.3214484605488037,
+     "p_high": 0.2983979936706569,
+     "change": 0.023050466878146825
+    },
+    {
+     "input": "n_unknown_sessions",
+     "how": "conditioned",
+     "low": 12.0,
+     "high": 21.0,
+     "p_low": 0.2892698877520566,
+     "p_high": 0.29188047031105985,
+     "change": 0.0026105825590032605
+    },
+    {
+     "input": "branch_ra",
+     "how": "conditioned",
+     "low": 0.0,
+     "high": 1.0,
+     "p_low": 0.2871707052291005,
+     "p_high": 0.28559704894620863,
+     "change": 0.0015736562828918554
+    },
+    {
+     "input": "stars_per_hour",
+     "how": "set",
+     "low": 51.31556790870408,
+     "high": 87.90925118564601,
+     "p_low": 0.28639206010032564,
+     "p_high": 0.28639206010032564,
+     "change": 0.0
+    },
+    {
+     "input": "p_recorded",
+     "how": "set",
+     "low": 0.904849062191244,
+     "high": 0.9951887002674106,
+     "p_low": 0.28639206010032564,
+     "p_high": 0.28639206010032564,
+     "change": 0.0
+    },
+    {
+     "input": "p_disc_routine",
+     "how": "set",
+     "low": 0.014880443146159193,
+     "high": 0.4503252260093749,
+     "p_low": 0.28639206010032564,
+     "p_high": 0.28639206010032564,
+     "change": 0.0
+    },
+    {
+     "input": "p_disc_looking",
+     "how": "set",
+     "low": 0.24513789689550147,
+     "high": 0.9774523558373056,
+     "p_low": 0.28639206010032564,
+     "p_high": 0.28639206010032564,
+     "change": 0.0
+    },
+    {
+     "input": "north_first",
+     "how": "set",
+     "low": 0.0,
+     "high": 1.0,
+     "p_low": 0.28639206010032564,
+     "p_high": 0.28639206010032564,
+     "change": 0.0
+    },
+    {
+     "input": "moving_extent_factor",
+     "how": "set",
+     "low": 0.5780464409194163,
+     "high": 1.9211704611647322,
+     "p_low": 0.28639206010032564,
+     "p_high": 0.28639206010032564,
+     "change": 0.0
+    },
+    {
+     "input": "desk_hours_per_pair",
+     "how": "set",
+     "low": 1.2636056253968881,
+     "high": 5.745069462655746,
+     "p_low": 0.28639206010032564,
+     "p_high": 0.28639206010032564,
+     "change": 0.0
+    },
+    {
+     "input": "desk_hours_per_day",
+     "how": "set",
+     "low": 0.630691968543385,
+     "high": 2.876330177173459,
+     "p_low": 0.28639206010032564,
+     "p_high": 0.28639206010032564,
+     "change": 0.0
+    },
+    {
+     "input": "c4b_breadth_arcmin",
+     "how": "set",
+     "low": 34.49893349584426,
+     "high": 115.62788927768088,
+     "p_low": 0.28639206010032564,
+     "p_high": 0.28639206010032564,
+     "change": 0.0
+    }
+   ],
+   "C2_1800": [
+    {
+     "input": "weather",
+     "how": "conditioned",
+     "low": 0.3354975481514287,
+     "high": 0.5697056569773875,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "stars_per_hour",
+     "how": "set",
+     "low": 51.31556790870408,
+     "high": 87.90925118564601,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "p_recorded",
+     "how": "set",
+     "low": 0.904849062191244,
+     "high": 0.9951887002674106,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "p_follow",
+     "how": "set",
+     "low": 0.52589943724269,
+     "high": 0.9743572537124846,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "p_disc_routine",
+     "how": "set",
+     "low": 0.014880443146159193,
+     "high": 0.4503252260093749,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "p_disc_looking",
+     "how": "set",
+     "low": 0.24513789689550147,
+     "high": 0.9774523558373056,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "north_first",
+     "how": "set",
+     "low": 0.0,
+     "high": 1.0,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "n_unknown_sessions",
+     "how": "conditioned",
+     "low": 12.0,
+     "high": 21.0,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "moving_extent_factor",
+     "how": "set",
+     "low": 0.5780464409194163,
+     "high": 1.9211704611647322,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "hours_per_session_mean",
+     "how": "conditioned",
+     "low": 2.0686944392684374,
+     "high": 2.4777431305438262,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "desk_hours_per_pair",
+     "how": "set",
+     "low": 1.2636056253968881,
+     "high": 5.745069462655746,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "desk_hours_per_day",
+     "how": "set",
+     "low": 0.630691968543385,
+     "high": 2.876330177173459,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "c4b_breadth_arcmin",
+     "how": "set",
+     "low": 34.49893349584426,
+     "high": 115.62788927768088,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "branch_ra",
+     "how": "conditioned",
+     "low": 0.0,
+     "high": 1.0,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    }
+   ],
+   "C2_date": [
+    {
+     "input": "p_follow",
+     "how": "set",
+     "low": 0.52589943724269,
+     "high": 0.9743572537124846,
+     "p_low": 0.7752286563929957,
+     "p_high": 0.9993424495625776,
+     "change": 0.2241137931695819
+    },
+    {
+     "input": "hours_per_session_mean",
+     "how": "conditioned",
+     "low": 2.0686944392684374,
+     "high": 2.4777431305438262,
+     "p_low": 0.9209924587733336,
+     "p_high": 0.9166144709611886,
+     "change": 0.0043779878121449345
+    },
+    {
+     "input": "weather",
+     "how": "conditioned",
+     "low": 0.3354975481514287,
+     "high": 0.5697056569773875,
+     "p_low": 0.9146308977517288,
+     "p_high": 0.9188756948497102,
+     "change": 0.004244797097981423
+    },
+    {
+     "input": "n_unknown_sessions",
+     "how": "conditioned",
+     "low": 12.0,
+     "high": 21.0,
+     "p_low": 0.9143073083365579,
+     "p_high": 0.9154631242980816,
+     "change": 0.0011558159615236985
+    },
+    {
+     "input": "branch_ra",
+     "how": "conditioned",
+     "low": 0.0,
+     "high": 1.0,
+     "p_low": 0.917302669181834,
+     "p_high": 0.9171598940395279,
+     "change": 0.00014277514230609523
+    },
+    {
+     "input": "stars_per_hour",
+     "how": "set",
+     "low": 51.31556790870408,
+     "high": 87.90925118564601,
+     "p_low": 0.917232024041423,
+     "p_high": 0.917232024041423,
+     "change": 0.0
+    },
+    {
+     "input": "p_recorded",
+     "how": "set",
+     "low": 0.904849062191244,
+     "high": 0.9951887002674106,
+     "p_low": 0.917232024041423,
+     "p_high": 0.917232024041423,
+     "change": 0.0
+    },
+    {
+     "input": "p_disc_routine",
+     "how": "set",
+     "low": 0.014880443146159193,
+     "high": 0.4503252260093749,
+     "p_low": 0.917232024041423,
+     "p_high": 0.917232024041423,
+     "change": 0.0
+    },
+    {
+     "input": "p_disc_looking",
+     "how": "set",
+     "low": 0.24513789689550147,
+     "high": 0.9774523558373056,
+     "p_low": 0.917232024041423,
+     "p_high": 0.917232024041423,
+     "change": 0.0
+    },
+    {
+     "input": "north_first",
+     "how": "set",
+     "low": 0.0,
+     "high": 1.0,
+     "p_low": 0.917232024041423,
+     "p_high": 0.917232024041423,
+     "change": 0.0
+    },
+    {
+     "input": "moving_extent_factor",
+     "how": "set",
+     "low": 0.5780464409194163,
+     "high": 1.9211704611647322,
+     "p_low": 0.917232024041423,
+     "p_high": 0.917232024041423,
+     "change": 0.0
+    },
+    {
+     "input": "desk_hours_per_pair",
+     "how": "set",
+     "low": 1.2636056253968881,
+     "high": 5.745069462655746,
+     "p_low": 0.917232024041423,
+     "p_high": 0.917232024041423,
+     "change": 0.0
+    },
+    {
+     "input": "desk_hours_per_day",
+     "how": "set",
+     "low": 0.630691968543385,
+     "high": 2.876330177173459,
+     "p_low": 0.917232024041423,
+     "p_high": 0.917232024041423,
+     "change": 0.0
+    },
+    {
+     "input": "c4b_breadth_arcmin",
+     "how": "set",
+     "low": 34.49893349584426,
+     "high": 115.62788927768088,
+     "p_low": 0.917232024041423,
+     "p_high": 0.917232024041423,
+     "change": 0.0
+    }
+   ],
+   "C3_S4": [
+    {
+     "input": "p_disc_routine",
+     "how": "set",
+     "low": 0.014880443146159193,
+     "high": 0.4503252260093749,
+     "p_low": 0.04021655181768419,
+     "p_high": 0.7914134434574969,
+     "change": 0.7511968916398126
+    },
+    {
+     "input": "n_unknown_sessions",
+     "how": "conditioned",
+     "low": 12.0,
+     "high": 21.0,
+     "p_low": 0.34934020279470873,
+     "p_high": 0.4112286526213406,
+     "change": 0.061888449826631886
+    },
+    {
+     "input": "hours_per_session_mean",
+     "how": "conditioned",
+     "low": 2.0686944392684374,
+     "high": 2.4777431305438262,
+     "p_low": 0.4285966497018428,
+     "p_high": 0.37837055978002015,
+     "change": 0.05022608992182265
+    },
+    {
+     "input": "p_recorded",
+     "how": "set",
+     "low": 0.904849062191244,
+     "high": 0.9951887002674106,
+     "p_low": 0.39486867980219104,
+     "p_high": 0.4229374771207966,
+     "change": 0.028068797318605565
+    },
+    {
+     "input": "north_first",
+     "how": "set",
+     "low": 0.0,
+     "high": 1.0,
+     "p_low": 0.39941354478198643,
+     "p_high": 0.4178039914304438,
+     "change": 0.018390446648457348
+    },
+    {
+     "input": "weather",
+     "how": "conditioned",
+     "low": 0.3354975481514287,
+     "high": 0.5697056569773875,
+     "p_low": 0.4088278719746172,
+     "p_high": 0.40494176645662,
+     "change": 0.0038861055179971737
+    },
+    {
+     "input": "branch_ra",
+     "how": "conditioned",
+     "low": 0.0,
+     "high": 1.0,
+     "p_low": 0.40896235745409504,
+     "p_high": 0.40927357907386525,
+     "change": 0.0003112216197702078
+    },
+    {
+     "input": "stars_per_hour",
+     "how": "set",
+     "low": 51.31556790870408,
+     "high": 87.90925118564601,
+     "p_low": 0.40911634991155726,
+     "p_high": 0.40911634991155726,
+     "change": 0.0
+    },
+    {
+     "input": "p_follow",
+     "how": "set",
+     "low": 0.52589943724269,
+     "high": 0.9743572537124846,
+     "p_low": 0.40911634991155726,
+     "p_high": 0.40911634991155726,
+     "change": 0.0
+    },
+    {
+     "input": "p_disc_looking",
+     "how": "set",
+     "low": 0.24513789689550147,
+     "high": 0.9774523558373056,
+     "p_low": 0.40911634991155726,
+     "p_high": 0.40911634991155726,
+     "change": 0.0
+    },
+    {
+     "input": "moving_extent_factor",
+     "how": "set",
+     "low": 0.5780464409194163,
+     "high": 1.9211704611647322,
+     "p_low": 0.40911634991155726,
+     "p_high": 0.40911634991155726,
+     "change": 0.0
+    },
+    {
+     "input": "desk_hours_per_pair",
+     "how": "set",
+     "low": 1.2636056253968881,
+     "high": 5.745069462655746,
+     "p_low": 0.40911634991155726,
+     "p_high": 0.40911634991155726,
+     "change": 0.0
+    },
+    {
+     "input": "desk_hours_per_day",
+     "how": "set",
+     "low": 0.630691968543385,
+     "high": 2.876330177173459,
+     "p_low": 0.40911634991155726,
+     "p_high": 0.40911634991155726,
+     "change": 0.0
+    },
+    {
+     "input": "c4b_breadth_arcmin",
+     "how": "set",
+     "low": 34.49893349584426,
+     "high": 115.62788927768088,
+     "p_low": 0.40911634991155726,
+     "p_high": 0.40911634991155726,
+     "change": 0.0
+    }
+   ],
+   "C3_S4_prompt": [
+    {
+     "input": "n_unknown_sessions",
+     "how": "conditioned",
+     "low": 12.0,
+     "high": 21.0,
+     "p_low": 0.5610100257712397,
+     "p_high": 0.8490280095471154,
+     "change": 0.28801798377587573
+    },
+    {
+     "input": "p_disc_routine",
+     "how": "set",
+     "low": 0.014880443146159193,
+     "high": 0.4503252260093749,
+     "p_low": 0.6747509731518033,
+     "p_high": 0.9149892278922691,
+     "change": 0.24023825474046578
+    },
+    {
+     "input": "p_follow",
+     "how": "set",
+     "low": 0.52589943724269,
+     "high": 0.9743572537124846,
+     "p_low": 0.6775978638259194,
+     "p_high": 0.9043420215592974,
+     "change": 0.22674415773337808
+    },
+    {
+     "input": "hours_per_session_mean",
+     "how": "conditioned",
+     "low": 2.0686944392684374,
+     "high": 2.4777431305438262,
+     "p_low": 0.838174826073591,
+     "p_high": 0.705764128270306,
+     "change": 0.13241069780328496
+    },
+    {
+     "input": "north_first",
+     "how": "set",
+     "low": 0.0,
+     "high": 1.0,
+     "p_low": 0.7490666018707045,
+     "p_high": 0.831043214127197,
+     "change": 0.08197661225649244
+    },
+    {
+     "input": "weather",
+     "how": "conditioned",
+     "low": 0.3354975481514287,
+     "high": 0.5697056569773875,
+     "p_low": 0.7427676592886124,
+     "p_high": 0.8085783379683187,
+     "change": 0.06581067867970625
+    },
+    {
+     "input": "desk_hours_per_day",
+     "how": "set",
+     "low": 0.630691968543385,
+     "high": 2.876330177173459,
+     "p_low": 0.7725516991507667,
+     "p_high": 0.7987350219633105,
+     "change": 0.026183322812543763
+    },
+    {
+     "input": "desk_hours_per_pair",
+     "how": "set",
+     "low": 1.2636056253968881,
+     "high": 5.745069462655746,
+     "p_low": 0.7995494413061343,
+     "p_high": 0.7823540009409706,
+     "change": 0.017195440365163628
+    },
+    {
+     "input": "p_recorded",
+     "how": "set",
+     "low": 0.904849062191244,
+     "high": 0.9951887002674106,
+     "p_low": 0.7836683830097296,
+     "p_high": 0.7986688702806898,
+     "change": 0.01500048727096015
+    },
+    {
+     "input": "branch_ra",
+     "how": "conditioned",
+     "low": 0.0,
+     "high": 1.0,
+     "p_low": 0.793239815058862,
+     "p_high": 0.7904731639451698,
+     "change": 0.002766651113692231
+    },
+    {
+     "input": "stars_per_hour",
+     "how": "set",
+     "low": 51.31556790870408,
+     "high": 87.90925118564601,
+     "p_low": 0.7918708760878099,
+     "p_high": 0.7918708760878099,
+     "change": 0.0
+    },
+    {
+     "input": "p_disc_looking",
+     "how": "set",
+     "low": 0.24513789689550147,
+     "high": 0.9774523558373056,
+     "p_low": 0.7918708760878099,
+     "p_high": 0.7918708760878099,
+     "change": 0.0
+    },
+    {
+     "input": "moving_extent_factor",
+     "how": "set",
+     "low": 0.5780464409194163,
+     "high": 1.9211704611647322,
+     "p_low": 0.7918708760878099,
+     "p_high": 0.7918708760878099,
+     "change": 0.0
+    },
+    {
+     "input": "c4b_breadth_arcmin",
+     "how": "set",
+     "low": 34.49893349584426,
+     "high": 115.62788927768088,
+     "p_low": 0.7918708760878099,
+     "p_high": 0.7918708760878099,
+     "change": 0.0
+    }
+   ],
+   "C3_S5": [
+    {
+     "input": "weather",
+     "how": "conditioned",
+     "low": 0.3354975481514287,
+     "high": 0.5697056569773875,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "stars_per_hour",
+     "how": "set",
+     "low": 51.31556790870408,
+     "high": 87.90925118564601,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "p_recorded",
+     "how": "set",
+     "low": 0.904849062191244,
+     "high": 0.9951887002674106,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "p_follow",
+     "how": "set",
+     "low": 0.52589943724269,
+     "high": 0.9743572537124846,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "p_disc_routine",
+     "how": "set",
+     "low": 0.014880443146159193,
+     "high": 0.4503252260093749,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "p_disc_looking",
+     "how": "set",
+     "low": 0.24513789689550147,
+     "high": 0.9774523558373056,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "north_first",
+     "how": "set",
+     "low": 0.0,
+     "high": 1.0,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "n_unknown_sessions",
+     "how": "conditioned",
+     "low": 12.0,
+     "high": 21.0,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "moving_extent_factor",
+     "how": "set",
+     "low": 0.5780464409194163,
+     "high": 1.9211704611647322,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "hours_per_session_mean",
+     "how": "conditioned",
+     "low": 2.0686944392684374,
+     "high": 2.4777431305438262,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "desk_hours_per_pair",
+     "how": "set",
+     "low": 1.2636056253968881,
+     "high": 5.745069462655746,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "desk_hours_per_day",
+     "how": "set",
+     "low": 0.630691968543385,
+     "high": 2.876330177173459,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "c4b_breadth_arcmin",
+     "how": "set",
+     "low": 34.49893349584426,
+     "high": 115.62788927768088,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "branch_ra",
+     "how": "conditioned",
+     "low": 0.0,
+     "high": 1.0,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    }
+   ],
+   "C3_S5_prompt": [
+    {
+     "input": "weather",
+     "how": "conditioned",
+     "low": 0.3354975481514287,
+     "high": 0.5697056569773875,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "stars_per_hour",
+     "how": "set",
+     "low": 51.31556790870408,
+     "high": 87.90925118564601,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "p_recorded",
+     "how": "set",
+     "low": 0.904849062191244,
+     "high": 0.9951887002674106,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "p_follow",
+     "how": "set",
+     "low": 0.52589943724269,
+     "high": 0.9743572537124846,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "p_disc_routine",
+     "how": "set",
+     "low": 0.014880443146159193,
+     "high": 0.4503252260093749,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "p_disc_looking",
+     "how": "set",
+     "low": 0.24513789689550147,
+     "high": 0.9774523558373056,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "north_first",
+     "how": "set",
+     "low": 0.0,
+     "high": 1.0,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "n_unknown_sessions",
+     "how": "conditioned",
+     "low": 12.0,
+     "high": 21.0,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "moving_extent_factor",
+     "how": "set",
+     "low": 0.5780464409194163,
+     "high": 1.9211704611647322,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "hours_per_session_mean",
+     "how": "conditioned",
+     "low": 2.0686944392684374,
+     "high": 2.4777431305438262,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "desk_hours_per_pair",
+     "how": "set",
+     "low": 1.2636056253968881,
+     "high": 5.745069462655746,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "desk_hours_per_day",
+     "how": "set",
+     "low": 0.630691968543385,
+     "high": 2.876330177173459,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "c4b_breadth_arcmin",
+     "how": "set",
+     "low": 34.49893349584426,
+     "high": 115.62788927768088,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    },
+    {
+     "input": "branch_ra",
+     "how": "conditioned",
+     "low": 0.0,
+     "high": 1.0,
+     "p_low": 0.0,
+     "p_high": 0.0,
+     "change": 0.0
+    }
+   ],
+   "C4a": [
+    {
+     "input": "p_disc_routine",
+     "how": "set",
+     "low": 0.014880443146159193,
+     "high": 0.4503252260093749,
+     "p_low": 0.04033173338583469,
+     "p_high": 0.7963882262739235,
+     "change": 0.7560564928880887
+    },
+    {
+     "input": "p_recorded",
+     "how": "set",
+     "low": 0.904849062191244,
+     "high": 0.9951887002674106,
+     "p_low": 0.396705233740827,
+     "p_high": 0.424997209315081,
+     "change": 0.028291975574254002
+    },
+    {
+     "input": "hours_per_session_mean",
+     "how": "conditioned",
+     "low": 2.0686944392684374,
+     "high": 2.4777431305438262,
+     "p_low": 0.4244618881939957,
+     "p_high": 0.3972859226094751,
+     "change": 0.027175965584520623
+    },
+    {
+     "input": "n_unknown_sessions",
+     "how": "conditioned",
+     "low": 12.0,
+     "high": 21.0,
+     "p_low": 0.39518287078260494,
+     "p_high": 0.4107428877084857,
+     "change": 0.01556001692588077
+    },
+    {
+     "input": "north_first",
+     "how": "set",
+     "low": 0.0,
+     "high": 1.0,
+     "p_low": 0.4054283257279028,
+     "p_high": 0.41579422499552154,
+     "change": 0.010365899267618717
+    },
+    {
+     "input": "weather",
+     "how": "conditioned",
+     "low": 0.3354975481514287,
+     "high": 0.5697056569773875,
+     "p_low": 0.41418184323071633,
+     "p_high": 0.40606410896301376,
+     "change": 0.00811773426770257
+    },
+    {
+     "input": "branch_ra",
+     "how": "conditioned",
+     "low": 0.0,
+     "high": 1.0,
+     "p_low": 0.4115796517670631,
+     "p_high": 0.41053592588378396,
+     "change": 0.0010437258832791674
+    },
+    {
+     "input": "stars_per_hour",
+     "how": "set",
+     "low": 51.31556790870408,
+     "high": 87.90925118564601,
+     "p_low": 0.4110632162000173,
+     "p_high": 0.4110632162000173,
+     "change": 0.0
+    },
+    {
+     "input": "p_follow",
+     "how": "set",
+     "low": 0.52589943724269,
+     "high": 0.9743572537124846,
+     "p_low": 0.4110632162000173,
+     "p_high": 0.4110632162000173,
+     "change": 0.0
+    },
+    {
+     "input": "p_disc_looking",
+     "how": "set",
+     "low": 0.24513789689550147,
+     "high": 0.9774523558373056,
+     "p_low": 0.4110632162000173,
+     "p_high": 0.4110632162000173,
+     "change": 0.0
+    },
+    {
+     "input": "moving_extent_factor",
+     "how": "set",
+     "low": 0.5780464409194163,
+     "high": 1.9211704611647322,
+     "p_low": 0.4110632162000173,
+     "p_high": 0.4110632162000173,
+     "change": 0.0
+    },
+    {
+     "input": "desk_hours_per_pair",
+     "how": "set",
+     "low": 1.2636056253968881,
+     "high": 5.745069462655746,
+     "p_low": 0.4110632162000173,
+     "p_high": 0.4110632162000173,
+     "change": 0.0
+    },
+    {
+     "input": "desk_hours_per_day",
+     "how": "set",
+     "low": 0.630691968543385,
+     "high": 2.876330177173459,
+     "p_low": 0.4110632162000173,
+     "p_high": 0.4110632162000173,
+     "change": 0.0
+    },
+    {
+     "input": "c4b_breadth_arcmin",
+     "how": "set",
+     "low": 34.49893349584426,
+     "high": 115.62788927768088,
+     "p_low": 0.4110632162000173,
+     "p_high": 0.4110632162000173,
+     "change": 0.0
+    }
+   ],
+   "C4a_prompt": [
+    {
+     "input": "p_follow",
+     "how": "set",
+     "low": 0.52589943724269,
+     "high": 0.9743572537124846,
+     "p_low": 0.7187549987180881,
+     "p_high": 0.9766795354271443,
+     "change": 0.25792453670905613
+    },
+    {
+     "input": "p_disc_routine",
+     "how": "set",
+     "low": 0.014880443146159193,
+     "high": 0.4503252260093749,
+     "p_low": 0.7554303553748954,
+     "p_high": 0.9450662940168241,
+     "change": 0.18963593864192863
+    },
+    {
+     "input": "p_recorded",
+     "how": "set",
+     "low": 0.904849062191244,
+     "high": 0.9951887002674106,
+     "p_low": 0.8385654599966216,
+     "p_high": 0.8574175492592525,
+     "change": 0.018852089262630933
+    },
+    {
+     "input": "hours_per_session_mean",
+     "how": "conditioned",
+     "low": 2.0686944392684374,
+     "high": 2.4777431305438262,
+     "p_low": 0.8577004297911126,
+     "p_high": 0.8402651742503391,
+     "change": 0.01743525554077352
+    },
+    {
+     "input": "n_unknown_sessions",
+     "how": "conditioned",
+     "low": 12.0,
+     "high": 21.0,
+     "p_low": 0.8333588396884399,
+     "p_high": 0.848719641431647,
+     "change": 0.015360801743207086
+    },
+    {
+     "input": "north_first",
+     "how": "set",
+     "low": 0.0,
+     "high": 1.0,
+     "p_low": 0.8450412851942763,
+     "p_high": 0.8517317107834841,
+     "change": 0.006690425589207738
+    },
+    {
+     "input": "branch_ra",
+     "how": "conditioned",
+     "low": 0.0,
+     "high": 1.0,
+     "p_low": 0.8498241485492113,
+     "p_high": 0.847534869315331,
+     "change": 0.002289279233880337
+    },
+    {
+     "input": "weather",
+     "how": "conditioned",
+     "low": 0.3354975481514287,
+     "high": 0.5697056569773875,
+     "p_low": 0.8468471386897108,
+     "p_high": 0.8489155400461458,
+     "change": 0.0020684013564349346
+    },
+    {
+     "input": "desk_hours_per_day",
+     "how": "set",
+     "low": 0.630691968543385,
+     "high": 2.876330177173459,
+     "p_low": 0.8473463619545453,
+     "p_high": 0.8490354128904454,
+     "change": 0.001689050935900105
+    },
+    {
+     "input": "desk_hours_per_pair",
+     "how": "set",
+     "low": 1.2636056253968881,
+     "high": 5.745069462655746,
+     "p_low": 0.8490756983508312,
+     "p_high": 0.8480311600470283,
+     "change": 0.001044538303802911
+    },
+    {
+     "input": "stars_per_hour",
+     "how": "set",
+     "low": 51.31556790870408,
+     "high": 87.90925118564601,
+     "p_low": 0.8486914131842866,
+     "p_high": 0.8486914131842866,
+     "change": 0.0
+    },
+    {
+     "input": "p_disc_looking",
+     "how": "set",
+     "low": 0.24513789689550147,
+     "high": 0.9774523558373056,
+     "p_low": 0.8486914131842866,
+     "p_high": 0.8486914131842866,
+     "change": 0.0
+    },
+    {
+     "input": "moving_extent_factor",
+     "how": "set",
+     "low": 0.5780464409194163,
+     "high": 1.9211704611647322,
+     "p_low": 0.8486914131842866,
+     "p_high": 0.8486914131842866,
+     "change": 0.0
+    },
+    {
+     "input": "c4b_breadth_arcmin",
+     "how": "set",
+     "low": 34.49893349584426,
+     "high": 115.62788927768088,
+     "p_low": 0.8486914131842866,
+     "p_high": 0.8486914131842866,
+     "change": 0.0
+    }
+   ],
+   "C4b": [
+    {
+     "input": "c4b_breadth_arcmin",
+     "how": "set",
+     "low": 34.49893349584426,
+     "high": 115.62788927768088,
+     "p_low": 0.6490003911607732,
+     "p_high": 0.18689322114267312,
+     "change": 0.4621071700181001
+    },
+    {
+     "input": "p_disc_routine",
+     "how": "set",
+     "low": 0.014880443146159193,
+     "high": 0.4503252260093749,
+     "p_low": 0.21514336826857824,
+     "p_high": 0.5444874660006399,
+     "change": 0.32934409773206164
+    },
+    {
+     "input": "p_disc_looking",
+     "how": "set",
+     "low": 0.24513789689550147,
+     "high": 0.9774523558373056,
+     "p_low": 0.2466374864263495,
+     "p_high": 0.42511494690950696,
+     "change": 0.17847746048315746
+    },
+    {
+     "input": "hours_per_session_mean",
+     "how": "conditioned",
+     "low": 2.0686944392684374,
+     "high": 2.4777431305438262,
+     "p_low": 0.31575145953122125,
+     "p_high": 0.3754021629463479,
+     "change": 0.05965070341512663
+    },
+    {
+     "input": "p_recorded",
+     "how": "set",
+     "low": 0.904849062191244,
+     "high": 0.9951887002674106,
+     "p_low": 0.33786239987766903,
+     "p_high": 0.3678215011709431,
+     "change": 0.02995910129327406
+    },
+    {
+     "input": "north_first",
+     "how": "set",
+     "low": 0.0,
+     "high": 1.0,
+     "p_low": 0.34498741428381785,
+     "p_high": 0.3609040129764308,
+     "change": 0.01591659869261297
+    },
+    {
+     "input": "weather",
+     "how": "conditioned",
+     "low": 0.3354975481514287,
+     "high": 0.5697056569773875,
+     "p_low": 0.3668344482569526,
+     "p_high": 0.3549597295368084,
+     "change": 0.011874718720144228
+    },
+    {
+     "input": "n_unknown_sessions",
+     "how": "conditioned",
+     "low": 12.0,
+     "high": 21.0,
+     "p_low": 0.35690248029816046,
+     "p_high": 0.34975650997034413,
+     "change": 0.007145970327816331
+    },
+    {
+     "input": "branch_ra",
+     "how": "conditioned",
+     "low": 0.0,
+     "high": 1.0,
+     "p_low": 0.3543721753890349,
+     "p_high": 0.351459138286111,
+     "change": 0.0029130371029239543
+    },
+    {
+     "input": "stars_per_hour",
+     "how": "set",
+     "low": 51.31556790870408,
+     "high": 87.90925118564601,
+     "p_low": 0.3529308046305055,
+     "p_high": 0.3529308046305055,
+     "change": 0.0
+    },
+    {
+     "input": "p_follow",
+     "how": "set",
+     "low": 0.52589943724269,
+     "high": 0.9743572537124846,
+     "p_low": 0.3529308046305055,
+     "p_high": 0.3529308046305055,
+     "change": 0.0
+    },
+    {
+     "input": "moving_extent_factor",
+     "how": "set",
+     "low": 0.5780464409194163,
+     "high": 1.9211704611647322,
+     "p_low": 0.3529308046305055,
+     "p_high": 0.3529308046305055,
+     "change": 0.0
+    },
+    {
+     "input": "desk_hours_per_pair",
+     "how": "set",
+     "low": 1.2636056253968881,
+     "high": 5.745069462655746,
+     "p_low": 0.3529308046305055,
+     "p_high": 0.3529308046305055,
+     "change": 0.0
+    },
+    {
+     "input": "desk_hours_per_day",
+     "how": "set",
+     "low": 0.630691968543385,
+     "high": 2.876330177173459,
+     "p_low": 0.3529308046305055,
+     "p_high": 0.3529308046305055,
+     "change": 0.0
+    }
+   ]
+  }
+ },
+ "pairs_between_counterfactuals_not_read": {
+  "C1a minus C1b": {
+   "mean": 0.4309051266847804,
+   "q05": 0.0,
+   "q95": 0.9571944580809835
+  },
+  "C1a minus C1a_7d": {
+   "mean": 0.0,
+   "q05": 0.0,
+   "q95": 0.0
+  },
+  "C1a minus C1b_7d": {
+   "mean": 0.4309051266847804,
+   "q05": 0.0,
+   "q95": 0.9571944580809835
+  },
+  "C1a minus C2_1800": {
+   "mean": 0.7144044757329789,
+   "q05": 0.5014618801996444,
+   "q95": 0.9739144846200573
+  },
+  "C1a minus C2_date": {
+   "mean": -0.20231036327042412,
+   "q05": -0.24999786290571785,
+   "q95": -0.02540506126684013
+  },
+  "C1a minus C3_S4": {
+   "mean": 0.3056807999838026,
+   "q05": -0.2244680850373522,
+   "q95": 0.8003492275593818
+  },
+  "C1a minus C3_S4_prompt": {
+   "mean": -0.07510107052040967,
+   "q05": -0.3715391371235876,
+   "q95": 0.4951602612186606
+  },
+  "C1a minus C3_S5": {
+   "mean": 0.7144044757329789,
+   "q05": 0.5014618801996444,
+   "q95": 0.9739144846200573
+  },
+  "C1a minus C3_S5_prompt": {
+   "mean": 0.7144044757329789,
+   "q05": 0.5014618801996444,
+   "q95": 0.9739144846200573
+  },
+  "C1a minus C4a": {
+   "mean": 0.3039075595254643,
+   "q05": -0.224627594895879,
+   "q95": 0.7976872930148952
+  },
+  "C1a minus C4a_prompt": {
+   "mean": -0.13345575258989223,
+   "q05": -0.3957466167183513,
+   "q95": 0.003127045635337849
+  },
+  "C1a minus C4b": {
+   "mean": 0.36789612915170294,
+   "q05": -0.2695236431098175,
+   "q95": 0.8481081645257795
+  },
+  "C1b minus C1a_7d": {
+   "mean": -0.4309051266847804,
+   "q05": -0.9571944580809835,
+   "q95": 0.0
+  },
+  "C1b minus C1b_7d": {
+   "mean": 0.0,
+   "q05": 0.0,
+   "q95": 0.0
+  },
+  "C1b minus C2_1800": {
+   "mean": 0.28349934904819846,
+   "q05": 0.0,
+   "q95": 0.9346235819196149
+  },
+  "C1b minus C2_date": {
+   "mean": -0.6332154899552045,
+   "q05": -0.9983525187570834,
+   "q95": -0.061102342037684935
+  },
+  "C1b minus C3_S4": {
+   "mean": -0.12522432670097783,
+   "q05": -0.7778750388970924,
+   "q95": 0.6787903404293741
+  },
+  "C1b minus C3_S4_prompt": {
+   "mean": -0.5060061972051901,
+   "q05": -0.9778763505775597,
+   "q95": 0.001935666506221975
+  },
+  "C1b minus C3_S5": {
+   "mean": 0.28349934904819846,
+   "q05": 0.0,
+   "q95": 0.9346235819196149
+  },
+  "C1b minus C3_S5_prompt": {
+   "mean": 0.28349934904819846,
+   "q05": 0.0,
+   "q95": 0.9346235819196149
+  },
+  "C1b minus C4a": {
+   "mean": -0.12699756715931615,
+   "q05": -0.7750533142127816,
+   "q95": 0.6745151684580614
+  },
+  "C1b minus C4a_prompt": {
+   "mean": -0.5643608792746726,
+   "q05": -0.9788513167116848,
+   "q95": -0.005827208737134413
+  },
+  "C1b minus C4b": {
+   "mean": -0.06300899753307752,
+   "q05": -0.8547445240371985,
+   "q95": 0.7495061649284956
+  },
+  "C1a_7d minus C1b_7d": {
+   "mean": 0.4309051266847804,
+   "q05": 0.0,
+   "q95": 0.9571944580809835
+  },
+  "C1a_7d minus C2_1800": {
+   "mean": 0.7144044757329789,
+   "q05": 0.5014618801996444,
+   "q95": 0.9739144846200573
+  },
+  "C1a_7d minus C2_date": {
+   "mean": -0.20231036327042412,
+   "q05": -0.24999786290571785,
+   "q95": -0.02540506126684013
+  },
+  "C1a_7d minus C3_S4": {
+   "mean": 0.3056807999838026,
+   "q05": -0.2244680850373522,
+   "q95": 0.8003492275593818
+  },
+  "C1a_7d minus C3_S4_prompt": {
+   "mean": -0.07510107052040967,
+   "q05": -0.3715391371235876,
+   "q95": 0.4951602612186606
+  },
+  "C1a_7d minus C3_S5": {
+   "mean": 0.7144044757329789,
+   "q05": 0.5014618801996444,
+   "q95": 0.9739144846200573
+  },
+  "C1a_7d minus C3_S5_prompt": {
+   "mean": 0.7144044757329789,
+   "q05": 0.5014618801996444,
+   "q95": 0.9739144846200573
+  },
+  "C1a_7d minus C4a": {
+   "mean": 0.3039075595254643,
+   "q05": -0.224627594895879,
+   "q95": 0.7976872930148952
+  },
+  "C1a_7d minus C4a_prompt": {
+   "mean": -0.13345575258989223,
+   "q05": -0.3957466167183513,
+   "q95": 0.003127045635337849
+  },
+  "C1a_7d minus C4b": {
+   "mean": 0.36789612915170294,
+   "q05": -0.2695236431098175,
+   "q95": 0.8481081645257795
+  },
+  "C1b_7d minus C2_1800": {
+   "mean": 0.28349934904819846,
+   "q05": 0.0,
+   "q95": 0.9346235819196149
+  },
+  "C1b_7d minus C2_date": {
+   "mean": -0.6332154899552045,
+   "q05": -0.9983525187570834,
+   "q95": -0.061102342037684935
+  },
+  "C1b_7d minus C3_S4": {
+   "mean": -0.12522432670097783,
+   "q05": -0.7778750388970924,
+   "q95": 0.6787903404293741
+  },
+  "C1b_7d minus C3_S4_prompt": {
+   "mean": -0.5060061972051901,
+   "q05": -0.9778763505775597,
+   "q95": 0.001935666506221975
+  },
+  "C1b_7d minus C3_S5": {
+   "mean": 0.28349934904819846,
+   "q05": 0.0,
+   "q95": 0.9346235819196149
+  },
+  "C1b_7d minus C3_S5_prompt": {
+   "mean": 0.28349934904819846,
+   "q05": 0.0,
+   "q95": 0.9346235819196149
+  },
+  "C1b_7d minus C4a": {
+   "mean": -0.12699756715931615,
+   "q05": -0.7750533142127816,
+   "q95": 0.6745151684580614
+  },
+  "C1b_7d minus C4a_prompt": {
+   "mean": -0.5643608792746726,
+   "q05": -0.9788513167116848,
+   "q95": -0.005827208737134413
+  },
+  "C1b_7d minus C4b": {
+   "mean": -0.06300899753307752,
+   "q05": -0.8547445240371985,
+   "q95": 0.7495061649284956
+  },
+  "C2_1800 minus C2_date": {
+   "mean": -0.916714839003403,
+   "q05": -0.9993792055951611,
+   "q95": -0.7742020810217534
+  },
+  "C2_1800 minus C3_S4": {
+   "mean": -0.40872367574917634,
+   "q05": -0.8078202989161123,
+   "q95": -0.03729786149530774
+  },
+  "C2_1800 minus C3_S4_prompt": {
+   "mean": -0.7895055462533884,
+   "q05": -0.9854139273862078,
+   "q95": -0.22220451119292514
+  },
+  "C2_1800 minus C3_S5": {
+   "mean": 0.0,
+   "q05": 0.0,
+   "q95": 0.0
+  },
+  "C2_1800 minus C3_S5_prompt": {
+   "mean": 0.0,
+   "q05": 0.0,
+   "q95": 0.0
+  },
+  "C2_1800 minus C4a": {
+   "mean": -0.4104969162075146,
+   "q05": -0.8057189395408965,
+   "q95": -0.03862607030482744
+  },
+  "C2_1800 minus C4a_prompt": {
+   "mean": -0.8478602283228711,
+   "q05": -0.9860911019698204,
+   "q95": -0.6267534247959428
+  },
+  "C2_1800 minus C4b": {
+   "mean": -0.346508346581276,
+   "q05": -0.8967679563088728,
+   "q95": -0.019966957846867056
+  },
+  "C2_date minus C3_S4": {
+   "mean": 0.5079911632542267,
+   "q05": 0.09428247550594468,
+   "q95": 0.9079119123748352
+  },
+  "C2_date minus C3_S4_prompt": {
+   "mean": 0.12720929275001444,
+   "q05": -0.051356375157442936,
+   "q95": 0.6915033853641436
+  },
+  "C2_date minus C3_S5": {
+   "mean": 0.916714839003403,
+   "q05": 0.7742020810217533,
+   "q95": 0.9993792055951611
+  },
+  "C2_date minus C3_S5_prompt": {
+   "mean": 0.916714839003403,
+   "q05": 0.7742020810217533,
+   "q95": 0.9993792055951611
+  },
+  "C2_date minus C4a": {
+   "mean": 0.5062179227958884,
+   "q05": 0.09675743569513544,
+   "q95": 0.9059662132306598
+  },
+  "C2_date minus C4a_prompt": {
+   "mean": 0.06885461068053189,
+   "q05": -0.05437985459020385,
+   "q95": 0.20640091526926815
+  },
+  "C2_date minus C4b": {
+   "mean": 0.5702064924221271,
+   "q05": 0.016867212943982277,
+   "q95": 0.9377354558751859
+  },
+  "C3_S4 minus C3_S4_prompt": {
+   "mean": -0.38078187050421225,
+   "q05": -0.790547336029975,
+   "q95": 0.0
+  },
+  "C3_S4 minus C3_S5": {
+   "mean": 0.40872367574917634,
+   "q05": 0.03729786149530766,
+   "q95": 0.8078202989161122
+  },
+  "C3_S4 minus C3_S5_prompt": {
+   "mean": 0.40872367574917634,
+   "q05": 0.03729786149530766,
+   "q95": 0.8078202989161122
+  },
+  "C3_S4 minus C4a": {
+   "mean": -0.0017732404583383056,
+   "q05": -0.10753466117996364,
+   "q95": 0.11855318624004735
+  },
+  "C3_S4 minus C4a_prompt": {
+   "mean": -0.43913655257369477,
+   "q05": -0.8090926295238977,
+   "q95": -0.1289681930829593
+  },
+  "C3_S4 minus C4b": {
+   "mean": 0.06221532916790031,
+   "q05": -0.5936184284488651,
+   "q95": 0.3829631522030989
+  },
+  "C3_S4_prompt minus C3_S5": {
+   "mean": 0.7895055462533884,
+   "q05": 0.22220451119292506,
+   "q95": 0.9854139273862077
+  },
+  "C3_S4_prompt minus C3_S5_prompt": {
+   "mean": 0.7895055462533884,
+   "q05": 0.22220451119292506,
+   "q95": 0.9854139273862077
+  },
+  "C3_S4_prompt minus C4a": {
+   "mean": 0.37900863004587393,
+   "q05": -0.08398198825806372,
+   "q95": 0.7958694794313104
+  },
+  "C3_S4_prompt minus C4a_prompt": {
+   "mean": -0.058354682069482564,
+   "q05": -0.5753676800783055,
+   "q95": 0.05106081774196509
+  },
+  "C3_S4_prompt minus C4b": {
+   "mean": 0.44299719967211254,
+   "q05": -0.13789640970935527,
+   "q95": 0.8523497054691137
+  },
+  "C3_S5 minus C3_S5_prompt": {
+   "mean": 0.0,
+   "q05": 0.0,
+   "q95": 0.0
+  },
+  "C3_S5 minus C4a": {
+   "mean": -0.4104969162075146,
+   "q05": -0.8057189395408965,
+   "q95": -0.03862607030482744
+  },
+  "C3_S5 minus C4a_prompt": {
+   "mean": -0.8478602283228711,
+   "q05": -0.9860911019698204,
+   "q95": -0.6267534247959428
+  },
+  "C3_S5 minus C4b": {
+   "mean": -0.346508346581276,
+   "q05": -0.8967679563088728,
+   "q95": -0.019966957846867056
+  },
+  "C3_S5_prompt minus C4a": {
+   "mean": -0.4104969162075146,
+   "q05": -0.8057189395408965,
+   "q95": -0.03862607030482744
+  },
+  "C3_S5_prompt minus C4a_prompt": {
+   "mean": -0.8478602283228711,
+   "q05": -0.9860911019698204,
+   "q95": -0.6267534247959428
+  },
+  "C3_S5_prompt minus C4b": {
+   "mean": -0.346508346581276,
+   "q05": -0.8967679563088728,
+   "q95": -0.019966957846867056
+  },
+  "C4a minus C4a_prompt": {
+   "mean": -0.43736331211535645,
+   "q05": -0.8031651736499142,
+   "q95": -0.1377325512844621
+  },
+  "C4a minus C4b": {
+   "mean": 0.06398856962623861,
+   "q05": -0.5888918669186679,
+   "q95": 0.38280599248098873
+  },
+  "C4a_prompt minus C4b": {
+   "mean": 0.5013518817415951,
+   "q05": -0.0499822232240907,
+   "q95": 0.8583174931232616
+  }
+ },
+ "c1_completion": {
+  "C1a": {
+   "p_by": {
+    "1846-08-13": 0.4994032084941864,
+    "1846-08-14": 0.6560989022254944,
+    "1846-08-16": 0.7073867917060852,
+    "1846-08-20": 0.7142991423606873,
+    "1846-08-31": 0.7144013047218323,
+    "1846-09-22": 0.7144013047218323
+   },
+   "median_date_given_flagged": "1846-08-13",
+   "date_95_percent_of_flags": "1846-08-15"
+  },
+  "C1b": {
+   "p_by": {
+    "1846-08-13": 0.1568928211927414,
+    "1846-08-14": 0.2320341169834137,
+    "1846-08-16": 0.27153488993644714,
+    "1846-08-20": 0.28276902437210083,
+    "1846-08-31": 0.28350022435188293,
+    "1846-09-22": 0.28350022435188293
+   },
+   "median_date_given_flagged": "1846-08-13",
+   "date_95_percent_of_flags": "1846-08-16"
+  },
+  "C1a_7d": {
+   "p_by": {
+    "1846-08-13": 0.0,
+    "1846-08-14": 0.0,
+    "1846-08-16": 0.0,
+    "1846-08-20": 0.6560989022254944,
+    "1846-08-31": 0.7144013047218323,
+    "1846-09-22": 0.7144013047218323
+   },
+   "median_date_given_flagged": "1846-08-19",
+   "date_95_percent_of_flags": "1846-08-21"
+  },
+  "C1b_7d": {
+   "p_by": {
+    "1846-08-13": 0.0,
+    "1846-08-14": 0.0,
+    "1846-08-16": 0.0,
+    "1846-08-20": 0.2320341169834137,
+    "1846-08-31": 0.28350022435188293,
+    "1846-09-22": 0.28350022435188293
+   },
+   "median_date_given_flagged": "1846-08-19",
+   "date_95_percent_of_flags": "1846-08-22"
+  }
+ },
+ "posterior_against_prior": {
+  "p_disc_routine": {
+   "prior": {
+    "mean": 0.24998806990251,
+    "q05": 0.024938647518817195,
+    "q95": 0.4751171585311498
+   },
+   "posterior": {
+    "mean": 0.19659850396029524,
+    "q05": 0.014610829055345251,
+    "q95": 0.44815963131312986
+   }
+  },
+  "p_disc_looking": {
+   "prior": {
+    "mean": 0.5502082847484792,
+    "q05": 0.14515420884736835,
+    "q95": 0.9549701883004162
+   },
+   "posterior": {
+    "mean": 0.6741546564474399,
+    "q05": 0.24671245400377664,
+    "q95": 0.9751718533386083
+   }
+  },
+  "p_follow": {
+   "prior": {
+    "mean": 0.750206349402848,
+    "q05": 0.5249215043764531,
+    "q95": 0.9749935778258372
+   },
+   "posterior": {
+    "mean": 0.7500684571994791,
+    "q05": 0.5248180148877388,
+    "q95": 0.975084253881412
+   }
+  },
+  "p_recorded": {
+   "prior": {
+    "mean": 0.9499576975734468,
+    "q05": 0.9050069505060844,
+    "q95": 0.9949757742584924
+   },
+   "posterior": {
+    "mean": 0.9500610089995898,
+    "q05": 0.9050173001363159,
+    "q95": 0.9950027255255599
+   }
+  },
+  "stars_per_hour": {
+   "prior": {
+    "mean": 65.00822352734187,
+    "q05": 42.50911198510099,
+    "q95": 87.51323484555286
+   },
+   "posterior": {
+    "mean": 70.60870098629243,
+    "q05": 51.070161719538056,
+    "q95": 87.87381848490047
+   }
+  },
+  "moving_extent_factor": {
+   "prior": {
+    "mean": 1.2496390745305337,
+    "q05": 0.5745144529190976,
+    "q95": 1.9248070262703836
+   },
+   "posterior": {
+    "mean": 1.2507085564079656,
+    "q05": 0.5752834400119015,
+    "q95": 1.9255147521961768
+   }
+  },
+  "weather": {
+   "prior": {
+    "mean": 0.45006142439222147,
+    "q05": 0.3149881097160057,
+    "q95": 0.5850087072566365
+   },
+   "posterior": {
+    "mean": 0.4530864615324333,
+    "q05": 0.3181428473551004,
+    "q95": 0.5850849794267319
+   }
+  },
+  "desk_hours_per_pair": {
+   "prior": {
+    "mean": 3.4980588150748835,
+    "q05": 1.2499540476490592,
+    "q95": 5.749109268319958
+   },
+   "posterior": {
+    "mean": 3.497672436472057,
+    "q05": 1.24653735484597,
+    "q95": 5.750209618642813
+   }
+  },
+  "desk_hours_per_day": {
+   "prior": {
+    "mean": 1.7495801008045853,
+    "q05": 0.6252918812055424,
+    "q95": 2.875095188405258
+   },
+   "posterior": {
+    "mean": 1.7499777203021627,
+    "q05": 0.6245653620081786,
+    "q95": 2.8751040078523884
+   }
+  },
+  "n_unknown_drawn": {
+   "prior": {
+    "mean": 16.501094283724807,
+    "q05": 8.0,
+    "q95": 25.0
+   },
+   "posterior": {
+    "mean": 17.99003,
+    "q05": 11.0,
+    "q95": 25.0
+   }
+  },
+  "n_unknown_sessions": {
+   "prior": {
+    "mean": 14.808580539182529,
+    "q05": 8.0,
+    "q95": 22.0
+   },
+   "posterior": {
+    "mean": 16.16092,
+    "q05": 11.0,
+    "q95": 22.0
+   }
+  },
+  "hours_per_session_mean": {
+   "prior": {
+    "mean": 2.249867192619768,
+    "q05": 1.9690630169432939,
+    "q95": 2.531474579825801
+   },
+   "posterior": {
+    "mean": 2.269108684809741,
+    "q05": 2.010324883118721,
+    "q95": 2.540164203415207
+   }
+  },
+  "hours_total": {
+   "prior": {
+    "mean": 45.81586874866484,
+    "q05": 30.58926353156069,
+    "q95": 63.60899615531369
+   },
+   "posterior": {
+    "mean": 49.1198329284298,
+    "q05": 37.74190226029225,
+    "q95": 63.70017789692845
+   }
+  },
+  "stars_total": {
+   "prior": {
+    "mean": 3050.9761029883043,
+    "q05": 1761.7660120006278,
+    "q95": 4753.566198094899
+   },
+   "posterior": {
+    "mean": 3443.410252879246,
+    "q05": 3037.7781172544524,
+    "q95": 3927.9196945051194
+   }
+  },
+  "extent_jul30_deg": {
+   "prior": {
+    "mean": 42.17546752198312,
+    "q05": 14.864400426268535,
+    "q95": 81.65083284354775
+   },
+   "posterior": {
+    "mean": 42.57887310852499,
+    "q05": 14.96169478296753,
+    "q95": 82.10389299305987
+   }
+  },
+  "extent_aug12_deg": {
+   "prior": {
+    "mean": 33.75782817628008,
+    "q05": 16.887219666686594,
+    "q95": 50.61139509440928
+   },
+   "posterior": {
+    "mean": 34.06555374670842,
+    "q05": 16.988805704974432,
+    "q95": 50.718147802088886
+   }
+  },
+  "c4b_breadth_arcmin": {
+   "prior": {
+    "mean": 75.00498353341547,
+    "q05": 34.52559127139799,
+    "q95": 115.51685154749342
+   },
+   "posterior": {
+    "mean": 75.03766064775151,
+    "q05": 34.52396646568471,
+    "q95": 115.48695016003153
+   }
+  },
+  "branch_ra": {
+   "prior": {
+    "mean": 0.49935000443291994,
+    "q05": 0.0,
+    "q95": 1.0
+   },
+   "posterior": {
+    "mean": 0.49836,
+    "q05": 0.0,
+    "q95": 1.0
+   }
+  },
+  "north_first": {
+   "prior": {
+    "mean": 0.5003730625898414,
+    "q05": 0.0,
+    "q95": 1.0
+   },
+   "posterior": {
+    "mean": 0.49857,
+    "q05": 0.0,
+    "q95": 1.0
+   }
+  }
+ },
+ "compute": {
+  "wall_s": 1171.4,
+  "cpu_s": 1170.0,
+  "n_workers": 1
+ }
+}

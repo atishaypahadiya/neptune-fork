@@ -7,16 +7,6 @@
   "conditions_2_3": 0.32153861445184373,
   "condition_4": 0.3074247092734321
  },
- "seconds": {
-  "draws_and_abduction": 0.3333127498626709,
-  "closed_form_all_cases": 1.573577880859375,
-  "inner_draws_all_cases": 1.7718043327331543,
-  "cpu_total": 3.6766140000000003
- },
- "estimate_full_run_seconds": {
-  "closed_form_100000_accepted": 190.6890630722046,
-  "with_inner_draws": 367.86949634552
- },
  "cases": {
   "A0": {
    "primary_mean": 0.3254370580301795,
