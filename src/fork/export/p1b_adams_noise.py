@@ -697,6 +697,47 @@ def multistart_baselines(pre: dict) -> dict:
     return out
 
 
+def branch_summary(warm: np.ndarray, multi: np.ndarray, T_ecl: float, O_clean: float,
+                   d_obs: float, theta_real: float, theta_clean: float) -> dict:  # fmt: skip
+    """Description only: among the draws whose multistart Δ reaches Δ_obs, the fraction that
+    are branch changes (multistart minimum more than 1° from the warm start in the 1846.762
+    longitude; a lower bound from 12 starts), and where their θ lands against the real-data θ."""
+    cm = _col(multi, "converged") > 0.5
+    cw = _col(warm, "converged") > 0.5
+    lon_m, lon_w = _col(multi, "true_lon"), _col(warm, "true_lon")
+    d_lon = np.abs((lon_m - lon_w + 180.0) % 360.0 - 180.0)
+    branch = cm & (~cw | (d_lon > MULTI_DIFF_DEG))
+    delta = (lon_m - T_ecl + 180.0) % 360.0 - 180.0 - O_clean
+    exc = cm & (delta >= d_obs)
+    th = _col(multi, "theta")
+    d_real = (th - theta_real + 180.0) % 360.0 - 180.0
+    d_clean = (th - theta_clean + 180.0) % 360.0 - 180.0
+    eb = exc & branch
+    edges = np.arange(-180.0, 180.01, 20.0)
+    hist = np.histogram(d_real[eb], bins=edges)[0] if eb.any() else np.zeros(len(edges) - 1)
+    return {
+        "n_converged": int(cm.sum()),
+        "n_branch_changes": int(branch.sum()),
+        "fraction_branch_changes": float(branch.sum() / max(cm.sum(), 1)),
+        "n_exceeding": int(exc.sum()),
+        "n_exceeding_branch_changes": int(eb.sum()),
+        "fraction_of_exceeding_that_are_branch_changes": float(eb.sum() / exc.sum())
+        if exc.any()
+        else None,
+        "P_same_branch_only": float((exc & ~branch).sum() / max((cm & ~branch).sum(), 1)),
+        "theta_real_data": theta_real,
+        "theta_clean": theta_clean,
+        "exceeding_branch_theta_minus_real": _quant(d_real[eb]),
+        "exceeding_branch_theta_minus_clean": _quant(d_clean[eb]),
+        "exceeding_same_branch_theta_minus_real": _quant(d_real[exc & ~branch]),
+        "exceeding_branch_theta_minus_real_hist_20deg": {
+            f"{int(a)}..{int(a + 20)}": int(n) for a, n in zip(edges[:-1], hist, strict=True) if n
+        },
+        "exceeding_branch_within_10deg_of_real_theta": int(np.sum(np.abs(d_real[eb]) <= 10.0)),
+        "all_branch_theta_minus_clean": _quant(d_clean[branch]),
+    }
+
+
 def _quant(v: np.ndarray) -> dict:
     v = v[np.isfinite(v)]
     if v.size == 0:
@@ -881,6 +922,11 @@ def summarize(png: bool = True) -> dict:
                             * c["d1c"]["sigma_unscaled"]["theta"],
                             "step3b_sigma_theta_scaled_deg": c["d1c"]["sigma_scaled"]["theta"],
                         }
+                if method == "d1c" and use_multi:
+                    rec["branches"] = branch_summary(
+                        z["d1c"], z["multi"], T_ecl, oc, d_obs["primary"],
+                        out["multistart_baselines"][H]["real"]["theta"], th_clean["d1c"],
+                    )  # fmt: skip
                 if method == "chain":
                     roots = z["roots"]
                     rec[method]["roots"] = {
@@ -919,6 +965,7 @@ def summarize(png: bool = True) -> dict:
     R._dump(OUT_JSON, out)
     if png:
         draw(out, pre, OUT_PNG)
+        draw_branches(out, pre, OUT_PNG.with_name("P1B_adams_noise_branches.png"))
     return out
 
 
@@ -1005,6 +1052,57 @@ def draw(out: dict, pre: dict, path: Path) -> None:
         "(solid line his real-data solution by the same method, dashed his printed one)",
         fontsize=10,
     )
+    fig.tight_layout()
+    fig.savefig(path, dpi=130)
+    plt.close(fig)
+
+
+def draw_branches(out: dict, pre: dict, path: Path) -> None:
+    """Δ of the multistart solution per cell, the branch-change draws shaded apart."""
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    T_ecl = pre["truth"]["neptune_1846"]["ecl_j2000"]
+    fig, axes = plt.subplots(2, 3, figsize=(13, 7), sharex=True)
+    names = {"a": "(a) his scatter × 1.175", "b": "(b) set D scatter / √N",
+             "c": "(c) Student-t ν = 4"}  # fmt: skip
+    bins = np.arange(-180.0, 180.01, 4.0)
+    for i, hyp in enumerate(HYPS):
+        H = f"H{hyp}"
+        for j, model in enumerate(MODELS):
+            ax = axes[i, j]
+            ax.set_title(f"Hypothesis {'I' if hyp == 1 else 'II'}, {names[model]}", fontsize=10)
+            cell = out["results"].get(f"{H}/{model}")
+            if cell is None or "branches" not in cell:
+                ax.text(0.5, 0.5, "not run yet", transform=ax.transAxes, ha="center")
+                continue
+            z = np.load(draws_path(hyp, model))
+            multi, warm = z["multi"], z["d1c"]
+            cm = _col(multi, "converged") > 0.5
+            lon_m, lon_w = _col(multi, "true_lon"), _col(warm, "true_lon")
+            d_lon = np.abs((lon_m - lon_w + 180.0) % 360.0 - 180.0)
+            branch = cm & ((_col(warm, "converged") < 0.5) | (d_lon > MULTI_DIFF_DEG))
+            base = out["multistart_baselines"][H]
+            delta = (lon_m - T_ecl + 180.0) % 360.0 - 180.0 - base["clean"]["O"]
+            ax.hist([delta[cm & ~branch], delta[branch]], bins=bins, stacked=True,
+                    color=["#1f6fd1", "#d1521f"],
+                    label=["same branch as the warm start", "branch change"])  # fmt: skip
+            ax.axvline(base["delta_obs"]["primary"], color="black", lw=1.2)
+            b = out["results"][f"{H}/{model}"]["branches"]
+            P = out["results"][f"{H}/{model}"]["d1c"]["P"]["primary"]["P"]
+            frac = b["fraction_of_exceeding_that_are_branch_changes"]
+            ax.text(0.02, 0.97, f"P = {P:.4f}\nof the exceeding draws,\n"
+                    f"{'n/a' if frac is None else f'{100 * frac:.0f} %'} are branch changes",
+                    transform=ax.transAxes, va="top", fontsize=9)  # fmt: skip
+            ax.set_yscale("log")
+            ax.grid(alpha=0.25)
+            if i == 1:
+                ax.set_xlabel("Δ, degrees (line: Δ_obs)")
+            if j == 0:
+                ax.set_ylabel("realisations per 4° (log)")
+    axes[0, 0].legend(fontsize=8, loc="upper right", frameon=False)
     fig.tight_layout()
     fig.savefig(path, dpi=130)
     plt.close(fig)

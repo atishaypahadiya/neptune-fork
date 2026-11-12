@@ -198,3 +198,19 @@ def test_reading_with_flagged_intervals():
     r = N.reading_interval([0.10, 0.10], [0.04, 0.06])
     assert r["row"] == 3 and "(b)" in r["text"] and "0.05" in r["text"]
     assert N.reading_interval([0.01, 0.03], [0.01, 0.02])["row"] == 3
+
+
+def test_branch_summary_on_constructed_arrays():
+    k = len(N._FIELDS) + 2
+    i_lon, i_th = N._FIELDS.index("true_lon"), N._FIELDS.index("theta")
+    warm, multi = np.zeros((5, k)), np.zeros((5, k))
+    warm[:, -2] = multi[:, -2] = 1.0
+    warm[:, i_lon] = [100.0, 100.0, 100.0, 100.0, 100.0]
+    multi[:, i_lon] = [100.0, 100.5, 115.0, 130.0, 60.0]  # Δ = 0, 0.5, 15, 30, −40 (T = 100)
+    multi[:, i_th] = [10.0, 10.0, 10.0, 200.0, 10.0]
+    b = N.branch_summary(warm, multi, 100.0, 0.0, 12.0, 195.0, 10.0)
+    assert b["n_branch_changes"] == 3 and b["n_exceeding"] == 2
+    assert b["n_exceeding_branch_changes"] == 2
+    assert b["fraction_of_exceeding_that_are_branch_changes"] == pytest.approx(1.0)
+    assert b["P_same_branch_only"] == 0.0
+    assert b["exceeding_branch_within_10deg_of_real_theta"] == 1
