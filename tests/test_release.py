@@ -224,11 +224,11 @@ def test_doi_is_recorded_consistently_and_never_fetched():
             assert "XXXXXXX" not in p.read_text(encoding="utf-8"), p.name
 
 
-# MD5 of every file of version 1.0.1. PROVISIONAL until the Zenodo record of v1.0.1 is published:
-# these are the MD5s of the files as built for the upload (2026-11-12); once the record exists
-# they are compared with the MD5s it lists and this comment names the record. The package is
-# frozen: a change to any of these files needs a new Zenodo version (and new values here),
-# never an edit in place. Version 1.0.0 is Zenodo record 24044792 (published 2026-11-07).
+# MD5 of every file in Zenodo record 24158992 (version 1.0.1, published 2026-11-12, version DOI
+# 10.5281/zenodo.24158992), as the record's API lists them; compared on 2026-11-12, all 16 equal
+# to the files as built. The package is frozen: a change to any of these files needs a new
+# Zenodo version (and new values here), never an edit in place. Version 1.0.0 is Zenodo record
+# 24044792 (published 2026-11-07).
 PUBLISHED_MD5 = {
     ".zenodo.json": "fc450ae2d7119c6097fe03a5ef61d2aa",
     "CITATION.cff": "17c571e4551bb5fc375fa527a2cd707f",

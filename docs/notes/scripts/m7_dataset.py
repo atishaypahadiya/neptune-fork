@@ -22,7 +22,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[3]
 PKG = ROOT / "release" / "leverrier-table77"
 OUT = ROOT / "site" / "data" / "m7_dataset.json"
-RECORD = "https://zenodo.org/api/records/24044792"
+RECORD = "https://zenodo.org/api/records/24158992"  # v1.0.1 (v1.0.0 is record 24044792)
 
 
 def rows(name: str) -> list[dict]:
@@ -113,7 +113,7 @@ def main() -> None:
             "misprints": len(misprints),
         },
         "spot_checks": {
-            "automated": {
+            "first": {
                 "rows": len(auto["rows"]),
                 "cells": n_auto,
                 "matching": ok_auto,

@@ -115,3 +115,15 @@ not matching`. The record's SHA-256 is in `leverrier-table77/MANIFEST.md`.
 - [ ] A later change to any file in `data/historical/` or `docs/review/` that the package
   copies fails `tests/test_release.py`. Then rebuild, and publish a new Zenodo version under
   the same concept DOI.
+
+## 5. Version 1.0.1 (2026-11-12)
+
+- [x] Rewords descriptive strings in `spotcheck_results.json` and the documentation; no table
+  value or check result changes. From this version the package cites the concept DOI with the
+  version number, because a version's own DOI exists only once Zenodo has the files.
+- [x] Uploaded by hand as a new version of record 24044792: the 16 files replaced, version
+  1.0.1, publication date 2026-11-12, the description and the notes from `.zenodo.json`.
+- [x] **Published 2026-11-12: https://zenodo.org/records/24158992.** Version DOI
+  10.5281/zenodo.24158992; the concept DOI 10.5281/zenodo.24044791 resolves to it. All 16
+  files match the published record by MD5, and `tests/test_release.py` pins those MD5s.
+- [x] The concept DOI is in `CITATION.cff` `identifiers` (the open item of section 4).

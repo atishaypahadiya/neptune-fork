@@ -195,9 +195,12 @@ in the code record only.
   `site/data/release.json`; the companion page's status; `site/data/m7_timeline.json`
   "deferred" says 1.3.
 - [x] Checks: ruff, tests, prerender, number audit on both pages, layout in Chromium and WebKit.
-- [ ] Dataset v1.0.1 uploaded to Zenodo by hand as a new version of record 24044792.
-- [ ] After the upload: compare the record's MD5s with the pins and name the record in the
-  test's comment; the v1.0.1 version DOI in the project README and `site/data/m7_dataset.json`.
+- [x] Dataset v1.0.1 uploaded to Zenodo by hand as a new version of record 24044792:
+  published 2026-11-12, https://zenodo.org/records/24158992, version DOI 10.5281/zenodo.24158992.
+- [x] After the upload: the record's 16 MD5s equal the pins, and the test's comment names the
+  record; the v1.0.1 version DOI is in the project README and `site/data/m7_dataset.json`.
+- [x] Before the tag: the epoch of the held-distance fits' shortfall corrected to 1846.762
+  (a262a35), and the prior-dependent figures marked in the changelog, README and release notes.
 - [ ] Tag `v1.2.0`, publish the GitHub release (Zenodo mints the code's version DOI).
 - [ ] Follow-up commit: that DOI in `CITATION.cff`, `README.md` and `site/data/release.json`.
 

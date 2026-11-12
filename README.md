@@ -187,8 +187,10 @@ The write-up, with each claim's JSON path and deviation, is
 **Data availability.** Le Verrier's Table 77, transcribed, is on Zenodo (CC0).
 - Concept DOI [10.5281/zenodo.24044791](https://doi.org/10.5281/zenodo.24044791) (the badge
   above) covers all versions; cite it for the dataset in general.
-- Version DOI [10.5281/zenodo.24044792](https://doi.org/10.5281/zenodo.24044792) is v1.0.0;
-  cite it for exact reproduction.
+- Version DOI [10.5281/zenodo.24158992](https://doi.org/10.5281/zenodo.24158992) is v1.0.1,
+  the current version; cite it for exact reproduction. v1.0.1 rewords descriptive strings in
+  `spotcheck_results.json` and the documentation; no table value or check result changes.
+  v1.0.0 is [10.5281/zenodo.24044792](https://doi.org/10.5281/zenodo.24044792).
 - Each release of the code is archived on Zenodo as well. v1.1.0: version DOI
   [10.5281/zenodo.24122940](https://doi.org/10.5281/zenodo.24122940), concept DOI
   [10.5281/zenodo.24121059](https://doi.org/10.5281/zenodo.24121059) for all versions
