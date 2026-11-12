@@ -413,3 +413,129 @@ Review of the localhost page (2026-11-09):
 - UI-rule audit: no new pattern. Small multiples replace a four-curve overlay; no new colour,
   opacity step, dash, gradient, divider, pill or eyebrow; the panel titles are plain text, not
   eyebrows over headings.
+
+## Companion page: the British search, Adams and Challis (2026-11-12)
+
+Phase 1b gets its own page, `site/adams-challis/index.html`, served at `…/adams-challis/`. The
+main page is not renumbered and gains one sentence: the last paragraph of its abstract ends
+with a link to the companion study, its text read from `site/data/p1b_page.json`.
+
+**Same system, second paper.** The concept, the one rule, the palette, the type, the figure
+language, the voice and the interaction rules above apply unchanged. The page loads the same
+`css/` and the shared modules of `js/` (`data.js`, `figs.js`, `plate.js`, `clear.js`); its own
+text is in `js/copy_p1b.js` and its own figures in `js/figs_p1b.js`. It has no Plate I: the
+title block sits on paper, with the title, the byline as on the main page, and one line
+linking back to the main paper. Its sections, figures and tables are numbered from 1
+(Figs. 1 to 4, Table 1); a cross-reference to the other page is written "Fig. N of the main
+paper".
+
+**Structure.**
+1. Abstract: the two questions and their answers, each with its condition.
+2. Sources: the printed record (Adams's memoir, Challis's reports, Le Verrier's two papers),
+   the transcriptions and how each was checked, the frozen files and their hashes.
+3. How good was Adams (four findings, one subsection each):
+   - 3.1 the project's fit to his data at his distances falls short of Neptune (Fig. 1);
+   - 3.2 his printed solutions reproduced from the memoir; his data through his method, and
+     where the difference from his print sits;
+   - 3.3 on a noise-free Neptune every method is short at his distance: the shortfall is the
+     assumed distance (Fig. 1);
+   - 3.4 noise against a systematic: neither is established (Fig. 2).
+4. Challis's search as a detection model:
+   - 4.1 the record, the model and the conditioning on the record (Fig. 3);
+   - 4.2 the cases and their readings (Table 1, Fig. 4);
+   - 4.3 what each reading rests on.
+5. Limitations.
+6. Data availability: the notes, the JSON files and the code paths; the DOIs as on the main
+   page. Phase 1b is in the repository and not yet in a release, and the page says so.
+7. References, the page's own list.
+
+**Deviations stated where they bear on a claim** (each in the sentence that makes the claim,
+not in a separate list):
+- § 3.4: the pre-registered statistic treated an angle as linear and measured switching to
+  the second minimum of his least-squares problem; the on-branch figures are post hoc and
+  are labelled so wherever they appear.
+- § 4.2: under the reading with the realised events held, his actual procedure is 0 before
+  23 September by construction; the pre-registered paired rule is therefore uninformative,
+  and the page says so in place of quoting its statements.
+- § 4.2: three readings change row when the priors are halved and are marked
+  prior-dependent in Table 1 and Fig. 4; the zone priors were not halved; the tornado used
+  10,000 draws.
+- § 4.2, one sentence: the replay reading (every event redrawn) is outside the
+  pre-registered reading; its value for the actual procedure is given with its JSON path,
+  and the note carries the rest.
+- § 4.2, one sentence: paired differences between counterfactuals are post hoc and are in
+  the note only; the sentence links to them.
+- § 4.1: the Northumberland aperture per Airy 1844; the start places at ecliptic latitude 0;
+  the zone order; Neptune's magnitude carried back from a modern fit.
+
+**Table 1, the cases** (§ 4.2; journal layer, as Table 1 of the main paper): one row per case; columns: the
+case, the probability before 23 September with its 5 to 95 % range, the row of the reading
+rule, the input it is most sensitive to, what it is conditional on. Prior-dependent rows carry
+a dagger defined in the caption. The two 7-day-delay variants are one sentence under the
+table, not rows. Below 600 px the last column drops under each row's case name.
+
+**Fig. 1, the shortfall follows the assumed distance** (§ 3.1, 3.3): one horizontal axis, the
+heliocentric longitude minus Neptune's on Galle's night, Neptune a hairline at 0 lettered *N*.
+One row per solution: his two printed solutions; his data through his method; the project's
+fit at his two distances and with the distance free; each method on the noise-free Neptune at
+his distance. A dot per value with its interval where the source has one (2 px line); rows
+without an interval say so in the caption. Rows on the noise-free truth are open circles.
+Tooltip: the row's value, interval and source step.
+
+**Fig. 2, his shift against noise** (§ 3.4): the distribution over noise draws of the shift
+toward Neptune, on an angular axis from −180° to 180° so that the second minimum is a
+separate cluster and not a tail. Two panels (Hypothesis I, Hypothesis II). In each, noise
+model (a) is the white 2 px line and model (b) the lower-opacity line, both as stepped
+outlines of the same bins; the observed shift is a vertical hairline lettered and defined in
+the caption. The caption states that the on-branch fraction is post hoc and gives the
+pre-registered value beside it. The binned shifts are written from the cached draws of
+step 3c to a new file, `docs/notes/P1B_adams_noise_hist.json`, with its hash and a dated line
+in the step 3c note; `P1B_adams_noise.json` is not edited.
+
+**Fig. 3, the search on the sky** (§ 4.1): right ascension against declination, equinox of
+date, right ascension increasing to the left. Neptune's track from 29 July to 1 October as a
+dotted line with the four nights of the record lettered; the 30 July and 12 August zone as a
+band at its posterior median setting with its 5 to 95 % range as hairlines; the 4 August
+sector sweep as a bar; the five start places (the 325° column, S4, S5, Le Verrier June and
+August) as open marks lettered and defined in the caption; the edge of the Berlin sheet he had
+as two vertical hairlines, one per equinox, labelled along the line. To scale, and the caption
+says so. Tooltip: the nearest mark's place and source.
+
+**Fig. 4, the cases against the reading rule** (§ 4.2): one row per case in Table 1's order;
+the mean as a dot, the 5 to 95 % range as a 2 px line; the rule's two thresholds as
+0.6-opacity lines among 0.3 gridlines; prior-dependent rows carry the same dagger as Table 1
+and their halved-prior range as a 1 px line under the main one. Cases at 0 in every draw are
+a dot at 0 with no line, and the caption gives the reason for each (by construction, by
+timing, off the sheet). Tooltip: the row's numbers and what it is conditional on.
+
+**Data.** `fork.export.to_json` writes `site/data/p1b_adams.json`, `p1b_challis.json` and
+`p1b_page.json` as subsets of the committed `docs/notes/P1B_*.json`; every value keeps the
+path of its source field, and a test asserts each equals its source. Cited constants (the
+printed elements, the aperture, the magnitude constant) carry their citations. The site
+ledger is regenerated with the Phase 1b rows.
+
+**Build and checks, both pages.** `tools/prerender_site.py` prerenders `index.html` and
+`adams-challis/index.html` into `_site/`. `tools/check_prerender.py` runs the number audit
+and the JS-off comparison on each page, with one allowlist per page built from the files that
+page loads. `tools/check_layout.py` takes the page as an argument and runs every width on
+both, in Chromium and in WebKit; screenshots of the companion page go to
+`docs/notes/p1b_site/`. The Pages workflow runs all three on both pages before the upload,
+and one artifact deploys both.
+
+**Acceptance, in addition to the list above:**
+- the main page's rendered text differs from today's by the one sentence and nothing else;
+- every number on the companion page is in its allowlist, and the allowlist's sources are
+  committed files;
+- the words "post hoc", "by construction" and "prior-dependent" appear in the sentences
+  listed above, checked by a test on the copy;
+- no change to `release/`, to any pre-registered block or to `src/` outside
+  `fork/export/`; nothing is released.
+
+**UI-rule audit:** no new pattern. The page uses what the main page uses, for the same
+reasons: small caps on "Fig.", "Table" and "§"; section numbers, because the text
+cross-references them; the one eyebrow per section; italics for point letters and titles of
+works; the vignette on figure grounds. New on this page and justified: a dagger on three
+rows, because the mark must sit in a table cell and in a figure row alike. Not used: pills,
+bordered containers, dividers beyond Table 1's one hairline, monospace, ALL CAPS, any new
+colour, opacity step or gradient. The approved "one hue plus grey" is carried inside the
+palette: white line on the cyanotype ground, with the lower line opacity in the role of grey.
