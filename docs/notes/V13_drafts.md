@@ -44,7 +44,7 @@ one fit with the fast likelihood of M8, reweighted, 0.8 CPU-h (seed 1 of the hea
 - **Known limit, stated in advance:** the free-a posterior depends on the distance prior
   and on cell 2's repeatability (M6c), so the ratio inherits both.
 
-**Code ready** (12 November 2026, the commit that adds this line): `fork.export.v13`:
+**Code ready** (12 November 2026, commit 1852443): `fork.export.v13`:
 `shape_space` (ln a held, two e cells, 10 dimensions), `peirce_probability`, `peirce_ratio`
 (bootstrap interval), `log_bayes_factor`. Tests: `tests/test_v13.py`
 (`test_shape_space_holds_the_distance`, `test_peirce_probability_and_ratio`). Smoke run on
@@ -72,7 +72,7 @@ seeds, cache and ledger rows, which depend on the open choices.
 - **Overlap to state:** Phase 1b step 2 already fitted Adams's own data set D (278
   measurements). `adams` here is a different set (Table 77 without 1690).
 
-**Code ready** (same commit): `fork.export.v13.select_rows` for `bouvard` (492 measurements)
+**Code ready** (commit 1852443): `fork.export.v13.select_rows` for `bouvard` (492 measurements)
 and `adams` (527); `model.observation.structure_from_rows` gains `allow_empty_groups`, off
 by default, so a choice can drop the ancient series. Tests: `test_data_choices_select_the_rows_of_the_spec`,
 `test_empty_groups_are_refused_unless_asked_for`,
@@ -101,7 +101,7 @@ four fits on it.
 - **Open:** the uncertainty to assign to Galileo's drawings; whether the test is on
   longitude only.
 
-**Code ready** (same commit): `fork.export.v13.predictive_places` (the perturber's
+**Code ready** (commit 1852443): `fork.export.v13.predictive_places` (the perturber's
 geocentric right ascension and declination of date per posterior sample, one integration per
 sample, about 5 ms), `region_summary` (68 % and 95 % intervals, plane mean and covariance)
 and `region_level` (the smallest credible region that contains an observed place). Tests:
@@ -134,7 +134,7 @@ and the extension of the A6d static check to name the file.
 - **Stated in advance:** whichever way it falls, S1's published verdict is corrected only
   by an erratum line that keeps the old number visible.
 
-**Code ready** (same commit): `fork.export.v13.S1_SUBCELLS` (the example cut: six
+**Code ready** (commit 1852443): `fork.export.v13.S1_SUBCELLS` (the example cut: six
 sub-cells), `subcell_space`, `combine_subcells` (evidence of the union from the sub-cells'
 evidences and prior masses, with its error). Tests: `test_subcells_partition_cell_0` (the
 prior masses add up to cell 0's), `test_combine_subcells`. Smoke runs on synthetic data in
