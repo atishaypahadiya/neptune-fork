@@ -1184,7 +1184,7 @@ def draw(payload: dict, path: Path) -> None:
     from fork.export.p1b_adams_plot import BLUE, GRID, INK, MUTED, ORANGE, _style
 
     fig, axes = plt.subplots(2, 2, figsize=(11, 7.6))
-    fig.subplots_adjust(hspace=0.42, wspace=0.26)
+    fig.subplots_adjust(hspace=0.42, wspace=0.5)
     places = payload["his_data"]
     for j, hyp in enumerate((1, 2)):
         ax = axes[0, j]
@@ -1223,45 +1223,69 @@ def draw(payload: dict, path: Path) -> None:
     _style(ax)
     prof = payload["d2"]["profile"]
     clean = [p for p in prof if not p["flags"]]
+    flagged = [p for p in prof if p["flags"]]
     ax.plot([p["alpha"] for p in prof], [p["chi2"] for p in prof], color=GRID, linewidth=1.0)
     ax.plot(
         [p["alpha"] for p in clean],
         [p["chi2"] for p in clean],
         color=BLUE,
-        linewidth=1.8,
         marker="o",
-        markersize=3.5,
+        markersize=4,
         linestyle="none",
-        label="χ² (D1(c) weights)",
+        label="χ², D1(c) weights",
+    )
+    ax.plot(
+        [p["alpha"] for p in flagged],
+        [p["chi2"] for p in flagged],
+        color=BLUE,
+        marker="o",
+        markersize=4,
+        markerfacecolor="white",
+        linestyle="none",
+        label="inside a band (pole or truncation)",
     )
     drop = payload["d2"]["profile_second_order_dropped"]
     ax.plot(
-        [p["alpha"] for p in drop if not p["flags"]],
-        [p["chi2"] for p in drop if not p["flags"]],
+        [p["alpha"] for p in drop],
+        [p["chi2"] for p in drop],
         color=ORANGE,
         linewidth=1.2,
         linestyle=":",
         label="second-order terms dropped",
     )
-    ymax = max(p["chi2"] for p in clean) * 1.6
+    ymax = max(p["chi2"] for p in clean) * 1.9
     ax.set_ylim(0, ymax)
-    for a_, lab in ((A.POLES["3:1"], "3:1 pole"), (0.5, "α = 0.5"), (0.515, "0.515")):
+    for a_, lab, dx in (
+        (A.POLES["3:1"], "3:1 pole", -0.004),
+        (0.5, "α = 0.5", 0.002),
+        (0.515, "0.515", 0.002),
+    ):
         ax.axvline(a_, color=MUTED, linewidth=0.8, linestyle="--")
-        ax.text(a_, ymax * 0.95, lab, fontsize=7.5, color=MUTED, ha="left", va="top", rotation=90)
-    ax.axvspan(0.58, 0.60, color=GRID, alpha=0.5, lw=0)
+        ax.text(
+            a_ + dx,
+            ymax * 0.62,
+            lab,
+            fontsize=7.5,
+            color=MUTED,
+            ha="right" if dx < 0 else "left",
+            va="top",
+            rotation=90,
+        )
+    ax.axvspan(0.58, 0.605, color=GRID, alpha=0.5, lw=0)
     ax.text(
-        0.598,
-        ymax * 0.05,
-        "truncation-limited; 2:1 pole at 0.630 →",
+        0.603,
+        ymax * 0.03,
+        "truncation-limited;\n2:1 pole at 0.630 →",
         fontsize=7,
         color=MUTED,
         ha="right",
+        va="bottom",
     )
     ax.set_xlabel("α = a / a′", fontsize=8.5)
     ax.set_title(
         "D2: his equations rebuilt at each α, Hypothesis I weights", fontsize=9.5, color=INK
     )
-    ax.legend(fontsize=7.5, frameon=False, loc="upper left")
+    ax.legend(fontsize=7.5, frameon=False, loc="lower left")
     ax = axes[1, 1]
     _style(ax)
     d3 = payload["d3"]
@@ -1291,18 +1315,20 @@ def draw(payload: dict, path: Path) -> None:
     if O3 is not None:
         ax.axvline(O3, color=ORANGE, linewidth=1.2, linestyle="--")
         ax.text(
-            O3,
-            len(rows) - 0.55,
+            O3 + 0.15,
+            -0.55,
             f"step-3 shortfall {O3:+.1f}°",
             fontsize=7.5,
             color=ORANGE,
-            ha="center",
+            ha="left",
+            va="bottom",
         )
     ax.set_yticks(ys)
     ax.set_yticklabels([r[0] for r in rows], fontsize=8)
     ax.set_xlabel("longitude at 1846.762 − Neptune's, degrees (one truth)", fontsize=8.5)
     ax.set_title("D3: data against method", fontsize=9.5, color=INK)
-    ax.set_ylim(-0.7, len(rows) - 0.2)
+    ax.set_ylim(-0.9, len(rows) - 0.3)
+    ax.set_xlim(min(-12.5, (O3 or 0) - 2), 1.5)
     fig.savefig(path, dpi=150, bbox_inches="tight")
     plt.close(fig)
 

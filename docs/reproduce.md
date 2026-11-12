@@ -263,3 +263,22 @@ python3 -I docs/notes/scripts/p1b_adams_memoir_compare.py   # run from docs/note
 (the script expects `pass1/` and `pass2/` beside it); reconciliation in
 `docs/notes/adams_memoir_reconciliation.md`, final tables in `data/historical/adams_challis/
 adams_memoir_*.csv`. Hi-res renders for the decisions: see `MANIFEST.md`.
+
+## Phase 1b step 3b, stages B–D (the reproduction)
+
+```
+uv run pytest -q tests/test_adams_1846.py          # stages B and C: his intermediates and his solution from three entry points (24 tests)
+uv run pytest -q tests/test_p1b_adams_repro.py     # stage D's pieces (13 tests; one slow: the synthetic set D is noise-free)
+uv run python -m fork.export.p1b_adams_repro plan  # the two D3(iii) jobs, seeds [2026, 11, 3, 7, 0, k+1], state
+FORK_HORIZONS_CACHE_ONLY=1 uv run python -m fork.export.p1b_adams_repro cheap      # B, C, the location, D1, D2, D3 (i) and (ii): minutes, cached in data/cache/p1b_adams_repro/cheap.json
+FORK_HORIZONS_CACHE_ONLY=1 uv run python -m fork.export.p1b_adams_repro job 0 --n-workers 4 --maxiter 300   # smoke run of a D3(iii) cell, not saved
+# D3(iii), detached (own process session, nohup, caffeinate -is): step 3's H1(G) job on the synthetic set D, two cells on 6 workers each
+mkdir -p data/cache/p1b_adams_repro
+FORK_HORIZONS_CACHE_ONLY=1 nohup caffeinate -is uv run python -m fork.export.p1b_adams_repro d3iii --n-workers 12 \
+    > data/cache/p1b_adams_repro/run.out 2>&1 &
+FORK_HORIZONS_CACHE_ONLY=1 uv run python -m fork.export.p1b_adams_repro summarize   # D3(iii)'s summary, D4, the readings, docs/notes/P1B_adams_reproduction.{json,png}
+```
+
+Progress in `data/cache/p1b_adams_repro/progress.log`, the driver's log in `driver.log`, one ledger
+row per nested job (`p1b_adams_repro/d3iii/c<k>`) and one for the cheap stages; the nested jobs
+resume from their `.ckpt`. D4 needs step 3's cached results (`data/cache/p1b_adams/*.pkl`).
