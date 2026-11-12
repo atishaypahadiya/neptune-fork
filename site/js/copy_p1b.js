@@ -90,7 +90,10 @@ export function facts(D) {
   });
   const clean = [A.o_clean_least_squares, A.o_clean_his_procedure,
     A.o_clean_project_on_his_places, A.o_clean_project_fit];
-  return { A, W, K, printed, fit, cleanMin: Math.min(...clean.map(Math.abs)),
+  // His printed solutions at the fits' epoch, so that every row of Fig. 1 is at one epoch.
+  const printedAt = (h) => off(A[`${h}_printed_true_lon`], A.neptune_same_model,
+    `${h} printed minus Neptune, the fits' epoch`);
+  return { A, W, K, printed, printedAt, fit, cleanMin: Math.min(...clean.map(Math.abs)),
     cleanMax: Math.max(...clean.map(Math.abs)) };
 }
 
@@ -170,7 +173,7 @@ export function sourcesText(D) {
 }
 
 export function adamsText(D) {
-  const { A, K, printed, fit } = facts(D), EP = D.adams.constants.fit_epoch;
+  const { A, K, printedAt, fit } = facts(D), EP = D.adams.constants.fit_epoch;
   const f1 = fit("H1"), f2 = fit("H2"), F = K.fit_ranges_percent, T = K.noise_thresholds;
   const P = (x) => fmt(x, 3);
   // Every probability named by hypothesis and noise model.
@@ -190,7 +193,7 @@ export function adamsText(D) {
       `${F.outer} % range of the geocentric longitude in both. With the distance left free ` +
       `the same data put Neptune ${A.free_distance_status} the ${F.inner} % range. His ` +
       `printed solutions are much nearer than our fits at his own distances: ` +
-      `${signed(printed("S5"))}° and ${signed(printed("S6"))}° (Fig. 1, {P@fig-1} and ` +
+      `${signed(printedAt("H1"))}° and ${signed(printedAt("H2"))}° (Fig. 1, {P@fig-1} and ` +
       `{Q@fig-1} against {F@fig-1} and {G@fig-1}).`,
     a32_p1: `To see whether that nearness is in his method, we rebuilt his calculation from ` +
       `the memoir: the series, the equations of condition, the normal equations and his ` +
@@ -338,9 +341,8 @@ export function captions(D) {
     `${fmt(A[`H1_${kind}_P_b`], 3)} (b); Hypothesis II: ${fmt(A[`H2_${kind}_P_a`], 3)} (a), ` +
     `${fmt(A[`H2_${kind}_P_b`], 3)} (b)`;
   return {
-    cap_fig_1: `True heliocentric longitude minus Neptune's ({N@fig-1}), per solution: ` +
-      `Adams's printed solutions on Galle's night, the others at ` +
-      `${fmt(EP.julian_year, 3)}. {P@fig-1}, {Q@fig-1}: his printed solutions under his ` +
+    cap_fig_1: `True heliocentric longitude minus Neptune's ({N@fig-1}) at ` +
+      `${fmt(EP.julian_year, 3)}, per solution. {P@fig-1}, {Q@fig-1}: his printed solutions under his ` +
       `first and second hypotheses. {R@fig-1}: his data through his least squares. {F@fig-1}, ` +
       `{G@fig-1}: the project's fit with the distance held at ${fmt(A.S5_a_au)} and ` +
       `${fmt(A.S6_a_au, 2)} AU, with the ${F.inner} % range. Open marks: each method on a ` +

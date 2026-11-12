@@ -125,6 +125,7 @@ does (the dated correction in `P1B_challis_detection.md`).
 | claim | JSON path | deviation that bears on it |
 |---|---|---|
 | printed solutions +1.7°, +2.5° from Neptune | `fit` `targets.S5/S6.places.1846-09-23.helio_true` minus `neptune_places.1846-09-23.helio_true` | none |
+| the same at 1846.762, the epoch of Fig. 1 and § 3.1 (+1.7°, +2.5°) | `repro` `R7_d4.variants.h1_g/h2_g.true_lon_1846_of_date.vs.adams_printed.target` minus `R7_d4.neptune_same_model_of_date` | none |
 | fit at his distances 10.5°, 9.1° short | `repro` `R7_d4.variants.h1_g/h2_g.true_lon_1846_of_date` minus `R7_d4.neptune_same_model_of_date` | none |
 | Neptune inside the 68 % range with the distance free | `fit` `reading.g.statement_1.F.status` | none |
 | reproduced to 0.011°, 0.003° | `repro` `R3_stage_c.H1/C0, H2/C0.vs_print.rows.theta.delta` | none |

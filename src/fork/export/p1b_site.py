@@ -100,6 +100,9 @@ def adams_sources() -> dict:
         v = f"{h.lower()}_g"
         for q in ("median", "lo68", "hi68"):
             s[f"{h}_fit_true_lon_{q}"] = [REPRO, "R7_d4", "variants", v, "true_lon_1846_of_date", q]
+        # His printed solution carried to the same epoch as the fits (Fig. 1 and § 3.1).
+        s[f"{h}_printed_true_lon"] = [REPRO, "R7_d4", "variants", v, "true_lon_1846_of_date",
+                                      "vs", "adams_printed", "target"]  # fmt: skip
         s[f"{h}_fit_status"] = [FIT, "reading", "g", "statement_1", h, "status"]
         s[f"{h}_c0_theta_delta"] = [REPRO, "R3_stage_c", f"{h}/C0", "vs_print", "rows", "theta",
                                     "delta"]  # fmt: skip

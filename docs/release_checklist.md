@@ -201,8 +201,11 @@ in the code record only.
   record; the v1.0.1 version DOI is in the project README and `site/data/m7_dataset.json`.
 - [x] Before the tag: the epoch of the held-distance fits' shortfall corrected to 1846.762
   (a262a35), and the prior-dependent figures marked in the changelog, README and release notes.
-- [ ] Tag `v1.2.0`, publish the GitHub release (Zenodo mints the code's version DOI).
-- [ ] Follow-up commit: that DOI in `CITATION.cff`, `README.md` and `site/data/release.json`.
+- [x] Tag `v1.2.0` on 5df9f42 (test and pages green), GitHub release published 2026-11-12
+  11:14:57 UTC, not a draft; Zenodo minted version DOI 10.5281/zenodo.24159832
+  (https://zenodo.org/records/24159832), and the concept DOI 10.5281/zenodo.24121059 resolves
+  to that record.
+- [x] Follow-up commit: that DOI in `CITATION.cff`, `README.md` and `site/data/release.json`.
 
 ## v1.3 list (opened 2026-11-12; no release without the explicit word)
 

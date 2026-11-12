@@ -191,11 +191,12 @@ The write-up, with each claim's JSON path and deviation, is
   the current version; cite it for exact reproduction. v1.0.1 rewords descriptive strings in
   `spotcheck_results.json` and the documentation; no table value or check result changes.
   v1.0.0 is [10.5281/zenodo.24044792](https://doi.org/10.5281/zenodo.24044792).
-- Each release of the code is archived on Zenodo as well. v1.1.0: version DOI
-  [10.5281/zenodo.24122940](https://doi.org/10.5281/zenodo.24122940), concept DOI
+- Each release of the code is archived on Zenodo as well. v1.2.0: version DOI
+  [10.5281/zenodo.24159832](https://doi.org/10.5281/zenodo.24159832), concept DOI
   [10.5281/zenodo.24121059](https://doi.org/10.5281/zenodo.24121059) for all versions
-  (v1.0.0: [10.5281/zenodo.24121060](https://doi.org/10.5281/zenodo.24121060);
-  `CITATION.cff` carries all three).
+  (v1.1.0: [10.5281/zenodo.24122940](https://doi.org/10.5281/zenodo.24122940);
+  v1.0.0: [10.5281/zenodo.24121060](https://doi.org/10.5281/zenodo.24121060);
+  `CITATION.cff` carries all four).
 
 ## Limitations
 

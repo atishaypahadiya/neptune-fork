@@ -212,6 +212,16 @@
    "true_lon_1846_of_date",
    "hi68"
   ],
+  "H1_printed_true_lon": [
+   "docs/notes/P1B_adams_reproduction.json",
+   "R7_d4",
+   "variants",
+   "h1_g",
+   "true_lon_1846_of_date",
+   "vs",
+   "adams_printed",
+   "target"
+  ],
   "H1_fit_status": [
    "docs/notes/P1B_adams_fit.json",
    "reading",
@@ -412,6 +422,16 @@
    "h2_g",
    "true_lon_1846_of_date",
    "hi68"
+  ],
+  "H2_printed_true_lon": [
+   "docs/notes/P1B_adams_reproduction.json",
+   "R7_d4",
+   "variants",
+   "h2_g",
+   "true_lon_1846_of_date",
+   "vs",
+   "adams_printed",
+   "target"
   ],
   "H2_fit_status": [
    "docs/notes/P1B_adams_fit.json",
@@ -723,6 +743,7 @@
   "H1_fit_true_lon_median": 316.518,
   "H1_fit_true_lon_lo68": 312.182,
   "H1_fit_true_lon_hi68": 320.135,
+  "H1_printed_true_lon": 328.7736,
   "H1_fit_status": "outside",
   "H1_c0_theta_delta": 0.010812833379588938,
   "H1_c2_vs_print": 1.4449361279038726,
@@ -897,6 +918,7 @@
   "H2_fit_true_lon_median": 317.889,
   "H2_fit_true_lon_lo68": 314.385,
   "H2_fit_true_lon_hi68": 322.117,
+  "H2_printed_true_lon": 329.4951,
   "H2_fit_status": "outside",
   "H2_c0_theta_delta": 0.0033605969779557654,
   "H2_c2_vs_print": 1.7598882094079045,

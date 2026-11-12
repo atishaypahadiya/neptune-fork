@@ -16,11 +16,11 @@ const tick = (g, x, y, text, anchor = "middle") =>
 /* ---------------- Fig. 1: the shortfall follows the assumed distance ---------------- */
 
 export function fig1(fig, D) {
-  const { A, printed, fit } = facts(D);
+  const { A, printedAt, fit } = facts(D);
   const f1 = fit("H1"), f2 = fit("H2"), c68 = A.o_clean_project_fit_68;
   const rows = [
-    { id: "P", label: "Printed solution, first hypothesis", v: printed("S5") },
-    { id: "Q", label: "Printed solution, second hypothesis", v: printed("S6") },
+    { id: "P", label: "Printed solution, first hypothesis", v: printedAt("H1") },
+    { id: "Q", label: "Printed solution, second hypothesis", v: printedAt("H2") },
     { id: "R", label: "His data, his least squares", v: A.H1_o_real_least_squares },
     { id: "F", label: `Project fit, distance held at ${fmt(A.S5_a_au)} AU`, v: f1.med, lo: f1.lo, hi: f1.hi },
     { id: "G", label: `Project fit, distance held at ${fmt(A.S6_a_au, 2)} AU`, v: f2.med, lo: f2.lo, hi: f2.hi },
