@@ -148,3 +148,36 @@ Under `data/cache/adams_challis/berlin/`. Used in `docs/notes/P1B_challis_detect
 | `wroclaw/p012_w2600.jpg` | image 12 (p. VI) | `7a2bc356b6e110d2e8ccdaa8b416aa03959afc966cc1fb6495a9381d51e85d84` |
 | `wroclaw/p013_w2600.jpg` | image 13 (p. VII) | `d73e6f9c9ddf74e653dea86156a33ab52f653373007b07e99fac4db9527fed12` |
 | `an_bub_gb_v1Q_AAAAcAAJ_djvu.txt` | archive.org `bub_gb_v1Q_AAAAcAAJ`, text layer; it is *Astronomische Nachrichten* 5 (1827), not the volume 4 wanted | `3b12add4d1967c329e5e40ecd54c1f7b4e2209aa51ccd6329399f07fe96f20b9` |
+
+## Bouvard's 1821 tables: source search of 12 November 2026 (located, not obtained)
+
+Bouvard, A., *Tables astronomiques publiées par le Bureau des longitudes de France, contenant
+les tables de Jupiter, de Saturne et d'Uranus, construites d'après la théorie de la Mécanique
+céleste* (Paris: Bachelier et Huzard, 1821; XXVIII + 110 pp. by the catalogue record of the
+French defence libraries). These are the reference Adams subtracted (his § 7; see
+`docs/notes/P1B_adams_reproduction.md`, the last named input).
+
+No file was downloaded, so there is no hash and nothing in the cache. Every copy below
+refused a scripted request once and was not asked again. Each needs a browser.
+
+| copy | URL | answer to one scripted request (12 Nov 2026) |
+|---|---|---|
+| Gallica (BnF) | https://gallica.bnf.fr/ark:/12148/bpt6k9668766k | catalogue search (SRU) answered 403; the ark itself was not requested |
+| Google Books, Harvard copy | https://books.google.com/books?id=SfZ4Eiw9yR0C | 429, a browser check page |
+| Google Books, Austrian National Library copy | https://books.google.com/books?id=LPRVAAAAcAAJ | 429, a browser check page |
+| Google Books, Oxford copy | https://books.google.com/books?id=E2xbAAAAQAAJ | 429, a browser check page |
+| Google Books, a fourth record | https://books.google.com/books?id=eMFGAAAAcAAJ | 429, a browser check page |
+| French defence libraries, record 77d0faf0-47b0-485f-8c1d-121335baa70f | https://bibliotheques-numeriques.defense.gouv.fr/document/77d0faf0-47b0-485f-8c1d-121335baa70f | no connection (timed out twice) |
+
+Searched without a copy: archive.org (advanced search, eight queries: only the 1808 edition,
+`bub_gb_Yuu0Iel8Jc8C`, Jupiter and Saturn in the decimal division, which has no Uranus
+tables); HathiTrust (catalogue search answered 403 with a browser check); e-rara (browser
+check); ADS (the search interface needs a token; a book of 1821 is not expected there); the
+Munich digital library (its search needs a browser). The Google Books volumes API was over
+its daily quota. That the four Google Books records and the Gallica ark are full scans of
+the 1821 volume rests on a web search's result list; it has not been seen on a page.
+
+Not done, because no page was seen: rendering the Uranus tables, recording their structure
+(arguments, epochs, perturbation terms, masses) and estimating the transcription effort for
+Adams's 30 normal-place epochs. Once a PDF is saved by hand, put it under
+`data/cache/adams_challis/bouvard/` and add its SHA-256 here.
