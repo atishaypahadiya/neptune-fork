@@ -247,3 +247,7 @@ FORK_HORIZONS_CACHE_ONLY=1 uv run python -m fork.export.p1b_adams summarize   # 
 Progress in `data/cache/p1b_adams/progress.log`, the driver's log in `driver.log`, one ledger row
 per job (`p1b_adams/<variant>/c<k>`); resumable per job from its `.ckpt`. `FORK_HORIZONS_CACHE_ONLY=1`
 makes a cache miss raise instead of fetching.
+
+Run of 2026-11-10/11: 70.6 CPU-h over the 16 jobs (held-a variants 6.8–7.3 CPU-h each, free-a 20.7
+and 21.8), 7 h 53 min wall on 12 workers, 51.9 M likelihood calls; results in
+`docs/notes/P1B_adams_fit.md`. The ledger rows are in the local ledger only until the site step.
