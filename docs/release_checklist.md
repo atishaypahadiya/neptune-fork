@@ -160,3 +160,21 @@ Released on the user's explicit go-ahead ("Release v1.1.0"). What it adds to v1.
   day, 2026-11-11), and the concept DOI 10.5281/zenodo.24121059 resolves to that record;
   follow-up commit with the DOI in `CITATION.cff` (`doi:` and a v1.1.0 identifier beside
   v1.0.0's), `README.md` and `site/data/release.json`.
+
+## v1.2.0 list (opened 2026-11-11; no release without the explicit word)
+
+- Carried from v1.1: M6d, M6e, the M6c variant fits, the S1 cell-0 resolution.
+- `docs/reproduce.md`: write sections for the M6c headline, S1–S3, R1/R2, M7, M8/M8b and the
+  A8d(S1) arbiter from the notes and the ledger. No version of the file has had them; those
+  runs appear only in its run-identifier table.
+- At the site step: regenerate the site ledger (`site/data/ledger.json`) with the Phase 1b rows
+  (`p1b_adams/*`, `p1b_adams_repro/*`, `p1b_adams_noise/draws`; 103 CPU-h, held in the local
+  ledger until then).
+- Release v1.2.0 so the concept DOI resolves to the files reworded in f7fecdc
+  ("Describe transcription passes by method").
+- With that release, the dataset tree: the same rewording in `src/fork/export/release.py`
+  (the descriptor's description and the spot-check resource) was held back on 2026-11-11
+  because `tests/test_release.py` pins `release/leverrier-table77/datapackage.json` to the
+  builder's output, and `release/` is not edited outside a release. The dataset's own README,
+  CITATION.cff, `.zenodo.json`, DATA_DICTIONARY, MANIFEST and CHECKLIST carry the same earlier
+  wording; decide their text when the dataset version is cut.
