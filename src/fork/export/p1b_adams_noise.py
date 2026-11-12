@@ -1121,7 +1121,7 @@ def draw(out: dict, pre: dict, path: Path) -> None:
                 )
                 outside[model] = float(np.mean((delta < -15.0) | (delta > 20.0)))
             d = pre["delta_obs"][H][method]
-            ax.set_ylim(top=ax.get_ylim()[1] * 1.45)  # room for the text above the curves
+            ax.set_ylim(top=ax.get_ylim()[1] * 1.6)  # room for the text above the curves
             ax.axvline(d["primary"], color="black", lw=1.2)
             ax.axvline(d["printed"], color="black", lw=0.8, ls="--")
             ps = out["results"]
@@ -1145,7 +1145,7 @@ def draw(out: dict, pre: dict, path: Path) -> None:
                 ax.set_xlabel("Δ = (offset from Neptune with noise) − (noise-free offset), degrees")
             if j == 0:
                 ax.set_ylabel("fraction of realisations per degree")
-    axes[0, 0].legend(fontsize=8, loc="upper left", bbox_to_anchor=(0.0, 0.86), frameon=False)
+    axes[0, 0].legend(fontsize=8, loc="upper left", bbox_to_anchor=(0.0, 0.80), frameon=False)
     fig.suptitle(
         "Step 3c: does independent noise in his layout carry his method as far as his real "
         "data did? "
@@ -1200,6 +1200,7 @@ def draw_branches(out: dict, pre: dict, path: Path) -> None:
                     f"post hoc, on his branch: P = {ph:.4f}",
                     transform=ax.transAxes, va="top", fontsize=9)  # fmt: skip
             ax.set_yscale("log")
+            ax.set_ylim(top=ax.get_ylim()[1] * 40)  # room for the text above the bars
             ax.grid(alpha=0.25)
             if i == 1:
                 ax.set_xlabel("Δ, degrees (line: Δ_obs)")

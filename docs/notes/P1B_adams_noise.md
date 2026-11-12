@@ -193,3 +193,321 @@ compared).
    part of the reading rule.
 5. The empty-window count corrected: seven modern windows (1780, 1804, 1813, 1816, 1819, 1822,
    1825), not eight.
+
+---
+
+## Results (2026-11-11; code and pre-run record 9beae34; draws 21:12–23:27 PST on 12 workers; nothing above the lines edited)
+
+Report order R1–R7 of § 5. Every number is in `P1B_adams_noise.json`; the figures are
+`P1B_adams_noise.png` and `P1B_adams_noise_branches.png`. Offsets O and shifts Δ are on the 1846.762 heliocentric true longitude in
+the data's frame (ecl_j2000 for the synthetic draws, of date for his real-data solutions; an
+offset from Neptune in the same frame is frame-free). "Converged" means the least squares
+stopped on a tolerance, or the chain had a positive-mass root; nothing else was excluded.
+
+### Summary
+
+Under independent noise his shift of about 11° toward Neptune occurs in about 1–2 % (Hypothesis
+I) and 4–5 % (Hypothesis II) of the draws that stay on his branch of the solution (a post hoc
+statistic, R6b). Neither luck nor a systematic is established. Bouvard's tables remain the named
+route to attribution. The pre-registered rule reads "noise suffices" in every multistart and
+chain row (R6a), but its statistic measures how often noise switches the solution to a second
+minimum nearly opposite Neptune, not how often noise carries the solution toward Neptune
+(deviation 5).
+
+### Deviations from the plan as written
+
+1. **Multistart on every draw, and primary for the reading.** § 2 (amendment 1) set a multistart
+   check on 1,000 draws with a full rerun if more than 1 % differed by more than 1°. A 40-draw
+   smoke run before the full run differed in 2.5–25 % of the draws per cell. The trigger fired,
+   so the full run carried the 12-start multistart (lowest χ² kept) on every realisation. The
+   reading's primary method is the multistart global minimum; the warm start is reported beside
+   it. Δ_obs for D1(c) was recomputed with the same 12-start multistart on the clean column and
+   on his real § 9 data before reading: the same minima as before, Δ_obs unchanged (R2). The
+   per-cell fraction of branch changes is a lower bound, since 12 starts need not find every
+   minimum.
+2. **Cost and the detached run.** The plan put the cost at about 1.5 CPU-h, minutes of wall
+   time, not detached. The multistart costs about 2 s per draw; the run took 126 minutes of
+   wall time on 12 workers, about 25 CPU-h. A first full run (19:04–21:10, results held in memory
+   and collected in submission order) was stopped after 2 h 06 min with nothing saved: its log
+   had stalled at 72 of 240 chunks for 78 minutes while the workers stayed busy. The system log
+   for 19:00–21:15 shows no memory-pressure kill and no crash report; the workers held about
+   120 MB each; no stuck draw was found offline on the chunk being waited for. **The cause of
+   the stall is not established.** The run was relaunched detached (nohup, caffeinate) with one
+   result file per chunk written by its worker, progress logged per chunk, a 60 s wall-clock
+   watchdog per solve, exceptions and timeouts recorded per draw as flags, cells (a) and (b)
+   before (c), and (c)'s solves capped at 500 function evaluations with capped starts counted.
+   No chunk stalled in the relaunch.
+3. **Three chunks of (c) recomputed.** Three chunks of sensitivity (c) failed with a math domain
+   error: a chain solution with e′ ≥ 1 has no longitude. The code was changed to flag such a draw
+   (commit 671241f) and the three chunks were recomputed with the same seeds (6.6 minutes).
+   Three chain draws in 20,000 carry the flag (R5).
+4. **Window counts.** The set D counts by the pre-registered rule differ from the list printed
+   in § 2 at six Greenwich windows (R1). The rule governs.
+5. **The plan's statistic treats an angle as linear (identified after reading).** P(Δ ≥ Δ_obs)
+   is one-sided on Δ wrapped to (−180°, +180°]. His least-squares problem has a second minimum
+   at θ ≈ 95° (R3b). A draw whose global minimum is there has Δ ≈ +160° to +175° and counts as
+   exceeding, although it lies nearly opposite Neptune. Between 59 % and 92 % of the exceeding
+   draws in cells (a) and (b) are of this kind. The defect is in the plan's statistic and was
+   identified after the P values were read. **The pre-registered P values therefore measure the
+   frequency of branch switching, not noise carrying the solution toward Neptune.** They are
+   reported as the rule gives them (R4, R6a). A post hoc statistic, labelled post hoc wherever
+   it appears, is reported beside them (R6b).
+6. **Flag rule, set before reading.** If flagged draws (timeout, capped solve, exception,
+   non-convergence) exceed 1 % of a cell, P is the interval [P over converged draws, P with
+   every flag exceeding], and a cell whose interval crosses a threshold reads "weak". No cell
+   reached 1 % (R5), so every P is a single number.
+7. **Additions to the report, description only:** the branch description and its figure (R3b),
+   the warm-start rows, the second minimum on the clean and real data.
+
+### R1 The frozen inputs and the σ_j tables
+
+The synthetic column (D3(i)'s O − C in mean-longitude seconds at his 30 epochs) regenerated by
+step 3b's code agrees with step 3b's cached column to 0.0″ (bit-identical); the memoir tables'
+SHA-256 and the step-3 frozen inputs (Table 77, the error model, his solutions, Challis's
+sweeps) are in the JSON. The truth's Neptune at 1846.762: 329.171° ecl_j2000, 327.031° of date.
+The Bouvard-base "C": a 19.137 AU, e 0.0474, β 47.43°, ε(1810.328) 220.705° ecl_j2000 (step 3b).
+
+**Model (a).** His § 52 residual RMS, raw and scaled by √(29/21) = 1.1751:
+
+| hypothesis | modern raw (21) | modern scaled | ancient raw (8) | ancient scaled |
+|---|---|---|---|---|
+| I | 1.240″ | 1.457″ | 6.211″ | 7.299″ |
+| II | 1.225″ | 1.439″ | 6.294″ | 7.397″ |
+
+Conditioned on his own fit: the residuals of a solution with eight parameters on 29 places; the
+factor is exact only if his model is exact, so (a) remains the lower bracket.
+
+**Model (b).** Step 3's H1(G) best-fit residual RMS about the fitted group offsets, RA only:
+ancient 5.481″ (18 measurements), Greenwich 2.217″ (87), Paris 1835–1845 2.181″ (40). The set D
+observations per window by the rule of § 2 (±1.518 yr about a modern place, ±1 yr about an
+ancient one, the epoch from its TT Julian Date), every one of the 145 falling in exactly one
+window:
+
+| place | 1712 | 1715 | 1750 | 1753 | 1756 | 1764 | 1769 | 1771 | 1780 | 1783 | 1786 | 1789 | 1792 | 1795 | 1798 | 1801 | 1804 | 1807 | 1810 | 1813–1825 (5) | 1828 | 1831 | 1834 | 1837 | 1840 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| N_j | 1 | 3 | 2 | 1 | 1 | 1 | 8 | 1 | 0 | 17 | 8 | 12 | 15 | 12 | 7 | 2 | 0 | 2 | 1 | 0 | 6 | 5 | 13 | 17 | 10 |
+| σ_j (″) | 5.48 | 3.16 | 3.88 | 5.48 | 5.48 | 5.48 | 1.94 | 5.48 | 2.22 | 0.54 | 0.78 | 0.64 | 0.57 | 0.64 | 0.84 | 1.57 | 2.22 | 1.57 | 2.22 | 2.22 | 0.91 | 0.99 | 0.60 | 0.53 | 0.69 |
+
+**The counts differ from the list printed in § 2 at six Greenwich windows** (1783: 17 not 19;
+1786: 8 not 6; 1789: 12 not 15; 1792: 15 not 14; 1795: 12 not 11; 1798: 7 not 6). The list in
+§ 2 was made with a month-rounded parse of the epochs when the plan was written; the rule (the
+window on the epoch) is what was pre-registered and what the code applies. The group totals
+(18, 87, 40), the ancient and Paris counts, and the seven empty modern windows (1780, 1804,
+1813, 1816, 1819, 1822, 1825; floored at N = 1, σ = 2.22″) are as listed. The effect on σ_j is
+at most 0.06″ at one place. The same σ_j serve both hypotheses (set D does not depend on his
+hypothesis) and sensitivity (c).
+
+### R2 The clean solutions and Δ_obs
+
+Both methods on the noise-free column, each hypothesis at his α (0.5; 0.515):
+
+| hyp | method | θ | m′ | e′ | β′ | mean lon 1846 (ecl_j2000) | true lon | O_clean | χ² (weights c) |
+|---|---|---|---|---|---|---|---|---|---|
+| I | D1(c), multistart = warm | 318.88 | 0.817 | 0.0965 | 275.8 | 317.02 | 319.66 | **−9.512°** | 3.23 |
+| I | his chain (6 roots, 2 positive mass) | 318.77 | 0.834 | 0.0918 | 273.8 | 317.14 | 319.25 | **−9.923°** | 3.32 |
+| II | D1(c) | 320.14 | 0.740 | 0.0810 | 281.1 | 318.27 | 321.55 | **−7.621°** | 3.40 |
+| II | his chain (6, 2) | 320.01 | 0.757 | 0.0763 | 278.3 | 318.40 | 321.04 | **−8.127°** | 3.50 |
+
+Hypothesis I's rows are step 3b's D3(i) to the last figure. Hypothesis II at α = 0.515 lands
+1.9° nearer Neptune than Hypothesis I on the same clean data, as D2's rising profile of true
+longitude with α predicts (step 3b R5: 328.7 at 0.50, 331.0 at 0.51 on his real data).
+
+His real-data solutions by the same methods (of date, step 3b) against Neptune's 327.031° of
+date, and Δ_obs = O_real − O_clean per method:
+
+| hyp | method | real-data true lon | O_real | Δ_obs (primary) | Δ_obs vs his printed solution |
+|---|---|---|---|---|---|
+| I | D1(c) on his § 9 data | 328.678 | +1.647° | **+11.158°** | +11.254° (printed 328.774, O +1.743°) |
+| I | his chain on his data (C2 = Brookes) | 328.052 | +1.021° | **+10.944°** | +11.666° |
+| II | D1(c) | 331.995 | +4.964° | **+12.585°** | +10.085° (printed 329.495, O +2.464°) |
+| II | his chain (C2) | 331.478 | +4.447° | **+12.574°** | +10.591° |
+
+The formal uncertainty of the clean solution, unscaled (√diag (JᵀWJ)⁻¹ with W = 1/RMS², no
+χ²/dof factor): σ_θ 3.81° (I), 3.57° (II); under (a), whose noise is 1.175 × RMS, the
+propagated SD of θ should be 1.175 × these = 4.48° and 4.19° (the R5 check). Step 3b's quoted
+σ_θ 1.49° is the same quantity scaled by √(χ²/dof) = √(3.23/21), which is the right scaling for
+clean data fitted by an exact model and not for noise at his residuals' level.
+
+**The clean χ² (3.23 and 3.40) is not noise.** The clean column carries no noise, so this χ² is
+the misfit of his linear model to the truth at the assumed distance, in units of his weights.
+
+**Δ_obs by the draws' own solver.** The 12-start multistart on the clean column and on his real
+§ 9 data finds the same minima as the earlier solves: χ² 3.2276 and 28.4875 (I), 3.4003 and
+28.5938 (II); Δ_obs +11.158° and +12.585°, unchanged to 0.0001°.
+
+### R3 The Δ distributions
+
+Quantiles of Δ over the 10,000 draws per cell, in degrees. "Multistart" is the reading's
+primary solver; "warm" is the one-start solution of the same draws.
+
+| cell | solver | 2.5 % | 16 % | 50 % | 84 % | 97.5 % | SD |
+|---|---|---|---|---|---|---|---|
+| I (a) | multistart | −12.0 | −5.9 | +1.4 | +165.2 | +174.5 | 64.4 |
+| I (a) | warm | −12.2 | −6.4 | −0.1 | +5.8 | +10.5 | 6.0 |
+| I (a) | chain | −15.4 | −7.4 | +2.3 | +12.0 | +176.1 | 59.9 |
+| I (b) | multistart | −10.5 | −5.5 | +0.6 | +6.8 | +170.5 | 42.0 |
+| I (b) | warm | −10.7 | −5.8 | 0.0 | +5.5 | +9.6 | 5.4 |
+| I (b) | chain | −16.6 | −8.7 | +1.4 | +8.8 | +172.9 | 40.7 |
+| I (c) | multistart | −14.1 | −7.0 | +1.2 | +9.6 | +173.9 | 55.2 |
+| I (c) | warm | −14.6 | −7.7 | −0.1 | +6.6 | +11.6 | 7.2 |
+| I (c) | chain | −21.3 | −11.1 | +1.6 | +9.6 | +175.0 | 49.3 |
+| II (a) | multistart | −13.2 | −6.7 | +1.4 | +14.6 | +172.2 | 59.4 |
+| II (a) | warm | −13.3 | −7.2 | 0.0 | +7.6 | +14.3 | 7.2 |
+| II (a) | chain | −16.4 | −8.8 | +2.3 | +15.2 | +174.2 | 54.3 |
+| II (b) | multistart | −12.0 | −6.4 | +0.5 | +8.4 | +168.4 | 37.0 |
+| II (b) | warm | −12.0 | −6.6 | 0.0 | +7.0 | +13.7 | 6.7 |
+| II (b) | chain | −18.2 | −10.5 | +1.0 | +12.7 | +169.0 | 32.8 |
+| II (c) | multistart | −15.4 | −8.1 | +1.2 | +13.0 | +172.1 | 51.2 |
+| II (c) | warm | −15.7 | −8.6 | −0.1 | +9.3 | +16.9 | 8.8 |
+| II (c) | chain | −22.9 | −13.1 | +1.6 | +14.4 | +173.3 | 42.9 |
+
+![Δ per method and hypothesis](P1B_adams_noise.png)
+
+The figure shows −15° to +20° only; each panel states the fraction of draws off that range.
+
+### R3b The second minimum and the branch changes (description only)
+
+**A property of his inverse problem.** His eight-parameter least-squares problem has a second
+minimum, present without noise:
+
+| data | hyp | best: θ, χ² | second: θ | e′ | m′ | χ² above the best | offset from Neptune |
+|---|---|---|---|---|---|---|---|
+| clean column | I | 318.88°, 3.23 | 96.27° | 0.433 | 0.777 | 7.07 | +159.7° |
+| his real § 9 data | I | 310.27°, 28.49 | 89.21° | 0.454 | 0.840 | 6.93 | +165.2° |
+| clean column | II | 320.14°, 3.40 | 96.45° | 0.448 | 0.654 | 6.91 | +160.2° |
+| his real § 9 data | II | 311.85°, 28.59 | 89.06° | 0.477 | 0.700 | 7.09 | +164.1° |
+
+It is a planet of high eccentricity (e′ ≈ 0.44) placed about 160° from Neptune at 1846.762.
+It sits about 7 in χ² above the best minimum on the clean data and on his real data alike.
+Noise reverses the order of the two minima in 5–17 % of draws.
+
+**Branch changes among the exceeding draws.** A branch change is a draw whose multistart
+minimum is more than 1° from its warm start in the 1846.762 longitude (a lower bound, 12
+starts).
+
+| cell | draws that change branch | exceeding (Δ ≥ Δ_obs) | of which branch changes | their θ − real-data θ (2.5 %, 50 %, 97.5 %) | within 10° of the real-data θ |
+|---|---|---|---|---|---|
+| I (a) | 16.8 % | 1,826 | 1,684 (92 %) | +136°, +144°, +153° | 0 |
+| I (b) | 6.4 % | 742 | 642 (87 %) | +140°, +146°, +153° | 0 |
+| I (c) | 11.6 % | 1,405 | 1,158 (82 %) | +136°, +146°, +157° | 0 |
+| II (a) | 14.2 % | 1,822 | 1,424 (78 %) | +135°, +142°, +151° | 0 |
+| II (b) | 5.0 % | 842 | 495 (59 %) | +137°, +144°, +152° | 0 |
+| II (c) | 9.9 % | 1,672 | 992 (59 %) | +133°, +144°, +156° | 0 |
+
+Every exceeding branch change lands on the second minimum (θ ≈ 86°–103°), 120° to 180° from
+the real-data θ of 310.27° (I) and 311.85° (II). None lands near his real-data solution. The
+chain shows the same: 3.5–13.7 % of its draws per cell are more than 30° from the clean
+solution, at Δ near +172°.
+
+![Δ per cell, branch changes shaded apart](P1B_adams_noise_branches.png)
+
+### R4 P(Δ ≥ Δ_obs), the pre-registered statistic
+
+Exceeding counts over converged draws; the binomial standard error is at most 0.0044.
+See deviation 5 for what these numbers measure.
+
+| hyp | method | target | (a) | (b) | (c), not read |
+|---|---|---|---|---|---|
+| I | multistart (primary, headline) | same method | 1,826: 0.1826 | 742: 0.0742 | 1,405: 0.1405 |
+| I | multistart | his printed solution | 1,821: 0.1821 | 731: 0.0731 | 1,395: 0.1395 |
+| I | his chain | same method | 1,737: 0.1737 | 962: 0.0962 | 1,303: 0.1303 |
+| I | his chain | his printed solution | 1,633: 0.1633 | 850: 0.0850 | 1,205: 0.1205 |
+| I | warm start | same method | 175: 0.0175 | 109: 0.0109 | 299: 0.0299 |
+| I | warm start | his printed solution | 169: 0.0169 | 98: 0.0098 | 288: 0.0288 |
+| II | multistart (primary) | same method | 1,822: 0.1822 | 842: 0.0842 | 1,672: 0.1672 |
+| II | multistart | his printed solution | 2,204: 0.2204 | 1,223: 0.1223 | 2,181: 0.2181 |
+| II | his chain | same method | 2,080: 0.2080 | 1,651: 0.1651 | 2,013: 0.2013 |
+| II | his chain | his printed solution | 2,546: 0.2546 | 2,186: 0.2186 | 2,636: 0.2637 |
+| II | warm start | same method | 472: 0.0472 | 362: 0.0362 | 777: 0.0777 |
+| II | warm start | his printed solution | 937: 0.0937 | 768: 0.0768 | 1,345: 0.1345 |
+
+### R5 Failed, escaped and bound fractions; the multistart fraction; the SD check
+
+**Flags.** No timeout, no capped solve and no least-squares exception in any cell. Every
+least-squares draw converged. The chain failed on 1 draw of 10,000 in I (c) and 2 in II (c)
+(e′ ≥ 1, no longitude); these are excluded from the chain's P in those cells, far below the
+1 % rule. No draw of the primary solver ended on a bound; one warm-start draw did in each (c)
+cell. The chain had six real roots and two of positive mass in every draw of (a) and (b).
+
+**Escapes** (|Δ| > 30°, kept as outcomes):
+
+| cell | multistart | warm | chain |
+|---|---|---|---|
+| I (a) | 16.84 % | 0 | 13.66 % |
+| I (b) | 6.42 % | 0 | 5.71 % |
+| I (c) | 11.68 % | 0.09 % | 9.31 % |
+| II (a) | 14.24 % | 0 | 11.08 % |
+| II (b) | 4.95 % | 0 | 3.49 % |
+| II (c) | 10.02 % | 0.09 % | 7.07 % |
+
+**Multistart fraction** (minimum more than 1° from the warm start; in every such draw the
+multistart χ² is the lower): on the first 1,000 draws 17.0 %, 5.7 %, 10.0 % (I a, b, c) and
+14.1 %, 4.0 %, 13.0 % (II); on all 10,000 draws 16.84 %, 6.42 %, 11.60 % and 14.24 %, 4.95 %,
+9.93 %. All above the 1 % trigger; lower bounds.
+
+**SD against the covariance, model (a).** On the warm-start branch the SD of θ over the draws
+is 4.34° (I) and 4.15° (II) against the propagated 4.48° and 4.19°. The linear propagation
+holds on the branch to 3 %. Over all multistart draws the SD of θ is 84° and 79°, which is the
+second minimum and not a property of the branch.
+
+### R6a The reading by the pre-registered rule
+
+| hyp | method, target | P(a) | P(b) | row of § 4 |
+|---|---|---|---|---|
+| **I** | **multistart, same method (headline)** | **0.183** | **0.074** | **noise suffices** |
+| I | multistart, printed | 0.182 | 0.073 | noise suffices |
+| I | his chain, same method | 0.174 | 0.096 | noise suffices |
+| I | his chain, printed | 0.163 | 0.085 | noise suffices |
+| I | warm start, same method | 0.018 | 0.011 | weak |
+| I | warm start, printed | 0.017 | 0.010 | weak |
+| II | multistart, same method | 0.182 | 0.084 | noise suffices |
+| II | multistart, printed | 0.220 | 0.122 | noise suffices |
+| II | his chain, same method | 0.208 | 0.165 | noise suffices |
+| II | his chain, printed | 0.255 | 0.219 | noise suffices |
+| II | warm start, same method | 0.047 | 0.036 | weak |
+| II | warm start, printed | 0.094 | 0.077 | noise suffices |
+
+As the rule gives it: "noise suffices" in every multistart and chain row. **By deviation 5 this
+reading does not answer the question asked.** The exceeding draws are mostly solutions nearly
+opposite Neptune. Sensitivity (c) is reported in R4 and not read.
+
+### R6b Post hoc statistic: P on his branch
+
+**Post hoc.** Defined after the pre-registered P was read. P(Δ ≥ Δ_obs) among the draws whose
+multistart minimum lies on the real-data branch, θ within 30° of the real-data θ. Read against
+the same thresholds (0.003 and 0.05).
+
+| cell | draws on his branch | exceeding | P, post hoc (SE) | against his printed solution, post hoc |
+|---|---|---|---|---|
+| I (a) | 83.16 % | 142 | 0.0171 (0.0014) | 137: 0.0165 |
+| I (b) | 93.58 % | 100 | 0.0107 (0.0011) | 89: 0.0095 |
+| I (c), not read | 88.36 % | 245 | 0.0277 (0.0017) | 235: 0.0266 |
+| II (a) | 85.76 % | 398 | 0.0464 (0.0023) | 780: 0.0910 |
+| II (b) | 95.05 % | 347 | 0.0365 (0.0019) | 728: 0.0766 |
+| II (c), not read | 90.06 % | 679 | 0.0754 (0.0028) | 1,188: 0.1319 |
+
+Post hoc reading on the same-method target: **weak in all four cells**, Hypothesis I at
+0.011–0.017 and Hypothesis II at 0.037–0.046. Neither threshold is passed. One row differs:
+Hypothesis II against his printed solution (Δ_obs +10.08°) reads "noise suffices" post hoc, at
+0.091 and 0.077. The post hoc P agrees with the warm-start P of R4 to 0.001, since the draws
+on his branch are the draws where the multistart kept the warm-start solution.
+
+### R7 What remains unseparated
+
+- **Luck against a systematic.** On his branch, independent noise at the level of his own
+  residuals or of set D's scatter produces his shift in 1–2 % of draws under Hypothesis I and
+  4–5 % under Hypothesis II. That is uncommon and not excluded. Neither luck nor a systematic
+  is established.
+- **The systematic's source.** A smooth error in Bouvard's tables or his § 7 corrections, the
+  construction of the normal places, or a series-wide reduction error would each act as a
+  correlated shift that independent noise cannot mimic. Bouvard's tables remain the named route
+  to attribution; nothing here attributes the shift.
+- **The noise level.** (a) is conditioned on his own fit and (b) on set D's reduction; the
+  heavy-tailed (c) raises the post hoc P to 0.028 (I) and 0.075 (II). A noise model with
+  correlated or group-offset errors was not run.
+- **The second minimum.** It is 7 in χ² above his solution on his real data. Whether Adams's
+  own procedure could have landed there is a question about his root choice, not answered here.
+- **The stall of the first run** has no established cause (deviation 2).
+
+The ledger row `p1b_adams_noise/draws` is in the local compute ledger only. The site is
+untouched. Nothing in step 3b's note was edited.

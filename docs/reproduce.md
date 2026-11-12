@@ -7,9 +7,31 @@ Ledger CPU-hours add up across jobs. Wall times are per job: many jobs ran side 
 14-core Apple Silicon machine, so summed wall time overstates the elapsed time. Jobs the ledger
 does not cover took seconds to a few minutes and are marked "not in ledger".
 
-**Ledger total so far: 1090 CPU-hours** (1007 timed live, 83 estimated), 1153 million likelihood
-calls, 624 million of them N-body integrations over 1690–1846 (the rest are the fast linearized
-likelihood of M8), or 96 billion simulated planet-years.
+## Totals
+
+| phase | CPU-hours | source |
+|---|---|---|
+| Phase 1 (M1–M10) | 1090 (1007 timed live, 83 estimated) | the tracked site ledger `site/data/ledger.json`, 271 rows |
+| Phase 1b (steps 3, 3b, 3c) | 103 in the ledger, plus at most 25 for a stopped run that left no row | the local ledger `data/cache/compute_ledger.jsonl`, rows `p1b_*` (27 rows); not on the site until the site step |
+
+**Phase 1:** 1153 million likelihood calls, 624 million of them N-body integrations over
+1690–1846 (the rest are the fast linearized likelihood of M8), or 96 billion simulated
+planet-years.
+
+**Phase 1b by step** (CPU-hours and wall time as the ledger recorded them):
+
+| step | CPU-hours | wall | ledger rows |
+|---|---|---|---|
+| step 3, the Adams-variant fit | 70.8 | 7 h 53 min on 12 workers | `p1b_adams/*` (20, the smoke runs included) |
+| step 3b, the reproduction | 7.1 | 6 min for the cheap stages, 44 min for D3(iii) | `p1b_adams_repro/*` (3) |
+| step 3c, the full run | 24.5 | 2 h 06 min on 12 workers | `p1b_adams_noise/draws` |
+| step 3c, three chunks recomputed | 0.3 | 6.6 min on 3 workers | `p1b_adams_noise/draws` |
+| step 3c, two smoke runs | 0.2 | 2.5 min | `p1b_adams_noise/draws` (2) |
+| step 3c, the first full run, stopped | at most 25 (2 h 06 min × 12 workers; estimated) | 2 h 06 min | none: it saved nothing and wrote no row |
+
+Step 3b stage A (transcription) used no compute. The stopped run of step 3c is counted here
+and not in the ledger sum; its stall has no established cause (`docs/notes/P1B_adams_noise.md`,
+deviation 2).
 
 ## Run identifiers
 
@@ -37,6 +59,11 @@ the commands below use these identifiers.
 | the coverage test on synthetic data with the real error model | A6c | `docs/notes/A6.md` |
 | the leak check (the fit never reads Neptune) | A6d | `docs/notes/A6.md` |
 | the coverage test on synthetic data | A3b (M5b) | `docs/notes/M5.md` |
+| Phase 1b: Adams's solutions and Challis's search log from the printed record | steps 1 and 2 | `docs/notes/P1B_sources.md` |
+| Phase 1b: the Adams-variant fit on data set D | step 3 (`fork.export.p1b_adams`; ledger `p1b_adams/<variant>/c<k>`) | `docs/notes/P1B_adams_fit.md` |
+| Phase 1b: the memoir transcription | step 3b stage A | `docs/notes/P1B_adams_reproduction.md` |
+| Phase 1b: the reproduction of Adams's own solution | step 3b stages B–D (`fork.export.p1b_adams_repro`; ledger `p1b_adams_repro/cheap`, `p1b_adams_repro/d3iii/c<k>`) | `docs/notes/P1B_adams_reproduction.md` |
+| Phase 1b: noise against systematic | step 3c (`fork.export.p1b_adams_noise`; ledger `p1b_adams_noise/draws`) | `docs/notes/P1B_adams_noise.md` |
 
 ## Setup
 
@@ -225,7 +252,7 @@ screenshots of every plate and figure at each width. Without Google Chrome, run
 
 ## Phase 1b
 
-```
+```sh
 uv run python docs/notes/scripts/p1b_neptune_on_challis_dates.py   # data/historical/adams_challis/neptune_*.csv (cache only, seconds)
 ```
 
@@ -252,11 +279,11 @@ Run of 2026-11-10/11: 70.6 CPU-h over the 16 jobs (held-a variants 6.8–7.3 CPU
 and 21.8), 7 h 53 min wall on 12 workers, 51.9 M likelihood calls; results in
 `docs/notes/P1B_adams_fit.md`. The ledger rows are in the local ledger only until the site step.
 
-## Phase 1b step 3b, stage A (transcription)
+### Step 3b, stage A: the memoir transcription (`docs/notes/P1B_adams_reproduction.md`)
 
 No compute. Two transcription passes of the memoir (`docs/notes/adams_memoir_passes/`), compared by
 
-```
+```sh
 python3 -I docs/notes/scripts/p1b_adams_memoir_compare.py   # run from docs/notes/adams_memoir_passes/
 ```
 
@@ -264,9 +291,9 @@ python3 -I docs/notes/scripts/p1b_adams_memoir_compare.py   # run from docs/note
 `docs/notes/adams_memoir_reconciliation.md`, final tables in `data/historical/adams_challis/
 adams_memoir_*.csv`. Hi-res renders for the decisions: see `MANIFEST.md`.
 
-## Phase 1b step 3b, stages B–D (the reproduction)
+### Step 3b, stages B–D: the reproduction
 
-```
+```sh
 uv run pytest -q tests/test_adams_1846.py          # stages B and C: his intermediates and his solution from three entry points (24 tests)
 uv run pytest -q tests/test_p1b_adams_repro.py     # stage D's pieces (13 tests; one slow: the synthetic set D is noise-free)
 uv run python -m fork.export.p1b_adams_repro plan  # the two D3(iii) jobs, seeds [2026, 11, 3, 7, 0, k+1], state
@@ -283,17 +310,25 @@ Progress in `data/cache/p1b_adams_repro/progress.log`, the driver's log in `driv
 row per nested job (`p1b_adams_repro/d3iii/c<k>`) and one for the cheap stages; the nested jobs
 resume from their `.ckpt`. D4 needs step 3's cached results (`data/cache/p1b_adams/*.pkl`).
 
-## Phase 1b step 3c (noise against systematic)
+### Step 3c: noise against systematic (pre-registered in `docs/notes/P1B_adams_noise.md`)
 
-```
-uv run pytest -q tests/test_p1b_adams_noise.py                                     # 11 tests; the slow one regenerates step 3b's synthetic column and lands on D3(i)
+```sh
+uv run pytest -q tests/test_p1b_adams_noise.py                                     # 14 tests; the slow one regenerates step 3b's synthetic column and lands on D3(i)
 FORK_HORIZONS_CACHE_ONLY=1 uv run python -m fork.export.p1b_adams_noise prerun    # the frozen inputs: the synthetic column, the set D window counts, the step-3 group RMS, the σ tables, the clean solutions, Δ_obs → data/cache/p1b_adams_noise/prerun.json
-FORK_HORIZONS_CACHE_ONLY=1 uv run python -m fork.export.p1b_adams_noise draws --n-draws 40 --n-workers 4   # smoke run (overwritten by the full run)
-FORK_HORIZONS_CACHE_ONLY=1 uv run python -m fork.export.p1b_adams_noise draws --multistart-all --n-workers 12   # 10,000 realisations × 3 noise models × 2 hypotheses through both methods, the multistart on every draw (the plan's 1 % trigger fired on the smoke run); about 5 CPU-h, half an hour wall; not detached
-FORK_HORIZONS_CACHE_ONLY=1 uv run python -m fork.export.p1b_adams_noise summarize # docs/notes/P1B_adams_noise.{json,png}
+(FORK_HORIZONS_CACHE_ONLY=1 nohup caffeinate -is uv run python -m fork.export.p1b_adams_noise draws --multistart-all --n-workers 12 > data/cache/p1b_adams_noise/run.out 2>&1 &)   # detached; 10,000 realisations × 3 noise models × 2 hypotheses through both methods, the 12-start multistart on every draw; about 30 CPU-h, 2.5 to 3 h wall on 12 workers
+FORK_HORIZONS_CACHE_ONLY=1 uv run python -m fork.export.p1b_adams_noise summarize # docs/notes/P1B_adams_noise.{json,png} and P1B_adams_noise_branches.png
 ```
 
-Progress in `data/cache/p1b_adams_noise/progress.log`; one ledger row `p1b_adams_noise/draws`;
-the realisations in `data/cache/p1b_adams_noise/draws_h<hyp>_<model>.npz`. `prerun` needs step 3's
+Progress in `data/cache/p1b_adams_noise/progress.log`, one line per chunk of 250 draws; one
+ledger row `p1b_adams_noise/draws`. Each chunk is a file in `data/cache/p1b_adams_noise/chunks/`
+written by its worker; a rerun of `draws` skips the chunks present and computes the rest, so an
+interrupted run resumes and a chunk reported as failed in the log is recomputed by running the
+same command again. Empty that folder before a run with a different `--n-draws`. Cells (a) and
+(b) run before sensitivity (c). The joined realisations are
+`data/cache/p1b_adams_noise/draws_h<hyp>_<model>.npz`. `prerun` needs step 3's
 cached H1(G) results (`data/cache/p1b_adams/*.pkl`) for the group RMS and the Horizons cache for
 the truth; `draws` and `summarize` need only `prerun.json` and the memoir tables.
+
+Run of 2026-11-11: 24.5 CPU-h and 2 h 06 min wall on 12 workers for the full run, 0.3 CPU-h for
+three recomputed chunks of sensitivity (c). A first full run was stopped after 2 h 06 min with
+nothing saved (at most 25 CPU-h, not in the ledger); see Totals.
