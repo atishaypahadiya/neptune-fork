@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The British search for Neptune: Adams's solutions and Challis's sweeps</title>
+  <link rel="icon" href="data:,">
+  <meta name="description" content="A companion study: how good Adams's solutions were, and whether Challis's sweeps could have found Neptune.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=GFS+Didot&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+  <link rel="stylesheet" href="../css/site.css">
+  <link rel="stylesheet" href="../css/p1b.css">
+  <script type="importmap">
+    {"imports": {"d3": "https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm"}}
+  </script>
+</head>
+<body class="p1b">
+  <!-- Ground textures for every plate: shared SVG filters with fixed seeds. They encode nothing. -->
+  <svg class="defs" aria-hidden="true" focusable="false">
+    <defs>
+      <filter id="tex-mottle" x="0" y="0" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.0045 0.006" numOctaves="5" seed="80"/>
+        <feColorMatrix values="0 0 0 0 0.059  0 0 0 0 0.165  0 0 0 0 0.42  -2.2 0 0 0 1.25"/>
+      </filter>
+      <filter id="tex-cloud" x="0" y="0" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.003 0.004" numOctaves="4" seed="33"/>
+        <feColorMatrix values="0 0 0 0 0.616  0 0 0 0 0.722  0 0 0 0 0.863  2.4 0 0 0 -1.45"/>
+      </filter>
+      <filter id="tex-grain" x="0" y="0" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" seed="7" stitchTiles="stitch"/>
+        <feColorMatrix type="saturate" values="0"/>
+      </filter>
+      <filter id="tex-dust" x="0" y="0" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.38" numOctaves="1" seed="98"/>
+        <feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  24 0 0 0 -17"/>
+      </filter>
+      <radialGradient id="tex-vignette" cx="50%" cy="50%" r="72%">
+        <stop offset="0.62" stop-color="#9db8dc" stop-opacity="0"/>
+        <stop offset="1" stop-color="#9db8dc" stop-opacity="0.75"/>
+      </radialGradient>
+      <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="5"/>
+      </filter>
+    </defs>
+  </svg>
+
+
+  <header class="paper-title">
+    <p class="back"><span data-v="subtitle"></span><a href="../"><i data-v="main_title"></i></a></p>
+    <h1 data-v="title"></h1>
+    <p class="byline"><span data-v="author"></span> · <span data-v="status"></span></p>
+    <p class="error" hidden></p>
+  </header>
+
+  <main>
+    <section id="s1" aria-labelledby="h-s1">
+      <p class="sec sc">§ 1</p>
+      <h2 id="h-s1">Abstract</h2>
+      <p data-v="abstract"></p>
+      <p data-v="abstract_p2"></p>
+      <p data-v="abstract_p3"></p>
+    </section>
+
+    <section id="s2" aria-labelledby="h-s2">
+      <p class="sec sc">§ 2</p>
+      <h2 id="h-s2">Sources</h2>
+      <p data-v="src_p1"></p>
+      <p data-v="src_p2"></p>
+      <p data-v="src_p3"></p>
+    </section>
+
+    <section id="s3" aria-labelledby="h-s3">
+      <p class="sec sc">§ 3</p>
+      <h2 id="h-s3">How good was Adams</h2>
+      <h3 id="s3-1"><span class="sc">§ 3.1</span> The project's fit at his distances</h3>
+      <p data-v="a31_p1"></p>
+      <p data-v="a31_p2"></p>
+      <figure class="fig-1" id="fig-1" data-fig="fig-1" aria-describedby="cap-fig-1">
+        <div class="canvas">
+          <svg class="fig" role="img" aria-labelledby="cap-fig-1"></svg>
+          <p class="tip" hidden></p>
+          <p class="error" hidden></p>
+        </div>
+        <figcaption id="cap-fig-1"><span class="sc">Fig. 1.</span> <span data-v="cap_fig_1"></span></figcaption>
+      </figure>
+      <h3 id="s3-2"><span class="sc">§ 3.2</span> His solutions reproduced</h3>
+      <p data-v="a32_p1"></p>
+      <p data-v="a32_p2"></p>
+      <h3 id="s3-3"><span class="sc">§ 3.3</span> The shortfall belongs to the assumed distance</h3>
+      <p data-v="a33_p1"></p>
+      <h3 id="s3-4"><span class="sc">§ 3.4</span> Noise against a systematic cause</h3>
+      <p data-v="a34_p1"></p>
+      <p data-v="a34_p2"></p>
+      <figure class="fig-2" id="fig-2" data-fig="fig-2" aria-describedby="cap-fig-2">
+        <div class="canvas">
+          <svg class="fig" role="img" aria-labelledby="cap-fig-2"></svg>
+          <p class="tip" hidden></p>
+          <p class="error" hidden></p>
+        </div>
+        <figcaption id="cap-fig-2"><span class="sc">Fig. 2.</span> <span data-v="cap_fig_2"></span></figcaption>
+      </figure>
+      <p data-v="a34_p3"></p>
+    </section>
+
+    <section id="s4" aria-labelledby="h-s4">
+      <p class="sec sc">§ 4</p>
+      <h2 id="h-s4">Challis's search as a detection model</h2>
+      <h3 id="s4-1"><span class="sc">§ 4.1</span> The record, the model and the conditioning</h3>
+      <p data-v="c41_p1"></p>
+      <figure class="fig-3" id="fig-3" data-fig="fig-3" aria-describedby="cap-fig-3">
+        <div class="canvas">
+          <svg class="fig" role="img" aria-labelledby="cap-fig-3"></svg>
+          <p class="tip" hidden></p>
+          <p class="error" hidden></p>
+        </div>
+        <figcaption id="cap-fig-3"><span class="sc">Fig. 3.</span> <span data-v="cap_fig_3"></span></figcaption>
+      </figure>
+      <p data-v="c41_p2"></p>
+      <p data-v="c41_p3"></p>
+      <h3 id="s4-2"><span class="sc">§ 4.2</span> The cases and their readings</h3>
+      <p data-v="c42_p1"></p>
+      <p data-v="c42_p2"></p>
+      <figure class="table" id="table-1">
+        <table>
+          <caption data-v="cap_table_1"></caption>
+          <thead><tr><th>Case</th><th class="n">Probability</th><th>Reading</th><th class="cond">Conditional on</th></tr></thead>
+          <tbody></tbody>
+          <tfoot></tfoot>
+        </table>
+      </figure>
+      <figure class="fig-4" id="fig-4" data-fig="fig-4" aria-describedby="cap-fig-4">
+        <div class="canvas">
+          <svg class="fig" role="img" aria-labelledby="cap-fig-4"></svg>
+          <p class="tip" hidden></p>
+          <p class="error" hidden></p>
+        </div>
+        <figcaption id="cap-fig-4"><span class="sc">Fig. 4.</span> <span data-v="cap_fig_4"></span></figcaption>
+      </figure>
+      <p data-v="c42_p3"></p>
+      <p data-v="c42_p4"></p>
+      <h3 id="s4-3"><span class="sc">§ 4.3</span> What each reading rests on</h3>
+      <p data-v="c43_p1"></p>
+      <p data-v="c43_p2"></p>
+    </section>
+
+    <section id="s5" aria-labelledby="h-s5">
+      <p class="sec sc">§ 5</p>
+      <h2 id="h-s5">Limitations</h2>
+      <ul class="limits"></ul>
+    </section>
+
+    <section id="s6" aria-labelledby="h-s6">
+      <p class="sec sc">§ 6</p>
+      <h2 id="h-s6">Data availability</h2>
+      <p data-v="avail_p1"></p>
+      <p><span data-v="avail_p2"></span> <a data-href="repo_url">Repository</a>.</p>
+    </section>
+
+    <section id="s7" aria-labelledby="h-s7">
+      <p class="sec sc">§ 7</p>
+      <h2 id="h-s7">References</h2>
+      <ol class="refs"></ol>
+    </section>
+  </main>
+
+  <script type="module" src="../js/main_p1b.js"></script>
+</body>
+</html>

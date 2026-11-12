@@ -1,0 +1,132 @@
+{
+ "description": "Companion page: where it lives and what it was built from.",
+ "path": "adams-challis/",
+ "title": "The British search for Neptune: Adams's solutions and Challis's sweeps",
+ "status": "in the repository; not yet in a release",
+ "main_title": "Refitting Le Verrier's prediction of Neptune",
+ "main_link": "A companion study treats the British search of the same years: ",
+ "references": [
+  {
+   "id": "adams",
+   "parts": [
+    "Adams, J. C. 1847. An explanation of the observed irregularities in the motion of Uranus, on the hypothesis of disturbances caused by a more distant planet. ",
+    "{Memoirs of the Royal Astronomical Society}",
+    " 16, 427–460."
+   ]
+  },
+  {
+   "id": "airy",
+   "parts": [
+    "Airy, G. B. 1844. ",
+    "{Account of the Northumberland Equatoreal and Dome}",
+    ". Cambridge: University Press."
+   ]
+  },
+  {
+   "id": "brookes",
+   "parts": [
+    "Brookes, C. J. 1970. On the prediction of Neptune. ",
+    "{Celestial Mechanics}",
+    " 3, 67–80."
+   ]
+  },
+  {
+   "id": "challis-mn",
+   "parts": [
+    "Challis, J. 1846. Account of observations at the Cambridge Observatory for detecting the planet exterior to Uranus. ",
+    "{Monthly Notices of the Royal Astronomical Society}",
+    " 7, 145–149."
+   ]
+  },
+  {
+   "id": "challis-mem",
+   "parts": [
+    "Challis, J. 1847. An account of observations undertaken in search of the planet discovered at Berlin on Sept. 23, 1846. ",
+    "{Memoirs of the Royal Astronomical Society}",
+    " 16, 415–426."
+   ]
+  },
+  {
+   "id": "hind",
+   "parts": [
+    "Hind, J. R. 1850. Auszug aus einem Briefe des Herrn Hind. ",
+    "{Astronomische Nachrichten}",
+    " 30, 257–258."
+   ]
+  },
+  {
+   "id": "kowal",
+   "parts": [
+    "Kowal, C. T. and Drake, S. 1980. Galileo's observations of Neptune. ",
+    "{Nature}",
+    " 287, 311."
+   ]
+  },
+  {
+   "id": "krajnovic",
+   "parts": [
+    "Krajnović, D. 2021. “That star is not on the map”: the German side of the discovery. In ",
+    "{The Discovery of Neptune}",
+    ". Springer. arXiv:2108.06305."
+   ]
+  },
+  {
+   "id": "lv-june",
+   "parts": [
+    "Le Verrier, U. J. 1846. Recherches sur les mouvements d'Uranus. ",
+    "{Comptes rendus}",
+    " 22, 917 (1 June)."
+   ]
+  },
+  {
+   "id": "lv-aug",
+   "parts": [
+    "Le Verrier, U. J. 1846. Sur la planète qui produit les anomalies observées dans le mouvement d'Uranus. ",
+    "{Comptes rendus}",
+    " 23, 428–438 (31 August)."
+   ]
+  },
+  {
+   "id": "mallama",
+   "parts": [
+    "Mallama, A. and Hilton, J. L. 2018. Computing apparent planetary magnitudes for The Astronomical Almanac. ",
+    "{Astronomy and Computing}",
+    " 25, 10."
+   ]
+  },
+  {
+   "id": "mauvais",
+   "parts": [
+    "Mauvais, V. 1847. Sur une observation inédite de la nouvelle planète. ",
+    "{Comptes rendus}",
+    " 24, 666–669."
+   ]
+  },
+  {
+   "id": "schonfeld",
+   "parts": [
+    "Schönfeld, E. 1886. Notiz über eine Beobachtung des Neptun in den Lamont'schen Zonen. ",
+    "{Astronomische Nachrichten}",
+    " 114, 59–60."
+   ]
+  }
+ ],
+ "notes": [
+  "P1B_sources.md",
+  "P1B_adams_solutions.md",
+  "P1B_challis_sweeps.md",
+  "P1B_adams_fit.md",
+  "P1B_adams_reproduction.md",
+  "P1B_adams_noise.md",
+  "P1B_challis_detection.md"
+ ],
+ "built_from_sha256": {
+  "docs/notes/P1B_adams_fit.json": "33c753937104cfa1ed24bb4a8aacaa3eb3a7ea294bdeb0ecf6998db5f2f540a2",
+  "docs/notes/P1B_adams_reproduction.json": "6fd9da25406c2a1038dfa86650c5bf8ad1ee52aaccc39a7955860640b7927be8",
+  "docs/notes/P1B_adams_noise.json": "7611c757f07f0d6bd007f87c11e160ca1a1be0c31f8f20bc1d3839b6c015e652",
+  "docs/notes/P1B_adams_noise_hist.json": "a0ca3937bd9ce47ddcd2cb5d62584587dfc51ac073a677c70aabc12493dbfa95",
+  "docs/notes/P1B_challis_detection.json": "eeb8f4e8bfbd7bb52d85d77e2479bf6106a8808cff67b45d6ad193f441e70079",
+  "docs/notes/P1B_challis_prerun.json": "5d2dfad0842d164712014a526c1ee8b191cd2d59e06d21e963f9d06f89a1aba5",
+  "data/historical/adams_challis/prediscovery_recordings.csv": "9fb014c020fc5eeb0dc312866a60a4d748c6f2301cd7b8cd23cb1988c5ee9f47"
+ }
+}

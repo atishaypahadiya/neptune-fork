@@ -163,6 +163,27 @@ likelihood ([Phase 1 spec](docs/PHASE1_SPEC.md#m8-fast-linearized-likelihood)) m
 runs of every cell affordable; its higher-resolution reruns did not meet the 95 % stability
 condition, so the 95 % interval stays provisional.
 
+**Phase 1b: the British search (in the repository, not yet in a release).** A companion
+study, [on its own page](https://atishaypahadiya.github.io/neptune-fork/adams-challis/), asks
+two questions of the printed record.
+
+- *How good was Adams?* At the distances he assumed, the project's fit is 10.5° and 9.1° short
+  of Neptune on Galle's night. His solutions are reproduced from his memoir. On a noise-free
+  Neptune at his first distance every method is short (his least squares 9.5°, the project's
+  model on his places 7.8°, the project's fit 10.4°), so the shortfall belongs to the assumed
+  distance and his nearness (+1.7° and +2.5°) to his data or their reduction. Whether noise
+  alone accounts for it is not settled: the pre-registered statistic measured jumps to a second
+  minimum, and the post hoc one (0.017 under the first hypothesis) reads weak.
+- *Could Challis have recognised the planet before 23 September?* A detection model
+  conditioned on his record (100,000 kept draws) gives, with the realised events held: his
+  actual procedure 0 by construction; the comparison he broke off, carried through,
+  0.71 (0.50 to 0.97); zones from Adams's first place 0.41, or 0.79 with prompt comparison;
+  from Le Verrier's June place 0.85 with prompt comparison. Each depends on an input the record
+  does not fix, three readings are prior-dependent, and none reaches "very probably".
+
+The write-up, with each claim's JSON path and deviation, is
+[docs/notes/P1B_writeup.md](docs/notes/P1B_writeup.md).
+
 **Data availability.** Le Verrier's Table 77, transcribed, is on Zenodo (CC0).
 - Concept DOI [10.5281/zenodo.24044791](https://doi.org/10.5281/zenodo.24044791) (the badge
   above) covers all versions; cite it for the dataset in general.
@@ -194,6 +215,12 @@ condition, so the 95 % interval stays provisional.
 - The far side of the distance depends on the error model: Δ ln L = −2 at 34.0 AU under Gaussian
   errors and 40.6 AU under Student-t errors; Le Verrier's 36.15 AU is 3.15 below the maximum
   under the first and 0.76 under the second.
+
+- Phase 1b reads the printed record only: the Cambridge observing books, Airy's papers and
+  Bouvard's tables were not consulted, and the limits of the Berlin sheet Challis had are from a
+  secondary source.
+- Phase 1b's probabilities for Challis's search are conditional on declared priors where the
+  record is silent; under the reading reported, his actual procedure is 0 by construction.
 
 ## Quickstart
 
@@ -243,11 +270,22 @@ site/           static site (GitHub Pages) and its data
   - point fits, profile likelihood, posteriors and their calibration ([M5](docs/notes/M5.md))
   - nested-sampling validation ([M5b](docs/notes/M5b_dynesty_validation.md))
   - historical data, observation model, headline fit ([M6](docs/notes/M6.md))
+- Phase 1b, the British search:
+  - the write-up ([P1B_writeup](docs/notes/P1B_writeup.md))
+  - sources ([step 0](docs/notes/P1B_sources.md)), Adams's solutions
+    ([1](docs/notes/P1B_adams_solutions.md)), Challis's search log
+    ([2](docs/notes/P1B_challis_sweeps.md))
+  - the fit at his distances ([3](docs/notes/P1B_adams_fit.md)), the reproduction
+    ([3b](docs/notes/P1B_adams_reproduction.md)), noise against a systematic cause
+    ([3c](docs/notes/P1B_adams_noise.md))
+  - Challis's search as a detection model ([4](docs/notes/P1B_challis_detection.md))
 
 ## Compute
 
-The ledger (`site/data/ledger.json`) records **1090 CPU-hours** to date: 1007 timed live, plus 83
-estimated from logs. That covers 1153 million likelihood evaluations, 624 million of them N-body
+The ledger (`site/data/ledger.json`) records **1193 CPU-hours** to date: 1109 timed live, plus 83
+estimated from logs. Phase 1 accounts for 1090 of them and Phase 1b for 103 (the fit at Adams's
+distances 70.8, the reproduction 7.0, the noise test 24.9, the detection model 0.3). Phase 1
+covers 1153 million likelihood evaluations, 624 million of them N-body
 integrations over 1690–1846 and the rest the fast linearized likelihood. Nested sampling
 accounts for nearly all of it: the posterior calibration on synthetic data, and the coverage
 test with the real error model at 277 CPU-hours. The headline fit took 28.5, its sensitivity
@@ -266,6 +304,10 @@ This is well-trodden ground. We credit and benchmark against:
   perturbations by Neptune.
 - CoFI (Common Framework for Inference): the example "Finding Neptune using Uranus".
 - KTH thesis (2018): Neptune from Uranus by Gauss–Newton, with an RK4 integrator.
+- For Phase 1b: Brookes (1970), a re-derivation of Adams's solutions that ours agrees with;
+  Kowal & Drake (1980) on Galileo's recordings of Neptune; Mallama & Hilton (2018) for its
+  magnitude; Kollerstrom (2006) and Krajnović (2016, 2021) on the British and German sides of
+  the discovery.
 
 What this project does differently:
 

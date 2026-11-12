@@ -539,3 +539,31 @@ rows, because the mark must sit in a table cell and in a figure row alike. Not u
 bordered containers, dividers beyond Table 1's one hairline, monospace, ALL CAPS, any new
 colour, opacity step or gradient. The approved "one hue plus grey" is carried inside the
 palette: white line on the cyanotype ground, with the lower line opacity in the role of grey.
+
+**Changes made while building (2026-11-12).**
+- Order of the figures, by appearance: Fig. 1 the shortfall, Fig. 2 the noise draws (two
+  panels, the first noise model as the 2 px white line and the second at the lower opacity),
+  Fig. 3 the sky, Fig. 4 the cases.
+- Fig. 1 has no row for the fit with the distance free: the committed JSON holds the true
+  longitude on Galle's night for the held-distance fits only. The sentence of § 3.1 gives the
+  free-distance result as the JSON states it (Neptune inside the 68 % range).
+- Fig. 3 draws the zone of 30 July and 12 August at the middle of the settings the record
+  allows, with hairlines at the two extremes; the posterior of the zone's setting is not in a
+  committed JSON. The 4 August sector is not drawn: its centre is not in the record.
+- Fig. 2 reads `docs/notes/P1B_adams_noise_hist.json`, binned from the cached draws (5° bins on
+  the circle); `P1B_adams_noise.json` is not edited.
+- Table 1's last column gives each case's condition in the page's words; the note's wording
+  stays in `p1b_challis.json`. On phones the condition sits under the case, and Figs. 1 and 4
+  use shorter row labels.
+- Table 1 omits the two one-week-delay variants (identical to their cases to two decimals);
+  the table's footnote says so.
+- References give title, journal, volume and page as the notes record them. The titles and
+  page ranges of three short communications were added from the publisher's records: Hind 1850
+  and Schönfeld 1886 from the Crossref records of *Astronomische Nachrichten*
+  (10.1002/asna.18500301706, 10.1002/asna.18861140406), Mauvais 1847 from the heading on
+  p. 666 of the scanned volume (archive.org, `comptesrendusheb24acad`). ADS, the intended
+  source, did not serve its records to a script.
+- The companion page's link preview uses the main page's Plate I image.
+- Screenshots (390 and 1440 px, Chromium and WebKit) are written to `docs/notes/p1b_site/`
+  by `tools/check_layout.py --shots` and are not tracked: the folder is in `.gitignore`.
+- The Pages workflow file is unchanged: its three commands now cover both pages.

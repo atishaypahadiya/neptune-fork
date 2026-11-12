@@ -1,5 +1,7 @@
 """Acceptance check for the prerendered site (tools/prerender_site.py's output).
 
+For each page of the site (the main paper and its companion, site/adams-challis/):
+
 1. Loads the built index.html with JavaScript disabled (what a crawler, link preview, archive
    or reader mode gets) and runs the number audit on it: every number in the text and in the
    SVG labels must be a value in the site's data files, a number from the embedded registry of
@@ -24,14 +26,22 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from prerender_site import BASE_URL, OG_SIZE, VIEWPORT, launch, open_rendered, serve
+from prerender_site import (
+    BASE_URL,
+    OG_SIZE,
+    PAGES,
+    STRUCTURE,
+    VIEWPORT,
+    launch,
+    open_rendered,
+    serve,
+)
 
 # Runs in either page (JS on or off): text, numbers and the audit. The audit is the site's
 # acceptance rule (docs/DESIGN.md): each number is a JSON value, a derived number or structure.
-AUDIT = r"""({json, derived}) => {
+AUDIT = r"""({json, derived, structure}) => {
   const NUM = /(?<![\p{L}\d.])\d+(?:\.\d+)?(?![\p{L}\d])/gu;
-  const STRUCTURE = new Set(["1", "2", "3", "4", "5", "6", "7", "8", "3.1", "3.2", "3.3", "4.1",
-                             "4.2", "4.3"]);
+  const STRUCTURE = new Set(structure);
   const norm = (t) => {
     if (!t.includes(".")) return String(Number(t));
     const [i, f] = t.split(".");
@@ -91,6 +101,8 @@ HEAD = r"""() => {
     twitter: Object.fromEntries([...document.head.querySelectorAll('meta[name^="twitter:"]')]
       .map((m) => [m.getAttribute("name"), m.content])),
     conj: document.querySelector("#s4-2").textContent.trim(),
+    required: ["post hoc", "by construction", "prior-dependent"]
+      .filter((w) => !document.body.textContent.includes(w)),
     derived: JSON.parse(document.getElementById("derived-numbers")?.textContent ?? "null"),
   };
 }"""
@@ -103,11 +115,16 @@ def png_size(path: Path) -> tuple[int, int]:
     return struct.unpack(">II", head[16:24])
 
 
-def check(out: Path, base_url: str) -> list[str]:
+def check(out: Path, base_url: str, path: str = "") -> list[str]:
+    """One page of the site: ``path`` under the output directory ("" is the main paper)."""
     fails: list[str] = []
+    image = base_url + "plate-i.png"
+    base_url += path
+    structure = STRUCTURE[path]
     problems: list[str] = []
     fetched: list[str] = []
-    with serve(out) as url, sync_playwright() as p:
+    with serve(out) as root, sync_playwright() as p:
+        url = root + path
         browser = launch(p)
         # 1. JavaScript off: the built HTML as served.
         ctx = browser.new_context(
@@ -126,8 +143,12 @@ def check(out: Path, base_url: str) -> list[str]:
             static_derived: list = []
         else:
             static_derived = [d["x"] for d in head["derived"]]
-        a_static = static.evaluate(AUDIT, {"json": data, "derived": static_derived})
-        a_live = live.evaluate(AUDIT, {"json": data, "derived": live_derived})
+        a_static = static.evaluate(
+            AUDIT, {"json": data, "derived": static_derived, "structure": structure}
+        )
+        a_live = live.evaluate(
+            AUDIT, {"json": data, "derived": live_derived, "structure": structure}
+        )
         browser.close()
 
     fails += [f"JS page: {p}" for p in problems]
@@ -158,7 +179,6 @@ def check(out: Path, base_url: str) -> list[str]:
 
     # 3. Head tags.
     first = head["description"] or ""
-    image = base_url + "plate-i.png"
     want = {
         "title = h1": head["title"] == head["h1"],
         "description is the abstract's first sentence": bool(first)
@@ -173,8 +193,11 @@ def check(out: Path, base_url: str) -> list[str]:
         and head["twitter"].get("twitter:image") == image,
         "plate-i.png 1200x630": png_size(out / "plate-i.png")
         == (OG_SIZE["width"], OG_SIZE["height"]),
-        "section 4.2 heading complete": head["conj"].rstrip()[-4:].isdigit(),
     }
+    if path == "":
+        want["section 4.2 heading complete"] = head["conj"].rstrip()[-4:].isdigit()
+    else:  # the companion page states its deviations where it makes the claims
+        want["the text says post hoc, by construction and prior-dependent"] = not head["required"]
     for k, ok in want.items():
         print(f"{'ok  ' if ok else 'FAIL'} {k}")
         if not ok:
@@ -188,7 +211,11 @@ def main() -> None:
     ap.add_argument("out", type=Path)
     ap.add_argument("--base-url", default=BASE_URL)
     a = ap.parse_args()
-    fails = check(a.out.resolve(), a.base_url if a.base_url.endswith("/") else a.base_url + "/")
+    base = a.base_url if a.base_url.endswith("/") else a.base_url + "/"
+    fails: list[str] = []
+    for path in PAGES:
+        print(f"--- {path or 'main page'}")
+        fails += [f"[{path or 'main'}] {f}" for f in check(a.out.resolve(), base, path)]
     if fails:
         print("\nFAILED:\n  " + "\n  ".join(fails))
         raise SystemExit(1)

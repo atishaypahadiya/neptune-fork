@@ -1,0 +1,1937 @@
+{
+ "description": "Companion page, § 4: values copied from the committed step 4 JSONs; `sources` names the field of each. `track` is Neptune's place per night from the pre-run; `recordings` the pre-discovery table's counts.",
+ "sources": {
+  "n_accepted": [
+   "docs/notes/P1B_challis_detection.json",
+   "n_accepted"
+  ],
+  "n_drawn": [
+   "docs/notes/P1B_challis_detection.json",
+   "acceptance",
+   "n_drawn"
+  ],
+  "acceptance": [
+   "docs/notes/P1B_challis_detection.json",
+   "acceptance",
+   "all"
+  ],
+  "acceptance_conditions_2_3": [
+   "docs/notes/P1B_challis_detection.json",
+   "acceptance",
+   "conditions_2_3"
+  ],
+  "acceptance_condition_4": [
+   "docs/notes/P1B_challis_detection.json",
+   "acceptance",
+   "condition_4"
+  ],
+  "halved_n_accepted": [
+   "docs/notes/P1B_challis_detection.json",
+   "acceptance_halved_priors",
+   "n_accepted"
+  ],
+  "tornado_n_draws": [
+   "docs/notes/P1B_challis_detection.json",
+   "tornado",
+   "n_draws"
+  ],
+  "c2_combined": [
+   "docs/notes/P1B_challis_detection.json",
+   "c2_combined_reading_row"
+  ],
+  "replay_a0": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "A0",
+   "replay",
+   "primary",
+   "mean"
+  ],
+  "c1a_done_by": [
+   "docs/notes/P1B_challis_detection.json",
+   "c1_completion",
+   "C1a",
+   "date_95_percent_of_flags"
+  ],
+  "v10": [
+   "docs/notes/P1B_challis_prerun.json",
+   "constants",
+   "V10_neptune",
+   0
+  ],
+  "v10_source": [
+   "docs/notes/P1B_challis_prerun.json",
+   "constants",
+   "V10_neptune",
+   1
+  ],
+  "lv_august_true_lon": [
+   "docs/notes/P1B_challis_prerun.json",
+   "le_verrier_august",
+   "true_lon_1847_deg"
+  ],
+  "lv_august_limits": [
+   "docs/notes/P1B_challis_prerun.json",
+   "le_verrier_august",
+   "limits_helio_lon_deg"
+  ],
+  "lv_june_limits": [
+   "docs/notes/P1B_challis_prerun.json",
+   "le_verrier_june_limits_deg"
+  ],
+  "p_disc_routine_prior_mean": [
+   "docs/notes/P1B_challis_detection.json",
+   "posterior_against_prior",
+   "p_disc_routine",
+   "prior",
+   "mean"
+  ],
+  "p_disc_routine_posterior_mean": [
+   "docs/notes/P1B_challis_detection.json",
+   "posterior_against_prior",
+   "p_disc_routine",
+   "posterior",
+   "mean"
+  ],
+  "p_disc_looking_prior_mean": [
+   "docs/notes/P1B_challis_detection.json",
+   "posterior_against_prior",
+   "p_disc_looking",
+   "prior",
+   "mean"
+  ],
+  "p_disc_looking_posterior_mean": [
+   "docs/notes/P1B_challis_detection.json",
+   "posterior_against_prior",
+   "p_disc_looking",
+   "posterior",
+   "mean"
+  ],
+  "p_follow_prior_mean": [
+   "docs/notes/P1B_challis_detection.json",
+   "posterior_against_prior",
+   "p_follow",
+   "prior",
+   "mean"
+  ],
+  "p_follow_posterior_mean": [
+   "docs/notes/P1B_challis_detection.json",
+   "posterior_against_prior",
+   "p_follow",
+   "posterior",
+   "mean"
+  ],
+  "A0_mean": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "A0",
+   "held",
+   "primary",
+   "mean"
+  ],
+  "A0_q05": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "A0",
+   "held",
+   "primary",
+   "q05"
+  ],
+  "A0_q95": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "A0",
+   "held",
+   "primary",
+   "q95"
+  ],
+  "A0_row": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "A0",
+   "reading_row"
+  ],
+  "A0_top_input": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "A0",
+   "top_input"
+  ],
+  "A0_conditional_on": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "A0",
+   "conditional_on"
+  ],
+  "A0_prior_dependent": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "A0",
+   "prior_dependent"
+  ],
+  "A0_halved_q05": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "A0",
+   "halved_priors",
+   "primary",
+   "q05"
+  ],
+  "A0_halved_q95": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "A0",
+   "halved_priors",
+   "primary",
+   "q95"
+  ],
+  "A0_halved_row": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "A0",
+   "halved_priors",
+   "reading_row"
+  ],
+  "C1a_mean": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C1a",
+   "held",
+   "primary",
+   "mean"
+  ],
+  "C1a_q05": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C1a",
+   "held",
+   "primary",
+   "q05"
+  ],
+  "C1a_q95": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C1a",
+   "held",
+   "primary",
+   "q95"
+  ],
+  "C1a_row": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C1a",
+   "reading_row"
+  ],
+  "C1a_top_input": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C1a",
+   "top_input"
+  ],
+  "C1a_conditional_on": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C1a",
+   "conditional_on"
+  ],
+  "C1a_prior_dependent": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C1a",
+   "prior_dependent"
+  ],
+  "C1a_halved_q05": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C1a",
+   "halved_priors",
+   "primary",
+   "q05"
+  ],
+  "C1a_halved_q95": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C1a",
+   "halved_priors",
+   "primary",
+   "q95"
+  ],
+  "C1a_halved_row": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C1a",
+   "halved_priors",
+   "reading_row"
+  ],
+  "C1b_mean": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C1b",
+   "held",
+   "primary",
+   "mean"
+  ],
+  "C1b_q05": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C1b",
+   "held",
+   "primary",
+   "q05"
+  ],
+  "C1b_q95": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C1b",
+   "held",
+   "primary",
+   "q95"
+  ],
+  "C1b_row": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C1b",
+   "reading_row"
+  ],
+  "C1b_top_input": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C1b",
+   "top_input"
+  ],
+  "C1b_conditional_on": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C1b",
+   "conditional_on"
+  ],
+  "C1b_prior_dependent": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C1b",
+   "prior_dependent"
+  ],
+  "C1b_halved_q05": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C1b",
+   "halved_priors",
+   "primary",
+   "q05"
+  ],
+  "C1b_halved_q95": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C1b",
+   "halved_priors",
+   "primary",
+   "q95"
+  ],
+  "C1b_halved_row": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C1b",
+   "halved_priors",
+   "reading_row"
+  ],
+  "C2_1800_mean": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C2_1800",
+   "held",
+   "primary",
+   "mean"
+  ],
+  "C2_1800_q05": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C2_1800",
+   "held",
+   "primary",
+   "q05"
+  ],
+  "C2_1800_q95": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C2_1800",
+   "held",
+   "primary",
+   "q95"
+  ],
+  "C2_1800_row": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C2_1800",
+   "reading_row"
+  ],
+  "C2_1800_top_input": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C2_1800",
+   "top_input"
+  ],
+  "C2_1800_conditional_on": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C2_1800",
+   "conditional_on"
+  ],
+  "C2_1800_prior_dependent": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C2_1800",
+   "prior_dependent"
+  ],
+  "C2_1800_halved_q05": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C2_1800",
+   "halved_priors",
+   "primary",
+   "q05"
+  ],
+  "C2_1800_halved_q95": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C2_1800",
+   "halved_priors",
+   "primary",
+   "q95"
+  ],
+  "C2_1800_halved_row": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C2_1800",
+   "halved_priors",
+   "reading_row"
+  ],
+  "C2_date_mean": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C2_date",
+   "held",
+   "primary",
+   "mean"
+  ],
+  "C2_date_q05": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C2_date",
+   "held",
+   "primary",
+   "q05"
+  ],
+  "C2_date_q95": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C2_date",
+   "held",
+   "primary",
+   "q95"
+  ],
+  "C2_date_row": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C2_date",
+   "reading_row"
+  ],
+  "C2_date_top_input": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C2_date",
+   "top_input"
+  ],
+  "C2_date_conditional_on": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C2_date",
+   "conditional_on"
+  ],
+  "C2_date_prior_dependent": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C2_date",
+   "prior_dependent"
+  ],
+  "C2_date_halved_q05": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C2_date",
+   "halved_priors",
+   "primary",
+   "q05"
+  ],
+  "C2_date_halved_q95": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C2_date",
+   "halved_priors",
+   "primary",
+   "q95"
+  ],
+  "C2_date_halved_row": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C2_date",
+   "halved_priors",
+   "reading_row"
+  ],
+  "C3_S4_mean": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S4",
+   "held",
+   "primary",
+   "mean"
+  ],
+  "C3_S4_q05": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S4",
+   "held",
+   "primary",
+   "q05"
+  ],
+  "C3_S4_q95": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S4",
+   "held",
+   "primary",
+   "q95"
+  ],
+  "C3_S4_row": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S4",
+   "reading_row"
+  ],
+  "C3_S4_top_input": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S4",
+   "top_input"
+  ],
+  "C3_S4_conditional_on": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S4",
+   "conditional_on"
+  ],
+  "C3_S4_prior_dependent": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S4",
+   "prior_dependent"
+  ],
+  "C3_S4_halved_q05": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S4",
+   "halved_priors",
+   "primary",
+   "q05"
+  ],
+  "C3_S4_halved_q95": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S4",
+   "halved_priors",
+   "primary",
+   "q95"
+  ],
+  "C3_S4_halved_row": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S4",
+   "halved_priors",
+   "reading_row"
+  ],
+  "C3_S4_prompt_mean": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S4_prompt",
+   "held",
+   "primary",
+   "mean"
+  ],
+  "C3_S4_prompt_q05": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S4_prompt",
+   "held",
+   "primary",
+   "q05"
+  ],
+  "C3_S4_prompt_q95": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S4_prompt",
+   "held",
+   "primary",
+   "q95"
+  ],
+  "C3_S4_prompt_row": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S4_prompt",
+   "reading_row"
+  ],
+  "C3_S4_prompt_top_input": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S4_prompt",
+   "top_input"
+  ],
+  "C3_S4_prompt_conditional_on": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S4_prompt",
+   "conditional_on"
+  ],
+  "C3_S4_prompt_prior_dependent": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S4_prompt",
+   "prior_dependent"
+  ],
+  "C3_S4_prompt_halved_q05": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S4_prompt",
+   "halved_priors",
+   "primary",
+   "q05"
+  ],
+  "C3_S4_prompt_halved_q95": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S4_prompt",
+   "halved_priors",
+   "primary",
+   "q95"
+  ],
+  "C3_S4_prompt_halved_row": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S4_prompt",
+   "halved_priors",
+   "reading_row"
+  ],
+  "C3_S5_mean": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S5",
+   "held",
+   "primary",
+   "mean"
+  ],
+  "C3_S5_q05": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S5",
+   "held",
+   "primary",
+   "q05"
+  ],
+  "C3_S5_q95": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S5",
+   "held",
+   "primary",
+   "q95"
+  ],
+  "C3_S5_row": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S5",
+   "reading_row"
+  ],
+  "C3_S5_top_input": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S5",
+   "top_input"
+  ],
+  "C3_S5_conditional_on": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S5",
+   "conditional_on"
+  ],
+  "C3_S5_prior_dependent": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S5",
+   "prior_dependent"
+  ],
+  "C3_S5_halved_q05": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S5",
+   "halved_priors",
+   "primary",
+   "q05"
+  ],
+  "C3_S5_halved_q95": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S5",
+   "halved_priors",
+   "primary",
+   "q95"
+  ],
+  "C3_S5_halved_row": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S5",
+   "halved_priors",
+   "reading_row"
+  ],
+  "C3_S5_prompt_mean": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S5_prompt",
+   "held",
+   "primary",
+   "mean"
+  ],
+  "C3_S5_prompt_q05": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S5_prompt",
+   "held",
+   "primary",
+   "q05"
+  ],
+  "C3_S5_prompt_q95": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S5_prompt",
+   "held",
+   "primary",
+   "q95"
+  ],
+  "C3_S5_prompt_row": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S5_prompt",
+   "reading_row"
+  ],
+  "C3_S5_prompt_top_input": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S5_prompt",
+   "top_input"
+  ],
+  "C3_S5_prompt_conditional_on": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S5_prompt",
+   "conditional_on"
+  ],
+  "C3_S5_prompt_prior_dependent": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S5_prompt",
+   "prior_dependent"
+  ],
+  "C3_S5_prompt_halved_q05": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S5_prompt",
+   "halved_priors",
+   "primary",
+   "q05"
+  ],
+  "C3_S5_prompt_halved_q95": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S5_prompt",
+   "halved_priors",
+   "primary",
+   "q95"
+  ],
+  "C3_S5_prompt_halved_row": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C3_S5_prompt",
+   "halved_priors",
+   "reading_row"
+  ],
+  "C4a_mean": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C4a",
+   "held",
+   "primary",
+   "mean"
+  ],
+  "C4a_q05": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C4a",
+   "held",
+   "primary",
+   "q05"
+  ],
+  "C4a_q95": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C4a",
+   "held",
+   "primary",
+   "q95"
+  ],
+  "C4a_row": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C4a",
+   "reading_row"
+  ],
+  "C4a_top_input": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C4a",
+   "top_input"
+  ],
+  "C4a_conditional_on": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C4a",
+   "conditional_on"
+  ],
+  "C4a_prior_dependent": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C4a",
+   "prior_dependent"
+  ],
+  "C4a_halved_q05": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C4a",
+   "halved_priors",
+   "primary",
+   "q05"
+  ],
+  "C4a_halved_q95": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C4a",
+   "halved_priors",
+   "primary",
+   "q95"
+  ],
+  "C4a_halved_row": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C4a",
+   "halved_priors",
+   "reading_row"
+  ],
+  "C4a_prompt_mean": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C4a_prompt",
+   "held",
+   "primary",
+   "mean"
+  ],
+  "C4a_prompt_q05": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C4a_prompt",
+   "held",
+   "primary",
+   "q05"
+  ],
+  "C4a_prompt_q95": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C4a_prompt",
+   "held",
+   "primary",
+   "q95"
+  ],
+  "C4a_prompt_row": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C4a_prompt",
+   "reading_row"
+  ],
+  "C4a_prompt_top_input": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C4a_prompt",
+   "top_input"
+  ],
+  "C4a_prompt_conditional_on": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C4a_prompt",
+   "conditional_on"
+  ],
+  "C4a_prompt_prior_dependent": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C4a_prompt",
+   "prior_dependent"
+  ],
+  "C4a_prompt_halved_q05": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C4a_prompt",
+   "halved_priors",
+   "primary",
+   "q05"
+  ],
+  "C4a_prompt_halved_q95": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C4a_prompt",
+   "halved_priors",
+   "primary",
+   "q95"
+  ],
+  "C4a_prompt_halved_row": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C4a_prompt",
+   "halved_priors",
+   "reading_row"
+  ],
+  "C4b_mean": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C4b",
+   "held",
+   "primary",
+   "mean"
+  ],
+  "C4b_q05": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C4b",
+   "held",
+   "primary",
+   "q05"
+  ],
+  "C4b_q95": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C4b",
+   "held",
+   "primary",
+   "q95"
+  ],
+  "C4b_row": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C4b",
+   "reading_row"
+  ],
+  "C4b_top_input": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C4b",
+   "top_input"
+  ],
+  "C4b_conditional_on": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C4b",
+   "conditional_on"
+  ],
+  "C4b_prior_dependent": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C4b",
+   "prior_dependent"
+  ],
+  "C4b_halved_q05": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C4b",
+   "halved_priors",
+   "primary",
+   "q05"
+  ],
+  "C4b_halved_q95": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C4b",
+   "halved_priors",
+   "primary",
+   "q95"
+  ],
+  "C4b_halved_row": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C4b",
+   "halved_priors",
+   "reading_row"
+  ],
+  "neptune_0729_ra_h": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   0,
+   "neptune",
+   "ra_h"
+  ],
+  "neptune_0729_dec_deg": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   0,
+   "neptune",
+   "dec_deg"
+  ],
+  "neptune_0729_ra1800_h": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   0,
+   "neptune",
+   "ra1800_h"
+  ],
+  "neptune_0729_V": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   0,
+   "neptune",
+   "V"
+  ],
+  "neptune_0729_diameter_arcsec": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   0,
+   "neptune",
+   "diameter_arcsec"
+  ],
+  "neptune_0730_ra_h": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   1,
+   "neptune",
+   "ra_h"
+  ],
+  "neptune_0730_dec_deg": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   1,
+   "neptune",
+   "dec_deg"
+  ],
+  "neptune_0730_ra1800_h": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   1,
+   "neptune",
+   "ra1800_h"
+  ],
+  "neptune_0730_V": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   1,
+   "neptune",
+   "V"
+  ],
+  "neptune_0730_diameter_arcsec": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   1,
+   "neptune",
+   "diameter_arcsec"
+  ],
+  "neptune_0804_ra_h": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   6,
+   "neptune",
+   "ra_h"
+  ],
+  "neptune_0804_dec_deg": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   6,
+   "neptune",
+   "dec_deg"
+  ],
+  "neptune_0804_ra1800_h": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   6,
+   "neptune",
+   "ra1800_h"
+  ],
+  "neptune_0804_V": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   6,
+   "neptune",
+   "V"
+  ],
+  "neptune_0804_diameter_arcsec": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   6,
+   "neptune",
+   "diameter_arcsec"
+  ],
+  "neptune_0812_ra_h": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   14,
+   "neptune",
+   "ra_h"
+  ],
+  "neptune_0812_dec_deg": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   14,
+   "neptune",
+   "dec_deg"
+  ],
+  "neptune_0812_ra1800_h": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   14,
+   "neptune",
+   "ra1800_h"
+  ],
+  "neptune_0812_V": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   14,
+   "neptune",
+   "V"
+  ],
+  "neptune_0812_diameter_arcsec": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   14,
+   "neptune",
+   "diameter_arcsec"
+  ],
+  "neptune_0922_ra_h": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   55,
+   "neptune",
+   "ra_h"
+  ],
+  "neptune_0922_dec_deg": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   55,
+   "neptune",
+   "dec_deg"
+  ],
+  "neptune_0922_ra1800_h": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   55,
+   "neptune",
+   "ra1800_h"
+  ],
+  "neptune_0922_V": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   55,
+   "neptune",
+   "V"
+  ],
+  "neptune_0922_diameter_arcsec": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   55,
+   "neptune",
+   "diameter_arcsec"
+  ],
+  "neptune_0929_ra_h": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   62,
+   "neptune",
+   "ra_h"
+  ],
+  "neptune_0929_dec_deg": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   62,
+   "neptune",
+   "dec_deg"
+  ],
+  "neptune_0929_ra1800_h": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   62,
+   "neptune",
+   "ra1800_h"
+  ],
+  "neptune_0929_V": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   62,
+   "neptune",
+   "V"
+  ],
+  "neptune_0929_diameter_arcsec": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   62,
+   "neptune",
+   "diameter_arcsec"
+  ],
+  "neptune_1001_ra_h": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   64,
+   "neptune",
+   "ra_h"
+  ],
+  "neptune_1001_dec_deg": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   64,
+   "neptune",
+   "dec_deg"
+  ],
+  "neptune_1001_ra1800_h": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   64,
+   "neptune",
+   "ra1800_h"
+  ],
+  "neptune_1001_V": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   64,
+   "neptune",
+   "V"
+  ],
+  "neptune_1001_diameter_arcsec": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   64,
+   "neptune",
+   "diameter_arcsec"
+  ],
+  "place_col325_ra_h": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   14,
+   "targets",
+   "col325",
+   "ra_h"
+  ],
+  "place_col325_dec_deg": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   14,
+   "targets",
+   "col325",
+   "dec_deg"
+  ],
+  "place_S4_ra_h": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   14,
+   "targets",
+   "S4",
+   "ra_h"
+  ],
+  "place_S4_dec_deg": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   14,
+   "targets",
+   "S4",
+   "dec_deg"
+  ],
+  "place_S5_ra_h": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   14,
+   "targets",
+   "S5",
+   "ra_h"
+  ],
+  "place_S5_dec_deg": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   14,
+   "targets",
+   "S5",
+   "dec_deg"
+  ],
+  "place_LVJ_ra_h": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   14,
+   "targets",
+   "LVJ",
+   "ra_h"
+  ],
+  "place_LVJ_dec_deg": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   14,
+   "targets",
+   "LVJ",
+   "dec_deg"
+  ],
+  "place_LVA_ra_h": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   14,
+   "targets",
+   "LVA",
+   "ra_h"
+  ],
+  "place_LVA_dec_deg": [
+   "docs/notes/P1B_challis_prerun.json",
+   "nights",
+   14,
+   "targets",
+   "LVA",
+   "dec_deg"
+  ]
+ },
+ "values": {
+  "n_accepted": 100000,
+  "n_drawn": 1003853,
+  "acceptance": 0.09961617886284148,
+  "acceptance_conditions_2_3": 0.3203726043554186,
+  "acceptance_condition_4": 0.30897850581708675,
+  "halved_n_accepted": 20000,
+  "tornado_n_draws": 10000,
+  "c2_combined": "depends on the Berlin sheet's limits",
+  "replay_a0": 0.33594461585071944,
+  "c1a_done_by": "1846-08-15",
+  "v10": -6.89,
+  "v10_source": "Mallama & Hilton 2018, Astronomy and Computing 25, 10, Eq. 16 (t < 1980.0); fitted to 1954–2014, carried to 1846",
+  "lv_august_true_lon": 326.53333333333336,
+  "lv_august_limits": [
+   321.0,
+   335.0
+  ],
+  "lv_june_limits": [
+   315.0,
+   335.0
+  ],
+  "p_disc_routine_prior_mean": 0.24998806990251,
+  "p_disc_routine_posterior_mean": 0.19659850396029524,
+  "p_disc_looking_prior_mean": 0.5502082847484792,
+  "p_disc_looking_posterior_mean": 0.6741546564474399,
+  "p_follow_prior_mean": 0.750206349402848,
+  "p_follow_posterior_mean": 0.7500684571994791,
+  "A0_mean": 0.0,
+  "A0_q05": 0.0,
+  "A0_q95": 0.0,
+  "A0_row": "would very probably not have",
+  "A0_top_input": null,
+  "A0_conditional_on": "the printed record and the priors of § 4 (N2's fallback)",
+  "A0_prior_dependent": false,
+  "A0_halved_q05": 0.0,
+  "A0_halved_q95": 0.0,
+  "A0_halved_row": "would very probably not have",
+  "C1a_mean": 0.7144044757329789,
+  "C1a_q05": 0.5014618801996444,
+  "C1a_q95": 0.9739144846200573,
+  "C1a_row": "depends on",
+  "C1a_top_input": "p_follow",
+  "C1a_conditional_on": "the printed record and the priors of § 4 (N2's fallback)",
+  "C1a_prior_dependent": false,
+  "C1a_halved_q05": 0.6368174142151987,
+  "C1a_halved_q95": 0.8630275879113576,
+  "C1a_halved_row": "depends on",
+  "C1b_mean": 0.28349934904819846,
+  "C1b_q05": 0.0,
+  "C1b_q95": 0.9346235819196149,
+  "C1b_row": "depends on",
+  "C1b_top_input": "p_follow",
+  "C1b_conditional_on": "the printed record and the priors of § 4 (N2's fallback)",
+  "C1b_prior_dependent": false,
+  "C1b_halved_q05": 0.0,
+  "C1b_halved_q95": 0.8398696947996303,
+  "C1b_halved_row": "depends on",
+  "C2_1800_mean": 0.0,
+  "C2_1800_q05": 0.0,
+  "C2_1800_q95": 0.0,
+  "C2_1800_row": "would very probably not have",
+  "C2_1800_top_input": null,
+  "C2_1800_conditional_on": "N1's first fallback (the sheet's limits for the equinox of 1800)",
+  "C2_1800_prior_dependent": false,
+  "C2_1800_halved_q05": 0.0,
+  "C2_1800_halved_q95": 0.0,
+  "C2_1800_halved_row": "would very probably not have",
+  "C2_date_mean": 0.916714839003403,
+  "C2_date_q05": 0.7742020810217533,
+  "C2_date_q95": 0.9993792055951611,
+  "C2_date_row": "depends on",
+  "C2_date_top_input": "p_follow",
+  "C2_date_conditional_on": "N1's second fallback (the sheet's limits applied to right ascension of date)",
+  "C2_date_prior_dependent": true,
+  "C2_date_halved_q05": 0.868728548761366,
+  "C2_date_halved_q95": 0.9812457576660403,
+  "C2_date_halved_row": "would very probably have recognised the planet before Galle's night",
+  "C3_S4_mean": 0.40872367574917634,
+  "C3_S4_q05": 0.03729786149530766,
+  "C3_S4_q95": 0.8078202989161122,
+  "C3_S4_row": "depends on",
+  "C3_S4_top_input": "p_disc_routine",
+  "C3_S4_conditional_on": "N3's fallback (zones alternating outward from the start place) and N2's",
+  "C3_S4_prior_dependent": true,
+  "C3_S4_halved_q05": 0.3323545723185452,
+  "C3_S4_halved_q95": 0.7136149895938085,
+  "C3_S4_halved_row": "an open chance",
+  "C3_S4_prompt_mean": 0.7895055462533884,
+  "C3_S4_prompt_q05": 0.22220451119292506,
+  "C3_S4_prompt_q95": 0.9854139273862077,
+  "C3_S4_prompt_row": "depends on",
+  "C3_S4_prompt_top_input": "n_unknown_sessions",
+  "C3_S4_prompt_conditional_on": "N3's fallback (zones alternating outward from the start place) and N2's",
+  "C3_S4_prompt_prior_dependent": false,
+  "C3_S4_prompt_halved_q05": 0.7712557384459734,
+  "C3_S4_prompt_halved_q95": 0.9458119967052475,
+  "C3_S4_prompt_halved_row": "depends on",
+  "C3_S5_mean": 0.0,
+  "C3_S5_q05": 0.0,
+  "C3_S5_q95": 0.0,
+  "C3_S5_row": "would very probably not have",
+  "C3_S5_top_input": null,
+  "C3_S5_conditional_on": "N3's fallback (zones alternating outward from the start place) and N2's",
+  "C3_S5_prior_dependent": false,
+  "C3_S5_halved_q05": 0.0,
+  "C3_S5_halved_q95": 0.0,
+  "C3_S5_halved_row": "would very probably not have",
+  "C3_S5_prompt_mean": 0.0,
+  "C3_S5_prompt_q05": 0.0,
+  "C3_S5_prompt_q95": 0.0,
+  "C3_S5_prompt_row": "would very probably not have",
+  "C3_S5_prompt_top_input": null,
+  "C3_S5_prompt_conditional_on": "N3's fallback (zones alternating outward from the start place) and N2's",
+  "C3_S5_prompt_prior_dependent": false,
+  "C3_S5_prompt_halved_q05": 0.0,
+  "C3_S5_prompt_halved_q95": 0.0,
+  "C3_S5_prompt_halved_row": "would very probably not have",
+  "C4a_mean": 0.4104969162075146,
+  "C4a_q05": 0.03862607030482735,
+  "C4a_q95": 0.8057189395408964,
+  "C4a_row": "depends on",
+  "C4a_top_input": "p_disc_routine",
+  "C4a_conditional_on": "N3's fallback (zones alternating outward from the start place) and N2's",
+  "C4a_prior_dependent": true,
+  "C4a_halved_q05": 0.3243362842459565,
+  "C4a_halved_q95": 0.7120749560687875,
+  "C4a_halved_row": "an open chance",
+  "C4a_prompt_mean": 0.8478602283228711,
+  "C4a_prompt_q05": 0.6267534247959425,
+  "C4a_prompt_q95": 0.9860911019698204,
+  "C4a_prompt_row": "depends on",
+  "C4a_prompt_top_input": "p_follow",
+  "C4a_prompt_conditional_on": "N3's fallback (zones alternating outward from the start place) and N2's",
+  "C4a_prompt_prior_dependent": false,
+  "C4a_prompt_halved_q05": 0.7810714307638608,
+  "C4a_prompt_halved_q95": 0.945372567669398,
+  "C4a_prompt_halved_row": "depends on",
+  "C4b_mean": 0.346508346581276,
+  "C4b_q05": 0.019966957846866893,
+  "C4b_q95": 0.8967679563088726,
+  "C4b_row": "depends on",
+  "C4b_top_input": "c4b_breadth_arcmin",
+  "C4b_conditional_on": "N3's fallback (zones alternating outward from the start place) and N2's",
+  "C4b_prior_dependent": false,
+  "C4b_halved_q05": 0.12928420921438555,
+  "C4b_halved_q95": 0.72471256566618,
+  "C4b_halved_row": "depends on",
+  "neptune_0729_ra_h": 21.98030410337116,
+  "neptune_0729_dec_deg": -12.90677774401676,
+  "neptune_0729_ra1800_h": 21.93853039626538,
+  "neptune_0729_V": 7.8132440056784,
+  "neptune_0729_diameter_arcsec": 2.349716226979295,
+  "neptune_0730_ra_h": 21.97869476837296,
+  "neptune_0730_dec_deg": -12.91569634410882,
+  "neptune_0730_ra1800_h": 21.936915710585346,
+  "neptune_0730_V": 7.812809568017621,
+  "neptune_0730_diameter_arcsec": 2.3501837582414202,
+  "neptune_0804_ra_h": 21.970461345062056,
+  "neptune_0804_dec_deg": -12.961167217114268,
+  "neptune_0804_ra1800_h": 21.928655190538624,
+  "neptune_0804_V": 7.810947398247646,
+  "neptune_0804_diameter_arcsec": 2.3521869689037245,
+  "neptune_0812_ra_h": 21.956791611162263,
+  "neptune_0812_dec_deg": -13.036133089489416,
+  "neptune_0812_ra1800_h": 21.914941174601715,
+  "neptune_0812_V": 7.809072216304055,
+  "neptune_0812_diameter_arcsec": 2.3541981450241205,
+  "neptune_0922_ra_h": 21.889021587160983,
+  "neptune_0922_dec_deg": -13.399523806248233,
+  "neptune_0922_ra1800_h": 21.84694750114685,
+  "neptune_0922_V": 7.821235304834285,
+  "neptune_0922_diameter_arcsec": 2.3409418018628676,
+  "neptune_0929_ra_h": 21.879864524543297,
+  "neptune_0929_dec_deg": -13.44753041083796,
+  "neptune_0929_ra1800_h": 21.837756525483474,
+  "neptune_0929_V": 7.82668361489305,
+  "neptune_0929_diameter_arcsec": 2.3350575093157273,
+  "neptune_1001_ra_h": 21.877466472449747,
+  "neptune_1001_dec_deg": -13.46004540508074,
+  "neptune_1001_ra1800_h": 21.83534917903216,
+  "neptune_1001_V": 7.828392865997867,
+  "neptune_1001_diameter_arcsec": 2.3332150394919466,
+  "place_col325_ra_h": 21.821,
+  "place_col325_dec_deg": -13.172500000000001,
+  "place_S4_ra_h": 21.753122070349978,
+  "place_S4_dec_deg": -13.53938574415656,
+  "place_S5_ra_h": 22.0590320109621,
+  "place_S5_dec_deg": -11.92287717713266,
+  "place_LVJ_ra_h": 21.789012581724432,
+  "place_LVJ_dec_deg": -13.354866870727978,
+  "place_LVA_ra_h": 21.879859350191175,
+  "place_LVA_dec_deg": -12.881739533324591
+ },
+ "track": [
+  {
+   "date": "1846-07-29",
+   "ra_h": 21.98030410337116,
+   "dec_deg": -12.90677774401676
+  },
+  {
+   "date": "1846-07-30",
+   "ra_h": 21.97869476837296,
+   "dec_deg": -12.91569634410882
+  },
+  {
+   "date": "1846-07-31",
+   "ra_h": 21.977072172639453,
+   "dec_deg": -12.924677952013615
+  },
+  {
+   "date": "1846-08-01",
+   "ra_h": 21.975436920297778,
+   "dec_deg": -12.933719222906236
+  },
+  {
+   "date": "1846-08-02",
+   "ra_h": 21.97378962089885,
+   "dec_deg": -12.942816788266056
+  },
+  {
+   "date": "1846-08-03",
+   "ra_h": 21.972130889219702,
+   "dec_deg": -12.951967257088945
+  },
+  {
+   "date": "1846-08-04",
+   "ra_h": 21.970461345062056,
+   "dec_deg": -12.961167217114268
+  },
+  {
+   "date": "1846-08-05",
+   "ra_h": 21.96878161304715,
+   "dec_deg": -12.970413236066069
+  },
+  {
+   "date": "1846-08-06",
+   "ra_h": 21.967092322406963,
+   "dec_deg": -12.97970186290762
+  },
+  {
+   "date": "1846-08-07",
+   "ra_h": 21.96539410677187,
+   "dec_deg": -12.98902962910872
+  },
+  {
+   "date": "1846-08-08",
+   "ra_h": 21.963687603954916,
+   "dec_deg": -12.998393049924791
+  },
+  {
+   "date": "1846-08-09",
+   "ra_h": 21.96197345573267,
+   "dec_deg": -13.007788625687287
+  },
+  {
+   "date": "1846-08-10",
+   "ra_h": 21.960252307622927,
+   "dec_deg": -13.01721284310434
+  },
+  {
+   "date": "1846-08-11",
+   "ra_h": 21.9585248086592,
+   "dec_deg": -13.026662176571227
+  },
+  {
+   "date": "1846-08-12",
+   "ra_h": 21.956791611162263,
+   "dec_deg": -13.036133089489416
+  },
+  {
+   "date": "1846-08-13",
+   "ra_h": 21.955053370508775,
+   "dec_deg": -13.045622035593713
+  },
+  {
+   "date": "1846-08-14",
+   "ra_h": 21.953310744897113,
+   "dec_deg": -13.055125460286524
+  },
+  {
+   "date": "1846-08-15",
+   "ra_h": 21.95156439511055,
+   "dec_deg": -13.064639801978528
+  },
+  {
+   "date": "1846-08-16",
+   "ra_h": 21.949814984277943,
+   "dec_deg": -13.074161493434694
+  },
+  {
+   "date": "1846-08-17",
+   "ra_h": 21.948063177631965,
+   "dec_deg": -13.083686963125064
+  },
+  {
+   "date": "1846-08-18",
+   "ra_h": 21.946309642265152,
+   "dec_deg": -13.093212636579173
+  },
+  {
+   "date": "1846-08-19",
+   "ra_h": 21.944555046883767,
+   "dec_deg": -13.102734937743495
+  },
+  {
+   "date": "1846-08-20",
+   "ra_h": 21.942800061559705,
+   "dec_deg": -13.112250290340878
+  },
+  {
+   "date": "1846-08-21",
+   "ra_h": 21.941045357480558,
+   "dec_deg": -13.1217551192311
+  },
+  {
+   "date": "1846-08-22",
+   "ra_h": 21.939291606698003,
+   "dec_deg": -13.131245851771803
+  },
+  {
+   "date": "1846-08-23",
+   "ra_h": 21.937539481874616,
+   "dec_deg": -13.140718919178886
+  },
+  {
+   "date": "1846-08-24",
+   "ra_h": 21.93578965602935,
+   "dec_deg": -13.150170757885212
+  },
+  {
+   "date": "1846-08-25",
+   "ra_h": 21.934042802281724,
+   "dec_deg": -13.15959781089734
+  },
+  {
+   "date": "1846-08-26",
+   "ra_h": 21.93229959359496,
+   "dec_deg": -13.16899652914874
+  },
+  {
+   "date": "1846-08-27",
+   "ra_h": 21.930560702518186,
+   "dec_deg": -13.17836337284923
+  },
+  {
+   "date": "1846-08-28",
+   "ra_h": 21.92882680092792,
+   "dec_deg": -13.187694812829236
+  },
+  {
+   "date": "1846-08-29",
+   "ra_h": 21.927098559768872,
+   "dec_deg": -13.196987331878493
+  },
+  {
+   "date": "1846-08-30",
+   "ra_h": 21.92537664879441,
+   "dec_deg": -13.20623742607806
+  },
+  {
+   "date": "1846-08-31",
+   "ra_h": 21.92366173630667,
+   "dec_deg": -13.215441606124767
+  },
+  {
+   "date": "1846-09-01",
+   "ra_h": 21.92195448889662,
+   "dec_deg": -13.224596398647591
+  },
+  {
+   "date": "1846-09-02",
+   "ra_h": 21.92025557118412,
+   "dec_deg": -13.233698347514734
+  },
+  {
+   "date": "1846-09-03",
+   "ra_h": 21.9185656455583,
+   "dec_deg": -13.24274401513093
+  },
+  {
+   "date": "1846-09-04",
+   "ra_h": 21.91688537191821,
+   "dec_deg": -13.25172998372394
+  },
+  {
+   "date": "1846-09-05",
+   "ra_h": 21.915215407414134,
+   "dec_deg": -13.260652856619584
+  },
+  {
+   "date": "1846-09-06",
+   "ra_h": 21.913556406189613,
+   "dec_deg": -13.26950925950462
+  },
+  {
+   "date": "1846-09-07",
+   "ra_h": 21.911909019124277,
+   "dec_deg": -13.278295841676451
+  },
+  {
+   "date": "1846-09-08",
+   "ra_h": 21.91027389357786,
+   "dec_deg": -13.287009277279232
+  },
+  {
+   "date": "1846-09-09",
+   "ra_h": 21.90865167313533,
+   "dec_deg": -13.295646266525464
+  },
+  {
+   "date": "1846-09-10",
+   "ra_h": 21.907042997353525,
+   "dec_deg": -13.304203536902323
+  },
+  {
+   "date": "1846-09-11",
+   "ra_h": 21.90544850150922,
+   "dec_deg": -13.312677844362446
+  },
+  {
+   "date": "1846-09-12",
+   "ra_h": 21.903868816349018,
+   "dec_deg": -13.321065974497765
+  },
+  {
+   "date": "1846-09-13",
+   "ra_h": 21.90230456784105,
+   "dec_deg": -13.329364743696669
+  },
+  {
+   "date": "1846-09-14",
+   "ra_h": 21.90075637692876,
+   "dec_deg": -13.33757100028303
+  },
+  {
+   "date": "1846-09-15",
+   "ra_h": 21.899224859286868,
+   "dec_deg": -13.345681625637063
+  },
+  {
+   "date": "1846-09-16",
+   "ra_h": 21.897710625079675,
+   "dec_deg": -13.353693535297154
+  },
+  {
+   "date": "1846-09-17",
+   "ra_h": 21.89621427872192,
+   "dec_deg": -13.36160368004219
+  },
+  {
+   "date": "1846-09-18",
+   "ra_h": 21.89473641864225,
+   "dec_deg": -13.369409046953924
+  },
+  {
+   "date": "1846-09-19",
+   "ra_h": 21.893277637049515,
+   "dec_deg": -13.377106660458695
+  },
+  {
+   "date": "1846-09-20",
+   "ra_h": 21.89183851970205,
+   "dec_deg": -13.384693583348213
+  },
+  {
+   "date": "1846-09-21",
+   "ra_h": 21.890419645680012,
+   "dec_deg": -13.392166917778672
+  },
+  {
+   "date": "1846-09-22",
+   "ra_h": 21.889021587160983,
+   "dec_deg": -13.399523806248233
+  },
+  {
+   "date": "1846-09-23",
+   "ra_h": 21.887644909198947,
+   "dec_deg": -13.40676143255184
+  },
+  {
+   "date": "1846-09-24",
+   "ra_h": 21.886290169506804,
+   "dec_deg": -13.413877022713505
+  },
+  {
+   "date": "1846-09-25",
+   "ra_h": 21.88495791824247,
+   "dec_deg": -13.42086784589544
+  },
+  {
+   "date": "1846-09-26",
+   "ra_h": 21.88364869779883,
+   "dec_deg": -13.427731215283723
+  },
+  {
+   "date": "1846-09-27",
+   "ra_h": 21.88236304259751,
+   "dec_deg": -13.434464488950283
+  },
+  {
+   "date": "1846-09-28",
+   "ra_h": 21.881101478886748,
+   "dec_deg": -13.441065070690707
+  },
+  {
+   "date": "1846-09-29",
+   "ra_h": 21.879864524543297,
+   "dec_deg": -13.44753041083796
+  },
+  {
+   "date": "1846-09-30",
+   "ra_h": 21.878652688878685,
+   "dec_deg": -13.453858007051316
+  },
+  {
+   "date": "1846-10-01",
+   "ra_h": 21.877466472449747,
+   "dec_deg": -13.46004540508074
+  }
+ ],
+ "recordings": [
+  {
+   "observer": "Galileo",
+   "nights": 3,
+   "counted": "yes"
+  },
+  {
+   "observer": "Michel Lefrançais de Lalande",
+   "nights": 1,
+   "counted": "yes"
+  },
+  {
+   "observer": "Michel Lefrançais de Lalande",
+   "nights": 1,
+   "counted": "yes"
+  },
+  {
+   "observer": "Johann von Lamont",
+   "nights": 1,
+   "counted": "yes"
+  },
+  {
+   "observer": "Johann von Lamont",
+   "nights": 1,
+   "counted": "yes"
+  },
+  {
+   "observer": "Johann von Lamont",
+   "nights": 1,
+   "counted": "yes"
+  },
+  {
+   "observer": "John Herschel",
+   "nights": 0,
+   "counted": "no"
+  }
+ ],
+ "constants": {
+  "zone_breadth_arcmin": {
+   "value": 9,
+   "citation": "Challis 1846, MNRAS 7, 145: the field at power 166"
+  },
+  "power": {
+   "value": 166,
+   "citation": "Challis 1846, MNRAS 7, 145"
+  },
+  "aperture": {
+   "text": "a little more than 11½ inches",
+   "citation": "Airy 1844, Account of the Northumberland Equatoreal and Dome"
+  },
+  "sheet_west_edge_ra": {
+   "h": 21,
+   "m": 56,
+   "equinox": 1800,
+   "citation": "Krajnović 2021 (secondary): Hora XXII, one hour of right ascension with a 4-minute overlap"
+  },
+  "rule_thresholds": {
+   "low": 0.2,
+   "high": 0.8,
+   "citation": "the pre-registered reading rule, docs/notes/P1B_challis_detection.md § 7"
+  },
+  "galle_night": {
+   "day": 23,
+   "month": "September",
+   "year": 1846
+  },
+  "range_percent": {
+   "low": 5,
+   "high": 95,
+   "citation": "the pre-registered reading rule, docs/notes/P1B_challis_detection.md § 7"
+  },
+  "fit_ranges_percent": {
+   "inner": 68,
+   "outer": 95,
+   "citation": "the pre-registered reading rule, docs/notes/P1B_adams_fit.md"
+  },
+  "planet_number_12_august": {
+   "value": 49,
+   "citation": "Challis 1847, Memoirs RAS 16, 415–426 (challis_sweeps.csv)"
+  },
+  "comparison_stopped_at": {
+   "value": 39,
+   "citation": "Challis 1847, Memoirs RAS 16, 415–426 (challis_sweeps.csv)"
+  },
+  "events": {
+   "search_start": "1846-07-29",
+   "zone_first_swept": "1846-07-30",
+   "recorded_first": "1846-08-04",
+   "recorded_second": "1846-08-12",
+   "disc_noted": "1846-09-29",
+   "track_end": "1846-10-01",
+   "citation": "Challis 1847, Memoirs RAS 16, 415–426 (challis_sweeps.csv)"
+  },
+  "noise_thresholds": {
+   "suffices": 0.05,
+   "systematic": 0.003,
+   "citation": "the pre-registered reading rule, docs/notes/P1B_adams_noise.md"
+  }
+ },
+ "map_night": "1846-08-12",
+ "case_order": [
+  "A0",
+  "C1a",
+  "C1b",
+  "C2_1800",
+  "C2_date",
+  "C3_S4",
+  "C3_S4_prompt",
+  "C3_S5",
+  "C3_S5_prompt",
+  "C4a",
+  "C4a_prompt",
+  "C4b"
+ ]
+}

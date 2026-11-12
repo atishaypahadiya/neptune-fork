@@ -12,7 +12,8 @@ does not cover took seconds to a few minutes and are marked "not in ledger".
 | phase | CPU-hours | source |
 |---|---|---|
 | Phase 1 (M1–M10) | 1090 (1007 timed live, 83 estimated) | the tracked site ledger `site/data/ledger.json`, 271 rows |
-| Phase 1b (steps 3, 3b, 3c) | 103 in the ledger, plus at most 25 for a stopped run that left no row | the local ledger `data/cache/compute_ledger.jsonl`, rows `p1b_*` (27 rows); not on the site until the site step |
+| Phase 1b (steps 3, 3b, 3c, 4) | 103 in the ledger, plus at most 25 for a stopped run that left no row | the same ledger, rows `p1b_*` (28 rows), added at the site step (2026-11-12) |
+| all | 1193 (1109 timed live, 83 estimated) | `site/data/ledger.json`, 299 rows |
 
 **Phase 1:** 1153 million likelihood calls, 624 million of them N-body integrations over
 1690–1846 (the rest are the fast linearized likelihood of M8), or 96 billion simulated
@@ -27,6 +28,7 @@ planet-years.
 | step 3c, the full run | 24.5 | 2 h 06 min on 12 workers | `p1b_adams_noise/draws` |
 | step 3c, three chunks recomputed | 0.3 | 6.6 min on 3 workers | `p1b_adams_noise/draws` |
 | step 3c, two smoke runs | 0.2 | 2.5 min | `p1b_adams_noise/draws` (2) |
+| step 4, the draws | 0.3 | 20 min on one core | `p1b_challis/draws` |
 | step 3c, the first full run, stopped | at most 25 (2 h 06 min × 12 workers; estimated) | 2 h 06 min | none: it saved nothing and wrote no row |
 
 Step 3b stage A (transcription) used no compute. The stopped run of step 3c is counted here
@@ -345,5 +347,4 @@ FORK_HORIZONS_CACHE_ONLY=1 uv run python -m fork.export.p1b_challis summarize # 
 
 Progress in `data/cache/p1b_challis/progress.log`, one line per chunk of 5,000 accepted draws;
 a rerun of `draws` skips the chunks already in `data/cache/p1b_challis/main/` and `halved/`.
-One ledger row `p1b_challis/draws` (0.33 CPU-h), in the local ledger and not in the totals
-above. `smoke` writes to the cache; the smoke record in `docs/notes/` is the pre-run's.
+One ledger row `p1b_challis/draws` (0.33 CPU-h), in the totals above. `smoke` writes to the cache; the smoke record in `docs/notes/` is the pre-run's.

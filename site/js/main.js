@@ -13,20 +13,20 @@ import { fig1, fig2, fig4, fig5, fig6, fig7, fig8, fig9 } from "./figs.js";
 
 async function load() {
   const [head, conjL, window_, timeline, checks, rep, conj, m6, dataset, table1, plates, motion, refs,
-    quotes, parallax, m9, m10, release] =
+    quotes, parallax, m9, m10, release, p1b] =
     await Promise.all([
       loadHeadline(), loadConjunction(), loadWindow(), loadTimeline(), loadChecks(),
       loadJSON("m6c_replacement.json"), loadJSON("m6c_conjunction.json"), loadJSON("m6_fits.json"),
       loadJSON("m7_dataset.json"), loadJSON("m7_table1.json"), loadJSON("m7_plates.json"),
       loadJSON("m7_motion.json"), loadJSON("m7_references.json"), loadJSON("m7_quotes.json"),
       loadJSON("m7_parallax.json"), loadJSON("m9_profile.json"), loadJSON("m10_profile.json"),
-      loadJSON("release.json"),
+      loadJSON("release.json"), loadJSON("p1b_page.json"),
     ]);
   // The plates' posterior must be the published one (the script checks this too).
   const q = plates.plate_ii_conjunction.posterior.lon_deg, want = conj.conjunction_helio.all;
   if (Math.abs(q.median - want.median) > 1e-3) throw new Error("m7_plates.json does not match m6c_conjunction.json");
   return { head, conjL, window: window_, timeline, checks, rep, conj, m6, dataset, table1, plates, motion, refs,
-    quotes, parallax, m9, m10, release };
+    quotes, parallax, m9, m10, release, p1b };
 }
 
 function setSlots(values) {
@@ -149,6 +149,7 @@ async function main() {
   setSlots({
     ...C.titleBlock(D),
     ...C.abstract(D),
+    companion_lead: D.p1b.main_link, companion_title: D.p1b.title, companion_url: D.p1b.path,
     cap_plate_i: C.capPlateI(D),
     ...C.dataText(D),
     ...C.prereg(D),

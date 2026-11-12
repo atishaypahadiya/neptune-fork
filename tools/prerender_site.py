@@ -1,9 +1,11 @@
 """Build the Pages output: site/ prerendered, so the page reads without JavaScript.
 
-The site renders its text, numbers, tables, references and figures client-side from
-site/data/*.json. This script copies site/ to the output directory, loads it in headless Chrome
-(Playwright) until the page reports ``data-ready``, and writes the rendered DOM back as
-index.html: text, tables, captions, references and the static SVG of every plate and figure.
+The site has two pages (PAGES): the main paper and its companion, site/adams-challis/. Each
+renders its text, numbers, tables, references and figures client-side from
+site/data/*.json. This script copies site/ to the output directory, loads each page
+in headless Chrome (Playwright) until it reports ``data-ready``, and writes the rendered DOM back as
+that page's index.html: text, tables, captions, references and the static SVG of every plate
+and figure.
 JavaScript still runs on the built page and redraws the same content, adding what needs JS
 (hover links, Plate III's animation and controls, Copy buttons; those controls are
 ``data-js hidden`` in the HTML).
@@ -35,6 +37,14 @@ SITE = ROOT / "site"
 BASE_URL = "https://atishaypahadiya.github.io/neptune-fork/"
 VIEWPORT = {"width": 1440, "height": 900}  # the drawn width of the static SVG
 OG_SIZE = {"width": 1200, "height": 630}
+# The pages of the site, as paths under the output directory: the main paper and its companion
+# (docs/DESIGN.md, "Companion page"). `structure`: the section numbers the number audit allows.
+PAGES = ("", "adams-challis/")
+STRUCTURE = {
+    "": ["1", "2", "3", "4", "5", "6", "7", "8", "3.1", "3.2", "3.3", "4.1", "4.2", "4.3"],
+    "adams-challis/": ["1", "2", "3", "4", "5", "6", "7", "3.1", "3.2", "3.3", "3.4", "4.1",
+                       "4.2", "4.3"],
+}  # fmt: skip
 OPTIONAL = ("m8_arbiter.json", "m8b.json")  # loaded with { optional: true }: a 404 is "pending"
 
 
@@ -116,7 +126,7 @@ def open_rendered(
 
 
 # Runs in the rendered page: head tags, JS-only controls hidden, the number registry embedded.
-SERIALIZE = """({base, og}) => {
+SERIALIZE = """({base, og, image}) => {
   const html = document.documentElement, head = document.head;
   delete html.dataset.ready;
   html.dataset.prerendered = "1";
@@ -127,7 +137,8 @@ SERIALIZE = """({base, og}) => {
   // First sentence: up to the first full stop followed by a space and a capital letter.
   const m = abstract.match(/^.+?[.!?](?=\\s+[A-Z(])/s);
   const description = (m ? m[0] : abstract).replace(/\\s+/g, " ");
-  const caption = document.querySelector("#cap-plate-i").textContent.trim().replace(/\\s+/g, " ");
+  const cap = document.querySelector("#cap-plate-i");
+  const caption = cap ? cap.textContent.trim().replace(/\\s+/g, " ") : title;
   document.title = title;
 
   const set = (sel, make, attrs) => {
@@ -139,7 +150,6 @@ SERIALIZE = """({base, og}) => {
     set(`meta[${attr}="${key}"]`, "meta", { [attr]: key, content: value });
   meta("description", description, "name");
   set('link[rel="canonical"]', "link", { rel: "canonical", href: base });
-  const image = new URL("plate-i.png", base).href;
   meta("og:type", "article");
   meta("og:site_name", "neptune-fork");
   meta("og:title", title);
@@ -165,21 +175,30 @@ SERIALIZE = """({base, og}) => {
 
 
 def build(out: Path, base_url: str) -> None:
+    """Every page of PAGES is prerendered in place; the companion page's link preview uses the
+    main page's Plate I image."""
     if out.exists():
         shutil.rmtree(out)
     shutil.copytree(SITE, out)
     problems: list[str] = []
+    rendered: dict[str, str] = {}
+    image = base_url + "plate-i.png"
     with serve(out) as url, sync_playwright() as p:
         browser = launch(p)
-        page = open_rendered(browser, url, VIEWPORT, problems)
-        html = page.evaluate(SERIALIZE, {"base": base_url, "og": OG_SIZE})
+        for path in PAGES:
+            page = open_rendered(browser, url + path, VIEWPORT, problems)
+            rendered[path] = page.evaluate(
+                SERIALIZE, {"base": base_url + path, "og": OG_SIZE, "image": image}
+            )
         og = open_rendered(browser, url, OG_SIZE, problems)
         og.screenshot(path=str(out / "plate-i.png"), clip={"x": 0, "y": 0, **OG_SIZE})
         browser.close()
     if problems:
         raise SystemExit("prerender failed:\n  " + "\n  ".join(problems))
-    (out / "index.html").write_text(html, encoding="utf-8")
-    print(f"wrote {out / 'index.html'} ({len(html) / 1024:.0f} KB) and {out / 'plate-i.png'}")
+    for path, html in rendered.items():
+        (out / path / "index.html").write_text(html, encoding="utf-8")
+        print(f"wrote {out / path / 'index.html'} ({len(html) / 1024:.0f} KB)")
+    print(f"wrote {out / 'plate-i.png'}")
 
 
 def main() -> None:

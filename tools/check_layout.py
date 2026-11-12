@@ -1,6 +1,7 @@
 """Layout, print and interaction acceptance checks for the site (docs/DESIGN.md, Acceptance).
 
-Loads the page with JavaScript at 360, 390, 430, 768, 899, 900, 1024 and 1440 px (phones as touch
+Runs on every page of the site (the main paper and its companion, site/adams-challis/; the
+checks of Plates II and III apply where the page has them). Loads the page with JavaScript at 360, 390, 430, 768, 899, 900, 1024 and 1440 px (phones as touch
 devices) and in print (A4 from an 800 px window), and fails on any of:
 
 - **Text over marks:** in every plate and figure, a text box (SVG text, the lettering along
@@ -39,7 +40,7 @@ from playwright.sync_api import Page, sync_playwright
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from check_prerender import AUDIT
-from prerender_site import launch, open_rendered, serve
+from prerender_site import PAGES, STRUCTURE, launch, open_rendered, serve
 
 WIDTHS = [
     (360, 780),
@@ -244,8 +245,8 @@ PAGE = r"""({ emoji, narrow }) => {
     pairs([...s.querySelector(".side").children], `${s.id} text column`);
   }
   const c = document.querySelector("#plate-iii .controls");
-  pairs([c.querySelector(".play"), c.querySelector("label")], "Plate III controls");
-  pairs([c.querySelector(".play"), c.querySelector("label > span") ?? c.querySelector("label"), c.querySelector(".scrub")].filter(Boolean), "Plate III controls");
+  if (c) pairs([c.querySelector(".play"), c.querySelector("label")], "Plate III controls");
+  if (c) pairs([c.querySelector(".play"), c.querySelector("label > span") ?? c.querySelector("label"), c.querySelector(".scrub")].filter(Boolean), "Plate III controls");
 
   // Table 1: headers and year ranges on one line.
   out.table = [];
@@ -315,8 +316,7 @@ PRINT = r"""() => {
     const p = getComputedStyle(e).position;
     if ((p === "sticky" || p === "fixed") && e.getClientRects().length) out.sticky.push(`${e.tagName}.${e.className}`);
   }
-  const pairs = [["plate-i", "cap-plate-i"], ["plate-ii", "cap-plate-ii"], ["plate-iii", "cap-plate-iii"],
-    ...["fig-1", "fig-2", "fig-3", "fig-4", "fig-5", "fig-6", "fig-7", "fig-8", "fig-9"].map((f) => [f, `cap-${f}`])];
+  const pairs = [...document.querySelectorAll("[data-fig]")].map((e) => [e.dataset.fig, `cap-${e.dataset.fig}`]);
   for (const [f, c] of pairs) {
     const fe = document.querySelector(`[data-fig="${f}"]`);
     const fb = (fe.querySelector(":scope > .canvas") ?? fe).getBoundingClientRect();
@@ -370,11 +370,19 @@ SHOTS = [("plate-i", "header"), ("table-1", "#table-1"), ("fig-1", "#fig-1"), ("
          ("plate-iii", "#plate-iii"), ("plate-iii-side", "#plate-iii .side"), ("fig-4", "#fig-4"),
          ("plate-ii", "#plate-ii"), ("fig-5", "#fig-5"), ("fig-6", "#fig-6"), ("fig-7", "#fig-7"),
          ("fig-8", "#fig-8"), ("fig-9", "#fig-9"), ("refs", "#s7")]  # fmt: skip
+# The companion page: its title and abstract, each figure, Table 1 and the references.
+SHOTS_COMPANION = [("title", "header"), ("fig-1", "#fig-1"), ("fig-2", "#fig-2"), ("fig-3", "#fig-3"),
+                   ("table-1", "#table-1"), ("fig-4", "#fig-4"), ("refs", "#s7")]  # fmt: skip
 
 
-def check(out: Path, engine: str, shots: Path | None, widths: list[tuple[int, int]]) -> list[str]:
+def check(
+    out: Path, engine: str, shots: Path | None, widths: list[tuple[int, int]], path: str = ""
+) -> list[str]:
+    """One page of the site: ``path`` under ``out`` ("" is the main paper)."""
     fails: list[str] = []
-    with serve(out) as url, sync_playwright() as p:
+    main_page = path == ""
+    with serve(out) as root, sync_playwright() as p:
+        url = root + path
         browser = p.webkit.launch() if engine == "webkit" else launch(p)
         for w, h in widths:
             phone = w < PHONE
@@ -390,7 +398,9 @@ def check(out: Path, engine: str, shots: Path | None, widths: list[tuple[int, in
             m = page.evaluate(MARKS)
             data = [json.loads((out / "data" / n).read_text()) for n in sorted(set(fetched))]
             derived = page.evaluate("globalThis.__derived.map((d) => d.x)")
-            audit = page.evaluate(AUDIT, {"json": data, "derived": derived})
+            audit = page.evaluate(
+                AUDIT, {"json": data, "derived": derived, "structure": STRUCTURE[path]}
+            )
             res = {
                 "page": problems, "overflow": r["overflowX"], "emoji": r["emoji"],
                 "sticky": r["sticky"], "blocks": r["blocks"], "table": r["table"],
@@ -398,7 +408,7 @@ def check(out: Path, engine: str, shots: Path | None, widths: list[tuple[int, in
                 "text over marks": m["collisions"], "labels longer than their path": m["paths"],
                 "text leaving its figure": m["leaves"], "number audit": audit["unmatched"],
             }  # fmt: skip
-            if w == 1440 or phone:
+            if main_page and (w == 1440 or phone):
                 res["Plate III controls"] = plate_iii_controls(page)
             bad = {k: v for k, v in res.items() if v}
             print(f"{engine} {w}px: {len(audit['numbers'])} numbers, {r['nLinks']} letter links, "
@@ -407,11 +417,14 @@ def check(out: Path, engine: str, shots: Path | None, widths: list[tuple[int, in
             if shots:
                 shots.mkdir(parents=True, exist_ok=True)
                 page.evaluate("window.scrollTo(0, 0)")
-                for name, sel in SHOTS:
+                for name, sel in SHOTS if main_page else SHOTS_COMPANION:
                     page.eval_on_selector(sel, "e => e.scrollIntoView({block: 'start'})")
                     page.evaluate("window.scrollBy(0, -16)")
                     page.wait_for_timeout(250)
-                    page.screenshot(path=str(shots / f"{w}_{name}.png"))
+                    page.screenshot(path=str(shots / f"{engine}_{w}_{name}.png" if not main_page
+                                             else shots / f"{w}_{name}.png"))  # fmt: skip
+                if not main_page and w in (390, 1440):
+                    page.screenshot(path=str(shots / f"{engine}_{w}_page.png"), full_page=True)
             ctx.close()
 
         # Print: A4 from an 800 px window.
@@ -457,6 +470,7 @@ def main() -> None:
     ap.add_argument("out", type=Path, help="the site to check: _site (built) or site")
     ap.add_argument("--engine", choices=["chromium", "webkit"], default="chromium")
     ap.add_argument("--shots", type=Path, help="save screenshots of every plate and figure here")
+    ap.add_argument("--page", choices=PAGES, help="check one page only (default: every page)")
     ap.add_argument("--widths", help="comma-separated widths (default: all)")
     a = ap.parse_args()
     widths = WIDTHS
@@ -465,7 +479,13 @@ def main() -> None:
         widths = [wh for wh in WIDTHS if wh[0] in want] + [
             (x, 900) for x in want - {w for w, _ in WIDTHS}
         ]
-    fails = check(a.out.resolve(), a.engine, a.shots, widths)
+    fails: list[str] = []
+    for path in [a.page] if a.page is not None else PAGES:
+        print(f"--- {path or 'main page'}")
+        fails += [
+            f"[{path or 'main'}] {f}"
+            for f in check(a.out.resolve(), a.engine, a.shots, widths, path)
+        ]
     if fails:
         print("\nFAILED:\n  " + "\n  ".join(fails))
         raise SystemExit(1)

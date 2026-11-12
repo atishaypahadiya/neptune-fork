@@ -33,3 +33,5 @@ data/historical/adams_challis/*.pdf
 
 # design reference exports: look-only, never committed
 docs/design-ref/
+# Screenshots of the companion page (tools/check_layout.py --shots); kept outside the repository
+docs/notes/p1b_site/
