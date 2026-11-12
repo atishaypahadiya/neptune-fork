@@ -484,3 +484,17 @@ FORK_HORIZONS_CACHE_ONLY=1 uv run python -m fork.export.v13 smoke   # synthetic 
 ```
 
 The draft plans are in `docs/notes/V13_drafts.md`. No run on Table 77 exists for them.
+
+## Phase 2 physics and its validation (not a result about history)
+
+```sh
+uv run pytest -q tests/test_phase2_physics.py                 # 11 fast tests; the slow one with -m slow
+uv run python -m fork.phase2.reference --fetch --fixture      # Horizons states into data/cache/phase2/ and the CI fixture
+nohup caffeinate -is uv run python -m fork.phase2.validation run > /dev/null 2>&1 &   # V1 to V5, about 1.5 min
+uv run python -m fork.phase2.validation plot                  # the two figures of docs/phase2/validation.md
+uv run python -m fork.phase2.identifiability                  # the synthetic identifiability report
+uv run pytest -q tests/test_phase2_identifiability.py         # 3 tests
+```
+
+Progress in `data/cache/phase2/validation/progress.log`; a rerun skips the checks already
+written unless `--fresh` is given. Output: `docs/phase2/validation.json`. No ledger row.
