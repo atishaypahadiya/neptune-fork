@@ -30,3 +30,6 @@ _site/
 # Phase 1b source scans (cache-only; hashes and URLs in data/historical/adams_challis/MANIFEST.md)
 data/historical/adams_challis/*.pdf
 !data/historical/adams_challis/challis_1846_mnras_zenodo.pdf
+
+# design reference exports: look-only, never committed
+docs/design-ref/
