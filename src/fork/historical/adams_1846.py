@@ -1714,3 +1714,126 @@ def alpha_flags(alpha: float) -> list[str]:
     if abs(alpha - POLES["3:1"]) <= 0.015:
         flags.append("pole_limited_3_1")
     return flags
+
+
+# ----------------------------------------------------------------------- step 3c: noise draws
+# docs/notes/P1B_adams_noise.md § 2: per-place noise scales and the one-start solve.
+
+N_PLACES_USED = 29  # his 30 places less 1690, which he set aside
+N_PARAMS = len(PARAMS)
+SCALE_A = math.sqrt(N_PLACES_USED / (N_PLACES_USED - N_PARAMS))  # √(N/(N − p)) = 1.175
+GREENWICH_LAST_YEAR = 1831  # modern places to here rest on Greenwich in set D; after, Paris
+
+
+def set_d_group_of_place(place: dict) -> str:
+    """The set D group whose observations a normal place's window holds (model (b)); an empty
+    modern window takes Greenwich's single-measurement scatter (the plan's floor)."""
+    if place["kind"] == "ancient":
+        return "ancient"
+    return "greenwich" if place["year"] <= GREENWICH_LAST_YEAR else "paris_1835_1845"
+
+
+def noise_sigmas(
+    m: Memoir,
+    model: str,
+    counts: dict[int, int] | None = None,
+    hyp: int = 1,
+    group_rms: dict[str, float] | None = None,
+    scale_a: float = SCALE_A,
+) -> dict[int, float]:
+    """σ_j in arcsec per place (keyed by year; 1690 excluded). (a) his § 52 residual RMS per
+    kind × √(N/(N − p)); (b) and (c) the set D group RMS over √max(N_j, 1) with N_j the set D
+    observations in the place's window (step 3c § 2)."""
+    out = {}
+    if model == "a":
+        rms = residual_rms(m, hyp)
+        for p in m.places:
+            if p["year"] != 1690:
+                out[p["year"]] = rms[p["kind"]] * scale_a
+        return out
+    if model not in ("b", "c"):
+        raise ValueError(model)
+    if counts is None or group_rms is None:
+        raise ValueError("models (b) and (c) need the window counts and the group RMS")
+    for p in m.places:
+        if p["year"] == 1690:
+            continue
+        n = max(int(counts.get(p["year"], 0)), 1)
+        out[p["year"]] = group_rms[set_d_group_of_place(p)] / math.sqrt(n)
+    return out
+
+
+_LS_LO = np.array([-np.inf, -np.inf, -np.inf, -np.inf, -np.inf, 0.0, 0.0, -np.inf])
+_LS_HI = np.array([np.inf, np.inf, np.inf, np.inf, np.inf, 50.0, 20.0, np.inf])
+
+
+def _ls_problem(rows, w: np.ndarray, s: Setup):
+    keep = w > 0
+    R = [r for r, k in zip(rows, keep, strict=True) if k]
+    sw = np.sqrt(w[keep])
+    lhs = np.array([r[3]["lhs"] for r in R])
+
+    def fun(x):
+        return sw * (lhs - np.array([model_value(r[3], r[2], x, s) for r in R]))
+
+    return R, fun
+
+
+def solve_warm(rows, w: np.ndarray, s: Setup, x0: np.ndarray, max_nfev: int = 2000) -> dict:
+    """The eight-parameter weighted least squares from one start (step 3c's primary method:
+    what an iterated solution does). Returns x (θ, β′ wrapped), χ², ``converged`` (the solver
+    stopped on a tolerance, not on ``max_nfev``), ``bound`` (m′ or e′ on a bound), the unscaled
+    formal σ (√diag (JᵀWJ)⁻¹, the noise-propagation prediction before any χ²/dof factor) and
+    the number of function evaluations."""
+    from scipy.optimize import least_squares
+
+    _R, fun = _ls_problem(rows, w, s)
+    x0 = np.asarray(x0, dtype=float).copy()
+    x0[5] = min(max(x0[5], _LS_LO[5]), _LS_HI[5])
+    x0[6] = min(max(x0[6], _LS_LO[6]), _LS_HI[6])
+    try:
+        sol = least_squares(fun, x0, bounds=(_LS_LO, _LS_HI), method="trf", x_scale="jac",
+                            xtol=1e-10, ftol=1e-10, gtol=1e-10, max_nfev=max_nfev)  # fmt: skip
+    except ValueError:
+        return {"x": np.full(N_PARAMS, np.nan), "chi2": float("nan"), "converged": False,
+                "bound": False, "sigma_unscaled": np.full(N_PARAMS, np.nan), "nfev": 0}  # fmt: skip
+    x = sol.x.copy()
+    x[4] %= 360.0
+    x[7] %= 360.0
+    bound = bool(x[5] <= _LS_LO[5] + 1e-9 or x[6] >= _LS_HI[6] - 1e-9 or x[5] >= _LS_HI[5] - 1e-9)
+    try:
+        sig = np.sqrt(np.clip(np.diag(np.linalg.inv(sol.jac.T @ sol.jac)), 0.0, None))
+    except np.linalg.LinAlgError:
+        sig = np.full(N_PARAMS, np.nan)
+    return {
+        "x": x,
+        "chi2": float(np.sum(sol.fun**2)),
+        "converged": bool(sol.status > 0 and np.all(np.isfinite(x))),
+        "bound": bound,
+        "sigma_unscaled": sig,
+        "nfev": int(sol.nfev),
+    }
+
+
+def theta_grid_starts(x_clean: np.ndarray, step_deg: float = 30.0) -> list[np.ndarray]:
+    """The multistart check's grid: θ every ``step_deg``, m′ 0.8, e′ 0.1 (2.0 units), β′ the
+    clean value, the linear corrections zero (step 3c § 2)."""
+    starts = []
+    for th in np.arange(0.0, 360.0, step_deg):
+        starts.append(np.array([0.0, 0.0, 0.0, 0.0, float(th), 0.8, 2.0, float(x_clean[7])]))
+    return starts
+
+
+def solve_multistart(rows, w: np.ndarray, s: Setup, x_clean: np.ndarray) -> dict:
+    """The lowest-χ² end point of ``theta_grid_starts`` (12 solves)."""
+    best = None
+    for x0 in theta_grid_starts(x_clean):
+        r = solve_warm(rows, w, s, x0)
+        if not r["converged"] or not math.isfinite(r["chi2"]):
+            continue
+        if best is None or r["chi2"] < best["chi2"] - 1e-9:
+            best = r
+    if best is None:
+        best = {"x": np.full(N_PARAMS, np.nan), "chi2": float("nan"), "converged": False,
+                "bound": False, "sigma_unscaled": np.full(N_PARAMS, np.nan), "nfev": 0}  # fmt: skip
+    return best
