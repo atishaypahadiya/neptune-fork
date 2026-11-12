@@ -120,6 +120,7 @@ def challis_sources() -> dict:
         "c2_combined": [DET, "c2_combined_reading_row"],
         "replay_a0": [DET, "cases", "A0", "replay", "primary", "mean"],
         "c1a_done_by": [DET, "c1_completion", "C1a", "date_95_percent_of_flags"],
+        "c1a_p_by_0816": [DET, "c1_completion", "C1a", "p_by", "1846-08-16"],
         "v10": [PRERUN, "constants", "V10_neptune", 0],
         "v10_source": [PRERUN, "constants", "V10_neptune", 1],
         "lv_august_true_lon": [PRERUN, "le_verrier_august", "true_lon_1847_deg"],

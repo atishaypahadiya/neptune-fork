@@ -62,8 +62,8 @@ noted); only events the history does not contain are drawn.
 
 | case | probability before 23 September (5 to 95 % range) | reading | note |
 |---|---|---|---|
-| his actual procedure | 0.00 | very probably not | by construction |
-| the 12 August comparison with 30 July, carried through | 0.71 (0.50 to 0.97) | depends on p_follow | |
+| his actual procedure | 0.00 | very probably not | by construction: the realised events are held fixed |
+| the 12 August comparison with 30 July, carried through | 0.71 (0.50 to 0.97) | depends on p_follow | complete by 16 August in 99 % of the draws that flag the planet; the record does not inform p_follow (prior mean 0.75, posterior 0.75) |
 | the 4 August sweep compared with 12 August | 0.28 (0.00 to 0.93) | depends on p_follow | |
 | the Berlin sheet he had, equinox of 1800 | 0.00 | very probably not | the planet is off the sheet |
 | the same sheet, right ascension of date | 0.92 (0.77 to 1.00) | depends on p_follow | prior-dependent |
@@ -79,7 +79,8 @@ No case reaches "very probably".
 
 **Deviations that bear on these claims.**
 
-1. Under the held reading his actual procedure is 0 by construction, so the pre-registered
+1. Under the held reading his actual procedure is 0 by construction (the realised events are held
+   fixed, so the cases measure what a change would have added), so the pre-registered
    paired-difference rule against it ("improves when the range excludes 0") is uninformative.
    Identified after reading the results. Its statements are not quoted on the page.
 2. Three readings change row when every prior interval is halved and are marked
@@ -135,7 +136,7 @@ does (the dated correction in `P1B_challis_detection.md`).
 | second minimum: e′ 0.45, 165° from Neptune, Δχ² 6.9 | `noise` `multistart_baselines.H1.second_minimum.real` | found during the run |
 | Fig. 2's histograms | `P1B_adams_noise_hist.json` | binned from the cached draws after the results; the summary JSON is not edited |
 | 100,000 kept of 1,003,853 | `det` `n_accepted`, `acceptance` | none |
-| Table 1's probabilities and ranges | `det` `cases.<case>.held.primary` | his actual procedure is 0 by construction; the paired rule is uninformative |
+| Table 1's probabilities and ranges | `det` `cases.<case>.held.primary` | his actual procedure is 0 by construction (the realised events are held fixed, so the cases measure what a change would have added); the paired rule is uninformative |
 | "depends on" and its input | `det` `cases.<case>.reading_row`, `.top_input` | the ranking of inputs used 10,000 draws |
 | prior-dependent rows | `det` `cases.<case>.prior_dependent`, `.halved_priors` | zone priors not halved; 20,000 draws |
 | replay, his actual procedure 0.34 | `det` `cases.A0.replay.primary.mean` | outside the pre-registered reading |

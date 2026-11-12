@@ -176,7 +176,8 @@ two questions of the printed record.
   minimum, and the post hoc one (0.017 under the first hypothesis) reads weak.
 - *Could Challis have recognised the planet before 23 September?* A detection model
   conditioned on his record (100,000 kept draws) gives, with the realised events held: his
-  actual procedure 0 by construction; the comparison he broke off, carried through,
+  actual procedure 0 by construction (the realised events are held fixed, so the cases measure
+  what a change would have added); the comparison he broke off, carried through,
   0.71 (0.50 to 0.97); zones from Adams's first place 0.41, or 0.79 with prompt comparison;
   from Le Verrier's June place 0.85 with prompt comparison. Each depends on an input the record
   does not fix, three readings are prior-dependent, and none reaches "very probably".
@@ -220,7 +221,8 @@ The write-up, with each claim's JSON path and deviation, is
   Bouvard's tables were not consulted, and the limits of the Berlin sheet Challis had are from a
   secondary source.
 - Phase 1b's probabilities for Challis's search are conditional on declared priors where the
-  record is silent; under the reading reported, his actual procedure is 0 by construction.
+  record is silent; under the reading reported, his actual procedure is 0 by construction: the
+  realised events are held fixed, so the cases measure what a change would have added.
 
 ## Quickstart
 

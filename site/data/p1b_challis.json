@@ -53,6 +53,13 @@
    "C1a",
    "date_95_percent_of_flags"
   ],
+  "c1a_p_by_0816": [
+   "docs/notes/P1B_challis_detection.json",
+   "c1_completion",
+   "C1a",
+   "p_by",
+   "1846-08-16"
+  ],
   "v10": [
    "docs/notes/P1B_challis_prerun.json",
    "constants",
@@ -1310,6 +1317,7 @@
   "c2_combined": "depends on the Berlin sheet's limits",
   "replay_a0": 0.33594461585071944,
   "c1a_done_by": "1846-08-15",
+  "c1a_p_by_0816": 0.7073867917060852,
   "v10": -6.89,
   "v10_source": "Mallama & Hilton 2018, Astronomy and Computing 25, 10, Eq. 16 (t < 1980.0); fitted to 1954–2014, carried to 1846",
   "lv_august_true_lon": 326.53333333333336,

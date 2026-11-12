@@ -69,7 +69,7 @@ const CASE_SHORT = {
   C4b: "29 September procedure from 29 July",
 };
 const ZERO_WHY = {
-  A0: "by construction of the reading",
+  A0: "by construction (the realised events are held fixed)",
   C2_1800: "the planet lies off the sheet",
   C3_S5: "by timing: the zones do not reach the planet",
   C3_S5_prompt: "by timing: the zones do not reach the planet",
@@ -107,6 +107,9 @@ export function titleBlock(D) {
 export function abstract(D) {
   const { A, W, K, printed, fit, cleanMin, cleanMax } = facts(D);
   const R = K.range_percent;
+  // The share of the draws that flag the planet in which the comparison is done by 16 August.
+  const by = D.challis.sources.c1a_p_by_0816.at(-1);
+  const share = drv(Math.round((100 * W.c1a_p_by_0816) / W.C1a_mean), "percent of flags by a date");
   return {
     abstract: `We put two questions to the British search for Neptune of ` +
       `${A.S4_date.slice(0, 4)} and ${K.galle_night.year}, using the printed record alone. How ` +
@@ -122,11 +125,17 @@ export function abstract(D) {
       `assumed distance; his nearness belongs to his data or their reduction. Whether noise ` +
       `alone could account for it we could not settle: the pre-registered statistic measured ` +
       `something else, and the post hoc one reads weak.`,
-    abstract_p3: `With the events of his own record held fixed, Challis's actual procedure ` +
-      `could not have recognised the planet before ${galle(K)}. That is how the reading is ` +
-      `constructed and is not a finding. Carrying through the comparison he broke off gives a ` +
-      `probability of ${p2(W.C1a_mean)} (${R.low} to ${R.high} % range ` +
-      `${rng(W.C1a_q05, W.C1a_q95)}); zones laid from Adams's first place or from Le ` +
+    abstract_p3: `Under the reading we report, Challis's actual procedure has probability ` +
+      `${p2(W.A0_mean)} of recognising the planet before ${galle(K)}. That is by ` +
+      `construction and is not a finding: the realised events are held fixed, so the cases ` +
+      `measure what a change would have added. Finishing the comparison of ` +
+      `${dayOf(K.events.recorded_second)} with ${dayOf(K.events.zone_first_swept)} that he ` +
+      `broke off (complete by ${dayOf(by)} in ${share} % of the draws that flag the planet) ` +
+      `gives ${p2(W.C1a_mean)} (${R.low} to ${R.high} % range ` +
+      `${rng(W.C1a_q05, W.C1a_q95)}) before ${galle(K)}. That figure rests on the chance ` +
+      `that he treats an unmatched star as a candidate, which the record does not inform: ` +
+      `its prior mean of ${p2(W.p_follow_prior_mean)} is ${p2(W.p_follow_posterior_mean)} ` +
+      `after the conditioning. Zones laid from Adams's first place or from Le ` +
       `Verrier's give ${p2(W.C3_S4_mean)} and ${p2(W.C4a_mean)}, or ` +
       `${p2(W.C3_S4_prompt_mean)} and ${p2(W.C4a_prompt_mean)} with prompt comparison. Each ` +
       `depends on an input the record does not fix, and none reaches the pre-registered ` +
@@ -263,7 +272,7 @@ export function challisText(D) {
     c42_p2: `These are the reading with the realised events held: a recording that a case ` +
       `shares with the history keeps what happened (no disc noted in August), and only the ` +
       `events the history does not contain are drawn. Under it his actual procedure is ` +
-      `${p2(W.A0_mean)} by construction. The pre-registered rule for paired differences ` +
+      `${p2(W.A0_mean)} by construction: the realised events are held fixed, so the cases measure what a change would have added. The pre-registered rule for paired differences ` +
       `against his actual procedure is therefore uninformative, and we do not quote its ` +
       `statements.`,
     c42_p3: `Three readings change when every prior interval is halved, and are marked ` +
@@ -345,7 +354,7 @@ export function captions(D) {
       `${K.rule_thresholds.low} and ${K.rule_thresholds.high}. † rows are prior-dependent; ` +
       `the thin line under each is its range with the priors halved. A dot at ` +
       `${p2(W.A0_mean)} with no line is a case that is ${p2(W.A0_mean)} in every draw: by ` +
-      `construction for his actual procedure, off the sheet for the chart under the first ` +
+      `construction for his actual procedure (the realised events are held fixed), off the sheet for the chart under the first ` +
       `limits, by timing for Adams's second place.`,
     cap_table_1: `Table 1. The cases: probability that the planet is flagged before ` +
       `${galle(K)} (mean, with the ${R.low} to ${R.high} % range), the row of the ` +
@@ -359,7 +368,7 @@ export function limits(D) {
     "The printed record stands in for the Cambridge observing books. Where it is silent the " +
       "model uses declared priors, and every probability in § 4 is conditional on them.",
     "Under the reading we report, his actual procedure cannot succeed before Galle's night by " +
-      "construction; the table says what each change adds to a procedure fixed at what happened.",
+      "construction: the realised events are held fixed, so the cases measure what a change would have added.",
     "The limits of the Berlin sheet he had are taken from a secondary source, and the chart " +
       `case ${W.c2_combined}.`,
     "The noise test of § 3.4 was read post hoc after its pre-registered statistic proved " +
