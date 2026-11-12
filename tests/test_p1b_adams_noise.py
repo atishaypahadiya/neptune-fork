@@ -214,3 +214,19 @@ def test_branch_summary_on_constructed_arrays():
     assert b["fraction_of_exceeding_that_are_branch_changes"] == pytest.approx(1.0)
     assert b["P_same_branch_only"] == 0.0
     assert b["exceeding_branch_within_10deg_of_real_theta"] == 1
+
+
+def test_post_hoc_on_branch_counts_only_the_real_data_branch():
+    # four draws on the branch (θ near 310°), two on the second minimum (θ near 95°)
+    f = list(N._FIELDS)
+    arr = np.zeros((6, len(f) + 2))
+    arr[:, -2] = 1.0
+    arr[:, f.index("theta")] = [310.0, 315.0, 320.0, 300.0, 95.0, 96.0]
+    arr[:, f.index("true_lon")] = [320.0, 332.0, 310.0, 345.0, 130.0, 131.0]
+    r = N.post_hoc_on_branch(arr, 329.0, -9.0, {"primary": 11.0}, 310.0)
+    assert r["post_hoc"] is True
+    assert r["n_on_branch"] == 4
+    assert r["fraction_on_branch"] == pytest.approx(4 / 6)
+    # Δ = (lon − 329) + 9: 0, 12, −10, 25 on the branch; the far draws (Δ ≈ +170) are left out
+    assert r["P"]["primary"]["n_exceeding"] == 2
+    assert r["P"]["primary"]["P"] == pytest.approx(0.5)

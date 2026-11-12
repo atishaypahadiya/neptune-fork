@@ -43,6 +43,7 @@ HYPS = (1, 2)
 METHODS = ("d1c", "chain")
 NU_T = 4  # sensitivity (c)
 ESCAPE_DEG = 30.0  # θ farther than this from the clean θ: another minimum (kept, counted)
+ON_BRANCH_DEG = 30.0  # post hoc: on the real-data branch when θ is within this of its θ
 SECOND_MIN_DEG = 30.0  # a second minimum: θ further than this from the best
 MULTI_DIFF_DEG = 1.0  # multistart check: a global minimum farther than this in the 1846.762 lon
 MULTI_TRIGGER = 0.01  # ... in more than this fraction → every draw rerun with the multistart
@@ -780,6 +781,27 @@ def branch_summary(warm: np.ndarray, multi: np.ndarray, T_ecl: float, O_clean: f
     }
 
 
+def post_hoc_on_branch(multi: np.ndarray, T_ecl: float, O_clean: float, d_obs: dict,
+                       theta_real: float) -> dict:  # fmt: skip
+    """POST HOC (defined after the pre-registered P was read; not the plan's statistic):
+    P(Δ ≥ Δ_obs) among the draws whose multistart minimum lies on the real-data branch, θ within
+    ``ON_BRANCH_DEG`` of the real-data θ. The plan's statistic treats the angle Δ as linear, so
+    draws on the second minimum (nearly opposite Neptune) count as exceeding."""
+    cm = _col(multi, "converged") > 0.5
+    d_real = (_col(multi, "theta") - theta_real + 180.0) % 360.0 - 180.0
+    on = cm & (np.abs(d_real) <= ON_BRANCH_DEG)
+    delta = (_col(multi, "true_lon") - T_ecl + 180.0) % 360.0 - 180.0 - O_clean
+    return {
+        "post_hoc": True,
+        "definition": f"P(Δ ≥ Δ_obs) among draws with multistart θ within {ON_BRANCH_DEG:g}° "
+        "of the real-data θ",
+        "theta_real_data": theta_real,
+        "n_on_branch": int(on.sum()),
+        "fraction_on_branch": float(on.sum() / max(cm.sum(), 1)),
+        "P": {k: p_value(delta[on], v) for k, v in d_obs.items()},
+    }
+
+
 def _quant(v: np.ndarray) -> dict:
     v = v[np.isfinite(v)]
     if v.size == 0:
@@ -974,6 +996,10 @@ def summarize(png: bool = True) -> dict:
                         pre["delta_obs"][H]["d1c"], n_total, fl_w,
                     )  # fmt: skip
                     rec["d1c_warm"]["solver"] = "warm start (beside the primary)"
+                    rec["post_hoc_on_branch"] = post_hoc_on_branch(
+                        z["multi"], T_ecl, oc, d_obs,
+                        out["multistart_baselines"][H]["real"]["theta"],
+                    )  # fmt: skip
                     rec["branches"] = branch_summary(
                         z["d1c"], z["multi"], T_ecl, oc, d_obs["primary"],
                         out["multistart_baselines"][H]["real"]["theta"], th_clean["d1c"],
@@ -1013,6 +1039,25 @@ def summarize(png: bool = True) -> dict:
                     **reading_interval(Ia, Ib),
                     "headline": hyp == 1 and method == "d1c" and target == "primary",
                 }
+    out["post_hoc_readings"] = {}
+    for hyp in HYPS:
+        H = f"H{hyp}"
+        ra, rb = out["results"].get(f"{H}/a"), out["results"].get(f"{H}/b")
+        if not ra or not rb or "post_hoc_on_branch" not in ra or "post_hoc_on_branch" not in rb:
+            continue
+        rc = out["results"].get(f"{H}/c")
+        for target in ("primary", "printed"):
+            Pa = ra["post_hoc_on_branch"]["P"][target]["P"]
+            Pb = rb["post_hoc_on_branch"]["P"][target]["P"]
+            out["post_hoc_readings"][f"{H}/d1c/{target}"] = {
+                "post_hoc": True,
+                "P_a": Pa,
+                "P_b": Pb,
+                "P_c_sensitivity": rc["post_hoc_on_branch"]["P"][target]["P"]
+                if rc and "post_hoc_on_branch" in rc
+                else None,
+                **reading(Pa, Pb),
+            }
     R._dump(OUT_JSON, out)
     if png:
         draw(out, pre, OUT_PNG)
@@ -1149,8 +1194,10 @@ def draw_branches(out: dict, pre: dict, path: Path) -> None:
             b = out["results"][f"{H}/{model}"]["branches"]
             P = out["results"][f"{H}/{model}"]["d1c"]["P"]["primary"]["P"]
             frac = b["fraction_of_exceeding_that_are_branch_changes"]
+            ph = out["results"][f"{H}/{model}"]["post_hoc_on_branch"]["P"]["primary"]["P"]
             ax.text(0.02, 0.97, f"P = {P:.4f}\nof the exceeding draws,\n"
-                    f"{'n/a' if frac is None else f'{100 * frac:.0f} %'} are branch changes",
+                    f"{'n/a' if frac is None else f'{100 * frac:.0f} %'} are branch changes\n"
+                    f"post hoc, on his branch: P = {ph:.4f}",
                     transform=ax.transAxes, va="top", fontsize=9)  # fmt: skip
             ax.set_yscale("log")
             ax.grid(alpha=0.25)
