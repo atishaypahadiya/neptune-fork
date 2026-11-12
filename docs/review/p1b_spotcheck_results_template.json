@@ -1,0 +1,2180 @@
+{
+ "seed": 20261112,
+ "tables_sha256": {
+  "adams_memoir_equations.csv": "922c533ec6d9d12dbd237099497b6340620e9cd771f8bc28a33cd1554e4257e2",
+  "adams_memoir_normal_places.csv": "52aa0a9cb1459ab7181991e7441f22c303e87a8fbf4166564a8e6d1481f12963",
+  "adams_memoir_series.csv": "b5356e9effe624612ccc1dccf285bf0c188eea4eadb305dbae7edfb32fbbc29a",
+  "adams_memoir_solution.csv": "5eaa0c0860b8403ddc1fa5669cd3bb8afe0c4fcc679ba660ea247b28f06b70f6",
+  "adams_memoir_statements.csv": "ccf6eb41e6200ff21a489cd4f59d75ae4c502f40933b41a9ed6f321ea1673b69",
+  "adams_solutions.csv": "9952542fa6283d7e0f67db58714173a0a17d746f41aa3cae7c2cd199088347ea",
+  "adams_solutions_statements.csv": "d0ff2d683db8356953688f8233e06b765d793ae70dfcf112bb9660f5160b6827",
+  "challis_sweeps.csv": "f9061de02545168636832645cca164260063ccf50ec1e1498b06950fd450fafa",
+  "challis_sweeps_statements.csv": "e9369699366f90fc78e05a336bed5edce97979cf94a38b3dd5d33a4adbbe76e3",
+  "neptune_on_challis_dates.csv": "815001ff41d6103a7bc6f1bf4e8025971742a7ecdd2a2be220b8470dccbcd46d",
+  "neptune_track_1846.csv": "7f688e20b1f77d0ab6796f09f6674e8b88dbab6e7749cb61b61367bbac3210c5",
+  "prediscovery_recordings.csv": "9fb014c020fc5eeb0dc312866a60a4d748c6f2301cd7b8cd23cb1988c5ee9f47"
+ },
+ "exported": null,
+ "rows": [
+  {
+   "table": "adams_memoir_equations.csv",
+   "row": "128",
+   "group": "page",
+   "id": "R01",
+   "cells": {
+    "hypothesis": {
+     "value": "1",
+     "matches": null,
+     "judgement": null
+    },
+    "section": {
+     "value": "17",
+     "matches": null,
+     "judgement": null
+    },
+    "equation": {
+     "value": "h1",
+     "matches": null,
+     "judgement": null
+    },
+    "term": {
+     "value": "h2",
+     "matches": null,
+     "judgement": null
+    },
+    "printed": {
+     "value": "-0.0452",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "adams_memoir_equations.csv",
+   "row": "140",
+   "group": "page",
+   "id": "R02",
+   "cells": {
+    "hypothesis": {
+     "value": "1",
+     "matches": null,
+     "judgement": null
+    },
+    "section": {
+     "value": "17",
+     "matches": null,
+     "judgement": null
+    },
+    "equation": {
+     "value": "h2",
+     "matches": null,
+     "judgement": null
+    },
+    "term": {
+     "value": "p3",
+     "matches": null,
+     "judgement": null
+    },
+    "printed": {
+     "value": "-0.0171",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "adams_memoir_equations.csv",
+   "row": "152",
+   "group": "page",
+   "id": "R03",
+   "cells": {
+    "hypothesis": {
+     "value": "1",
+     "matches": null,
+     "judgement": null
+    },
+    "section": {
+     "value": "17",
+     "matches": null,
+     "judgement": null
+    },
+    "equation": {
+     "value": "p2",
+     "matches": null,
+     "judgement": null
+    },
+    "term": {
+     "value": "h2",
+     "matches": null,
+     "judgement": null
+    },
+    "printed": {
+     "value": "-0.0160",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "adams_memoir_equations.csv",
+   "row": "172",
+   "group": "page",
+   "id": "R04",
+   "cells": {
+    "hypothesis": {
+     "value": "1",
+     "matches": null,
+     "judgement": null
+    },
+    "section": {
+     "value": "18",
+     "matches": null,
+     "judgement": null
+    },
+    "equation": {
+     "value": "n",
+     "matches": null,
+     "judgement": null
+    },
+    "term": {
+     "value": "q1",
+     "matches": null,
+     "judgement": null
+    },
+    "printed": {
+     "value": "+5.7519",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "adams_memoir_equations.csv",
+   "row": "451",
+   "group": "page",
+   "id": "R05",
+   "cells": {
+    "hypothesis": {
+     "value": "1",
+     "matches": null,
+     "judgement": null
+    },
+    "section": {
+     "value": "23",
+     "matches": null,
+     "judgement": null
+    },
+    "equation": {
+     "value": "anc_1753",
+     "matches": null,
+     "judgement": null
+    },
+    "term": {
+     "value": "h1",
+     "matches": null,
+     "judgement": null
+    },
+    "printed": {
+     "value": "-0.9154",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "adams_memoir_equations.csv",
+   "row": "463",
+   "group": "page",
+   "id": "R06",
+   "cells": {
+    "hypothesis": {
+     "value": "1",
+     "matches": null,
+     "judgement": null
+    },
+    "section": {
+     "value": "23",
+     "matches": null,
+     "judgement": null
+    },
+    "equation": {
+     "value": "anc_1753",
+     "matches": null,
+     "judgement": null
+    },
+    "term": {
+     "value": "q1",
+     "matches": null,
+     "judgement": null
+    },
+    "printed": {
+     "value": "-0.9969",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "adams_memoir_equations.csv",
+   "row": "481",
+   "group": "page",
+   "id": "R07",
+   "cells": {
+    "hypothesis": {
+     "value": "1",
+     "matches": null,
+     "judgement": null
+    },
+    "section": {
+     "value": "23",
+     "matches": null,
+     "judgement": null
+    },
+    "equation": {
+     "value": "anc_1756",
+     "matches": null,
+     "judgement": null
+    },
+    "term": {
+     "value": "k3",
+     "matches": null,
+     "judgement": null
+    },
+    "printed": {
+     "value": "-0.9976",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "adams_memoir_equations.csv",
+   "row": "599",
+   "group": "page",
+   "id": "R08",
+   "cells": {
+    "hypothesis": {
+     "value": "1",
+     "matches": null,
+     "judgement": null
+    },
+    "section": {
+     "value": "24",
+     "matches": null,
+     "judgement": null
+    },
+    "equation": {
+     "value": "anc_1750",
+     "matches": null,
+     "judgement": null
+    },
+    "term": {
+     "value": "q1",
+     "matches": null,
+     "judgement": null
+    },
+    "printed": {
+     "value": "+0.2540",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "adams_memoir_equations.csv",
+   "row": "753",
+   "group": "page",
+   "id": "R09",
+   "cells": {
+    "hypothesis": {
+     "value": "1",
+     "matches": null,
+     "judgement": null
+    },
+    "section": {
+     "value": "27",
+     "matches": null,
+     "judgement": null
+    },
+    "equation": {
+     "value": "e2",
+     "matches": null,
+     "judgement": null
+    },
+    "term": {
+     "value": "p1",
+     "matches": null,
+     "judgement": null
+    },
+    "printed": {
+     "value": "+0.2063",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "adams_memoir_equations.csv",
+   "row": "980",
+   "group": "page",
+   "id": "R10",
+   "cells": {
+    "hypothesis": {
+     "value": "2",
+     "matches": null,
+     "judgement": null
+    },
+    "section": {
+     "value": "38",
+     "matches": null,
+     "judgement": null
+    },
+    "equation": {
+     "value": "comb2",
+     "matches": null,
+     "judgement": null
+    },
+    "term": {
+     "value": "q1",
+     "matches": null,
+     "judgement": null
+    },
+    "printed": {
+     "value": "+0.3320",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "adams_memoir_equations.csv",
+   "row": "1070",
+   "group": "page",
+   "id": "R11",
+   "cells": {
+    "hypothesis": {
+     "value": "2",
+     "matches": null,
+     "judgement": null
+    },
+    "section": {
+     "value": "40",
+     "matches": null,
+     "judgement": null
+    },
+    "equation": {
+     "value": "anc_1715",
+     "matches": null,
+     "judgement": null
+    },
+    "term": {
+     "value": "dx2",
+     "matches": null,
+     "judgement": null
+    },
+    "printed": {
+     "value": "-0.0935",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "adams_memoir_equations.csv",
+   "row": "1220",
+   "group": "page",
+   "id": "R12",
+   "cells": {
+    "hypothesis": {
+     "value": "2",
+     "matches": null,
+     "judgement": null
+    },
+    "section": {
+     "value": "41",
+     "matches": null,
+     "judgement": null
+    },
+    "equation": {
+     "value": "comb_p3",
+     "matches": null,
+     "judgement": null
+    },
+    "term": {
+     "value": "h1",
+     "matches": null,
+     "judgement": null
+    },
+    "printed": {
+     "value": "-2.9237",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "adams_memoir_equations.csv",
+   "row": "1240",
+   "group": "page",
+   "id": "R13",
+   "cells": {
+    "hypothesis": {
+     "value": "2",
+     "matches": null,
+     "judgement": null
+    },
+    "section": {
+     "value": "41",
+     "matches": null,
+     "judgement": null
+    },
+    "equation": {
+     "value": "comb_q3",
+     "matches": null,
+     "judgement": null
+    },
+    "term": {
+     "value": "h2",
+     "matches": null,
+     "judgement": null
+    },
+    "printed": {
+     "value": "-1.3924",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "adams_memoir_equations.csv",
+   "row": "1372",
+   "group": "page",
+   "id": "R14",
+   "cells": {
+    "hypothesis": {
+     "value": "2",
+     "matches": null,
+     "judgement": null
+    },
+    "section": {
+     "value": "46",
+     "matches": null,
+     "judgement": null
+    },
+    "equation": {
+     "value": "L1",
+     "matches": null,
+     "judgement": null
+    },
+    "term": {
+     "value": "sin2",
+     "matches": null,
+     "judgement": null
+    },
+    "printed": {
+     "value": "-(1.48110)",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "adams_memoir_equations.csv",
+   "row": "1387",
+   "group": "page",
+   "id": "R15",
+   "cells": {
+    "hypothesis": {
+     "value": "2",
+     "matches": null,
+     "judgement": null
+    },
+    "section": {
+     "value": "46",
+     "matches": null,
+     "judgement": null
+    },
+    "equation": {
+     "value": "L2",
+     "matches": null,
+     "judgement": null
+    },
+    "term": {
+     "value": "sin3",
+     "matches": null,
+     "judgement": null
+    },
+    "printed": {
+     "value": "-(2.19916)",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "adams_memoir_normal_places.csv",
+   "row": "9",
+   "group": "page",
+   "id": "R16",
+   "cells": {
+    "year": {
+     "value": "1771",
+     "matches": null,
+     "judgement": null
+    },
+    "kind": {
+     "value": "ancient",
+     "matches": null,
+     "judgement": null
+    },
+    "t_h1": {
+     "value": "-12.64",
+     "matches": null,
+     "judgement": null
+    },
+    "t_h2": {
+     "value": "-12.64",
+     "matches": null,
+     "judgement": null
+    },
+    "oc_true": {
+     "value": "-2.3",
+     "matches": null,
+     "judgement": null
+    },
+    "oc_mean": {
+     "value": "-2.4",
+     "matches": null,
+     "judgement": null
+    },
+    "elements_h1": {
+     "value": "+27.6",
+     "matches": null,
+     "judgement": null
+    },
+    "perturbation_h1": {
+     "value": "-41.8",
+     "matches": null,
+     "judgement": null
+    },
+    "total_h1": {
+     "value": "-14.2",
+     "matches": null,
+     "judgement": null
+    },
+    "residual_h1": {
+     "value": "+11.8",
+     "matches": null,
+     "judgement": null
+    },
+    "elements_h2": {
+     "value": "-69.9",
+     "matches": null,
+     "judgement": null
+    },
+    "perturbation_h2": {
+     "value": "+54.7",
+     "matches": null,
+     "judgement": null
+    },
+    "total_h2": {
+     "value": "-15.2",
+     "matches": null,
+     "judgement": null
+    },
+    "residual_h2": {
+     "value": "+12.8",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "adams_memoir_normal_places.csv",
+   "row": "26",
+   "group": "page",
+   "id": "R17",
+   "cells": {
+    "year": {
+     "value": "1828",
+     "matches": null,
+     "judgement": null
+    },
+    "kind": {
+     "value": "modern",
+     "matches": null,
+     "judgement": null
+    },
+    "t_h1": {
+     "value": "6",
+     "matches": null,
+     "judgement": null
+    },
+    "t_h2": {
+     "value": "6",
+     "matches": null,
+     "judgement": null
+    },
+    "oc_true": {
+     "value": "+10.82",
+     "matches": null,
+     "judgement": null
+    },
+    "oc_mean": {
+     "value": "+11.50",
+     "matches": null,
+     "judgement": null
+    },
+    "elements_h1": {
+     "value": "+136.73",
+     "matches": null,
+     "judgement": null
+    },
+    "perturbation_h1": {
+     "value": "-127.48",
+     "matches": null,
+     "judgement": null
+    },
+    "total_h1": {
+     "value": "+9.25",
+     "matches": null,
+     "judgement": null
+    },
+    "residual_h1": {
+     "value": "+2.25",
+     "matches": null,
+     "judgement": null
+    },
+    "elements_h2": {
+     "value": "+74.52",
+     "matches": null,
+     "judgement": null
+    },
+    "perturbation_h2": {
+     "value": "-65.37",
+     "matches": null,
+     "judgement": null
+    },
+    "total_h2": {
+     "value": "+9.15",
+     "matches": null,
+     "judgement": null
+    },
+    "residual_h2": {
+     "value": "+2.35",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "adams_memoir_series.csv",
+   "row": "3",
+   "group": "page",
+   "id": "R18",
+   "cells": {
+    "hypothesis": {
+     "value": "1",
+     "matches": null,
+     "judgement": null
+    },
+    "section": {
+     "value": "12",
+     "matches": null,
+     "judgement": null
+    },
+    "item": {
+     "value": "log_adb0",
+     "matches": null,
+     "judgement": null
+    },
+    "printed": {
+     "value": "9.53765",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "adams_memoir_series.csv",
+   "row": "113",
+   "group": "page",
+   "id": "R19",
+   "cells": {
+    "hypothesis": {
+     "value": "2",
+     "matches": null,
+     "judgement": null
+    },
+    "section": {
+     "value": "34",
+     "matches": null,
+     "judgement": null
+    },
+    "item": {
+     "value": "arg_k1",
+     "matches": null,
+     "judgement": null
+    },
+    "printed": {
+     "value": "8 12.1",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "adams_memoir_series.csv",
+   "row": "130",
+   "group": "page",
+   "id": "R20",
+   "cells": {
+    "hypothesis": {
+     "value": "2",
+     "matches": null,
+     "judgement": null
+    },
+    "section": {
+     "value": "45",
+     "matches": null,
+     "judgement": null
+    },
+    "item": {
+     "value": "k_dk3_b",
+     "matches": null,
+     "judgement": null
+    },
+    "printed": {
+     "value": "-0.008974",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "adams_memoir_solution.csv",
+   "row": "10",
+   "group": "page",
+   "id": "R21",
+   "cells": {
+    "hypothesis": {
+     "value": "1",
+     "matches": null,
+     "judgement": null
+    },
+    "section": {
+     "value": "30",
+     "matches": null,
+     "judgement": null
+    },
+    "item": {
+     "value": "p3_formula_b",
+     "matches": null,
+     "judgement": null
+    },
+    "printed": {
+     "value": "-93.01",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "adams_memoir_solution.csv",
+   "row": "14",
+   "group": "page",
+   "id": "R22",
+   "cells": {
+    "hypothesis": {
+     "value": "1",
+     "matches": null,
+     "judgement": null
+    },
+    "section": {
+     "value": "30",
+     "matches": null,
+     "judgement": null
+    },
+    "item": {
+     "value": "varpi_prime_1846",
+     "matches": null,
+     "judgement": null
+    },
+    "printed": {
+     "value": "315 57",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "adams_memoir_solution.csv",
+   "row": "99",
+   "group": "page",
+   "id": "R23",
+   "cells": {
+    "hypothesis": {
+     "value": "2",
+     "matches": null,
+     "judgement": null
+    },
+    "section": {
+     "value": "50",
+     "matches": null,
+     "judgement": null
+    },
+    "item": {
+     "value": "alpha",
+     "matches": null,
+     "judgement": null
+    },
+    "printed": {
+     "value": "0.515",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "adams_memoir_statements.csv",
+   "row": "20",
+   "group": "page",
+   "id": "R24",
+   "cells": {
+    "id": {
+     "value": "S20",
+     "matches": null,
+     "judgement": null
+    },
+    "pdf_page": {
+     "value": "20",
+     "matches": null,
+     "judgement": null
+    },
+    "printed_page": {
+     "value": "14",
+     "matches": null,
+     "judgement": null
+    },
+    "section": {
+     "value": "23",
+     "matches": null,
+     "judgement": null
+    },
+    "statement": {
+     "value": "ancient equations of condition 1712–1771",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "adams_memoir_statements.csv",
+   "row": "22",
+   "group": "page",
+   "id": "R25",
+   "cells": {
+    "id": {
+     "value": "S22",
+     "matches": null,
+     "judgement": null
+    },
+    "pdf_page": {
+     "value": "21",
+     "matches": null,
+     "judgement": null
+    },
+    "printed_page": {
+     "value": "15",
+     "matches": null,
+     "judgement": null
+    },
+    "section": {
+     "value": "24",
+     "matches": null,
+     "judgement": null
+    },
+    "statement": {
+     "value": "ancient equations 1712–1771 after the elimination",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "adams_memoir_statements.csv",
+   "row": "55",
+   "group": "page",
+   "id": "R26",
+   "cells": {
+    "id": {
+     "value": "S55",
+     "matches": null,
+     "judgement": null
+    },
+    "pdf_page": {
+     "value": "36",
+     "matches": null,
+     "judgement": null
+    },
+    "printed_page": {
+     "value": "30",
+     "matches": null,
+     "judgement": null
+    },
+    "section": {
+     "value": "58",
+     "matches": null,
+     "judgement": null
+    },
+    "statement": {
+     "value": "δζ and dδζ/dt for 1834, 1840, 1846: not transcribed (outside §§ 8–55)",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "adams_solutions.csv",
+   "row": "5",
+   "group": "page",
+   "id": "R27",
+   "cells": {
+    "solution_id": {
+     "value": "S5",
+     "matches": null,
+     "judgement": null
+    },
+    "sampson_number": {
+     "value": "V",
+     "matches": null,
+     "judgement": null
+    },
+    "sampson_sigla": {
+     "value": "E.IV (and E.V)",
+     "matches": null,
+     "judgement": null
+    },
+    "date": {
+     "value": "1845-10-21",
+     "matches": null,
+     "judgement": null
+    },
+    "date_basis": {
+     "value": "Sampson 168: \"Adams's communication to Airy of the final solution according to the First Hypothesis was made on October 21, 1845\"; Airy: \"one of the last days of October, 1845\" (MNRAS 7, 129); restated 2 Sept 1846 and in the memoir of 12 Nov 1846 (§31)",
+     "matches": null,
+     "judgement": null
+    },
+    "kind": {
+     "value": "perturbation solution (Hypothesis I; final for a′ = 2a)",
+     "matches": null,
+     "judgement": null
+    },
+    "assumed_mean_distance_ratio": {
+     "value": "2 (a/a′ = 0.5)",
+     "matches": null,
+     "judgement": null
+    },
+    "assumed_mean_distance_au": {
+     "value": "38.4",
+     "matches": null,
+     "judgement": null
+    },
+    "mass_sun": {
+     "value": "0.0001656 (memoir; Airy No. 11) / 0.00016563 (Airy No. 20)",
+     "matches": null,
+     "judgement": null
+    },
+    "eccentricity": {
+     "value": "0.16103 (memoir) / 0.1610 (Airy No. 11)",
+     "matches": null,
+     "judgement": null
+    },
+    "perihelion_longitude": {
+     "value": "315° 57′ (memoir §31; Airy No. 20; Sampson table V) / 315° 55′ (Airy No. 11)",
+     "matches": null,
+     "judgement": null
+    },
+    "mean_longitude_at_epoch": {
+     "value": "269° 25′ (memoir §30) / 269° 25′.5 (Sampson table V)",
+     "matches": null,
+     "judgement": null
+    },
+    "epoch": {
+     "value": "1810.328",
+     "matches": null,
+     "judgement": null
+    },
+    "mean_longitude_1846": {
+     "value": "325° 7′ (memoir §31; 6 Oct 1846) / 325° 8′ (Airy No. 20; 1 Oct 1846)",
+     "matches": null,
+     "judgement": null
+    },
+    "mean_longitude_1846_date": {
+     "value": "1846-10-06 (memoir) / 1846-10-01 (letter)",
+     "matches": null,
+     "judgement": null
+    },
+    "stated_heliocentric_longitude": {
+     "value": "mean longitude 1 October 1845 = 323° 34′ (Airy No. 11); the memoir gives mean longitudes only",
+     "matches": null,
+     "judgement": null
+    },
+    "stated_heliocentric_longitude_date": {
+     "value": "1845-10-01",
+     "matches": null,
+     "judgement": null
+    },
+    "primary_sources": {
+     "value": "Airy MNRAS 7, 129 (No. 11); Airy MNRAS 7, 138 (No. 20); Adams MNRAS 7, 151; Adams memoir §§30–31 (pamphlet p. 18); Sampson 1904, 151 (table V), 166–167 (E.IV, E.V)",
+     "matches": null,
+     "judgement": null
+    },
+    "mark": {
+     "value": "P",
+     "matches": null,
+     "judgement": null
+    },
+    "notes": {
+     "value": "θ = −51° 30′ (memoir §30; Sampson E.IV −51° 30′.5); m′ = 0.82816; mean sidereal motion 1° 30′.9 per 365.25 days (Airy No. 11). The 315° 55′ / 315° 57′ and 325° 7′ / 325° 8′ differences are between printings of the same solution; see the statements file.",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "adams_solutions.csv",
+   "row": "7",
+   "group": "page",
+   "id": "R28",
+   "cells": {
+    "solution_id": {
+     "value": "S7",
+     "matches": null,
+     "judgement": null
+    },
+    "sampson_number": {
+     "value": "—",
+     "matches": null,
+     "judgement": null
+    },
+    "sampson_sigla": {
+     "value": "—",
+     "matches": null,
+     "judgement": null
+    },
+    "date": {
+     "value": "1846-09-02",
+     "matches": null,
+     "judgement": null
+    },
+    "date_basis": {
+     "value": "letter to Airy of 2 September 1846 (MNRAS 7, 139); withdrawn in direction in the memoir §54 (12 Nov 1846)",
+     "matches": null,
+     "judgement": null
+    },
+    "kind": {
+     "value": "extrapolation (no elements computed): mean distance inferred from the ratio of the 1843 errors of S5 and S6",
+     "matches": null,
+     "judgement": null
+    },
+    "assumed_mean_distance_ratio": {
+     "value": "1/0.57 (letter) ; 1/0.574 = 1/sin 35° (memoir §53)",
+     "matches": null,
+     "judgement": null
+    },
+    "assumed_mean_distance_au": {
+     "value": "33.7 (= 19.19/0.57; derived)",
+     "matches": null,
+     "judgement": null
+    },
+    "eccentricity": {
+     "value": "\"very small\" (inferred, not computed)",
+     "matches": null,
+     "judgement": null
+    },
+    "mean_longitude_1846": {
+     "value": "about 315° 20′ (\"which I am inclined to think is not far from the truth\")",
+     "matches": null,
+     "judgement": null
+    },
+    "mean_longitude_1846_date": {
+     "value": "1846-10-01",
+     "matches": null,
+     "judgement": null
+    },
+    "primary_sources": {
+     "value": "Airy MNRAS 7, 139 (No. 20); Adams MNRAS 7, 152; Adams memoir §§53–54 (pamphlet pp. 28–29)",
+     "matches": null,
+     "judgement": null
+    },
+    "mark": {
+     "value": "P",
+     "matches": null,
+     "judgement": null
+    },
+    "notes": {
+     "value": "Basis: Greenwich 1843 errors +6″.84 (Hyp. I) and +5″.50 (Hyp. II) in the letter; 1843–45 errors in the ratio 5:4 in the memoir. Memoir §54: \"I hastily inferred … that the effect of a diminution in the mean distance would be to diminish the mean longitude.\" Not a solution with elements; the mean distance in AU is a derived figure given here only for comparison.",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "adams_solutions_statements.csv",
+   "row": "3",
+   "group": "page",
+   "id": "R29",
+   "cells": {
+    "statement_id": {
+     "value": "S03",
+     "matches": null,
+     "judgement": null
+    },
+    "source": {
+     "value": "Sampson, Memoirs RAS 54 (1904)",
+     "matches": null,
+     "judgement": null
+    },
+    "printed_page": {
+     "value": "151",
+     "matches": null,
+     "judgement": null
+    },
+    "image_file": {
+     "value": "sampson_p009.png",
+     "matches": null,
+     "judgement": null
+    },
+    "label": {
+     "value": "Sampson p.151 det. III",
+     "matches": null,
+     "judgement": null
+    },
+    "mean_distance": {
+     "value": "38·4 (assumed)",
+     "matches": null,
+     "judgement": null
+    },
+    "mass": {
+     "value": "0·0001573",
+     "matches": null,
+     "judgement": null
+    },
+    "eccentricity": {
+     "value": "0·19717",
+     "matches": null,
+     "judgement": null
+    },
+    "perihelion_longitude": {
+     "value": "248° 8′·3",
+     "matches": null,
+     "judgement": null
+    },
+    "mean_longitude": {
+     "value": "271° 37′",
+     "matches": null,
+     "judgement": null
+    },
+    "mean_longitude_epoch": {
+     "value": "Epoch 1810·328",
+     "matches": null,
+     "judgement": null
+    },
+    "notes": {
+     "value": "Table headed 'Epoch 1810·328.'; I and II print 'Longitude at epoch', III–VI 'Mean longitude at epoch'; '(assumed)' printed after mean distance and (I, II) after eccentricity",
+     "matches": null,
+     "judgement": null
+    },
+    "solution_id": {
+     "value": "S3",
+     "matches": null,
+     "judgement": null
+    },
+    "mark": {
+     "value": "P (Sampson 1904 catalogue of the St John's manuscripts)",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "adams_solutions_statements.csv",
+   "row": "15",
+   "group": "page",
+   "id": "R30",
+   "cells": {
+    "statement_id": {
+     "value": "S09",
+     "matches": null,
+     "judgement": null
+    },
+    "source": {
+     "value": "Sampson, Memoirs RAS 54 (1904)",
+     "matches": null,
+     "judgement": null
+    },
+    "printed_page": {
+     "value": "165",
+     "matches": null,
+     "judgement": null
+    },
+    "image_file": {
+     "value": "sampson_p023.png",
+     "matches": null,
+     "judgement": null
+    },
+    "date_of_statement": {
+     "value": "not dated (Sampson p.145: 'it is not dated')",
+     "matches": null,
+     "judgement": null
+    },
+    "label": {
+     "value": "Sampson E.I",
+     "matches": null,
+     "judgement": null
+    },
+    "mass": {
+     "value": "m′ = 2·050",
+     "matches": null,
+     "judgement": null
+    },
+    "other_values": {
+     "value": "θ=−45° 21′; eccentricity treated as zero",
+     "matches": null,
+     "judgement": null
+    },
+    "notes": {
+     "value": "θ = ε − ε′ per Sampson; coefficient 71″·6 in place of 84″·2 noted as unexplained",
+     "matches": null,
+     "judgement": null
+    },
+    "solution_id": {
+     "value": "S2",
+     "matches": null,
+     "judgement": null
+    },
+    "mark": {
+     "value": "P (Sampson 1904 catalogue of the St John's manuscripts)",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "adams_solutions_statements.csv",
+   "row": "22",
+   "group": "page",
+   "id": "R31",
+   "cells": {
+    "statement_id": {
+     "value": "S13",
+     "matches": null,
+     "judgement": null
+    },
+    "source": {
+     "value": "Sampson, Memoirs RAS 54 (1904)",
+     "matches": null,
+     "judgement": null
+    },
+    "printed_page": {
+     "value": "167",
+     "matches": null,
+     "judgement": null
+    },
+    "image_file": {
+     "value": "sampson_p025.png",
+     "matches": null,
+     "judgement": null
+    },
+    "date_of_statement": {
+     "value": "August 20th, 1846",
+     "matches": null,
+     "judgement": null
+    },
+    "label": {
+     "value": "Sampson E.VII quoted MS note",
+     "matches": null,
+     "judgement": null
+    },
+    "other_values": {
+     "value": "θ=−42° 51′ (very nearly)",
+     "matches": null,
+     "judgement": null
+    },
+    "notes": {
+     "value": "Quoted: 'Hence the val. of θ given by the =n appears to be very nearly = −42° 51′. August 20th, 1846.' Sampson p.167: Second Hypothesis 'communicated to Airy on 1846 September 2'",
+     "matches": null,
+     "judgement": null
+    },
+    "solution_id": {
+     "value": "S6",
+     "matches": null,
+     "judgement": null
+    },
+    "mark": {
+     "value": "P (Sampson 1904 catalogue of the St John's manuscripts)",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "challis_sweeps.csv",
+   "row": "4",
+   "group": "page",
+   "id": "R32",
+   "cells": {
+    "row_id": {
+     "value": "1846-07-30",
+     "matches": null,
+     "judgement": null
+    },
+    "date_1846": {
+     "value": "July 30",
+     "matches": null,
+     "judgement": null
+    },
+    "kind": {
+     "value": "session",
+     "matches": null,
+     "judgement": null
+    },
+    "method": {
+     "value": "telescope moving (clock drive)",
+     "matches": null,
+     "judgement": null
+    },
+    "zone_ra": {
+     "value": "not stated; the August 12 zone \"exceeded in length that of July 30, but included the whole of it\"",
+     "matches": null,
+     "judgement": null
+    },
+    "zone_dec": {
+     "value": "zone of 9′ breadth; same declination-rod reading as July 29 and August 4",
+     "matches": null,
+     "judgement": null
+    },
+    "depth_magnitude": {
+     "value": "11th magnitude (\"\"sure that none brighter than the 11th escaped me\"\")",
+     "matches": null,
+     "judgement": null
+    },
+    "planet_recorded": {
+     "value": "no",
+     "matches": null,
+     "judgement": null
+    },
+    "neptune_mean_place_of_date": {
+     "value": "21h 58m 44s, −12° 55′",
+     "matches": null,
+     "judgement": null
+    },
+    "neptune_in_zone": {
+     "value": "outside (primary): the planet \"had wandered into the zone in the interval between July 30 and August 12\" (Memoirs 424; letter). Which edge it crossed (RA end or declination edge) is not printed; it moved 1m 18s west and 7′ south between the two nights",
+     "matches": null,
+     "judgement": null
+    },
+    "sources": {
+     "value": "Memoirs 16, 422, 424; MNRAS 7, 147; letter of 12 Oct",
+     "matches": null,
+     "judgement": null
+    },
+    "mark": {
+     "value": "P",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "challis_sweeps.csv",
+   "row": "9",
+   "group": "page",
+   "id": "R33",
+   "cells": {
+    "row_id": {
+     "value": "1846-09-29",
+     "matches": null,
+     "judgement": null
+    },
+    "date_1846": {
+     "value": "September 29",
+     "matches": null,
+     "judgement": null
+    },
+    "kind": {
+     "value": "session (plan changed after reading Le Verrier's 31 August paper)",
+     "matches": null,
+     "judgement": null
+    },
+    "method": {
+     "value": "sweep over \"a considerable breadth in declination\" within Le Verrier's limits of longitude; physical appearance of the brighter stars noted",
+     "matches": null,
+     "judgement": null
+    },
+    "zone_ra": {
+     "value": "within the limits of longitude marked out by Le Verrier (not printed by Challis)",
+     "matches": null,
+     "judgement": null
+    },
+    "zone_dec": {
+     "value": "a considerable breadth in declination (not quantified)",
+     "matches": null,
+     "judgement": null
+    },
+    "depth_magnitude": {
+     "value": "11th magnitude kept; brighter stars examined for a disk",
+     "matches": null,
+     "judgement": null
+    },
+    "star_count": {
+     "value": "nearly 300 (Memoirs) / 300 (abstract, letter)",
+     "matches": null,
+     "judgement": null
+    },
+    "duration": {
+     "value": "three hours and a half without intermission",
+     "matches": null,
+     "judgement": null
+    },
+    "planet_recorded": {
+     "value": "yes: one star noted \"It seems to have a disk\"; place 21h 52m 48.9s, NPD 103° 26′ 30″ at 10h 10m GMT from B.A.C. 7599",
+     "matches": null,
+     "judgement": null
+    },
+    "neptune_mean_place_of_date": {
+     "value": "21h 52m 48s, −13° 26′ (apparent 21h 52m 49.2s, NPD 103° 26′ 38″)",
+     "matches": null,
+     "judgement": null
+    },
+    "neptune_in_zone": {
+     "value": "inside (observed)",
+     "matches": null,
+     "judgement": null
+    },
+    "sources": {
+     "value": "Memoirs 16, 423; MNRAS 7, 147; letter of 12 Oct",
+     "matches": null,
+     "judgement": null
+    },
+    "mark": {
+     "value": "P",
+     "matches": null,
+     "judgement": null
+    },
+    "notes": {
+     "value": "Challis's rough place agrees with the computed apparent place to 0.3 s and 8″. Night was good.",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "challis_sweeps_statements.csv",
+   "row": "47",
+   "group": "page",
+   "id": "R34",
+   "cells": {
+    "statement_id": {
+     "value": "MAP-A-01",
+     "matches": null,
+     "judgement": null
+    },
+    "source": {
+     "value": "MNRAS 7, 145-149 (Society's abstract of Challis)",
+     "matches": null,
+     "judgement": null
+    },
+    "printed_page": {
+     "value": "146",
+     "matches": null,
+     "judgement": null
+    },
+    "image_file": {
+     "value": "mnras7_challis_zenodo_p002.png",
+     "matches": null,
+     "judgement": null
+    },
+    "topic": {
+     "value": "Berlin maps: hour xxi. not in the University Library; 'If I had had this map'",
+     "matches": null,
+     "judgement": null
+    },
+    "quotation": {
+     "value": "\"The only reason I can give,\" says Professor Challis, \"why I did not use hour XXI. of the Berlin star-maps is, that I was ignorant of its existence, as that hour was not to be found in the University Library, and consequently, as I believed, unpublished. If I had had this map a first sweep would have been unnecessary, I should have compared my field of view with the map at once.\"",
+     "matches": null,
+     "judgement": null
+    },
+    "other_values": {
+     "value": "hour XXI.",
+     "matches": null,
+     "judgement": null
+    },
+    "notes": {
+     "value": "the abstract does not mention Airy's note of July 21 nor hour xxii.",
+     "matches": null,
+     "judgement": null
+    },
+    "mark": {
+     "value": "P",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "challis_sweeps_statements.csv",
+   "row": "58",
+   "group": "page",
+   "id": "R35",
+   "cells": {
+    "statement_id": {
+     "value": "OBS-M-0929b",
+     "matches": null,
+     "judgement": null
+    },
+    "source": {
+     "value": "Challis, Memoirs RAS 16 (1847) 415-426",
+     "matches": null,
+     "judgement": null
+    },
+    "printed_page": {
+     "value": "423",
+     "matches": null,
+     "judgement": null
+    },
+    "image_file": {
+     "value": "memoirs16_p458.png",
+     "matches": null,
+     "judgement": null
+    },
+    "date_1846": {
+     "value": "September 29",
+     "matches": null,
+     "judgement": null
+    },
+    "topic": {
+     "value": "September 29: the evening sweep",
+     "matches": null,
+     "judgement": null
+    },
+    "method": {
+     "value": "not stated (plan altered; swept over a considerable breadth in declination)",
+     "matches": null,
+     "judgement": null
+    },
+    "zone_ra": {
+     "value": "within the limits of longitude marked out by M. Le Verrier",
+     "matches": null,
+     "judgement": null
+    },
+    "zone_dec": {
+     "value": "a considerable breadth in declination",
+     "matches": null,
+     "judgement": null
+    },
+    "depth_magnitude": {
+     "value": "more particular attention to the physical appearance of the brighter stars",
+     "matches": null,
+     "judgement": null
+    },
+    "star_count": {
+     "value": "nearly 300 stars",
+     "matches": null,
+     "judgement": null
+    },
+    "quotation": {
+     "value": "The general accordance of M. LE VERRIER's results respecting the mass and orbit of the unknown planet with those of Mr. ADAMS, previously known to me, inspired renewed confidence in the theoretical deductions, and induced me to alter my plan of operations. On the evening of September 29, I swept over a considerable breadth in declination, within the limits of longitude marked out by M. LE VERRIER, resolving, if possible, to include the planet. The night was a good one; I observed without intermission three hours and a half, and recorded the positions of nearly 300 stars, paying more particular attention to the physical appearance of the brighter stars. One only attracted my attention, against which I directed my assistant to note, \"It seems to have a disk.\"",
+     "matches": null,
+     "judgement": null
+    },
+    "other_values": {
+     "value": "three hours and a half; nearly 300 stars; note \"It seems to have a disk.\"",
+     "matches": null,
+     "judgement": null
+    },
+    "mark": {
+     "value": "P",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "challis_sweeps_statements.csv",
+   "row": "98",
+   "group": "page",
+   "id": "R36",
+   "cells": {
+    "statement_id": {
+     "value": "LET-1012-07",
+     "matches": null,
+     "judgement": null
+    },
+    "source": {
+     "value": "Airy, Account, MNRAS 7",
+     "matches": null,
+     "judgement": null
+    },
+    "printed_page": {
+     "value": "143",
+     "matches": null,
+     "judgement": null
+    },
+    "image_file": {
+     "value": "mnras7_airy_p023.png",
+     "matches": null,
+     "judgement": null
+    },
+    "date_1846": {
+     "value": "August 4",
+     "matches": null,
+     "judgement": null
+    },
+    "topic": {
+     "value": "12 Oct letter: the planet among the Aug. 4 stars",
+     "matches": null,
+     "judgement": null
+    },
+    "comparison": {
+     "value": "a comparison with a good star-map would most probably have detected it",
+     "matches": null,
+     "judgement": null
+    },
+    "quotation": {
+     "value": "Among these stars was the planet. A comparison of this day's observations with a good star-map would most probably have detected it.",
+     "matches": null,
+     "judgement": null
+    },
+    "mark": {
+     "value": "P",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "neptune_on_challis_dates.csv",
+   "row": "5",
+   "group": "no page",
+   "id": "R37",
+   "cells": {
+    "date": {
+     "value": "1846-09-23",
+     "matches": null,
+     "judgement": null
+    },
+    "time_ut": {
+     "value": "23:30",
+     "matches": null,
+     "judgement": null
+    },
+    "event": {
+     "value": "Berlin discovery (for reference)",
+     "matches": null,
+     "judgement": null
+    },
+    "ra_mean_date": {
+     "value": "21h 53m 15.8s",
+     "matches": null,
+     "judgement": null
+    },
+    "dec_mean_date": {
+     "value": "-13° 24′ 23″",
+     "matches": null,
+     "judgement": null
+    },
+    "ra_apparent": {
+     "value": "21h 53m 17.0s",
+     "matches": null,
+     "judgement": null
+    },
+    "dec_apparent": {
+     "value": "-13° 24′ 12″",
+     "matches": null,
+     "judgement": null
+    },
+    "ra_1800": {
+     "value": "21h 50m 44.3s",
+     "matches": null,
+     "judgement": null
+    },
+    "dec_1800": {
+     "value": "-13° 37′ 38″",
+     "matches": null,
+     "judgement": null
+    },
+    "ra_J2000": {
+     "value": "22h 01m 31.0s",
+     "matches": null,
+     "judgement": null
+    },
+    "dec_J2000": {
+     "value": "-12° 40′ 20″",
+     "matches": null,
+     "judgement": null
+    },
+    "distance_au": {
+     "value": "29.181",
+     "matches": null,
+     "judgement": null
+    },
+    "adams_325_ra": {
+     "value": "21h 46.1m",
+     "matches": null,
+     "judgement": null
+    },
+    "adams_325_dec": {
+     "value": "-13° 28′",
+     "matches": null,
+     "judgement": null
+    },
+    "neptune_minus_adams_ra_min_of_time": {
+     "value": "7.1",
+     "matches": null,
+     "judgement": null
+    },
+    "neptune_minus_adams_dec_arcmin": {
+     "value": "3.4",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "neptune_on_challis_dates.csv",
+   "row": "8",
+   "group": "no page",
+   "id": "R38",
+   "cells": {
+    "date": {
+     "value": "1846-10-01",
+     "matches": null,
+     "judgement": null
+    },
+    "time_ut": {
+     "value": "23:30",
+     "matches": null,
+     "judgement": null
+    },
+    "event": {
+     "value": "news of the discovery; search ended",
+     "matches": null,
+     "judgement": null
+    },
+    "ra_mean_date": {
+     "value": "21h 52m 39.1s",
+     "matches": null,
+     "judgement": null
+    },
+    "dec_mean_date": {
+     "value": "-13° 27′ 35″",
+     "matches": null,
+     "judgement": null
+    },
+    "ra_apparent": {
+     "value": "21h 52m 40.3s",
+     "matches": null,
+     "judgement": null
+    },
+    "dec_apparent": {
+     "value": "-13° 27′ 25″",
+     "matches": null,
+     "judgement": null
+    },
+    "ra_1800": {
+     "value": "21h 50m 07.5s",
+     "matches": null,
+     "judgement": null
+    },
+    "dec_1800": {
+     "value": "-13° 40′ 49″",
+     "matches": null,
+     "judgement": null
+    },
+    "ra_J2000": {
+     "value": "22h 00m 54.5s",
+     "matches": null,
+     "judgement": null
+    },
+    "dec_J2000": {
+     "value": "-12° 43′ 36″",
+     "matches": null,
+     "judgement": null
+    },
+    "distance_au": {
+     "value": "29.268",
+     "matches": null,
+     "judgement": null
+    },
+    "adams_325_ra": {
+     "value": "21h 45.6m",
+     "matches": null,
+     "judgement": null
+    },
+    "adams_325_dec": {
+     "value": "-13° 31′",
+     "matches": null,
+     "judgement": null
+    },
+    "neptune_minus_adams_ra_min_of_time": {
+     "value": "7.1",
+     "matches": null,
+     "judgement": null
+    },
+    "neptune_minus_adams_dec_arcmin": {
+     "value": "3.0",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "neptune_track_1846.csv",
+   "row": "14",
+   "group": "no page",
+   "id": "R39",
+   "cells": {
+    "date": {
+     "value": "1846-07-14",
+     "matches": null,
+     "judgement": null
+    },
+    "ra_mean_date": {
+     "value": "22h 00m 13.8s",
+     "matches": null,
+     "judgement": null
+    },
+    "dec_mean_date": {
+     "value": "-12° 46′ 30″",
+     "matches": null,
+     "judgement": null
+    },
+    "ra_1800": {
+     "value": "21h 57m 43.7s",
+     "matches": null,
+     "judgement": null
+    },
+    "dec_1800": {
+     "value": "-12° 59′ 56″",
+     "matches": null,
+     "judgement": null
+    },
+    "adams_325_ra": {
+     "value": "21h 51.3m",
+     "matches": null,
+     "judgement": null
+    },
+    "adams_325_dec": {
+     "value": "-13° 0′",
+     "matches": null,
+     "judgement": null
+    },
+    "neptune_minus_adams_ra_min_of_time": {
+     "value": "8.9",
+     "matches": null,
+     "judgement": null
+    },
+    "neptune_minus_adams_dec_arcmin": {
+     "value": "13.5",
+     "matches": null,
+     "judgement": null
+    },
+    "on_hora_xxii_epoch1800_4min_overlap": {
+     "value": "True",
+     "matches": null,
+     "judgement": null
+    },
+    "on_hora_xxii_epoch1800_no_overlap": {
+     "value": "False",
+     "matches": null,
+     "judgement": null
+    },
+    "on_hora_xxi_epoch1800_4min_overlap": {
+     "value": "True",
+     "matches": null,
+     "judgement": null
+    },
+    "on_hora_xxii_if_limits_applied_to_ra_of_date": {
+     "value": "True",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "neptune_track_1846.csv",
+   "row": "89",
+   "group": "no page",
+   "id": "R40",
+   "cells": {
+    "date": {
+     "value": "1846-09-27",
+     "matches": null,
+     "judgement": null
+    },
+    "ra_mean_date": {
+     "value": "21h 53m 01.3s",
+     "matches": null,
+     "judgement": null
+    },
+    "dec_mean_date": {
+     "value": "-13° 25′ 39″",
+     "matches": null,
+     "judgement": null
+    },
+    "ra_1800": {
+     "value": "21h 50m 29.7s",
+     "matches": null,
+     "judgement": null
+    },
+    "dec_1800": {
+     "value": "-13° 38′ 54″",
+     "matches": null,
+     "judgement": null
+    },
+    "adams_325_ra": {
+     "value": "21h 45.9m",
+     "matches": null,
+     "judgement": null
+    },
+    "adams_325_dec": {
+     "value": "-13° 29′",
+     "matches": null,
+     "judgement": null
+    },
+    "neptune_minus_adams_ra_min_of_time": {
+     "value": "7.2",
+     "matches": null,
+     "judgement": null
+    },
+    "neptune_minus_adams_dec_arcmin": {
+     "value": "3.5",
+     "matches": null,
+     "judgement": null
+    },
+    "on_hora_xxii_epoch1800_4min_overlap": {
+     "value": "False",
+     "matches": null,
+     "judgement": null
+    },
+    "on_hora_xxii_epoch1800_no_overlap": {
+     "value": "False",
+     "matches": null,
+     "judgement": null
+    },
+    "on_hora_xxi_epoch1800_4min_overlap": {
+     "value": "True",
+     "matches": null,
+     "judgement": null
+    },
+    "on_hora_xxii_if_limits_applied_to_ra_of_date": {
+     "value": "False",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "prediscovery_recordings.csv",
+   "row": "2",
+   "group": "no page",
+   "id": "R41",
+   "cells": {
+    "row_id": {
+     "value": "L1",
+     "matches": null,
+     "judgement": null
+    },
+    "observer": {
+     "value": "Michel Lefrançais de Lalande",
+     "matches": null,
+     "judgement": null
+    },
+    "place": {
+     "value": "École Militaire, Paris",
+     "matches": null,
+     "judgement": null
+    },
+    "dates": {
+     "value": "1795-05-08",
+     "matches": null,
+     "judgement": null
+    },
+    "instrument": {
+     "value": "Bird mural quadrant of 7½ pieds",
+     "matches": null,
+     "judgement": null
+    },
+    "aperture": {
+     "value": "2½ pouces (about 68 mm)",
+     "matches": null,
+     "judgement": null
+    },
+    "magnification": {
+     "value": "not found",
+     "matches": null,
+     "judgement": null
+    },
+    "recorded_as": {
+     "value": "star (transit and zenith distance); left out of the printed catalogue",
+     "matches": null,
+     "judgement": null
+    },
+    "disc_noted": {
+     "value": "no",
+     "matches": null,
+     "judgement": null
+    },
+    "counted": {
+     "value": "yes",
+     "matches": null,
+     "judgement": null
+    },
+    "nights": {
+     "value": "1",
+     "matches": null,
+     "judgement": null
+    },
+    "sources": {
+     "value": "Mauvais 1847, Comptes rendus 24, 666–669; Lalande 1801, Histoire céleste française, preface (aperture)",
+     "matches": null,
+     "judgement": null
+    },
+    "mark": {
+     "value": "P",
+     "matches": null,
+     "judgement": null
+    },
+    "notes": {
+     "value": "margin note: 'il y a transposition de hauteur et erreur sur le passage de l'étoile suivante'",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  },
+  {
+   "table": "prediscovery_recordings.csv",
+   "row": "6",
+   "group": "no page",
+   "id": "R42",
+   "cells": {
+    "row_id": {
+     "value": "M3",
+     "matches": null,
+     "judgement": null
+    },
+    "observer": {
+     "value": "Johann von Lamont",
+     "matches": null,
+     "judgement": null
+    },
+    "place": {
+     "value": "Munich (Bogenhausen)",
+     "matches": null,
+     "judgement": null
+    },
+    "dates": {
+     "value": "1846-09-11",
+     "matches": null,
+     "judgement": null
+    },
+    "instrument": {
+     "value": "Reichenbach meridian circle",
+     "matches": null,
+     "judgement": null
+    },
+    "aperture": {
+     "value": "not verified",
+     "matches": null,
+     "judgement": null
+    },
+    "magnification": {
+     "value": "not verified",
+     "matches": null,
+     "judgement": null
+    },
+    "recorded_as": {
+     "value": "zone 381, star of magnitude 9, catalogue No. 3818",
+     "matches": null,
+     "judgement": null
+    },
+    "disc_noted": {
+     "value": "no",
+     "matches": null,
+     "judgement": null
+    },
+    "counted": {
+     "value": "yes",
+     "matches": null,
+     "judgement": null
+    },
+    "nights": {
+     "value": "1",
+     "matches": null,
+     "judgement": null
+    },
+    "sources": {
+     "value": "Schönfeld 1886, Astronomische Nachrichten 114, 59",
+     "matches": null,
+     "judgement": null
+    },
+    "mark": {
+     "value": "P identification; S instrument",
+     "matches": null,
+     "judgement": null
+    },
+    "notes": {
+     "value": "identified by Schönfeld; Hind reported the first two only",
+     "matches": null,
+     "judgement": null
+    }
+   },
+   "notes": ""
+  }
+ ],
+ "reviewer": "human",
+ "reviewer_name": ""
+}

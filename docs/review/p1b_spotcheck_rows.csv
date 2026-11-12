@@ -1,0 +1,43 @@
+id,table,row,group
+R01,adams_memoir_equations.csv,128,page
+R02,adams_memoir_equations.csv,140,page
+R03,adams_memoir_equations.csv,152,page
+R04,adams_memoir_equations.csv,172,page
+R05,adams_memoir_equations.csv,451,page
+R06,adams_memoir_equations.csv,463,page
+R07,adams_memoir_equations.csv,481,page
+R08,adams_memoir_equations.csv,599,page
+R09,adams_memoir_equations.csv,753,page
+R10,adams_memoir_equations.csv,980,page
+R11,adams_memoir_equations.csv,1070,page
+R12,adams_memoir_equations.csv,1220,page
+R13,adams_memoir_equations.csv,1240,page
+R14,adams_memoir_equations.csv,1372,page
+R15,adams_memoir_equations.csv,1387,page
+R16,adams_memoir_normal_places.csv,9,page
+R17,adams_memoir_normal_places.csv,26,page
+R18,adams_memoir_series.csv,3,page
+R19,adams_memoir_series.csv,113,page
+R20,adams_memoir_series.csv,130,page
+R21,adams_memoir_solution.csv,10,page
+R22,adams_memoir_solution.csv,14,page
+R23,adams_memoir_solution.csv,99,page
+R24,adams_memoir_statements.csv,20,page
+R25,adams_memoir_statements.csv,22,page
+R26,adams_memoir_statements.csv,55,page
+R27,adams_solutions.csv,5,page
+R28,adams_solutions.csv,7,page
+R29,adams_solutions_statements.csv,3,page
+R30,adams_solutions_statements.csv,15,page
+R31,adams_solutions_statements.csv,22,page
+R32,challis_sweeps.csv,4,page
+R33,challis_sweeps.csv,9,page
+R34,challis_sweeps_statements.csv,47,page
+R35,challis_sweeps_statements.csv,58,page
+R36,challis_sweeps_statements.csv,98,page
+R37,neptune_on_challis_dates.csv,5,no page
+R38,neptune_on_challis_dates.csv,8,no page
+R39,neptune_track_1846.csv,14,no page
+R40,neptune_track_1846.csv,89,no page
+R41,prediscovery_recordings.csv,2,no page
+R42,prediscovery_recordings.csv,6,no page
