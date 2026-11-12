@@ -104,9 +104,9 @@ a disagreement between the two passes, the pamphlet image always wins over it.
 ### 3 Transcription (stage A)
 
 Two passes as in steps 1 and 2: pass 1 from the renders `pamphlet_p012.png`–`pamphlet_p037.png`
-(printed pp. 6–31); pass 2 by a subagent that sees only the renders and the column specification
-below; every numeric token compared; disagreements decided on the named image in a reconciliation
-file. About 600 tokens. Files under `data/historical/adams_challis/`, values kept as the printed
+(printed pp. 6–31); pass 2 an independent second transcription from the renders and the column
+specification below alone, without access to pass 1; every numeric token compared; disagreements
+decided on the named image in a reconciliation file. About 600 tokens. Files under `data/historical/adams_challis/`, values kept as the printed
 digit strings (no rounding, no conversion), angles as printed (`d m.m`):
 
 - `adams_memoir_normal_places.csv`: one row per normal place (30): `year, kind, t_h1, t_h2`
@@ -614,3 +614,6 @@ one series per role, no other device.
 ### What this step established, in one paragraph
 
 Adams's printed numbers are reproducible from his printed inputs to his own precision at every stage but one: his normal equation (n), whose coefficients are sums Σ t sin mt rounded to four decimals (one of them, q₁, slipped by 0.004), feeds an elimination that ends in an equation with a 3.4″ right-hand side, so his solution differs from the one his own data give by 1.4–1.8° in the mean longitude, which is Brookes's 1970 re-derivation, now located; the formal uncertainty of the problem (σ_θ ≈ 5°) is larger than that difference. His theory, set up at α = 0.5, sits 0.02 beyond the 3:1 commensurability pole of its own eccentric terms and 0.13 short of the 2:1 pole that bounds it, and his data in it give a flat χ² from 40 to 32 AU (Δχ² 0.3 at his distance): they could not have told him the distance. On one noise-free truth, his method on his layout, the project's model on his layout, and the project's sampler on set D all place a 38.4 AU planet 8–10° short of Neptune, the last of them within 0.1° of step 3's real-data shortfall: the step-3 shortfall is the assumed distance, not the data; his real-data nearness to Neptune is in his data and reductions, not in his method, and the candidates A1–A5 remain. Nothing on the site.
+
+2026-11-11: § 3 wording edited to describe pass 2 by its method; the procedure is unchanged; the
+frozen text is at 6be374d.
