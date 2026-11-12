@@ -43,6 +43,7 @@ HYPS = (1, 2)
 METHODS = ("d1c", "chain")
 NU_T = 4  # sensitivity (c)
 ESCAPE_DEG = 30.0  # θ farther than this from the clean θ: another minimum (kept, counted)
+SECOND_MIN_DEG = 30.0  # a second minimum: θ further than this from the best
 MULTI_DIFF_DEG = 1.0  # multistart check: a global minimum farther than this in the 1846.762 lon
 MULTI_TRIGGER = 0.01  # ... in more than this fraction → every draw rerun with the multistart
 FAIL_TRIGGER = 0.01  # failures above this fraction → the upper-bound P beside the first
@@ -404,7 +405,10 @@ def _pack(res: dict | None, eps_c: float, n_prime: float) -> list[float]:
     if res is None or not res.get("converged"):
         return [float("nan")] * len(_FIELDS) + [0.0, 0.0]
     x = res["x"]
-    lon = longitudes_of(x, eps_c, n_prime)
+    try:
+        lon = longitudes_of(x, eps_c, n_prime)
+    except ValueError:  # no longitude (e′ ≥ 1 from the chain): not a solution, flagged by _task
+        return [float("nan")] * len(_FIELDS) + [0.0, 0.0]
     return [
         x[4],
         x[5],
@@ -459,6 +463,14 @@ def _task(args) -> tuple:
     cap = NFEV_CAP_C if model == "c" else NFEV_DEFAULT
     nan_row = [float("nan")] * len(_FIELDS) + [0.0, 0.0]
     d1c, chain, multi, roots, flags, errors = [], [], [], [], [], []
+
+    def pack(res, stage: str, fl: list, idx: int) -> list[float]:
+        row = _pack(res, st["eps_c"], st["n_prime"]) if res else nan_row
+        if res and res.get("converged") and row[-2] == 0.0:
+            fl[_FLAGS.index(f"{stage}_error")] = 1.0
+            errors.append(f"draw {idx} {stage}: no longitude (math domain)")
+        return row
+
     for i in range(noise.shape[0]):
         rows = _noisy_rows(st["rows"], noise[i])
         fl = [0.0] * len(_FLAGS)  # timeouts/errors per stage, capped solves
@@ -470,7 +482,7 @@ def _task(args) -> tuple:
             errors.append(f"draw {i0 + i} warm: {status}")
         elif not r["converged"] and r["nfev"] >= cap:
             fl[_FLAGS.index("warm_capped")] = 1.0
-        d1c.append(_pack(r, st["eps_c"], st["n_prime"]) if r else nan_row)
+        d1c.append(pack(r, "warm", fl, i0 + i))
         if i < n_multi:
             r, status = _guarded(
                 lambda rows=rows: A.solve_multistart(rows, w, s, st["x_clean"], max_nfev=cap),
@@ -481,7 +493,7 @@ def _task(args) -> tuple:
                 errors.append(f"draw {i0 + i} multistart: {status}")
             else:
                 fl[_FLAGS.index("multi_n_capped")] = float(r.get("n_capped", 0))
-            multi.append(_pack(r, st["eps_c"], st["n_prime"]) if r else nan_row)
+            multi.append(pack(r, "multi", fl, i0 + i))
         ms = st["ms"]
         j = 0
         for p in ms.places:
@@ -494,7 +506,7 @@ def _task(args) -> tuple:
             fl[_FLAGS.index("chain_timeout" if status == "timeout" else "chain_error")] = 1.0
             errors.append(f"draw {i0 + i} chain: {status}")
             r = {"converged": False, "n_roots": 0, "n_positive": 0}
-        chain.append(_pack(r, st["eps_c"], st["n_prime"]))
+        chain.append(pack(r, "chain", fl, i0 + i))
         roots.append([r["n_roots"], r["n_positive"]])
         flags.append(fl)
     CHUNK_DIR.mkdir(parents=True, exist_ok=True)
@@ -686,7 +698,37 @@ def multistart_baselines(pre: dict) -> dict:
         true = A.true_longitude(mean, x[6] / 20.0, (s.eps - x[7] + s.prec) % 360.0)
         O_real = _wrap(true - T["of_date"])
         pr = pre["real_data"][f"H{hyp}"]["O"]["printed"]
+        second = {}
+        for name, oc_col, best, T_lon in (
+            ("clean", col, r, T["ecl_j2000"]),
+            ("real", None, q, T["of_date"]),
+        ):
+            rw = A.place_rows(m, s, oc=oc_col) if oc_col is not None else A.place_rows(m, s)
+            ww = A.weights_for(m, hyp, "c", rw)
+            alt = None
+            for x0 in A.theta_grid_starts(xc):
+                v = A.solve_warm(rw, ww, s, x0)
+                far = abs(_wrap(float(v["x"][4]) - float(best["x"][4]))) > SECOND_MIN_DEG
+                if v["converged"] and far and (alt is None or v["chi2"] < alt["chi2"]):
+                    alt = v
+            if alt is None:
+                second[name] = None
+                continue
+            xa = alt["x"]
+            if name == "clean":
+                ln = longitudes_of(xa, c["eps_c_1810_ecl_j2000"], s.n_prime_deg)
+                tl = ln["true_lon_1846_ecl_j2000"]
+            else:
+                mn = ((s.eps - xa[4]) % 360.0 + 12.0 * s.n_prime_deg + s.prec) % 360.0
+                tl = A.true_longitude(mn, xa[6] / 20.0, (s.eps - xa[7] + s.prec) % 360.0)
+            second[name] = {
+                "theta": float(xa[4]), "chi2": float(alt["chi2"]),
+                "chi2_minus_best": float(alt["chi2"] - best["chi2"]),
+                "e_prime": float(xa[6] / 20.0), "m_prime": float(xa[5]),
+                "O": _wrap(tl - T_lon),
+            }  # fmt: skip
         out[f"H{hyp}"] = {
+            "second_minimum": second,
             "clean": {"chi2": r["chi2"], "theta": float(r["x"][4]), "O": O_clean},
             "real": {"chi2": q["chi2"], "theta": float(x[4]), "O": O_real},
             "delta_obs": {"primary": O_real - O_clean, "printed": pr - O_clean},
@@ -923,6 +965,15 @@ def summarize(png: bool = True) -> dict:
                             "step3b_sigma_theta_scaled_deg": c["d1c"]["sigma_scaled"]["theta"],
                         }
                 if method == "d1c" and use_multi:
+                    fl_w = None
+                    if "flags" in z:
+                        cols = [k for k, nm in enumerate(names) if nm.startswith("warm_")]
+                        fl_w = np.any(z["flags"][:, cols] > 0, axis=1)
+                    rec["d1c_warm"] = _method_summary(
+                        z["d1c"], T_ecl, O_clean["d1c"], th_clean["d1c"],
+                        pre["delta_obs"][H]["d1c"], n_total, fl_w,
+                    )  # fmt: skip
+                    rec["d1c_warm"]["solver"] = "warm start (beside the primary)"
                     rec["branches"] = branch_summary(
                         z["d1c"], z["multi"], T_ecl, oc, d_obs["primary"],
                         out["multistart_baselines"][H]["real"]["theta"], th_clean["d1c"],
@@ -939,7 +990,7 @@ def summarize(png: bool = True) -> dict:
     )
     for hyp in HYPS:
         H = f"H{hyp}"
-        for method in METHODS:
+        for method in (*METHODS, "d1c_warm"):
             if (
                 f"{H}/a" not in out["results"]
                 or f"{H}/b" not in out["results"]
@@ -952,7 +1003,7 @@ def summarize(png: bool = True) -> dict:
                 Ia = out["results"][f"{H}/a"][method]["P"][target]["P_interval"]
                 Ib = out["results"][f"{H}/b"][method]["P"][target]["P_interval"]
                 rc = out["results"].get(f"{H}/c")
-                Pc = rc[method]["P"][target]["P"] if rc else None
+                Pc = rc[method]["P"][target]["P"] if rc and method in rc else None
                 out["readings"][f"{H}/{method}/{target}"] = {
                     "P_a": Pa,
                     "P_b": Pb,
@@ -984,7 +1035,7 @@ def draw(out: dict, pre: dict, path: Path) -> None:
         "c": "(c) Student-t ν = 4, (b)'s scales",
     }
     titles = {
-        "d1c": "warm-start least squares (his method as D1(c))",
+        "d1c": "least squares, lowest of 12 starts (his method as D1(c))",
         "chain": "his own elimination chain",
     }
     for i, hyp in enumerate(HYPS):
@@ -996,6 +1047,7 @@ def draw(out: dict, pre: dict, path: Path) -> None:
             if O_clean is None:
                 ax.set_axis_off()
                 continue
+            outside = {}
             for model in MODELS:
                 if not draws_path(hyp, model).exists():
                     continue
@@ -1020,14 +1072,17 @@ def draw(out: dict, pre: dict, path: Path) -> None:
                     ls="-" if model != "c" else ":",
                     color=hues[model],
                     label=labels[model],
-                    density=True,
+                    weights=np.full(delta.size, 1.0 / max(delta.size, 1) / 0.5),
                 )
+                outside[model] = float(np.mean((delta < -15.0) | (delta > 20.0)))
             d = pre["delta_obs"][H][method]
+            ax.set_ylim(top=ax.get_ylim()[1] * 1.45)  # room for the text above the curves
             ax.axvline(d["primary"], color="black", lw=1.2)
             ax.axvline(d["printed"], color="black", lw=0.8, ls="--")
             ps = out["results"]
             txt = "\n".join(
-                f"P({model}) = {ps[f'{H}/{model}'][method]['P']['primary']['P']:.4f}"
+                f"P({model}) = {ps[f'{H}/{model}'][method]['P']['primary']['P']:.4f}, "
+                f"{100 * outside[model]:.1f} % off this range"
                 for model in MODELS
                 if f"{H}/{model}" in ps
             )
@@ -1044,8 +1099,8 @@ def draw(out: dict, pre: dict, path: Path) -> None:
             if i == 1:
                 ax.set_xlabel("Δ = (offset from Neptune with noise) − (noise-free offset), degrees")
             if j == 0:
-                ax.set_ylabel("density of realisations")
-    axes[0, 0].legend(fontsize=8, loc="upper right", frameon=False)
+                ax.set_ylabel("fraction of realisations per degree")
+    axes[0, 0].legend(fontsize=8, loc="upper left", bbox_to_anchor=(0.0, 0.86), frameon=False)
     fig.suptitle(
         "Step 3c: does independent noise in his layout carry his method as far as his real "
         "data did? "
@@ -1077,6 +1132,7 @@ def draw_branches(out: dict, pre: dict, path: Path) -> None:
             cell = out["results"].get(f"{H}/{model}")
             if cell is None or "branches" not in cell:
                 ax.text(0.5, 0.5, "not run yet", transform=ax.transAxes, ha="center")
+                ax.set_yticks([])
                 continue
             z = np.load(draws_path(hyp, model))
             multi, warm = z["multi"], z["d1c"]
@@ -1102,8 +1158,9 @@ def draw_branches(out: dict, pre: dict, path: Path) -> None:
                 ax.set_xlabel("Δ, degrees (line: Δ_obs)")
             if j == 0:
                 ax.set_ylabel("realisations per 4° (log)")
-    axes[0, 0].legend(fontsize=8, loc="upper right", frameon=False)
-    fig.tight_layout()
+    handles, labels_ = axes[0, 0].get_legend_handles_labels()
+    fig.tight_layout(rect=(0, 0.04, 1, 1))
+    fig.legend(handles, labels_, fontsize=9, loc="lower center", ncol=2, frameon=False)
     fig.savefig(path, dpi=130)
     plt.close(fig)
 
