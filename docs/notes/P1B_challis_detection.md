@@ -239,3 +239,184 @@ search as a whole. The model covers his nights and instrument only.
 - Figures: per case, the T1 probability by date from 29 July to 1 October with its range, one
   panel per case, 23 September marked; the prior and posterior of each behavioural parameter;
   the tornado per case.
+
+---
+
+## Dated lines (nothing above the lines edited)
+
+- 2026-11-12: the Northumberland refractor's aperture is "a little more than 11½ inches", focal
+  length 19 ft 5¾ in (Airy 1844, *Account of the Northumberland Equatoreal and Dome*), replacing
+  the 11¾ inches of § 4's table, which was found in no source read. The prior on p_disc_looking
+  is unchanged.
+- 2026-11-12: the start places of C3 and C4 (S4, S5, Le Verrier's two places) lie at ecliptic
+  latitude 0, as both predictors assumed orbits in the ecliptic. Neptune's latitude of about
+  −0.5° is the source of most of the declination offsets in the table of P2.
+- 2026-11-12: the zone order of C3 and C4 is alternating north and south outward from the
+  centre, each zone swept twice (telescope fixed, then moving) before the next. This is the
+  interpretation of N3's fallback.
+
+## Pre-run (2026-11-12; frozen before any full draw)
+
+Frozen files:
+
+| file | sha256 |
+|---|---|
+| `docs/notes/P1B_challis_prerun.json` | `5d2dfad0842d164712014a526c1ee8b191cd2d59e06d21e963f9d06f89a1aba5` |
+| `docs/notes/P1B_challis_smoke.json` | `c1b969c2f21ab2ddf9a239a5868dc3bd42f1c32dcc8180e652d1eb90e93c6bfb` |
+| `data/historical/adams_challis/prediscovery_recordings.csv` | `9fb014c020fc5eeb0dc312866a60a4d748c6f2301cd7b8cd23cb1988c5ee9f47` |
+
+`uv run python -m fork.export.p1b_challis prerun` rewrites the first; `smoke` the second, whose
+timings change from run to run. The three frozen inputs of § 2 were checked against their
+hashes before the pre-run.
+
+### P1. Neptune per night
+
+Constants: V = 5 log₁₀(r Δ) − 6.89 (Mallama & Hilton 2018, Astronomy and Computing 25, 10,
+Eq. 16, the branch for dates before 1980.0; the fit rests on photometry of 1954 to 2014 and is
+carried back to 1846, which is an extrapolation). Equatorial radius 24,764 km (IAU WGCCRE 2015:
+Archinal et al. 2018, Celest. Mech. Dyn. Astron. 130, 22). 1 au = 149,597,870.7 km. Places are
+geometric, mean equinox of date, at 23:30 UT, from two-body arcs through the cached Horizons
+states of 1846-09-23 23:00 TDB; against step 2's track the right ascension differs by at most
+6.4 s, which is the difference of session times and of the two-body arc. All 65 nights are in the JSON.
+
+| night | RA | Dec | V | diameter | r (au) | Δ (au) |
+|---|---|---|---|---|---|---|
+| 1846-07-29 | 21h 58m 49.1s | −12° 54.4′ | 7.81 | 2.35″ | 30.013 | 29.063 |
+| 1846-07-30 | 21h 58m 43.3s | −12° 54.9′ | 7.81 | 2.35″ | 30.013 | 29.057 |
+| 1846-08-04 | 21h 58m 13.7s | −12° 57.7′ | 7.81 | 2.35″ | 30.013 | 29.032 |
+| 1846-08-12 | 21h 57m 24.4s | −13° 02.2′ | 7.81 | 2.35″ | 30.013 | 29.007 |
+| 1846-09-22 | 21h 53m 20.5s | −13° 24.0′ | 7.82 | 2.34″ | 30.011 | 29.172 |
+| 1846-09-29 | 21h 52m 47.5s | −13° 26.9′ | 7.83 | 2.34″ | 30.011 | 29.245 |
+| 1846-10-01 | 21h 52m 38.9s | −13° 27.6′ | 7.83 | 2.33″ | 30.011 | 29.268 |
+
+Motion between his nights:
+
+| from | to | ΔRA | ΔDec |
+|---|---|---|---|
+| 1846-07-29 | 1846-07-30 | -5.8 s | -0.5′ |
+| 1846-07-30 | 1846-08-04 | -29.6 s | -2.7′ |
+| 1846-08-04 | 1846-08-12 | -49.2 s | -4.5′ |
+| 1846-08-12 | 1846-09-29 | -276.9 s | -24.7′ |
+
+At power 166 a disc of 2.35″ subtends 6.5′ at the eye.
+
+### P2. The start places
+
+Transcribed from the papers. Le Verrier, 1 June 1846 (Comptes rendus 22, 917): heliocentric
+longitude 325° at 1 January 1847, with "not an error of 10 degrees", read as 315° to 335°.
+Le Verrier, 31 August 1846 (Comptes rendus 23, 428–438): semi-major axis 36,154; period
+217,387 years; eccentricity 0,10761; longitude of perihelion 284° 45′; mean longitude at
+1 January 1847 318° 47′; mass 1/9300; true heliocentric longitude 326° 32′ and distance 33,06
+at 1 January 1847 (p. 432); search "entre 321 et 335 degrés de longitude héliocentrique"
+starting from 326° 32′ (p. 436); mass between 1/14500 and 1/4700; predicted disc 3″,3
+(p. 433). He prints no geocentric place. The elements and the limits were read on the page
+images; Kollerstrom was not needed as a cross-check for any figure used.
+
+Geocentric places, equinox of date, latitude 0:
+
+| place | 29 July: RA, Dec | geocentric longitude | 22 September: RA, Dec | geocentric longitude |
+|---|---|---|---|---|
+| Adams S4 | 21h 46m 29.7s, −13° 25.7′ | 324.32° | 21h 41m 32.8s, −13° 50.9′ | 323.04° |
+| Adams S5 | 22h 04m 49.3s, −11° 48.4′ | 329.07° | 21h 59m 47.4s, −12° 15.7′ | 327.76° |
+| Le Verrier, 1 June | 21h 48m 29.3s, −13° 15.4′ | 324.83° | 21h 44m 07.2s, −13° 37.8′ | 323.70° |
+| Le Verrier, 31 August | 21h 54m 05.1s, −12° 46.1′ | 326.28° | 21h 49m 06.8s, −13° 12.1′ | 324.99° |
+
+Neptune minus the start place (ΔRA in minutes of time, ΔDec in arcminutes):
+
+| night | 325° column | S4 | S5 | Le Verrier June | Le Verrier August |
+|---|---|---|---|---|---|
+| 1846-07-29 | +8.3 min, +9.6′ | +12.3 min, +31.2′ | -6.0 min, -66.0′ | +10.3 min, +21.0′ | +4.7 min, -8.3′ |
+| 1846-08-12 | +8.1 min, +8.2′ | +12.2 min, +30.2′ | -6.1 min, -66.8′ | +10.1 min, +19.1′ | +4.6 min, -9.3′ |
+| 1846-09-22 | +7.1 min, +3.4′ | +11.8 min, +26.9′ | -6.4 min, -68.3′ | +9.2 min, +13.8′ | +4.2 min, -11.9′ |
+| 1846-09-29 | +7.1 min, +3.0′ | +11.7 min, +26.4′ | -6.5 min, -68.4′ | +9.1 min, +13.1′ | +4.2 min, -12.2′ |
+
+Le Verrier's August place enters the pre-run as asked; the plan's C4 uses the June place.
+
+### P3. Pre-discovery recordings (the basis of the prior on p_disc_routine)
+
+`data/historical/adams_challis/prediscovery_recordings.csv`, reviewed before freezing.
+
+| observer | nights | instrument | disc noted | identification | mark |
+|---|---|---|---|---|---|
+| Galileo | 28 Dec 1612; 27 and 28 Jan 1613 | Galilean refractor, aperture and power not verified | no | Kowal & Drake 1980, Nature 287, 311 | abstract read; wording from Standish and from Bernieri et al. 2022, secondary |
+| M. Lefrançais de Lalande | 8 and 10 May 1795 | mural quadrant, 2½ pouces (about 68 mm), power not found | no | Mauvais 1847, Comptes rendus 24, 666–669 | primary, read |
+| Lamont | 25 Oct 1845; 7 Sep 1846 | Reichenbach meridian circle, aperture and power not verified | no | Hind 1850, Astron. Nachr. 30, 257 | primary identification; instrument secondary |
+| Lamont | 11 Sep 1846 | same | no | Schönfeld 1886, Astron. Nachr. 114, 59 | primary identification; instrument secondary |
+| J. Herschel | 14 July 1830 | not verified | not established as a recording | Kollerstrom 2006, JAHH 9, 151: "nearly found it" | unverified; excluded from the count |
+
+Count: 8 recordings on 8 nights by 3 observers, none with a disc noted. The instruments could
+mostly not show a 2.35″ disc (a power of 20, for example, gives about 47″ at the eye), so the
+base rate supports the width of the 0 to 0.5 prior and does not narrow it. Description only:
+on 28 January 1613 Galileo noted that the star and its neighbour had seemed farther apart the
+night before, an anomaly noted and not followed up; it bears on p_follow, whose frozen prior is
+unchanged. Sources differ on Galileo's January nights (27 and 28, or 26/27 and 27/28).
+Power 166 and the field of 9′ are Challis's own figures (MNRAS 7, 145).
+
+### P4. The Moon rule per night
+
+Lit fraction, separation from Neptune's place and altitude at Cambridge at 21:30, 23:30 and
+01:30 UT are in the JSON. The rule of § 4 excludes: 08-06, 08-07, 08-08, 08-09, 09-02, 09-03, 09-04, 09-05, 09-29, 09-30, 10-01. Against the record: 4 August
+is not excluded (lit 0.92, 48° away) and he observed; 29 September is excluded by the rule (lit
+0.69, 28° away) though he observed for 3.5 hours; 30 September is excluded and he
+records the Moon in the way. The nights of the record are therefore set as the record gives
+them, and the rule acts only on the nights the record leaves open.
+
+### P5. Timed smoke run
+
+Seeds as § 5. 1000 accepted draws of 10061: acceptance 0.099 (conditions 2 and 3:
+0.322; condition 4: 0.307), above the 1 % stop. Draws and abduction 0.3 s;
+all 14 case variants in closed form 1.6 s; 1,000 inner event draws per draw and case
+1.8 s. Estimate for 100,000 accepted draws: 3 min in closed form, 6 min with the
+inner draws, on one core.
+
+Implementation choice: every case has a closed form for the per-draw probability, so the
+closed form is the reported value and 1,000 inner event draws per draw (the plan: 200) serve
+as its check. The Monte Carlo share is the mean of p(1 − p)/n over draws against that plus the
+variance of p between draws.
+
+| case | primary, mean | 5–95 % | by 1 Oct | T2 primary | worst inner − exact (s.e.) | MC share, n = 200 | n = 1,000 |
+|---|---|---|---|---|---|---|---|
+| A0 | 0.325 | 0.026 to 0.690 | 0.786 | 0.325 | 3.0 | 0.020 | 0.004 |
+| C1a | 0.831 | 0.616 to 0.987 | 0.947 | 0.831 | 3.3 | 0.046 | 0.010 |
+| C1b | 0.513 | 0.036 to 0.955 | 0.847 | 0.513 | 3.2 | 0.009 | 0.002 |
+| C1a_7d | 0.831 | 0.616 to 0.987 | 0.947 | 0.831 | 3.3 | 0.046 | 0.010 |
+| C1b_7d | 0.513 | 0.036 to 0.955 | 0.847 | 0.513 | 2.9 | 0.009 | 0.002 |
+| C2_1800 | 0.325 | 0.026 to 0.690 | 0.786 | 0.325 | 2.7 | 0.020 | 0.004 |
+| C2_date | 0.944 | 0.829 to 1.000 | 0.983 | 0.944 | 3.1 | 0.076 | 0.016 |
+| C3_S4 | 0.397 | 0.036 to 0.798 | 0.812 | 0.388 | 3.4 | 0.015 | 0.003 |
+| C3_S4_prompt | 0.788 | 0.225 to 0.987 | 0.950 | 0.764 | 3.2 | 0.012 | 0.003 |
+| C3_S5 | 0.000 | 0.000 to 0.000 | 0.683 | 0.000 | 0.0 | 0.000 | 0.000 |
+| C3_S5_prompt | 0.000 | 0.000 to 0.000 | 0.683 | 0.000 | 0.0 | 0.000 | 0.000 |
+| C4a | 0.401 | 0.032 to 0.805 | 0.810 | 0.401 | 3.3 | 0.015 | 0.003 |
+| C4a_prompt | 0.846 | 0.625 to 0.988 | 0.952 | 0.844 | 2.8 | 0.042 | 0.009 |
+| C4b | 0.353 | 0.018 to 0.900 | 0.781 | 0.353 | 3.0 | 0.009 | 0.002 |
+
+These are smoke numbers on 1,000 draws, not results, and are not read against § 7.
+
+Two things they show. C2 under the first fallback of N1 equals A0: the planet's right ascension
+for the equinox of 1800 is west of the sheet's limit on 4 and 12 August, as step 2 found.
+C3 from S5 gives 0 before 23 September by timing, not coverage: Neptune lies 66′ from S5's
+place in declination, the 7th step on one side, the 14th or 15th zone, so the 27th session at
+the earliest; by late September the offset is 68.4′, in the 8th step, and no draw has more than
+28 sessions. No draw of the 1,000 reaches the band; had one done so, the extent in right
+ascension (30 to 105 min each side against the 6 min needed) would cover the planet. From S4
+the band is reached in 995 draws (959 before 23 September; the 8th to 13th session, median
+8 September), and the extent in right ascension covers the planet in every one.
+
+### P6. Implementation choices the plan does not fix (open for ruling before the full draws)
+
+1. Replay reading of the abduction: an accepted draw keeps its parameters and the events are
+   drawn afresh, so P(A0, primary | draw) = 1 − (1 − p_disc_routine)², not 0.
+2. A0's zones: the plan places zones in right ascension only for C3 and C4. In A0, C1 and C2
+   the record fixes the recordings of 4 and 12 August and 29 September, and the sessions
+   between 12 August and 28 September are taken not to cover the planet (the record has no
+   further recording).
+3. C4b: "considerable breadth" is not quantified. The breadth in declination is uniform on
+   30′ to 120′, the length in right ascension scales as 9′ over the breadth, one sweep per
+   zone, p_disc_looking at each recording.
+4. If fewer usable nights than drawn sessions fall between 13 August and 28 September, the
+   sessions are cut to the usable nights.
+5. Hours per session are drawn per session; stars per hour once per draw; the planet's place
+   in the 12 August series is 49 over that session's stars, capped at 1.
+6. Desk work: a comparison flagged on day t is confirmed on the first usable night from t; a
+   disc noted at the eyepiece is confirmed on the next usable night.
