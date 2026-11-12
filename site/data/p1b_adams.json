@@ -53,6 +53,11 @@
    "R7_d4",
    "neptune_same_model_of_date"
   ],
+  "fit_epoch_jd_tdb": [
+   "docs/notes/P1B_adams_reproduction.json",
+   "R7_d4",
+   "epoch_jd_tdb"
+  ],
   "o_clean_least_squares": [
    "docs/notes/P1B_adams_reproduction.json",
    "R6_d3",
@@ -616,6 +621,7 @@
   "free_distance_status": "inside",
   "truth_r_au": 30.011051143665046,
   "neptune_same_model": 327.0308380153567,
+  "fit_epoch_jd_tdb": 2395574.8205,
   "o_clean_least_squares": -9.511517009512716,
   "o_clean_his_procedure": -9.92301698158036,
   "o_clean_project_on_his_places": -7.822872077216857,
@@ -1062,5 +1068,12 @@
    7
   ],
   "H2_b_hist_n": 10000
+ },
+ "constants": {
+  "fit_epoch": {
+   "julian_year": 1846.762,
+   "date": "1846-10-05",
+   "note": "the epoch at which step 3b compares every solution (TDB)"
+  }
  }
 }

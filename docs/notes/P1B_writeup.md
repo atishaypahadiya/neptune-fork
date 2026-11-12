@@ -17,8 +17,8 @@ repeated: `P1B_sources.md` (step 0), `P1B_adams_solutions.md` (1), `P1B_challis_
 **Finding 1 (step 3). At his distances the project's fit is 9 to 10° short of Neptune.**
 Adams assumed the planet's mean distance: 38.4 AU under his first hypothesis, 37.25 AU under
 his second. The project's model, fitted to the 145 observations of Table 77 comparable to his
-data with the distance held at those values, puts the true heliocentric longitude on Galle's
-night 10.5° short of Neptune under the first (68 % range −14.8° to −6.9°) and 9.1° short under
+data with the distance held at those values, puts the true heliocentric longitude at
+1846.762 (5 October 1846, the epoch at which every solution is compared) 10.5° short of Neptune under the first (68 % range −14.8° to −6.9°) and 9.1° short under
 the second (−12.6° to −4.9°). Neptune is outside the 95 % range of the geocentric longitude in
 both. With the distance free the same data put Neptune inside the 68 % range. His printed
 solutions are +1.7° and +2.5° from Neptune.

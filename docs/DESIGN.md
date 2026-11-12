@@ -475,7 +475,8 @@ a dagger defined in the caption. The two 7-day-delay variants are one sentence u
 table, not rows. Below 600 px the last column drops under each row's case name.
 
 **Fig. 1, the shortfall follows the assumed distance** (§ 3.1, 3.3): one horizontal axis, the
-heliocentric longitude minus Neptune's on Galle's night, Neptune a hairline at 0 lettered *N*.
+heliocentric longitude minus Neptune's (the printed solutions on Galle's night, the others at
+1846.762, as the caption says; corrected 2026-11-12), Neptune a hairline at 0 lettered *N*.
 One row per solution: his two printed solutions; his data through his method; the project's
 fit at his two distances and with the distance free; each method on the noise-free Neptune at
 his distance. A dot per value with its interval where the source has one (2 px line); rows
@@ -545,7 +546,8 @@ palette: white line on the cyanotype ground, with the lower line opacity in the 
   panels, the first noise model as the 2 px white line and the second at the lower opacity),
   Fig. 3 the sky, Fig. 4 the cases.
 - Fig. 1 has no row for the fit with the distance free: the committed JSON holds the true
-  longitude on Galle's night for the held-distance fits only. The sentence of § 3.1 gives the
+  longitude at 1846.762 for the held-distance fits only (first written as Galle's night;
+  corrected 2026-11-12). The sentence of § 3.1 gives the
   free-distance result as the JSON states it (Neptune inside the 68 % range).
 - Fig. 3 draws the zone of 30 July and 12 August at the middle of the settings the record
   allows, with hairlines at the two extremes; the posterior of the zone's setting is not in a

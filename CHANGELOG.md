@@ -8,7 +8,7 @@ Phase 1b, a companion study of the British search for the planet, read from the 
 alone. It asks two questions.
 
 How good was Adams? At the distances he assumed, the project's fit to his data choice is 10.5°
-and 9.1° short of Neptune on Galle's night. His two solutions are reproduced from his memoir. On
+and 9.1° short of Neptune at epoch 1846.762 (5 October 1846). His two solutions are reproduced from his memoir. On
 a noise-free Neptune at his first distance every method is short (his least squares 9.5°, the
 project's model on his places 7.8°, the project's fit 10.4°), so the shortfall belongs to the
 assumed distance, and his nearness to the truth (+1.7° and +2.5°) to his data or their
@@ -19,8 +19,7 @@ statistic (0.017 under his first hypothesis) reads weak.
 Could Challis have recognised the planet before 23 September 1846? A detection model
 conditioned on his record gives, with the realised events held fixed: his actual procedure 0 by
 construction (the cases measure what a change would have added); the comparison he broke off,
-carried through, 0.71 (0.50 to 0.97); zones from Adams's first place 0.41, or 0.79 with prompt
-comparison; from Le Verrier's June place 0.85 with prompt comparison. Each figure depends on an
+carried through, 0.71 (0.50 to 0.97); zones laid from Adams's first place or from Le Verrier's June place 0.41 and 0.41 (both prior-dependent), or 0.79 and 0.85 with prompt comparison. Each figure depends on an
 input the record does not fix, three readings are prior-dependent, and none reaches "very
 probably".
 

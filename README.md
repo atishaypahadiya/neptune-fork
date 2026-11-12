@@ -168,7 +168,7 @@ study, [on its own page](https://atishaypahadiya.github.io/neptune-fork/adams-ch
 two questions of the printed record.
 
 - *How good was Adams?* At the distances he assumed, the project's fit is 10.5° and 9.1° short
-  of Neptune on Galle's night. His solutions are reproduced from his memoir. On a noise-free
+  of Neptune at epoch 1846.762 (5 October 1846). His solutions are reproduced from his memoir. On a noise-free
   Neptune at his first distance every method is short (his least squares 9.5°, the project's
   model on his places 7.8°, the project's fit 10.4°), so the shortfall belongs to the assumed
   distance and his nearness (+1.7° and +2.5°) to his data or their reduction. Whether noise
@@ -178,8 +178,7 @@ two questions of the printed record.
   conditioned on his record (100,000 kept draws) gives, with the realised events held: his
   actual procedure 0 by construction (the realised events are held fixed, so the cases measure
   what a change would have added); the comparison he broke off, carried through,
-  0.71 (0.50 to 0.97); zones from Adams's first place 0.41, or 0.79 with prompt comparison;
-  from Le Verrier's June place 0.85 with prompt comparison. Each depends on an input the record
+  0.71 (0.50 to 0.97); zones laid from Adams's first place or from Le Verrier's June place 0.41 and 0.41 (both prior-dependent), or 0.79 and 0.85 with prompt comparison. Each depends on an input the record
   does not fix, three readings are prior-dependent, and none reaches "very probably".
 
 The write-up, with each claim's JSON path and deviation, is

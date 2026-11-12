@@ -47,6 +47,27 @@ def _collect(sources: dict) -> dict:
     return {k: resolve(s, cache) for k, s in sources.items()}
 
 
+def fit_epoch() -> dict:
+    """The epoch of the held-distance fits' longitudes (`fit_epoch_jd_tdb`, step 3b's comparison
+    epoch) as a Julian year and a calendar date, so that the page states it and not Galle's
+    night, 12 days earlier."""
+    jd = resolve([REPRO, "R7_d4", "epoch_jd_tdb"], {})
+    day = int(jd + 0.5) + 68569  # Fliegel and Van Flandern (1968), Gregorian date of a JD
+    n = 4 * day // 146097
+    day -= (146097 * n + 3) // 4
+    i = 4000 * (day + 1) // 1461001
+    day = day - 1461 * i // 4 + 31
+    j = 80 * day // 2447
+    d = day - 2447 * j // 80
+    day = j // 11
+    m, y = j + 2 - 12 * day, 100 * (n - 49) + i + day
+    return {
+        "julian_year": round(2000.0 + (jd - 2451545.0) / 365.25, 3),
+        "date": f"{y}-{m:02d}-{d:02d}",
+        "note": "the epoch at which step 3b compares every solution (TDB)",
+    }
+
+
 def adams_sources() -> dict:
     s: dict = {
         "fit_data_set": [FIT, "data_set", "fit"],
@@ -57,6 +78,7 @@ def adams_sources() -> dict:
         "free_distance_status": [FIT, "reading", "g", "statement_1", "F", "status"],
         "truth_r_au": [REPRO, "R6_d3", "truth", "neptune_1846", "r_au"],
         "neptune_same_model": [REPRO, "R7_d4", "neptune_same_model_of_date"],
+        "fit_epoch_jd_tdb": [REPRO, "R7_d4", "epoch_jd_tdb"],
         "o_clean_least_squares": [REPRO, "R6_d3", "O_i_d1c"],
         "o_clean_his_procedure": [REPRO, "R6_d3", "O_i_his_procedure"],
         "o_clean_project_on_his_places": [REPRO, "R6_d3", "O_ii"],
@@ -240,6 +262,7 @@ def build() -> dict[str, dict]:
             "description": "Companion page, § 3: values copied from the committed step 3, 3b "
             "and 3c JSONs; `sources` names the field of each.",
             "sources": a, "values": _collect(a),
+            "constants": {"fit_epoch": fit_epoch()},
         },
         "p1b_challis.json": {
             "description": "Companion page, § 4: values copied from the committed step 4 JSONs; "
