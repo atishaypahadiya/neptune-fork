@@ -174,8 +174,7 @@ def test_the_noise_free_draw_reproduces_d3_i(memoir):
     assert O_full == pytest.approx(-9.51, abs=0.02)
     warm = A.solve_warm(rows, w, s, x0)
     O_warm = N._wrap(
-        N.longitudes_of(warm["x"], eps_c, s.n_prime_deg)["true_lon_1846_ecl_j2000"]
-        - T["ecl_j2000"]
+        N.longitudes_of(warm["x"], eps_c, s.n_prime_deg)["true_lon_1846_ecl_j2000"] - T["ecl_j2000"]
     )
     assert abs(O_warm - O_full) < 1e-6
     import copy
@@ -189,3 +188,13 @@ def test_the_noise_free_draw_reproduces_d3_i(memoir):
         N.longitudes_of(ch["x"], eps_c, s.n_prime_deg)["true_lon_1846_ecl_j2000"] - T["ecl_j2000"]
     )
     assert O_ch == pytest.approx(-9.92, abs=0.02)
+
+
+def test_reading_with_flagged_intervals():
+    assert N.reading_interval([0.10, 0.10], [0.20, 0.20])["row"] == 1
+    assert N.reading_interval([0.001, 0.001], [0.0, 0.002])["row"] == 2
+    r = N.reading_interval([0.001, 0.02], [0.0, 0.0])
+    assert r["row"] == 3 and "(a)" in r["text"] and "0.003" in r["text"]
+    r = N.reading_interval([0.10, 0.10], [0.04, 0.06])
+    assert r["row"] == 3 and "(b)" in r["text"] and "0.05" in r["text"]
+    assert N.reading_interval([0.01, 0.03], [0.01, 0.02])["row"] == 3

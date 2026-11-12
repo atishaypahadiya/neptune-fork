@@ -649,6 +649,54 @@ def reading(P_a: float, P_b: float) -> dict:
     }
 
 
+def reading_interval(I_a: list[float], I_b: list[float]) -> dict:
+    """§ 4's rows when a cell's P is an interval (flagged draws above 1 %): a cell whose
+    interval crosses a reading threshold reads "weak"."""
+    for name, (lo, hi) in (("a", I_a), ("b", I_b)):
+        for thr in (P_SYSTEMATIC, P_NOISE_SUFFICES):
+            if lo < thr <= hi:
+                return {
+                    "row": 3,
+                    "verdict": "weak",
+                    "text": f"P under ({name}) lies in [{lo:.4f}, {hi:.4f}] with the flagged draws "
+                    f"counted either way, which crosses {thr}; no single statement.",
+                }
+    return reading(I_a[0], I_b[0])
+
+
+def multistart_baselines(pre: dict) -> dict:
+    """Δ_obs for D1(c) recomputed with the draws' own 12-start multistart on the clean column
+    and on his real § 9 data (the reading's primary method, both ends by one solver)."""
+    m = A.load_memoir()
+    col = {int(k): v for k, v in pre["synthetic_column_arcsec"].items()}
+    T = pre["truth"]["neptune_1846"]
+    out = {}
+    for hyp in HYPS:
+        c = pre["clean"][f"H{hyp}"]
+        s = A.setup_from_print(m, hyp)
+        xc = np.array([c["d1c"]["x"][k] for k in A.PARAMS])
+        rows = A.place_rows(m, s, oc=col)
+        r = A.solve_multistart(rows, A.weights_for(m, hyp, "c", rows), s, xc)
+        lon = longitudes_of(r["x"], c["eps_c_1810_ecl_j2000"], s.n_prime_deg)
+        O_clean = _wrap(lon["true_lon_1846_ecl_j2000"] - T["ecl_j2000"])
+        rows = A.place_rows(m, s)
+        q = A.solve_multistart(rows, A.weights_for(m, hyp, "c", rows), s, xc)
+        x = q["x"]
+        mean = ((s.eps - x[4]) % 360.0 + 12.0 * s.n_prime_deg + s.prec) % 360.0
+        true = A.true_longitude(mean, x[6] / 20.0, (s.eps - x[7] + s.prec) % 360.0)
+        O_real = _wrap(true - T["of_date"])
+        pr = pre["real_data"][f"H{hyp}"]["O"]["printed"]
+        out[f"H{hyp}"] = {
+            "clean": {"chi2": r["chi2"], "theta": float(r["x"][4]), "O": O_clean},
+            "real": {"chi2": q["chi2"], "theta": float(x[4]), "O": O_real},
+            "delta_obs": {"primary": O_real - O_clean, "printed": pr - O_clean},
+            "minus_prerun_delta_obs": O_real
+            - O_clean
+            - pre["delta_obs"][f"H{hyp}"]["d1c"]["primary"],
+        }
+    return out
+
+
 def _quant(v: np.ndarray) -> dict:
     v = v[np.isfinite(v)]
     if v.size == 0:
@@ -663,9 +711,19 @@ def _quant(v: np.ndarray) -> dict:
 
 
 def _method_summary(
-    arr: np.ndarray, T_ecl: float, O_clean: float, theta_clean: float, d_obs: dict, n_total: int
+    arr: np.ndarray,
+    T_ecl: float,
+    O_clean: float,
+    theta_clean: float,
+    d_obs: dict,
+    n_total: int,
+    flagged: np.ndarray | None = None,
 ) -> dict:
+    """``flagged``: per draw, a timeout, an exception or a capped solve for this method; a
+    non-converged draw is flagged too. Above FAIL_TRIGGER of the cell, P is the interval
+    [P over the converged draws, P with every flagged draw counted as exceeding]."""
     conv = _col(arr, "converged") > 0.5
+    flagged = ~conv if flagged is None else (flagged | ~conv)
     n_failed = int(n_total - conv.sum())
     true_lon = _col(arr, "true_lon")[conv]
     off = np.array([_wrap(v - T_ecl) for v in true_lon])
@@ -688,9 +746,16 @@ def _method_summary(
         "e_prime": _quant(_col(arr, "e_units")[conv] / 20.0),
         "P": {},
     }
-    nf = n_failed if n_failed / n_total > FAIL_TRIGGER else 0
+    out["n_flagged"] = int(flagged.sum())
+    out["fraction_flagged"] = float(flagged.mean())
+    over = out["fraction_flagged"] > FAIL_TRIGGER
     for target, dv in d_obs.items():
-        out["P"][target] = {"delta_obs": dv, **p_value(delta, dv, nf)}
+        rec = {"delta_obs": dv, **p_value(delta, dv)}
+        rec["P_interval"] = [rec["P"], rec["P"]]
+        if over:
+            k_clean = int(np.sum(delta[~flagged[conv]] >= dv))
+            rec["P_interval"] = [rec["P"], (k_clean + int(flagged.sum())) / n_total]
+        out["P"][target] = rec
     return out
 
 
@@ -747,6 +812,7 @@ def summarize(png: bool = True) -> dict:
         "multistart_rerun_required": False,
         "readings": {},
         "cells_missing": [],
+        "multistart_baselines": multistart_baselines(pre),
     }
     for hyp in HYPS:
         H = f"H{hyp}"
@@ -788,8 +854,23 @@ def summarize(png: bool = True) -> dict:
                     continue
                 arr = z["multi"] if (method == "d1c" and use_multi) else z[method]
                 d_obs = pre["delta_obs"][H][method]
+                if method == "d1c" and use_multi:
+                    d_obs = out["multistart_baselines"][H]["delta_obs"]
+                fl_m = None
+                if "flags" in z:
+                    names = [str(v) for v in z["flag_names"]]
+                    pref = (
+                        "multi_"
+                        if (method == "d1c" and use_multi)
+                        else ("warm_" if method == "d1c" else "chain_")
+                    )
+                    cols = [k for k, nm in enumerate(names) if nm.startswith(pref)]
+                    fl_m = np.any(z["flags"][:, cols] > 0, axis=1)
+                oc = O_clean[method]
+                if method == "d1c" and use_multi:
+                    oc = out["multistart_baselines"][H]["clean"]["O"]
                 rec[method] = _method_summary(
-                    arr, T_ecl, O_clean[method], th_clean[method], d_obs, n_total
+                    arr, T_ecl, oc, th_clean[method], d_obs, n_total, fl_m
                 )
                 if method == "d1c":
                     rec[method]["solver"] = "multistart (every draw)" if use_multi else "warm start"
@@ -822,13 +903,17 @@ def summarize(png: bool = True) -> dict:
             for target in ("primary", "printed"):
                 Pa = out["results"][f"{H}/a"][method]["P"][target]["P"]
                 Pb = out["results"][f"{H}/b"][method]["P"][target]["P"]
+                Ia = out["results"][f"{H}/a"][method]["P"][target]["P_interval"]
+                Ib = out["results"][f"{H}/b"][method]["P"][target]["P_interval"]
                 rc = out["results"].get(f"{H}/c")
                 Pc = rc[method]["P"][target]["P"] if rc else None
                 out["readings"][f"{H}/{method}/{target}"] = {
                     "P_a": Pa,
                     "P_b": Pb,
                     "P_c_sensitivity": Pc,
-                    **reading(Pa, Pb),
+                    "P_a_interval": Ia,
+                    "P_b_interval": Ib,
+                    **reading_interval(Ia, Ib),
                     "headline": hyp == 1 and method == "d1c" and target == "primary",
                 }
     R._dump(OUT_JSON, out)
