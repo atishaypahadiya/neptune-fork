@@ -86,3 +86,32 @@ instead, once, online, before the launch.
 The LV-June target of `docs/notes/P1B_adams_fit.md` therefore uses the printed value, marked P;
 Airy's summary (MNRAS 7, 131–132) is no longer the fallback. Page renders in
 `data/cache/adams_challis/renders/cr22_p921.png` … `cr22_p933.png`.
+
+## Secondary works (added in step 3b, stage A, 2026-11-11)
+
+Sought once each, as the step-3b plan requires, before any stage-B code.
+
+| file (cache) | source | printed pages | PDF pages | text layer | SHA-256 |
+|---|---|---|---|---|---|
+| `ads_1970CeMec...3...67B.pdf` | https://ui.adsabs.harvard.edu/link_gateway/1970CeMec...3...67B/ADS_PDF (served from articles.adsabs.harvard.edu; ADS scan, publisher's copyright notice on every page, not redistributed) | C. J. Brookes, "On the prediction of Neptune", Celestial Mechanics 3 (1970), 67–80 (DOI 10.1007/BF01230433) | 14 | no (image scan; read from renders) | `054b6285a75b0b82803d405bb88e520c5d1a7a7aabcc25511f4f084af5d8da9e` |
+
+Not obtained: W. M. Smart, "John Couch Adams and the discovery of Neptune", Occasional Notes of the
+RAS No. 11 (vol. 2, 33–38 as Brookes cites it; a 56-page pamphlet, 1947). The ADS gateway has no
+entry under the guessed bibcode (HTTP 404) and Nature's page for the 9 November 1946 abridgement
+(Nature 158, 648) serves only a paywall landing page; the pamphlet exists in print only (St John's
+College archives list a copy). Brookes 1970 acknowledges Smart for suggesting the problem.
+
+What Brookes 1970 contains (read in full on 2026-11-11, the same day it was obtained): a restatement
+of Adams's linearised model (his eqs 2.1–2.4, Tisserand's form of F_i); a re-derivation of the
+Hypothesis I solution from the memoir's equations giving e′ 0.1509, m′ 0.8267, ϖ′ 311° 35′,
+l′ 323° 39′ against Adams's 0.1610, 0.8282, 315° 57′, 325° 4′ [sic], the true longitude at
+discovery 328° 4′ against 328° 42′, "due mainly to a small numerical error occurring in one of the
+equations derived by Adams" (his 1969 thesis; the equation is not named in the paper); Hypothesis II
+by Hypothesis I's procedure (0.1387, 0.7393, 303° 52′, 324° 47′, 331° 31′ against Adams's 0.1206,
+0.7502, 299° 11′, 322° 58′, 329° 25′); the effect of Flamsteed 1690 (Table III); solutions with 61,
+31 and 21 equations (Table V); a first-order-only variant (p. 75); solutions at α = sin 29°, 30°, 31°,
+32° with the same theory (Table VI, X) and at sin 34°, 35°, 37° with F₄, G, H terms added
+(Tables X–XIV; a′ = 30 excluded for the near-commensurability of n and n′); the conclusion that the
+true longitude at discovery is insensitive to a′ between 30 and 40 AU for any epoch after 1830, and
+that the mean longitude for 1846 rises then falls with decreasing a′ (323.1, 324.3, 325.5, 326.7,
+321.4, 322.3, 322.0 for a′ 39.56 … 31.86), against Adams's § 54 expectation.
