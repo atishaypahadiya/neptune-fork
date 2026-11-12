@@ -1,5 +1,7 @@
 # neptune-fork
 
+[Site](https://atishaypahadiya.github.io/neptune-fork/) · [Companion study: the British search](https://atishaypahadiya.github.io/neptune-fork/adams-challis/)
+
 [![test](https://github.com/atishaypahadiya/neptune-fork/actions/workflows/test.yml/badge.svg)](https://github.com/atishaypahadiya/neptune-fork/actions/workflows/test.yml)
 [![pages](https://github.com/atishaypahadiya/neptune-fork/actions/workflows/pages.yml/badge.svg)](https://github.com/atishaypahadiya/neptune-fork/actions/workflows/pages.yml)
 [![DOI, dataset, all versions](https://zenodo.org/badge/DOI/10.5281/zenodo.24044791.svg)](https://doi.org/10.5281/zenodo.24044791)
