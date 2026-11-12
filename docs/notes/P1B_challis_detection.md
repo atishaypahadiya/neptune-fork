@@ -747,3 +747,9 @@ are marked **prior-dependent**:
 No other reading changes row. Two limits of the check as run: the zone priors (the
 declination setting and the branch weight) were not halved, and the check used 20,000
 accepted draws. The tornado of § 6.4 used the first 10,000 accepted draws.
+
+### Correction, 2026-11-12
+
+In the post hoc table above, the 39 % of draws in which C1a and C1b are equal are the draws
+where both comparisons cover the planet or neither does (each case's probability is p_follow
+times whether its comparison covers the planet). This replaces the gloss given there.
