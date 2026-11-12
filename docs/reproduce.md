@@ -455,3 +455,13 @@ FORK_HORIZONS_CACHE_ONLY=1 uv run python -m fork.export.p1b_challis summarize # 
 Progress in `data/cache/p1b_challis/progress.log`, one line per chunk of 5,000 accepted draws;
 a rerun of `draws` skips the chunks already in `data/cache/p1b_challis/main/` and `halved/`.
 One ledger row `p1b_challis/draws` (0.33 CPU-h), in the totals above. `smoke` writes to the cache; the smoke record in `docs/notes/` is the pre-run's.
+
+### Step 4, named input N1 (`docs/notes/P1B_challis_detection.md`, the sections of 12 November 2026)
+
+```sh
+uv run pytest -q tests/test_p1b_challis_n1.py
+FORK_HORIZONS_CACHE_ONLY=1 uv run python -m fork.export.p1b_challis_n1 run   # docs/notes/P1B_challis_detection_n1.json, about 3 min
+```
+
+Reads the step 4 draws in `data/cache/p1b_challis/` and changes none of them. The sources
+of N1 and the search for Bouvard's 1821 tables are in `data/historical/adams_challis/MANIFEST.md`.
