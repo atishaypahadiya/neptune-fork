@@ -1824,16 +1824,21 @@ def theta_grid_starts(x_clean: np.ndarray, step_deg: float = 30.0) -> list[np.nd
     return starts
 
 
-def solve_multistart(rows, w: np.ndarray, s: Setup, x_clean: np.ndarray) -> dict:
-    """The lowest-χ² end point of ``theta_grid_starts`` (12 solves)."""
+def solve_multistart(
+    rows, w: np.ndarray, s: Setup, x_clean: np.ndarray, max_nfev: int = 2000
+) -> dict:
+    """The lowest-χ² end point of ``theta_grid_starts`` (12 solves); ``n_capped`` counts the
+    starts that stopped on ``max_nfev`` (skipped)."""
     best = None
+    n_capped = 0
     for x0 in theta_grid_starts(x_clean):
-        r = solve_warm(rows, w, s, x0)
+        r = solve_warm(rows, w, s, x0, max_nfev=max_nfev)
         if not r["converged"] or not math.isfinite(r["chi2"]):
+            n_capped += int(r["nfev"] >= max_nfev)
             continue
         if best is None or r["chi2"] < best["chi2"] - 1e-9:
             best = r
     if best is None:
         best = {"x": np.full(N_PARAMS, np.nan), "chi2": float("nan"), "converged": False,
                 "bound": False, "sigma_unscaled": np.full(N_PARAMS, np.nan), "nfev": 0}  # fmt: skip
-    return best
+    return {**best, "n_capped": n_capped}

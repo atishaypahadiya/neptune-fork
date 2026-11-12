@@ -282,3 +282,18 @@ FORK_HORIZONS_CACHE_ONLY=1 uv run python -m fork.export.p1b_adams_repro summariz
 Progress in `data/cache/p1b_adams_repro/progress.log`, the driver's log in `driver.log`, one ledger
 row per nested job (`p1b_adams_repro/d3iii/c<k>`) and one for the cheap stages; the nested jobs
 resume from their `.ckpt`. D4 needs step 3's cached results (`data/cache/p1b_adams/*.pkl`).
+
+## Phase 1b step 3c (noise against systematic)
+
+```
+uv run pytest -q tests/test_p1b_adams_noise.py                                     # 11 tests; the slow one regenerates step 3b's synthetic column and lands on D3(i)
+FORK_HORIZONS_CACHE_ONLY=1 uv run python -m fork.export.p1b_adams_noise prerun    # the frozen inputs: the synthetic column, the set D window counts, the step-3 group RMS, the σ tables, the clean solutions, Δ_obs → data/cache/p1b_adams_noise/prerun.json
+FORK_HORIZONS_CACHE_ONLY=1 uv run python -m fork.export.p1b_adams_noise draws --n-draws 40 --n-workers 4   # smoke run (overwritten by the full run)
+FORK_HORIZONS_CACHE_ONLY=1 uv run python -m fork.export.p1b_adams_noise draws --multistart-all --n-workers 12   # 10,000 realisations × 3 noise models × 2 hypotheses through both methods, the multistart on every draw (the plan's 1 % trigger fired on the smoke run); about 5 CPU-h, half an hour wall; not detached
+FORK_HORIZONS_CACHE_ONLY=1 uv run python -m fork.export.p1b_adams_noise summarize # docs/notes/P1B_adams_noise.{json,png}
+```
+
+Progress in `data/cache/p1b_adams_noise/progress.log`; one ledger row `p1b_adams_noise/draws`;
+the realisations in `data/cache/p1b_adams_noise/draws_h<hyp>_<model>.npz`. `prerun` needs step 3's
+cached H1(G) results (`data/cache/p1b_adams/*.pkl`) for the group RMS and the Horizons cache for
+the truth; `draws` and `summarize` need only `prerun.json` and the memoir tables.

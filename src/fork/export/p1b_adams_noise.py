@@ -51,6 +51,12 @@ P_SYSTEMATIC = 0.003
 WINDOW_MODERN_YR = A.UNIT_YR / 2  # ±1.518 yr about a modern place
 WINDOW_ANCIENT_YR = 1.0
 CHUNK = 250
+CHUNK_DIR = CACHE / "chunks"
+NFEV_DEFAULT = 2000  # per solve, (a) and (b)
+NFEV_CAP_C = 500  # per solve in sensitivity (c); a capped start is skipped, capped draws counted
+WATCHDOG_S = 60.0  # wall-clock guard per solve (12× for the multistart); a timeout is a failure
+_FLAGS = ("warm_timeout", "warm_error", "warm_capped", "multi_timeout", "multi_error",
+          "multi_n_capped", "chain_timeout", "chain_error")  # fmt: skip
 QUANTILES = (2.5, 16, 50, 84, 97.5)
 # § 2's listed counts (from a month-rounded parse when the plan was written); the rule is the
 # window on the epoch, which the code applies; differences are reported in R1.
@@ -391,26 +397,6 @@ def _noisy_rows(rows, noise: np.ndarray):
     ]
 
 
-def _realisation(hyp: int, noise: np.ndarray, multistart: bool) -> dict:
-    st = _STATE[hyp]
-    s, w = st["s"], st["w"]
-    rows = _noisy_rows(st["rows"], noise)
-    out = {}
-    r = A.solve_warm(rows, w, s, st["x_clean"])
-    out["d1c"] = r
-    if multistart:
-        out["multi"] = A.solve_multistart(rows, w, s, st["x_clean"])
-    ms = st["ms"]
-    j = 0
-    for p in ms.places:
-        if p["year"] == 1690:
-            continue
-        p["oc_mean"] = st["rows"][j][3]["lhs"] + float(noise[j])
-        j += 1
-    out["chain"] = chain_solve(ms, hyp, rows, w, s)
-    return out
-
-
 _FIELDS = ("theta", "m_prime", "e_units", "beta_prime", "chi2", "mean_lon", "true_lon")
 
 
@@ -432,35 +418,132 @@ def _pack(res: dict | None, eps_c: float, n_prime: float) -> list[float]:
     ]
 
 
+class _Watchdog(Exception):
+    pass
+
+
+def _alarm(_signum, _frame):
+    raise _Watchdog()
+
+
+def _guarded(fn, seconds: float):
+    """Run ``fn`` under a wall-clock watchdog; returns (result | None, status) with status
+    "ok", "timeout" or the exception's one-line description."""
+    import signal
+
+    signal.signal(signal.SIGALRM, _alarm)
+    signal.setitimer(signal.ITIMER_REAL, seconds)
+    try:
+        return fn(), "ok"
+    except _Watchdog:
+        return None, "timeout"
+    except Exception as exc:  # recorded per draw, never lost with the chunk
+        return None, f"{type(exc).__name__}: {exc}"[:200]
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0)
+
+
+def chunk_path(hyp: int, model: str, i0: int) -> Path:
+    return CHUNK_DIR / f"h{hyp}_{model}_{i0:05d}.npz"
+
+
 def _task(args) -> tuple:
-    hyp, i0, noise, n_multi = args
+    """One chunk: every realisation through the warm start, the multistart (first ``n_multi``)
+    and the chain, each stage under the watchdog; the chunk is written to disk by the worker."""
+    hyp, model, i0, noise, n_multi = args
+    out_path = chunk_path(hyp, model, i0)
+    if out_path.exists():
+        return hyp, model, i0, "cached", []
     st = _STATE[hyp]
-    d1c, chain, multi, chain_roots = [], [], [], []
+    s, w = st["s"], st["w"]
+    cap = NFEV_CAP_C if model == "c" else NFEV_DEFAULT
+    nan_row = [float("nan")] * len(_FIELDS) + [0.0, 0.0]
+    d1c, chain, multi, roots, flags, errors = [], [], [], [], [], []
     for i in range(noise.shape[0]):
-        res = _realisation(hyp, noise[i], multistart=i < n_multi)
-        d1c.append(_pack(res["d1c"], st["eps_c"], st["n_prime"]))
-        chain.append(_pack(res["chain"], st["eps_c"], st["n_prime"]))
-        chain_roots.append([res["chain"]["n_roots"], res["chain"]["n_positive"]])
-        if "multi" in res:
-            multi.append(_pack(res["multi"], st["eps_c"], st["n_prime"]))
-    return hyp, i0, np.array(d1c), np.array(chain), np.array(chain_roots), np.array(multi)
+        rows = _noisy_rows(st["rows"], noise[i])
+        fl = [0.0] * len(_FLAGS)  # timeouts/errors per stage, capped solves
+        r, status = _guarded(
+            lambda rows=rows: A.solve_warm(rows, w, s, st["x_clean"], max_nfev=cap), WATCHDOG_S
+        )
+        if status != "ok":
+            fl[_FLAGS.index("warm_timeout" if status == "timeout" else "warm_error")] = 1.0
+            errors.append(f"draw {i0 + i} warm: {status}")
+        elif not r["converged"] and r["nfev"] >= cap:
+            fl[_FLAGS.index("warm_capped")] = 1.0
+        d1c.append(_pack(r, st["eps_c"], st["n_prime"]) if r else nan_row)
+        if i < n_multi:
+            r, status = _guarded(
+                lambda rows=rows: A.solve_multistart(rows, w, s, st["x_clean"], max_nfev=cap),
+                12 * WATCHDOG_S,
+            )
+            if status != "ok":
+                fl[_FLAGS.index("multi_timeout" if status == "timeout" else "multi_error")] = 1.0
+                errors.append(f"draw {i0 + i} multistart: {status}")
+            else:
+                fl[_FLAGS.index("multi_n_capped")] = float(r.get("n_capped", 0))
+            multi.append(_pack(r, st["eps_c"], st["n_prime"]) if r else nan_row)
+        ms = st["ms"]
+        j = 0
+        for p in ms.places:
+            if p["year"] == 1690:
+                continue
+            p["oc_mean"] = st["rows"][j][3]["lhs"] + float(noise[i][j])
+            j += 1
+        r, status = _guarded(lambda rows=rows, ms=ms: chain_solve(ms, hyp, rows, w, s), WATCHDOG_S)
+        if status != "ok":
+            fl[_FLAGS.index("chain_timeout" if status == "timeout" else "chain_error")] = 1.0
+            errors.append(f"draw {i0 + i} chain: {status}")
+            r = {"converged": False, "n_roots": 0, "n_positive": 0}
+        chain.append(_pack(r, st["eps_c"], st["n_prime"]))
+        roots.append([r["n_roots"], r["n_positive"]])
+        flags.append(fl)
+    CHUNK_DIR.mkdir(parents=True, exist_ok=True)
+    tmp = out_path.with_suffix(".tmp.npz")
+    np.savez(tmp, d1c=np.array(d1c), chain=np.array(chain), roots=np.array(roots),
+             multi=np.array(multi), flags=np.array(flags))  # fmt: skip
+    os.replace(tmp, out_path)
+    return hyp, model, i0, "done", errors
 
 
 def draws_path(hyp: int, model: str) -> Path:
     return CACHE / f"draws_h{hyp}_{model}.npz"
 
 
+def assemble(n_draws: int = N_DRAWS) -> list[tuple[int, str]]:
+    """Join each complete cell's chunk files into its draws file; returns the cells written."""
+    written = []
+    for hyp in HYPS:
+        for model in MODELS:
+            paths = [chunk_path(hyp, model, i0) for i0 in range(0, n_draws, CHUNK)]
+            if not all(p.exists() for p in paths):
+                continue
+            parts = [np.load(p) for p in paths]
+            arrays = {k: np.concatenate([z[k] for z in parts if z[k].size])
+                      for k in ("d1c", "chain", "roots", "multi", "flags")
+                      if any(z[k].size for z in parts)}  # fmt: skip
+            n_multi = arrays["multi"].shape[0] if "multi" in arrays else 0
+            np.savez(draws_path(hyp, model), fields=np.array((*_FIELDS, "converged", "bound")),
+                     flag_names=np.array(_FLAGS), multistart_all=np.array(n_multi == n_draws),
+                     **arrays)  # fmt: skip
+            written.append((hyp, model))
+    return written
+
+
 def run_draws(n_workers: int, multistart_all: bool = False, n_draws: int = N_DRAWS) -> None:
     """Every model × hypothesis: the noise matrix from its seed, both methods on every
-    realisation, the multistart on the first N_MULTI (or on all with ``multistart_all``)."""
+    realisation, the multistart on the first N_MULTI (or on all with ``multistart_all``).
+    Cells (a) and (b) of both hypotheses run first, (c) last; each chunk is a file on disk
+    (a rerun skips the chunks already there); progress is logged per chunk."""
+    from concurrent.futures import as_completed
+
     from fork import ledger
 
     pre = json.loads(PRERUN_JSON.read_text())
     m = A.load_memoir()
     t0 = time.time()
     tasks = []
-    for hyp in HYPS:
-        for model in MODELS:
+    for model in MODELS:  # (a), (b) for both hypotheses, then (c)
+        for hyp in HYPS:
             sig = _rows_sigma_vector(
                 m, {int(k): v for k, v in pre["sigma"][f"H{hyp}"][model].items()}
             )
@@ -472,43 +555,26 @@ def run_draws(n_workers: int, multistart_all: bool = False, n_draws: int = N_DRA
                 )
     _log(
         f"draws: {len(tasks)} chunks of {CHUNK} over {n_workers} workers "
-        f"(multistart on {'all' if multistart_all else N_MULTI} per cell)"
+        f"(multistart on {'all' if multistart_all else N_MULTI} per cell; order a, b, c)"
     )
-    store = {
-        (h, mo): {"d1c": [], "chain": [], "roots": [], "multi": []} for h in HYPS for mo in MODELS
-    }
     done = 0
     with ProcessPoolExecutor(
         n_workers, initializer=_init_worker, initargs=(str(PRERUN_JSON),)
     ) as ex:
-        futures = [(t[1], ex.submit(_task, (t[0], t[2], t[3], t[4]))) for t in tasks]
-        for model, fut in futures:
-            hyp, i0, d1c, chain, roots, multi = fut.result()
-            st = store[(hyp, model)]
-            st["d1c"].append((i0, d1c))
-            st["chain"].append((i0, chain))
-            st["roots"].append((i0, roots))
-            if multi.size:
-                st["multi"].append((i0, multi))
+        futures = {ex.submit(_task, t): t[:3] for t in tasks}
+        for fut in as_completed(futures):
+            hyp, model, i0 = futures[fut]
             done += 1
-            if done % 24 == 0 or done == len(tasks):
-                _log(f"draws: {done}/{len(tasks)} chunks, {(time.time() - t0) / 60:.1f} min")
-    for (hyp, model), st in store.items():
-        arrays = {
-            k: np.concatenate([a for _, a in sorted(st[k], key=lambda q: q[0])])
-            for k in ("d1c", "chain", "roots")
-            if st[k]
-        }
-        if st["multi"]:
-            arrays["multi"] = np.concatenate(
-                [a for _, a in sorted(st["multi"], key=lambda q: q[0])]
-            )
-        np.savez(
-            draws_path(hyp, model),
-            fields=np.array((*_FIELDS, "converged", "bound")),
-            multistart_all=np.array(multistart_all),
-            **arrays,
-        )
+            try:
+                _h, _m, _i, state, errors = fut.result()
+            except Exception as exc:  # a chunk lost whole: logged, the others go on
+                _log(f"CHUNK FAILED h{hyp}/{model}/{i0}: {type(exc).__name__}: {exc}")
+                continue
+            for e in errors[:5]:
+                _log(f"h{hyp}/{model}: {e}")
+            _log(f"chunk {done}/{len(tasks)} h{hyp}/{model}/{i0:05d} {state}, "
+                 f"{(time.time() - t0) / 60:.1f} min")  # fmt: skip
+    written = assemble(n_draws)
     ct = os.times()
     ledger.append(
         "p1b_adams_noise/draws",
@@ -521,9 +587,10 @@ def run_draws(n_workers: int, multistart_all: bool = False, n_draws: int = N_DRA
         n_workers=n_workers,
         estimated=False,
         note=f"{n_draws} draws × {len(MODELS)} models × {len(HYPS)} hypotheses × 2 methods"
-        f"{' + multistart on all' if multistart_all else f' + multistart on {N_MULTI}'}",
+        f"{' + multistart on all' if multistart_all else f' + multistart on {N_MULTI}'}"
+        "; per-chunk files",
     )
-    _log(f"draws done in {(time.time() - t0) / 60:.1f} min")
+    _log(f"draws done in {(time.time() - t0) / 60:.1f} min; cells assembled: {written}")
 
 
 # ------------------------------------------------------------------ summarize
@@ -679,6 +746,7 @@ def summarize(png: bool = True) -> dict:
         "multistart_check": {},
         "multistart_rerun_required": False,
         "readings": {},
+        "cells_missing": [],
     }
     for hyp in HYPS:
         H = f"H{hyp}"
@@ -689,6 +757,9 @@ def summarize(png: bool = True) -> dict:
         }
         O_clean = {"d1c": c["d1c"]["O_clean"], "chain": c["chain"]["O_clean"]}
         for model in MODELS:
+            if not draws_path(hyp, model).exists():
+                out["cells_missing"].append(f"{H}/{model}")
+                continue
             z = np.load(draws_path(hyp, model))
             n_total = z["d1c"].shape[0]
             rec = {
@@ -699,8 +770,15 @@ def summarize(png: bool = True) -> dict:
             if model == "a":
                 rec["sigma_raw_rms_arcsec"] = pre["sigma"][H]["a_raw_rms"]
                 rec["note"] = "conditioned on his own fit; scaled by √(29/21)"
+            if "flags" in z:
+                fl = z["flags"]
+                rec["flags"] = {
+                    str(nm): int(np.sum(fl[:, k] > 0)) for k, nm in enumerate(z["flag_names"])
+                }
             if "multi" in z:
-                rec["multistart"] = multistart_fraction(z["d1c"], z["multi"])
+                rec["multistart"] = multistart_fraction(z["d1c"], z["multi"][:N_MULTI])
+                if z["multi"].shape[0] > N_MULTI:
+                    rec["multistart_all_draws"] = multistart_fraction(z["d1c"], z["multi"])
                 out["multistart_check"][f"{H}/{model}"] = rec["multistart"]
             use_multi = (
                 bool(z["multistart_all"]) and "multi" in z and z["multi"].shape[0] == n_total
@@ -735,12 +813,17 @@ def summarize(png: bool = True) -> dict:
     for hyp in HYPS:
         H = f"H{hyp}"
         for method in METHODS:
-            if f"{H}/a" not in out["results"] or method not in out["results"][f"{H}/a"]:
+            if (
+                f"{H}/a" not in out["results"]
+                or f"{H}/b" not in out["results"]
+                or method not in out["results"][f"{H}/a"]
+            ):
                 continue
             for target in ("primary", "printed"):
                 Pa = out["results"][f"{H}/a"][method]["P"][target]["P"]
                 Pb = out["results"][f"{H}/b"][method]["P"][target]["P"]
-                Pc = out["results"][f"{H}/c"][method]["P"][target]["P"]
+                rc = out["results"].get(f"{H}/c")
+                Pc = rc[method]["P"][target]["P"] if rc else None
                 out["readings"][f"{H}/{method}/{target}"] = {
                     "P_a": Pa,
                     "P_b": Pb,
@@ -782,6 +865,8 @@ def draw(out: dict, pre: dict, path: Path) -> None:
                 ax.set_axis_off()
                 continue
             for model in MODELS:
+                if not draws_path(hyp, model).exists():
+                    continue
                 z = np.load(draws_path(hyp, model))
                 arr = (
                     z["multi"]
@@ -812,6 +897,7 @@ def draw(out: dict, pre: dict, path: Path) -> None:
             txt = "\n".join(
                 f"P({model}) = {ps[f'{H}/{model}'][method]['P']['primary']['P']:.4f}"
                 for model in MODELS
+                if f"{H}/{model}" in ps
             )
             ax.text(0.02, 0.97, txt, transform=ax.transAxes, va="top", fontsize=9)
             ax.text(
