@@ -420,3 +420,51 @@ the band is reached in 995 draws (959 before 23 September; the 8th to 13th sessi
    in the 12 August series is 49 over that session's stars, capped at 1.
 6. Desk work: a comparison flagged on day t is confirmed on the first usable night from t; a
    disc noted at the eyepiece is confirmed on the next usable night.
+
+## Dated lines, 2026-11-12: rulings on P6
+
+The rulings were decided, and the code implementing them was written, before the full draws
+were launched (00:27 PST). These lines were written into the note about two minutes after the
+launch, while the draws ran, and were committed alone and pushed before any result of the
+full run was read (no chunk opened, no summary made). The smoke record's split of line 7 is in
+the working tree and is committed with the results.
+
+1. **Abduction reading.** Primary, and the one read against § 7: the counterfactual with the
+   realised events held. A recording that a case shares with the actual history (the same
+   night, the same sweep, the same mode) keeps its realised outcome: recorded on 4 and
+   12 August with no disc noted, and recorded on 29 September with the disc noted. Events
+   the history does not contain are drawn afresh. Under this reading A0 is 0 before
+   23 September by construction. The paired differences of § 7 are taken under this reading.
+   Secondary, reported and not read: the replay with every event redrawn, labelled "his
+   procedure as a plan", A0 included. Both readings use the same accepted draws and seeds.
+   What counts as shared, as implemented: in A0, C1 and C2 the three recordings of the record;
+   in C3 and C4 the 29 September sweep only, since their zones and their 4 August sector
+   sweep are laid from another place and are other recordings.
+2. **The sessions of 13 August to 28 September do not cover the planet** in A0, C1 and C2.
+   Basis: step 2's primary statement, row `1846-08-13-to-09-28` of `challis_sweeps.csv`, the
+   ground "earlier in right ascension" than the planet (Challis's letter: "too early in right
+   ascension"), and "did not again fall in with the planet".
+3. **C4b, declared choice.** The breadth in declination of each sweep is uniform on 30′ to
+   120′; the length in right ascension scales as 9′ over the breadth; one sweep per zone;
+   p_disc_looking at each recording.
+4. **Too few usable nights, declared choice.** If fewer usable nights than drawn sessions
+   fall between 13 August and 28 September, the sessions are cut to the usable nights.
+5. **Hours and rate, declared choice.** Hours are drawn per session; stars per hour once per
+   draw; the planet's place in the 12 August series is 49 over that session's stars, capped
+   at 1.
+6. **Confirmation, declared choice.** A comparison that flags the planet on day t is
+   confirmed on the first usable night from t; a disc noted at the eyepiece is confirmed on
+   the next usable night.
+7. **The smoke record is split.** `docs/notes/P1B_challis_smoke.json` now holds the content
+   without timings, sha256
+   `6c0c25969c707b6696a7852d7ef455184cc744f31297942dbab80f437a148d8a`; the timings are in
+   `docs/notes/P1B_challis_smoke_timings.json`, not hashed. The numbers are those of the
+   pre-run's code (commit d754436), under the replay reading; a rerun of `smoke` writes to
+   the cache and leaves the record alone.
+
+Fixed with these lines, before the full draws, where the pre-run's code fell short of § 5:
+C1a now applies the plan's exception (the planet's 12 August place may lie in the part of the
+August zone beyond the July zone's extent). In the branch where the planet entered by the
+declination edge, the July zone lies within the August one at a setting uniform over the
+possible ones, and the planet sits at 49 over the session's stars along the August zone. The
+smoke record predates this and has C1a without the exception.
