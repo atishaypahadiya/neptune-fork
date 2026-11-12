@@ -195,6 +195,113 @@ There are 40 jobs (10 seeds × 4 cells), with the same nlive as M5b. The recorde
 costs more than in M5b because it computes the apparent place at 279 epochs. The result is in
 `site/data/a6c_coverage.json` and `docs/notes/M6.md`.
 
+## M6c: the headline fit and the sensitivity runs S1–S3
+
+```sh
+uv run python -m fork.export.m6c make-s2-sigma     # S2's data-only error model, before sampling
+uv run python -m fork.export.m6c plan
+caffeinate -i uv run python -m fork.export.m6c run --n-workers 12 --variant headline
+caffeinate -i uv run python -m fork.export.m6c run --n-workers 12 \
+    --variant s1_e05 --variant s2_sigma_data --variant s3_t4
+uv run python -m fork.export.m6c summarize         # site/data/m6_fits.json
+```
+
+Each variant is 4 jobs, one per cell of the partition. Ledger rows `m6c/<variant>/c<k>`:
+
+| run | CPU-hours | likelihood calls | per-job wall |
+|---|---|---|---|
+| headline | 28.5 | 17.3 million | 152 min (cell 0, 6 workers), 178–187 min (cells 1–3, 2 workers each) |
+| S1, eccentricity up to 0.5 (`s1_e05`) | 30.3 | 18.3 million | 173 min (cell 0), 177–196 min (cells 1–3) |
+| S2, error levels from the data alone (`s2_sigma_data`) | 28.3 | 17.6 million | 142 min (cell 0), 176–188 min (cells 1–3) |
+| S3, Student-t errors (`s3_t4`) | 30.4 | 17.1 million | 158 min (cell 0), 182–199 min (cells 1–3) |
+
+Pre-registered in `docs/notes/M6.md`; results and the reading rule there. The two after-the-fact
+diagnostics the site shows are `docs/notes/scripts/m6c_conjunction.py` (about 10 min) and
+`docs/notes/scripts/m6c_offset_track.py`.
+
+## M6c: the repeatability runs R1 and R2
+
+```sh
+uv run python -m fork.export.m6c_repeat plan
+caffeinate -i uv run python -m fork.export.m6c_repeat run --n-workers 12
+uv run python -m fork.export.m6c_repeat summarize  # site/data/m6c_repeat.json
+uv run python -m fork.export.m6c_repeat derived    # site/data/m6c_replacement.json
+```
+
+Six nested runs of cell 2: R1 is four runs at the headline's settings (117–122 min each on 3
+workers), R2 two runs at higher resolution (488 and 489 min each on 6 workers). **103.6
+CPU-hours** and 63.5 million likelihood calls in all; ledger rows `m6c_repeat/r1_<k>` and
+`m6c_repeat/r2_<k>` (the `summarize` and `derived` rows are estimates). The headline posterior
+on the site is the replacement posterior: the headline's cells 0, 1 and 3 with cell 2 replaced
+by the R2 merge (`docs/notes/M6.md`).
+
+## M7: the site's data
+
+```sh
+uv run python -m fork.export.to_json               # the site/data files of the fits and checks
+uv run python -m fork.export.ledger                # site/data/ledger.json
+uv run python docs/notes/scripts/m7_table1.py      # Table 1
+uv run python docs/notes/scripts/m7_plates.py      # Plates I to III
+uv run python docs/notes/scripts/m7_motion.py      # Plate III's frames
+uv run python docs/notes/scripts/m7_parallax.py
+uv run python docs/notes/scripts/m7_dataset.py     # reads release/ and Zenodo's records API (network)
+uv run python docs/notes/scripts/m7_timeline.py    # needs gh, network and this machine's run logs
+uv run python docs/notes/scripts/release_json.py   # site/data/release.json
+```
+
+Not in the ledger: each takes seconds to a few minutes. `m7_timeline.py` reads the run drivers'
+logs under `data/cache/`, so it reproduces only on the machine that ran the jobs; its output is
+committed. The page itself is built as under "Site (Pages build)" below (`docs/notes/M7.md`,
+`docs/DESIGN.md`).
+
+## M8: the fast linearized likelihood and its validation
+
+```sh
+uv run python -m fork.export.m8 a8a --n-workers 8              # 1.5 min wall, 0.2 CPU-h
+uv run python -m fork.export.m8 a8e
+uv run python -m fork.export.m8 summarize                      # site/data/m8_validation.json
+uv run python -m fork.export.m8_perturbative a8a --n-workers 8    # 3.1 min, 0.4 CPU-h
+uv run python -m fork.export.m8_perturbative cells --n-workers 8  # 7.7 min, 1.0 CPU-h
+uv run python -m fork.export.m8_runs laplace-check             # 20 min on 12 workers, 3.8 CPU-h
+uv run python -m fork.export.m8_runs laplace-check --points s1_cell0   # 17.7 min on 6 workers, 1.7 CPU-h
+nohup caffeinate -is .venv/bin/python -m fork.export.m8_runs pipeline --n-workers 12 &
+```
+
+The `main` pipeline is the fast-likelihood validation: 48 nested runs (the headline, S1 and S2,
+4 cells each, 4 seeds each; ledger rows `m8/<variant>/c<k>/s<j>`, one worker per run), then the
+reweighting against the full likelihood (`m8/reweight`, 25 min on 12 workers, 4.8 CPU-h) and
+the summary.
+
+| part | CPU-hours | likelihood calls (fast) |
+|---|---|---|
+| headline, 16 runs | 2.1 | 27.7 million |
+| S1, 16 runs | 2.3 | 28.7 million |
+| S2, 16 runs | 2.1 | 27.6 million |
+
+Pre-registered in `docs/notes/M8.md` and the spec; tests A8a–A8f are read there. Progress is in
+the campaign cache's `progress.log`, and a rerun skips finished jobs.
+
+## M8: the A8f rerun, the higher-resolution reruns (M8b) and the A8d(S1) arbiter
+
+```sh
+nohup caffeinate -is sh -c '.venv/bin/python -m fork.export.m8_runs pipeline --campaign a8f --n-workers 12; \
+  .venv/bin/python -m fork.export.m8_runs pipeline --campaign m8b --n-workers 12; \
+  .venv/bin/python -m fork.export.m8_arbiter pipeline --n-workers 12' > data/cache/m8/followup.out 2>&1 &
+```
+
+One detached chain, in the pre-registered order (`docs/notes/M8.md`, "Follow-up
+pre-registration").
+
+| run | what | CPU-hours | likelihood calls | wall |
+|---|---|---|---|---|
+| the A8f rerun (`--campaign a8f`) | 3 cells × 4 seeds, with its reweighting (8.6 min) | 11.7 | 133.5 million (fast) | ledger rows `m8/a8f/*` |
+| M8b (`--campaign m8b`) | the headline's 4 cells × 4 seeds at higher resolution | 24.3 | 299.7 million (fast) | ledger rows `m8/m8b/*`; `site/data/m8b.json` |
+| the A8d(S1) arbiter (`m8_arbiter`) | 2 full-likelihood runs of S1 cell 0, nlive 4000, 6 workers each | 98.0 (47.8, 49.7 and 0.5 for the summary) | 57.2 million (N-body) | 588 and 612 min per run; `site/data/m8_arbiter.json` |
+
+The arbiter ended in its third pre-registered outcome ("fail, agreeing with neither"), so S1's
+published verdict stands and the question is unresolved (`docs/notes/M8.md`, "A8d(S1) arbiter:
+results").
+
 ## M9: profile likelihood in the semi-major axis
 
 ```sh

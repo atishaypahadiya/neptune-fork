@@ -161,7 +161,7 @@ Released on the user's explicit go-ahead ("Release v1.1.0"). What it adds to v1.
   follow-up commit with the DOI in `CITATION.cff` (`doi:` and a v1.1.0 identifier beside
   v1.0.0's), `README.md` and `site/data/release.json`.
 
-## v1.2.0 list (opened 2026-11-11; no release without the explicit word)
+## v1.2.0 list (opened 2026-11-11; no release without the explicit word; closed below)
 
 - Carried from v1.1: M6d, M6e, the M6c variant fits, the S1 cell-0 resolution.
 - `docs/reproduce.md`: write sections for the M6c headline, S1–S3, R1/R2, M7, M8/M8b and the
@@ -178,3 +178,31 @@ Released on the user's explicit go-ahead ("Release v1.1.0"). What it adds to v1.
   builder's output, and `release/` is not edited outside a release. The dataset's own README,
   CITATION.cff, `.zenodo.json`, DATA_DICTIONARY, MANIFEST and CHECKLIST carry the same earlier
   wording; decide their text when the dataset version is cut.
+
+## v1.2.0 (prepared 2026-11-12; not tagged until the explicit word)
+
+Plan approved 2026-11-12 with four decisions: M6d, M6e, the S1 cell-0 resolution and the
+remaining M6c variants go to v1.3; dataset v1.0.1 is cut with this release; the descriptive
+strings of `spotcheck_results.json` are reworded with values unchanged; the Phase 1b tables are
+in the code record only.
+
+- [x] Dataset tree v1.0.1 (5988a01): documents, the builder and the spot-check record's strings
+  reworded; `datapackage.json` regenerated; the package cites the concept DOI with the version
+  number; `tests/test_release.py` pins the MD5s of the files as built, marked provisional.
+- [x] `docs/reproduce.md`: the Phase 1 sections listed above.
+- [x] Metadata: version 1.2.0 in `pyproject.toml`, `uv.lock` and `CITATION.cff` (its `doi:`
+  removed until Zenodo mints the version DOI); `.zenodo.json`; `CHANGELOG.md`;
+  `site/data/release.json`; the companion page's status; `site/data/m7_timeline.json`
+  "deferred" says 1.3.
+- [x] Checks: ruff, tests, prerender, number audit on both pages, layout in Chromium and WebKit.
+- [ ] Dataset v1.0.1 uploaded to Zenodo by hand as a new version of record 24044792.
+- [ ] After the upload: compare the record's MD5s with the pins and name the record in the
+  test's comment; the v1.0.1 version DOI in the project README and `site/data/m7_dataset.json`.
+- [ ] Tag `v1.2.0`, publish the GitHub release (Zenodo mints the code's version DOI).
+- [ ] Follow-up commit: that DOI in `CITATION.cff`, `README.md` and `site/data/release.json`.
+
+## v1.3 list (opened 2026-11-12; no release without the explicit word)
+
+- Carried from v1.2: M6d, M6e, the remaining M6c variants, the S1 cell-0 resolution.
+- A human spot check of the Phase 1b tables (`data/historical/adams_challis/`), then a separate
+  dataset record for them.

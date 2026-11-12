@@ -1,11 +1,11 @@
 {
  "description": "The code's release, from pyproject.toml and CITATION.cff: version, tag, release date, and the Zenodo DOIs of the archived code once minted (null before).",
- "version": "1.1.0",
- "tag": "v1.1.0",
- "date_released": "2026-11-10",
- "software_doi": "10.5281/zenodo.24122940",
+ "version": "1.2.0",
+ "tag": "v1.2.0",
+ "date_released": "2026-11-12",
+ "software_doi": null,
  "software_concept_doi": "10.5281/zenodo.24121059",
  "repository": "https://github.com/atishaypahadiya/neptune-fork",
- "release_url": "https://github.com/atishaypahadiya/neptune-fork/releases/tag/v1.1.0",
+ "release_url": "https://github.com/atishaypahadiya/neptune-fork/releases/tag/v1.2.0",
  "license": "MIT (code); CC0 1.0 (data/historical/)"
 }

@@ -446,7 +446,7 @@ paper".
    - 4.3 what each reading rests on.
 5. Limitations.
 6. Data availability: the notes, the JSON files and the code paths; the DOIs as on the main
-   page. Phase 1b is in the repository and not yet in a release, and the page says so.
+   page. Phase 1b is in the repository and not yet in a release, and the page says so (until release v1.2.0, whose page names the release).
 7. References, the page's own list.
 
 **Deviations stated where they bear on a claim** (each in the sentence that makes the claim,

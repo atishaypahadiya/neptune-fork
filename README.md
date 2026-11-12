@@ -66,9 +66,9 @@ Phase 1. The stages on synthetic data are complete:
 
 The pre-registered fit to the real data (the headline fit) is done and reported, and so are the
 acceptance tests on the historical data ([report](docs/notes/A6.md)). The Peirce-number analysis
-and the held-out test on Neptune's precoveries are deferred to v1.2. The spec's other variants of
+and the held-out test on Neptune's precoveries are deferred to v1.3. The spec's other variants of
 the headline fit (the `bouvard` and `adams` data
-variants, the 1846 reduction track and the Le Verrier shape model) are deferred to v1.2 too:
+variants, the 1846 reduction track and the Le Verrier shape model) are deferred to v1.3 too:
 they are not yet pre-registered, will be planned and pushed before launch, and the `adams`
 variant opens the Adams–Challis study. The higher-resolution reruns with a faster likelihood did
 not meet the 95 % stability condition, so the 95 % interval stays provisional. The full-likelihood
@@ -163,7 +163,7 @@ likelihood ([Phase 1 spec](docs/PHASE1_SPEC.md#m8-fast-linearized-likelihood)) m
 runs of every cell affordable; its higher-resolution reruns did not meet the 95 % stability
 condition, so the 95 % interval stays provisional.
 
-**Phase 1b: the British search (in the repository, not yet in a release).** A companion
+**Phase 1b: the British search (release v1.2.0).** A companion
 study, [on its own page](https://atishaypahadiya.github.io/neptune-fork/adams-challis/), asks
 two questions of the printed record.
 
@@ -190,7 +190,7 @@ The write-up, with each claim's JSON path and deviation, is
   above) covers all versions; cite it for the dataset in general.
 - Version DOI [10.5281/zenodo.24044792](https://doi.org/10.5281/zenodo.24044792) is v1.0.0;
   cite it for exact reproduction.
-- The code of release v1.1.0 is archived on Zenodo as well: version DOI
+- Each release of the code is archived on Zenodo as well. v1.1.0: version DOI
   [10.5281/zenodo.24122940](https://doi.org/10.5281/zenodo.24122940), concept DOI
   [10.5281/zenodo.24121059](https://doi.org/10.5281/zenodo.24121059) for all versions
   (v1.0.0: [10.5281/zenodo.24121060](https://doi.org/10.5281/zenodo.24121060);
@@ -201,7 +201,7 @@ The write-up, with each claim's JSON path and deviation, is
 - The reduction check against JPL: comparison against per-group precision not made: no precision figure was fixed before the data were seen. Medians reported. Details in the [acceptance-test report](docs/notes/A6.md).
 - The transcription check: 0 of 28 rows in error; 95 % upper bound on the per-row error rate 10.1 % (exact one-sided Clopper–Pearson, 0 of 28); the remaining 251 rows are unchecked.
 - The observation model does not include diurnal parallax (up to 0.5″ for Uranus over 1781–1845).
-- Only Le Verrier's data choice on the modern reduction track is fitted: the `bouvard` and `adams` variants, the 1846 reduction track and the Le Verrier shape model are deferred to v1.2 (not yet pre-registered; to be planned and pushed before launch; the `adams` variant opens the Adams–Challis study).
+- Only Le Verrier's data choice on the modern reduction track is fitted: the `bouvard` and `adams` variants, the 1846 reduction track and the Le Verrier shape model are deferred to v1.3 (not yet pre-registered; to be planned and pushed before launch; the `adams` variant opens the Adams–Challis study).
 - Error model: the evidence favours Student-t errors (ln B = +13.7); the Gaussian error model
   was fixed by the pre-registration and is kept. Student-t errors move the median 0.37 headline
   half-widths.

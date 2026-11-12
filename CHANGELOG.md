@@ -2,6 +2,53 @@
 
 Versions follow semver. Dates are the release dates; the DOIs are in `CITATION.cff`.
 
+## 1.2.0 (2026-11-12)
+
+Phase 1b, a companion study of the British search for the planet, read from the printed record
+alone. It asks two questions.
+
+How good was Adams? At the distances he assumed, the project's fit to his data choice is 10.5°
+and 9.1° short of Neptune on Galle's night. His two solutions are reproduced from his memoir. On
+a noise-free Neptune at his first distance every method is short (his least squares 9.5°, the
+project's model on his places 7.8°, the project's fit 10.4°), so the shortfall belongs to the
+assumed distance, and his nearness to the truth (+1.7° and +2.5°) to his data or their
+reduction. Whether noise alone accounts for that nearness is not settled: the pre-registered
+statistic measured jumps to a second minimum of his least-squares problem, and the post hoc
+statistic (0.017 under his first hypothesis) reads weak.
+
+Could Challis have recognised the planet before 23 September 1846? A detection model
+conditioned on his record gives, with the realised events held fixed: his actual procedure 0 by
+construction (the cases measure what a change would have added); the comparison he broke off,
+carried through, 0.71 (0.50 to 0.97); zones from Adams's first place 0.41, or 0.79 with prompt
+comparison; from Le Verrier's June place 0.85 with prompt comparison. Each figure depends on an
+input the record does not fix, three readings are prior-dependent, and none reaches "very
+probably".
+
+- `docs/notes/P1B_*.md`: sources, Adams's solutions, Challis's search log, the fit at his
+  distances, the reproduction, noise against a systematic cause, the detection model, and the
+  write-up with each claim's JSON path and deviation (`docs/notes/P1B_writeup.md`). Each
+  pre-registration stands unedited above its results.
+- `data/historical/adams_challis/`: the transcribed tables of the study (CC0). They are in the
+  code archive only; they have had no human spot check and are not a dataset record.
+- `fork.historical.adams_1846`, `fork.historical.challis_1846`; `fork.export.p1b_adams`,
+  `p1b_adams_repro`, `p1b_adams_noise`, `p1b_challis`, `p1b_site`; their tests.
+- Site: the companion page `adams-challis/`, with Table 1 and Figs. 1 to 4, every number a
+  named field of a committed JSON; the main page gains one sentence at the end of its abstract.
+  The prerender, the number audit and the layout check cover both pages.
+- `docs/reproduce.md`: sections for the headline fit and the sensitivity runs, the
+  repeatability runs, the site's data, the fast-likelihood validation, its reruns and the
+  full-likelihood check of the eccentricity test, and Phase 1b.
+- Wording: the notes, the source manifest and the documentation describe the transcription and
+  its checks by their method. The caveats stand: both passes and the first spot check share one
+  method, so their errors may be correlated, and 251 rows of Table 77 have had no human check.
+- Dataset v1.0.1 (concept DOI 10.5281/zenodo.24044791): rewords descriptive strings in
+  `spotcheck_results.json` and the documentation; no table value or check result changes.
+- Compute ledger: 1193 CPU-hours (Phase 1: 1090; Phase 1b: 103).
+- Deferred from v1.2 to v1.3: the Peirce shape-model comparison (M6d), the held-out
+  precoveries (M6e), the remaining M6c variants (the Bouvard and Adams data variants, the 1846
+  reduction track, the Le Verrier shape model), and the resolution of the eccentricity test's
+  low-distance cell (S1 cell 0).
+
 ## 1.1.0 (2026-11-10)
 
 The distance claim of v1.0.0 held only under the Gaussian error model. v1.0.0 said that the
