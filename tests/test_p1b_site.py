@@ -70,7 +70,9 @@ def test_the_copy_states_the_deviations():
     copy = (S.ROOT / "site" / "js" / "copy_p1b.js").read_text(encoding="utf-8")
     copy = re.sub(r"` \+\s+`", "", copy)  # sentences run over several template lines
     for phrase in ("post hoc", "by construction", "prior-dependent", "not halved",
-                   "Outside the pre-registered reading"):  # fmt: skip
+                   "Outside the pre-registered reading", "depends on the method",
+                   "an interpretation and not a reading",
+                   "Post hoc, and defined after the cases were seen"):  # fmt: skip
         assert phrase in copy, phrase
 
 
@@ -105,3 +107,23 @@ def test_quoted_phase_1b_numbers(path):
     text = (S.ROOT / path).read_text(encoding="utf-8")
     for what, s in _quoted().items():
         assert s in text, f"{path}: {what} ({s})"
+
+
+def test_section_3_5_matches_the_note():
+    """The S8 sentence's premises, the ranges as ruled, and the manuscript line."""
+    d = _load("p1b_adams.json")
+    a = d["values"]
+    assert a["bv_H1_d1c_row"] != a["bv_H1_chain_row"]
+    assert not a["bv_s8a_H1_one_row"] and a["bv_s8b_H1_one_row"] and a["bv_s8c_H1_one_row"]
+    got = [f"{a[f'bv_s8_bc_{k}']:+.1f}" for k in ("Ob_min", "Ob_max", "R_min", "R_max")]
+    assert got == ["+8.6", "+12.0", "+0.5", "+3.1"]
+    assert a["bv_H1_d1c_R"] + a["bv_H1_d1c_Ob"] == pytest.approx(a["bv_H1_d1c_shift"])
+    ms = d["manuscript"]
+    assert ms["source"] == "St John's College, Cambridge, MS W16 (arranged by R. A. Sampson, 1901)"
+    assert (ms["n_values_agree"], ms["n_values_contradict"]) == (11, 0)
+    assert "Maria Giovanna De Simone" in _load("p1b_page.json")["acknowledgements"]
+
+
+def test_no_manuscript_image_on_the_site():
+    names = [p.name.lower() for p in (S.ROOT / "site").rglob("*") if p.is_file()]
+    assert not [n for n in names if "w16" in n or "stjohn" in n or n.startswith("168")]

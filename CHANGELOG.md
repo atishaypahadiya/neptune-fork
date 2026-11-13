@@ -4,7 +4,8 @@ Versions follow semver. Dates are the release dates; the DOIs are in `CITATION.c
 
 ## Unreleased
 
-Everything on `main` since 1.2.1. Nothing here changes a number on either page.
+Everything on `main` since 1.2.1. No number already on either page changes; the companion
+page gains § 3.5 and the text listed under Changed.
 
 ### Security
 
@@ -12,8 +13,27 @@ Everything on `main` since 1.2.1. Nothing here changes a number on either page.
   matching). It comes in through astroquery. No patched soupsieve supports Python 3.11.0
   to 3.11.4, so the minimum Python is now 3.11.5.
 
+### Changed
+
+- The companion page: a new § 3.5 with Table 2 (the four cases), the pre-registered
+  reading, the post hoc variants and an interpretation labelled as such; the two findings
+  on Bouvard's tables and the manuscript check in § 2 (values only, no image); an
+  acknowledgement; two references. The abstract, the end of § 3.4 and one limitation no
+  longer say that Bouvard's tables were not used.
+
 ### Added
 
+- The companion study's attribution step, pre-registered: Adams's four cases (his
+  observations or noise-free ones, against Bouvard's reference or a clean one) by both
+  methods and both hypotheses. Reading: "depends on the method"; the shift is not
+  attributed. Post hoc variants of the 1780 place point the other way from the case as
+  run (`docs/notes/P1B_bouvard_attribution.md`). The rows of Bouvard's tables of 1821
+  that his places touch are transcribed in two entries, with a misprint log
+  (`data/historical/adams_challis/bouvard_1821/`).
+- Two findings on Bouvard's tables: the leading coefficient of the equation of the centre
+  on p. xv differs from the tables in one digit, and Table I's mean longitude falls behind
+  the introduction's mean motion, as a handwritten line in the Harvard copy also says
+  (`docs/notes/P1B_bouvard_1821.md`).
 - The manuscript check of Adams's solutions (St John's College, Cambridge, MS W16) has a
   spot check by the author: 20 cells read against the images, all matching. The two
   readings the entries left doubtful are resolved. 11 of the 20 cells were chosen and 9

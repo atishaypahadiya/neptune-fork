@@ -971,3 +971,15 @@ the observations carry about 9° to 10° of the shift (the eight rows run from +
 +12.0°) and the reference about 1.5° to 3° (+0.5° to +3.1°); variant (a), the century
 branch, is the only one under which the methods disagree. The pre-registered reading is
 unchanged. The cubic rule for (c) stays as recorded.
+
+### S8, a clarification added on 13 November 2026 (post hoc)
+
+The sentence above says that variant (a) is the only one under which the methods
+disagree. Stated by the rows of § 6, which is how the runner's JSON now records it
+(`cells.S8`): on Hypothesis I the two methods fall in different rows under (a) and in
+the same row, "The observations carry the shift", under (b) and (c). On Hypothesis II
+they also fall in different rows under (c), where the chain's effect of the reference is
++3.13°, just over the 3° boundary ("Mostly the observations"), against +2.84° by least
+squares; the two differ by 0.29°. Under (a) they differ by 5.07° (Hyp. I) and 6.67°
+(Hyp. II). No number above changes. The JSON also gains the attribution of each variant
+and the ranges over (b) and (c); these are arithmetic on the cells already recorded.
