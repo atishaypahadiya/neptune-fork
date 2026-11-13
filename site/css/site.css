@@ -141,7 +141,7 @@ p { margin: 0 0 1em; }
 /* figures in the text are wide; the caption is on paper below, on the measure */
 main > section > .wide { margin: var(--fig-space) 0; }
 /* Fig. 10 is the one figure in the text on the measure: a single small histogram. */
-main > section > figure.body[data-fig] { margin: var(--fig-space) 0; }
+main > section > .fig-10 { margin: var(--fig-space) 0; }
 .canvas { position: relative; background: var(--prussian); overflow: hidden; }
 .canvas > svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .canvas > svg.ground { pointer-events: none; }
@@ -174,7 +174,9 @@ figure[data-fig] > figcaption { margin-top: 10px; }
    or the citation block is that block's top margin alone: the block before it gives up its
    bottom margin, and so do the last block of a section and the last item of a list. */
 main > section > :is(:has(+ :is(h3, figure, .pair, .cite)), :last-child) { margin-bottom: 0; }
-main > section > h3:first-child { margin-top: 0; }
+/* A heading that opens a section keeps its space above, whatever ends the section before
+   it. Only after a plate, which brings its own space, does it give it up. */
+main > .split + section > h3:first-child { margin-top: 0; }
 
 /* ---------- archival quotes (journal layer) ---------- */
 .quote { margin: 0 0 28px; padding-left: 1.6em; }

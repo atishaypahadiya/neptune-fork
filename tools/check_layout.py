@@ -29,6 +29,9 @@ checks of Plates II and III apply where the page has them). Loads the page with 
 - The number audit (tools/check_prerender.py's) at every width.
 - Every point letter in the prose lights its point; Plate III's play, pause and scrub work
   and the button's icon is SVG.
+- **Space above headings:** the gap between a section heading (an h3, or an h2 with its
+  "§ n" label) and the figure, caption, table or plate that ends above it is at least the
+  gap the same kind of heading has after a paragraph, within 2 px.
 - Print: nothing sticky, controls hidden, every caption under its figure.
 
     uv run --group site python tools/check_layout.py _site [--engine webkit] [--shots DIR]
@@ -455,6 +458,43 @@ GRID = r"""({ exempt, print }) => {
   return out;
 }"""
 
+# Space above section headings. A heading is an h3, or an h2 with its "§ n" label above it.
+# What stands before it is the block that ends last above it: its previous sibling, or the
+# last block of the previous section when it opens a section. The gap from that block's
+# bottom edge to the heading's top edge, after a figure, a caption, a table or a plate, must
+# be at least the gap the same kind of heading has after a paragraph (2 px tolerance).
+HEADINGS = r"""() => {
+  const lastBlock = (el) => { while (el && el.lastElementChild && !el.matches("p, figure, table, ul, ol, blockquote, .cite, .split, h2, h3")) el = el.lastElementChild; return el; };
+  const before = (el) => {
+    let prev = el.previousElementSibling;
+    if (!prev && el.parentElement.matches("section")) prev = el.parentElement.previousElementSibling;
+    return prev ? lastBlock(prev) : null;
+  };
+  const units = [];
+  for (const h of document.querySelectorAll("main h2, main h3")) {
+    if (h.closest(".side")) continue;                      // the text beside a plate
+    const label = h.previousElementSibling;
+    const top = h.tagName === "H2" && label && label.matches(".sec") ? label : h;
+    const prev = before(top);
+    if (!prev || prev.matches("h2, h3, .sec")) continue;   // the first block, or a heading under a heading
+    const gap = top.getBoundingClientRect().top - prev.getBoundingClientRect().bottom;
+    const kind = prev.matches("figure, figure *, table, .pair, .split, .split *") ? "figure" : prev.matches("p, ul, ol, blockquote, li") ? "text" : "other";
+    units.push({ id: h.id || h.textContent.trim().slice(0, 30), tag: h.tagName, kind, gap, margin: parseFloat(getComputedStyle(top).marginTop), prev: prev.id || prev.className || prev.tagName });
+  }
+  const fails = [], ref = {};
+  for (const tag of ["H2", "H3"]) {
+    const text = units.filter((u) => u.tag === tag && u.kind === "text").map((u) => u.gap);
+    const own = units.filter((u) => u.tag === tag).map((u) => u.margin);
+    // No heading of this kind after a paragraph on this page: the kind's own space above.
+    if (text.length) ref[tag] = Math.min(...text); else if (own.length) ref[tag] = Math.max(...own);
+  }
+  for (const u of units) {
+    if (u.kind === "text" || ref[u.tag] === undefined) continue;
+    if (u.gap < ref[u.tag] - 2) fails.push(`${u.tag.toLowerCase()} #${u.id}: ${u.gap.toFixed(1)} px above it after ${u.prev}; after a paragraph ${ref[u.tag].toFixed(1)} px`);
+  }
+  return { fails, units, ref };
+}"""
+
 PRINT = r"""() => {
   const out = { sticky: [], captions: [], controls: [] };
   for (const e of document.querySelectorAll("body *")) {
@@ -547,8 +587,10 @@ def check(
                 AUDIT, {"json": data, "derived": derived, "structure": STRUCTURE[path]}
             )
             g = page.evaluate(GRID, {"exempt": GRID_EXEMPT, "print": False})
+            hd = page.evaluate(HEADINGS)
             res = {
                 "page": problems, "overflow": r["overflowX"], "grid lines": g["fails"],
+                "space above headings": hd["fails"],
                 "emoji": r["emoji"],
                 "sticky": r["sticky"], "blocks": r["blocks"], "table": r["table"],
                 "columns": r["columns"], "gaps": r["gaps"], "links": r["links"],
