@@ -1,0 +1,4 @@
+table,row,field,printed,corrected,action,reason
+I,11,contact,III,,log_only,"1782 Nov 12: both rows of the transit are printed III. The first (2h 42m 6s) precedes the second (3h 49m 37s), so by the table's own pattern it is contact II. Printed value kept"
+III,12,day,8,,log_only,"1848: the exterior contact is dated Nov 8 at 4h 29m 40s, while table I dates contact III of the same transit Nov 9 at 4h 28m 8s (astronomical day from noon; contact II is Nov 8 at 23h 6m 47s). The two tables disagree by one day; printed values kept in both"
+III,12,k_sign,,,log_only,"0k printed without a sign; table I prints '- 0k' for the same transit. No numerical effect"

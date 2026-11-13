@@ -1,0 +1,189 @@
+{
+ "seed": 20261113,
+ "contacts_sha256": "70d4d0d1ea242c55c227d593b1cf9238593ce52c3cd39ae0ce9c1fdbd41712f9",
+ "exported": "2026-11-13T06:34:47.448Z",
+ "reviewer": "human",
+ "reviewer_name": "Atishay Pahadiya",
+ "cells": [
+  {
+   "table": "I",
+   "row": "1",
+   "field": "obs_s",
+   "value": "1",
+   "reason": "marked doubtful",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "table": "I",
+   "row": "2",
+   "field": "contact",
+   "value": "III",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "table": "I",
+   "row": "2",
+   "field": "weight",
+   "value": "0.1",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "table": "I",
+   "row": "6",
+   "field": "contact",
+   "value": "III",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "table": "I",
+   "row": "6",
+   "field": "obs_h",
+   "value": "23",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "table": "I",
+   "row": "7",
+   "field": "k_coeff",
+   "value": "4",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "table": "I",
+   "row": "10",
+   "field": "k_coeff",
+   "value": "12",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "table": "I",
+   "row": "11",
+   "field": "contact",
+   "value": "III",
+   "reason": "misprint log",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "table": "I",
+   "row": "14",
+   "field": "obs_m",
+   "value": "44",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "table": "I",
+   "row": "14",
+   "field": "k_sign",
+   "value": "+",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "table": "I",
+   "row": "19",
+   "field": "obs_h",
+   "value": "4",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "table": "I",
+   "row": "23",
+   "field": "obs_s",
+   "value": "9.8",
+   "reason": "fractional second",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "table": "II",
+   "row": "3",
+   "field": "second_value",
+   "value": "15 0 8",
+   "reason": "braced second value",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "table": "III",
+   "row": "1",
+   "field": "obs_s",
+   "value": "33",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "table": "III",
+   "row": "4",
+   "field": "k_sign",
+   "value": "-",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "table": "III",
+   "row": "12",
+   "field": "day",
+   "value": "8",
+   "reason": "misprint log",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "table": "III",
+   "row": "12",
+   "field": "obs_h",
+   "value": "4",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "table": "III",
+   "row": "12",
+   "field": "k_sign",
+   "value": "",
+   "reason": "misprint log",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "table": "IV",
+   "row": "4",
+   "field": "year",
+   "value": "1832",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "table": "IV",
+   "row": "4",
+   "field": "k_sign",
+   "value": "+",
+   "reason": "marked doubtful",
+   "matches": true,
+   "reading": ""
+  }
+ ]
+}
