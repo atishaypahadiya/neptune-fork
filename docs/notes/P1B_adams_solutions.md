@@ -149,7 +149,7 @@ Adams's memoir uses the same quantity (§ 30: ε = 217° 55′, θ = −51° 30�
 - Neptune's longitude is from the cached Horizons vectors at two bracketing epochs; the interpolation
   error over 8 days is below 1′.
 
-## Amendment: manuscript check, 13 Nov 2026
+## Amendment: manuscript check, 12 Nov 2026
 
 Added after the step was closed; nothing above is changed, and `adams_solutions.csv` is not
 edited. St John's College supplied images of seven sheets of MS W16 on 12 November 2026

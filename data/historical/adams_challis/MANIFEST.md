@@ -225,7 +225,7 @@ appear in the notes and tables.
 | `16873_Medium (1000 x 1000).jpg` | 747 × 999 | the supplier's smaller copy of 16873.jpg |  |  | `9dabae92033881c0cee66befaab199e4e7dfff21a25cb04c539c0bb79bfe1601` |
 | `16873_Small (500 x 500).jpg` | 373 × 499 | the supplier's smaller copy of 16873.jpg |  |  | `379c7aa6d26c76dfd28c20f4a6f15402cc0d90c7c7918c465be9c44e9bb50dab` |
 
-Transcription (13 November 2026 amendment of `docs/notes/P1B_adams_solutions.md`): two
+Transcription (12 November 2026 amendment of `docs/notes/P1B_adams_solutions.md`): two
 entries of 200 cells from 17 bands cut from the full-size images (under
 `data/cache/adams_challis/stjohns_bands/`, not committed).
 
