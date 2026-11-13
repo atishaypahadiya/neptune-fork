@@ -537,6 +537,20 @@ def solve_cell(m, hyp: int, col: dict, frame: str, ctx: dict) -> dict:
     }
 
 
+def _d_1780_interpolated(years: list, t: np.ndarray, d0: np.ndarray) -> float:
+    """S8 (c): the cubic through D at 1769, 1771, 1783 and 1786, at the 1780 place's epoch."""
+    idx = [years.index(y) for y in (1769, 1771, 1783, 1786)]
+    x = t[years.index(1780)]
+    total = 0.0
+    for i in idx:
+        w = 1.0
+        for j in idx:
+            if j != i:
+                w *= (x - t[j]) / (t[i] - t[j])
+        total += w * d0[i]
+    return float(total)
+
+
 def cells() -> dict:
     """The four cells for both methods and both hypotheses, the attribution, the reading
     and the sensitivities (the plan's §§ 2 to 7 and its amendments)."""
@@ -653,9 +667,16 @@ def cells() -> dict:
         "propagation d cos III": d * np.cos(arg3),
         # post hoc, not in the plan: a frame rate in true longitude
         "post hoc: 0.1 arcsec a year in true longitude": 0.1 * (t - t[use].mean()),
-        # post hoc: the 1780 place falls 0.04 year before 1780, so the amendment's rule gives
-        # it the century row; here it is put on Table I's own branch instead
-        "post hoc: the 1780 place on Table I's branch": np.array(
+        # S8 (defined after the cells were seen): the 1780 place falls 0.04 year before
+        # 1780, so the first amendment's rule gives it the century row (variant a, as run);
+        # (b) puts it on Table I's own branch; (c) interpolates D from its neighbours
+        "S8c the 1780 place: D interpolated from its neighbours": np.array(
+            [
+                _d_1780_interpolated(years, t, d0) - d0[years.index(1780)] if y == 1780 else 0.0
+                for y in years
+            ]
+        ),
+        "S8b the 1780 place on Table I's branch": np.array(
             [B.MEAN_SLIP_PER_YEAR * 100.0 * CS if y == 1780 else 0.0 for y in years]
         ),
     }
@@ -666,7 +687,7 @@ def cells() -> dict:
             "delta_arcsec": {
                 y: float(v) for y, v in zip(years, delta, strict=True) if abs(v) > 0.005
             }
-            if name.startswith(("S5", "post hoc: the 1780"))
+            if name.startswith(("S5", "S8"))
             else {"min": float(delta.min()), "max": float(delta.max())},
         }
         for hyp in (1, 2):

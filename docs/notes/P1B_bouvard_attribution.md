@@ -909,3 +909,57 @@ pushed (5fb7ba5). No earlier text is changed.
    about six minutes on one core (4 cells and the variants, each by both methods on
    both hypotheses, each least-squares solve from its grid of starts). Nothing in the
    method follows from this.
+
+## Results, 13 November 2026: S8, and an interpretation
+
+Run after the amendment above was pushed (157b3b2). S8 was defined after the cells were
+seen. It is reported, not read, and does not change the reading.
+
+### S8, the 1780 place
+
+Change of C_Bouvard at that one place, the change of cells B and C, and the attribution
+each variant would give (degrees).
+
+| variant | δ at 1780 | | B | C | R | Ob | I |
+|---|---|---|---|---|---|---|---|
+| (a) century branch, as run | 0 | Hyp. I, D1(c) | −3.17 | −3.80 | +5.26 | +5.89 | −0.45 |
+| | | Hyp. I, chain | −10.91 | −1.19 | +10.34 | +0.61 | +1.60 |
+| | | Hyp. II, D1(c) | −1.42 | −0.71 | +6.65 | +5.94 | −0.26 |
+| | | Hyp. II, chain | −10.33 | +3.72 | +13.31 | −0.74 | +1.46 |
+| (b) Table I's branch | +3″.40 | Hyp. I, D1(c) | +1.63 | −6.56 | +1.48 | +9.68 | −1.47 |
+| | | Hyp. I, chain | +2.32 | −7.68 | +0.47 | +10.47 | −1.77 |
+| | | Hyp. II, D1(c) | +4.30 | −4.33 | +1.98 | +10.61 | −1.31 |
+| | | Hyp. II, chain | +5.69 | −5.68 | +0.60 | +11.97 | −1.84 |
+| (c) D interpolated from 1769, 1771, 1783, 1786 | +2″.80 | Hyp. I, D1(c) | +0.73 | −6.07 | +2.18 | +8.98 | −1.26 |
+| | | Hyp. I, chain | −0.06 | −6.23 | +2.39 | +8.56 | −1.31 |
+| | | Hyp. II, D1(c) | +3.19 | −3.71 | +2.84 | +9.74 | −1.06 |
+| | | Hyp. II, chain | +2.47 | −3.84 | +3.13 | +9.44 | −1.16 |
+
+- Under (b) and (c) the two methods agree within 1.4° in R, and the effect of the observations
+  is +8.6° to +12.0° in all eight rows; the effect of the reference is +0.5° to +3.1°.
+- Under (a) the methods disagree by 5.1° (Hyp. I) and 6.7° (Hyp. II) in R.
+- The interpolated D of (c) lies 0″.6 from Table I's branch and 2″.8 from the century
+  branch.
+- Which variant represents what Adams had at 1780 is not established. His error there
+  was itself interpolated from errors of 1781 to 1783 and of 1769 and 1771, which this
+  step does not have.
+
+### Interpretation (not a reading)
+
+This paragraph interprets the numbers of this note and of steps 3b and 3c. It is not
+one of the readings fixed in § 6 and claims nothing beyond the numbers it cites.
+
+- Here: a choice of 1″.9 at the 1789 place (S5) moves cell B by 2.1° and cell C by 1.2°
+  under D1(c); a choice of 2″.8 to 3″.4 at the 1780 place (S8) moves cell B by 3.9° to
+  4.8° and cell C by 2.3° to 2.8°. In the chain the same choices move cell B by 10.9° to
+  13.2°, or to its other root. The attribution classes of § 6 are 3° wide.
+- Step 3b: one unit of his fourth decimal on one coefficient of his normal equation (n)
+  moves θ by 2.9° on Hypothesis I (`P1B_adams_reproduction.md`).
+- Step 3c: noise at the level of his modern residuals gives an SD of θ of 4.34° on the
+  solution's branch (propagated 4.48°), Hypothesis I (`P1B_adams_noise.md`).
+
+The shift to be attributed is +11.16°. Changes of a few arcseconds at single early
+normal places, one unit in a fourth decimal, and noise at his residuals' level each
+move his solution by 2° to 5°, the same order as the classes into which the shift was
+to be divided. On these numbers his nearness of about 11° lies within the sensitivity
+of his own problem, and what carries it may not be identifiable from his data.

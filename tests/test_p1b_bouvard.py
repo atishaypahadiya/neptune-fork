@@ -244,3 +244,15 @@ def test_cells_as_recorded():
     assert (chain["R_class"], chain["Ob_class"]) == ("carries", "does not carry")
     assert set(c["sensitivities"]) >= {"S2 eccentricity of p. ii", "S3 without § 7"}
     assert len(c["D"]["years"]) == 30
+
+
+def test_s8_as_recorded():
+    import json
+
+    s = json.loads(P.OUT_JSON.read_text(encoding="utf-8"))["cells"]["sensitivities"]
+    b = s["S8b the 1780 place on Table I's branch"]
+    c = s["S8c the 1780 place: D interpolated from its neighbours"]
+    assert b["delta_arcsec"]["1780"] == pytest.approx(3.402, abs=1e-3)
+    assert c["delta_arcsec"]["1780"] == pytest.approx(2.797, abs=2e-3)
+    assert b["H1"]["d1c"]["change_B"] == pytest.approx(4.81, abs=0.01)
+    assert c["H1"]["d1c"]["change_B"] == pytest.approx(3.90, abs=0.01)
