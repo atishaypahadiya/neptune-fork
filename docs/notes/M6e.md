@@ -307,3 +307,18 @@ years, puts the planet within 0.3° in longitude of the star Lalande recorded, i
 68 % region of both error models, with a region a hundredth of the prior's. In latitude
 the fits say little, and the place is in their outer third. Galileo's drawings remain
 for their own pre-registration.
+
+## Statement of scope, 13 November 2026
+
+A statement of scope, not a new analysis. No number above is changed.
+
+1795 lies within the span of the observations the fits use (Table 77, 1690 to 1845). The
+posterior's place for the perturber in 1795 is therefore constrained by Uranus's motion in
+that era: the fits never saw Lalande's places or any place of Neptune, but they did see
+Uranus in the 1790s. The result is an out-of-sample check within the data span, not an
+extrapolation, and is to be described as such everywhere it is used. Where the results
+above say that the orbit is "carried back 51 years", that is the interval from Galle's
+night, at which the posterior is usually quoted, to Lalande's nights; it is not a
+distance beyond the data.
+Likewise "never saw 1795" in § 3 and in the reading means that the fits never saw
+Lalande's places of 1795, not that they saw no observation of that time.
