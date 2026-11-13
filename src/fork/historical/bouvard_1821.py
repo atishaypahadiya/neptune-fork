@@ -135,6 +135,49 @@ def table_rows(used: bool = True) -> dict[tuple[str, str, str], str]:
         return {(r["table"], r["row"], r["column"]): r[col] for r in csv.DictReader(f)}
 
 
+ROUTE_B_ROWS = BOUVARD / "bouvard_1821_uranus_table_rows_route_b.csv"
+ROUTE_B_MISPRINTS = BOUVARD / "bouvard_1821_misprints_route_b.csv"
+MISPRINT_COLUMNS = (
+    "place", "page", "reads", "evidence", "value_by_the_evidence", "status", "used", "touches",
+)  # fmt: skip
+COLUMN_NAMES = {"eq": "Équation", "diff": "Différences", "d1": "Différences premières",
+                "d2": "Différences secondes"}  # fmt: skip
+REPLACED = "replaced"  # the status of a reading the rule of § 2 replaces
+
+
+def route_b_rulings() -> dict[tuple[str, str, str], str]:
+    """Readings of the route B rows replaced under the rule of § 2 of
+    docs/notes/P1B_bouvard_tables.md, from its misprint log: {(table, row, column): used}."""
+    if not ROUTE_B_MISPRINTS.exists():
+        return {}
+    out = {}
+    with ROUTE_B_MISPRINTS.open(encoding="utf-8") as f:
+        for r in csv.DictReader(f):
+            if not r["status"].startswith(REPLACED):
+                continue
+            table, row, name = (p.strip() for p in r["place"].split(","))
+            col = {v: k for k, v in COLUMN_NAMES.items()}[name]
+            out[table.split()[1], row.split()[1], col] = r["used"]
+    return out
+
+
+@cache
+def route_b_rows(used: bool = True) -> dict[tuple[str, str, str], str]:
+    """The route B rows. ``used``: the file's ``value_used`` with the rulings of the route B
+    misprint log applied (a copy in memory; the file is not changed); otherwise as printed."""
+    with ROUTE_B_ROWS.open(encoding="utf-8") as f:
+        col = "value_used" if used else "value_as_printed"
+        rows = {(r["table"], r["row"], r["column"]): r[col] for r in csv.DictReader(f)}
+    if used:
+        rows.update(route_b_rulings())
+    return rows
+
+
+def all_table_rows(used: bool = True) -> dict[tuple[str, str, str], str]:
+    """Both rows files: step 3d's (with its rulings) and route B's (with its own)."""
+    return {**table_rows(used), **route_b_rows(used)}
+
+
 def _sin(grades: float) -> float:
     return math.sin(grades * math.pi / 200.0)
 
