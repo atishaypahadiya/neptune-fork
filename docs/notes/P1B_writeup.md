@@ -169,3 +169,24 @@ from the heading on p. 666 of the scanned volume.
   conditional on the printed record and the declared priors; the Cambridge observing books
   were not consulted.
 - Any probability for the British search as a whole.
+
+## Correction, v1.2.1 (12 November 2026): the chart case
+
+The tables above stand as written for v1.2.0. One of their rows is withdrawn.
+
+- The Berlin sheet's limits have since been read from the sheet (Hora XXII) and from the
+  Academy's rules of 1859, and I checked them against the sheet images: 21h 56m to 23h 04m,
+  15° south to 15° north, for the equinox of 1800
+  (`docs/notes/P1B_challis_detection.md`, "Named input N1").
+- Under those limits the planet lay off the sheet on every night Challis recorded it. The
+  chart case is 0.00, "would very probably not have"
+  (`docs/notes/P1B_challis_detection_n1.json`, `case.held.primary`).
+- The row "the same sheet, right ascension of date", 0.92 (0.77 to 1.00), came from a
+  fallback that applied the sheet's limits in the wrong frame. It is withdrawn, with its
+  replay figure of 0.94.
+- The sentence "The chart case as a whole depends on the Berlin sheet's limits, taken from a
+  secondary source" no longer holds.
+
+Krajnović's chapter is in *Neptune: From Grand Discovery to a World Revealed* (Cham:
+Springer, 2021), pp. 185–244, doi:10.1007/978-3-030-54218-4_6; v1.2.0 gave the book's title
+wrongly.

@@ -11,7 +11,7 @@ All three are in the public domain.
 | file | edition | source | SHA-256 |
 |---|---|---|---|
 | `leverrier_1846_archive_org.pdf` | 1846 offprint (Bachelier); Google Books scan, 264 PDF pages, page images ~1600 × 2500 px | https://archive.org/details/bub_gb_HMi0NyDVkhQC (`bub_gb_HMi0NyDVkhQC.pdf`) | `d17963fd996b3ae32e7ebe6e2b97b1964638ea718e280cf2bd8e78ff907ec042` |
-| `leverrier_1846_lille.pdf` | 1846 offprint ("Extrait de la Connaissance des temps, pour 1849"); Université de Lille, 262 PDF pages, ~1890 × 2835 px, ABBYY FineReader 9 | http://hdl.handle.net/1908/3096 → https://lillonum.univ-lille.fr/files/original/ffcb92a065dce94c1880b6ce3180498ec3449541.pdf | `298d2b57fdf5119b47a60c6449addb0d42964e4f7e4fe4e8484f0810d0ee51c6` |
+| `leverrier_1846_lille.pdf` | 1846 offprint ("Extrait de la Connaissance des temps, pour 1849"); Université de Lille, 262 PDF pages, ~1890 × 2835 px, ABBYY FineReader 9 | https://lillonum.univ-lille.fr/files/original/ffcb92a065dce94c1880b6ce3180498ec3449541.pdf (formerly hdl:1908/3096; the handle stopped resolving, seen 12 Nov 2026) | `298d2b57fdf5119b47a60c6449addb0d42964e4f7e4fe4e8484f0810d0ee51c6` |
 | `cdt_1849_additions.pdf` | *Connaissance des Temps pour 1849*, Additions; BnF Gallica, views 468–725, 258 PDF pages, ~1000 × 1540 px, colour | https://gallica.bnf.fr/ark:/12148/bpt6k6505616w (views 468–725) | `bbb8bbcacd2d57abf25a5d75af623431e42925169b314bdd591cc28999c805d9` |
 
 ## Page mapping (printed page → PDF page, 1-based)

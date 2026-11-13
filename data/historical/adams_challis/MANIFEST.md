@@ -46,7 +46,7 @@ why most files are not redistributed from this repository:
 | file (cache) | source | SHA-256 |
 |---|---|---|
 | `krajnovic_2016_arxiv_1610.06424v2.pdf` | arXiv:1610.06424v2 (published as A&G 57 (5), 5.28–5.34, DOI 10.1093/astrogeo/atw183) | `0b07a6c4fc01d085bef2bbde7089523a3a5bf956761b8195e373f8696fe8009b` |
-| `krajnovic_2021_arxiv_2108.06305.pdf` | arXiv:2108.06305 (chapter in *The Discovery of Neptune*, Springer 2021, DOI 10.1007/978-3-030-54218-4_6), CC BY 4.0 | `cd62724e87aa18593b67dc8c78d9cfcc68329aa542952f5c404f625629bde744` |
+| `krajnovic_2021_arxiv_2108.06305.pdf` | arXiv:2108.06305 (chapter in *Neptune: From Grand Discovery to a World Revealed*, Springer 2021, pp. 185–244, DOI 10.1007/978-3-030-54218-4_6), CC BY 4.0 | `cd62724e87aa18593b67dc8c78d9cfcc68329aa542952f5c404f625629bde744` |
 | `kollerstrom_2006_hiatus_part1_columbuslandfall.pdf` | History of Science 44 (1), 1–28, DOI 10.1177/007327530604400101; cached from a third-party mirror (columbuslandfall.com, expired certificate) | `ae54d89208021641674694e46eb86b7e2e8148d8ab93efc87eaba7bc3b3b82f0` |
 
 Also in the cache, not sources: saved catalogue pages (`cul_*.html`, `cudl_rgo6.html`, `numdam_jmpa_*.html`,

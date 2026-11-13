@@ -42,6 +42,9 @@ the commands below use these identifiers.
 
 | name on the site and in the README | identifier | notes |
 |---|---|---|
+| the main study; the refit of Le Verrier's prediction | Phase 1 | `docs/PHASE1_SPEC.md` |
+| the companion study; the British search for Neptune | Phase 1b (files `P1B_*`) | `docs/notes/P1B_writeup.md` |
+| not named in public until it exists | Phase 2 | `docs/phase2/` |
 | the headline fit (its posterior: the headline posterior) | M6c headline; the replacement posterior, with cell 2 replaced by the R2 merge | `docs/notes/M6.md` |
 | the sensitivity runs | M6c S1–S3 | `docs/notes/M6.md` |
 | the eccentricity sensitivity test (eccentricity up to 0.5) | S1 (`s1_e05`) | `docs/notes/M6.md` |
@@ -61,12 +64,12 @@ the commands below use these identifiers.
 | the coverage test on synthetic data with the real error model | A6c | `docs/notes/A6.md` |
 | the leak check (the fit never reads Neptune) | A6d | `docs/notes/A6.md` |
 | the coverage test on synthetic data | A3b (M5b) | `docs/notes/M5.md` |
-| Phase 1b: Adams's solutions and Challis's search log from the printed record | steps 1 and 2 | `docs/notes/P1B_sources.md` |
-| Phase 1b: the Adams-variant fit on data set D | step 3 (`fork.export.p1b_adams`; ledger `p1b_adams/<variant>/c<k>`) | `docs/notes/P1B_adams_fit.md` |
-| Phase 1b: the memoir transcription | step 3b stage A | `docs/notes/P1B_adams_reproduction.md` |
-| Phase 1b: the reproduction of Adams's own solution | step 3b stages B–D (`fork.export.p1b_adams_repro`; ledger `p1b_adams_repro/cheap`, `p1b_adams_repro/d3iii/c<k>`) | `docs/notes/P1B_adams_reproduction.md` |
-| Phase 1b: noise against systematic | step 3c (`fork.export.p1b_adams_noise`; ledger `p1b_adams_noise/draws`) | `docs/notes/P1B_adams_noise.md` |
-| Phase 1b: Challis's search as a detection model | step 4 (`fork.export.p1b_challis`; ledger `p1b_challis/draws`) | `docs/notes/P1B_challis_detection.md` |
+| the companion study: Adams's solutions and Challis's search log from the printed record | steps 1 and 2 | `docs/notes/P1B_sources.md` |
+| the companion study: the Adams-variant fit on data set D | step 3 (`fork.export.p1b_adams`; ledger `p1b_adams/<variant>/c<k>`) | `docs/notes/P1B_adams_fit.md` |
+| the companion study: the memoir transcription | step 3b stage A | `docs/notes/P1B_adams_reproduction.md` |
+| the companion study: the reproduction of Adams's own solution | step 3b stages B–D (`fork.export.p1b_adams_repro`; ledger `p1b_adams_repro/cheap`, `p1b_adams_repro/d3iii/c<k>`) | `docs/notes/P1B_adams_reproduction.md` |
+| the companion study: noise against systematic | step 3c (`fork.export.p1b_adams_noise`; ledger `p1b_adams_noise/draws`) | `docs/notes/P1B_adams_noise.md` |
+| the companion study: Challis's search as a detection model | step 4 (`fork.export.p1b_challis`; ledger `p1b_challis/draws`) | `docs/notes/P1B_challis_detection.md` |
 
 ## Setup
 

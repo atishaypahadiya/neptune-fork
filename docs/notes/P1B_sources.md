@@ -296,7 +296,7 @@ catalogue.
   Berlin"; Adams's new orbit from Challis's three observations. No count of Adams's solutions and no
   315⅓° figure in this text.
 - D. Krajnović, "'That star is not on the map': the German side of the discovery", chapter in
-  *The Discovery of Neptune* (Springer 2021), arXiv:2108.06305 (CC BY 4.0, cached). Source for the
+  *Neptune: From Grand Discovery to a World Revealed* (Springer 2021, pp. 185–244, doi:10.1007/978-3-030-54218-4_6), arXiv:2108.06305 (CC BY 4.0, cached). Source for the
   Hora XXII statements above and for the Berlin charts' design (24 one-hour sheets, ±15°, 4-minute
   overlaps, grids of 510 one-degree squares).
 - N. Kollerstrom, "An hiatus in history: the British claim for Neptune's co-prediction, 1845–1846",
