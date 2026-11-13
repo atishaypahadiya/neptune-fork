@@ -522,3 +522,41 @@ uv run pytest -q tests/test_mercury_transcription.py                # the two en
 ```
 
 The method and the counts are in `docs/phase2/transcription.md`.
+
+## Prior-work reading notes (13 November 2026; reading only, nothing is computed)
+
+The notes are in `docs/notes/prior_work/`. Their downloads go to `data/cache/prior_work/`
+(not tracked, not redistributed). To fetch them again and compare the hashes:
+
+```sh
+mkdir -p data/cache/prior_work/cofi && cd data/cache/prior_work
+UA="Mozilla/5.0 (research reading notes)"
+curl -sL -A "$UA" -o ads_1958MNRAS.118..551L.pdf https://articles.adsabs.harvard.edu/pdf/1958MNRAS.118..551L
+curl -sL -A "$UA" -o ads_2006HisSc..44....1K.pdf https://articles.adsabs.harvard.edu/pdf/2006HisSc..44....1K
+curl -sL -A "$UA" -o ads_2006HisSc..44..349K.pdf https://articles.adsabs.harvard.edu/pdf/2006HisSc..44..349K
+B=https://raw.githubusercontent.com/inlab-geo/cofi-examples/d81ceb78d768537457877b836315d587d474e147
+for f in finding_neptune_via_deterministic_inv.ipynb finding_neptune_via_bayesian_inv.ipynb meta.yml; do
+  curl -sL -A "$UA" -o cofi/$f $B/examples/Finding_Neptune_Inversions/$f
+done
+curl -sL -A "$UA" -o cofi/LICENCE $B/LICENCE
+shasum -a 256 *.pdf cofi/*
+```
+
+| file | SHA-256 on 13 November 2026 |
+|---|---|
+| `ads_1958MNRAS.118..551L.pdf` (Lyttleton 1958) | `fddaa13c22e4cf642e4e69b64b5a19f45ce10a0a64c694817bbf8049c508b057` |
+| `ads_2006HisSc..44....1K.pdf` (Kollerstrom 2006, Part 1) | `aab2dcf7e3bcd390e0e2b99fac22a9cb2f3ac40efd6d88f747e3e17cd01d4e5b` |
+| `ads_2006HisSc..44..349K.pdf` (Kollerstrom 2006, Part 2) | `d2e7a54102a652ab5d4265dfdf052aef0dbb105774386eea55acda19228105da` |
+| `cofi/finding_neptune_via_deterministic_inv.ipynb` | `e6ff341f66876e8e50d6e9bb1e6a9427cea8eb89f447b72eaddf8905c0ded7ed` |
+| `cofi/finding_neptune_via_bayesian_inv.ipynb` | `b25e87a7847410be494b6076084b09c8aae0254ebf8d522d81c1e95aabdd83d5` |
+| `cofi/meta.yml` | `c2294d7cf001ada4fc3f0966883fb94fa9d368a5bae5a32e9142cafad0628368` |
+| `cofi/LICENCE` | `2746a7c23b7e279cc745a6da55894fb6ebc6a68054c0994e0cf841c41b17f3a7` |
+
+The scans of Sampson (1904) and Brookes (1970) are the ones already listed in
+`data/historical/adams_challis/MANIFEST.md`. The other files (the remaining CoFI modules and
+theory pages, the Crossref and archive.org records, the two *Nature* landing pages and the
+seventeen pages of the discoverneptune site) are listed with their addresses and hashes in the
+notes themselves. Records served by an API and live web pages are not fixed files: their
+hashes may differ on a later day without the content cited having changed. The scans have no
+text layer except Lyttleton's; the notes say which pages were read as OCR text, made with
+tesseract from renders at 200 to 220 dpi.

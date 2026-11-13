@@ -270,3 +270,12 @@ local branches):
 | Phase 2 scoping, physics, validation and first data set | merged (16c78d2, 10ca793, 407f4dc); nothing fitted; no plan frozen | a pre-registered plan before any fit of Mercury's observations |
 | The attribution to Bouvard's tables | done and released in v1.3.0 (`docs/notes/P1B_bouvard_attribution.md`) | none |
 | Changelog | the Unreleased section covers `main` since v1.3.0 | date it at the release |
+
+Added 2026-11-13, prior-work reading notes:
+
+- [ ] `docs/notes/prior_work/` holds nine reading notes and `novelty.md`, on the branch
+  `prior-work` only: not merged, not on the site, not in any release. Before a release that
+  cites them, read `novelty.md`'s section "What follows for the wording elsewhere" (three
+  places in `README.md`, `docs/notes/M6.md` and `docs/notes/P1B_sources.md` that the reading
+  bears on; none of them was edited) and its list of what still needs a browser or a library.
+  The weekly link check covers the new directory (`.github/workflows/links.yml`).
