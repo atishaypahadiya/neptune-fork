@@ -86,6 +86,8 @@ four fits on it.
 
 ## M6e: held-out precoveries (draft)
 
+Superseded for Lalande's places by the pre-registration in `docs/notes/M6e.md`.
+
 - **Sourcing first, no fit touched.** Lalande, 8 and 10 May 1795 (*Histoire céleste
   française*; Mauvais 1847, *Comptes rendus* 24, 666), and Galileo, 28 December 1612 and
   28 January 1613 (Kowal and Drake 1980, *Nature* 287, 311; only its abstract has been
