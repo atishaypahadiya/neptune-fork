@@ -1,5 +1,5 @@
 # Version follows semver. 1.0.0 and 1.1.0 were tagged on 2026-11-10 (docs/release_checklist.md),
-# 1.2.0 after them;
+# 1.2.0 and 1.2.1 after them;
 # each release's software DOI (doi:) is added once Zenodo mints it; the concept DOI covers all.
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
@@ -31,10 +31,14 @@ license:
   - CC0-1.0
 version: "1.2.1"
 date-released: "2026-11-13"
+doi: "10.5281/zenodo.24183833"
 identifiers:
   - type: doi
     value: "10.5281/zenodo.24121059"
     description: "Concept DOI of the code archive on Zenodo: all versions."
+  - type: doi
+    value: "10.5281/zenodo.24183833"
+    description: "Version DOI of v1.2.1 (released 2026-11-13)."
   - type: doi
     value: "10.5281/zenodo.24159832"
     description: "Version DOI of v1.2.0 (released 2026-11-12)."

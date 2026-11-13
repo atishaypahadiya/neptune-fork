@@ -217,7 +217,11 @@ link, public names and voice, the manuscript check, Bouvard's tables, the CI che
   page's status.
 - [x] Checks: ruff, tests, prerender, number audit on both pages, layout in Chromium and
   WebKit, citation validation, one link pass.
-- [ ] Tag, GitHub release, Zenodo version DOI, follow-up commit with the DOI.
+- [x] Tag `v1.2.1` on 4729be9 (test and pages green), GitHub release published 2026-11-13
+  03:35:34 UTC, not a draft; Zenodo minted version DOI 10.5281/zenodo.24183833
+  (https://zenodo.org/records/24183833).
+- [x] Follow-up commit: that DOI in `CITATION.cff`, `README.md` and `site/data/release.json`.
+- [x] The v1.2.0 GitHub release notes corrected in place (title and five phrases).
 - Not in this release: the dataset record is unchanged (its Lille handle is corrected by
   hand on Zenodo); the v1.2.0 release notes and Zenodo description are corrected in place.
 
