@@ -550,6 +550,9 @@ LABELS = {
     "A0": "A0 actual procedure", "C1a": "C1a 12 Aug against 30 Jul",
     "C1b": "C1b 4 Aug against 12 Aug", "C1a_7d": "C1a, 7-day delay",
     "C1b_7d": "C1b, 7-day delay", "C2_1800": "C2 chart, equinox 1800",
+    # C2_date is withdrawn (v1.2.1): its limits were applied in the wrong frame. The figure
+    # P1B_challis_detection.png still draws it; see the correction of 13 November 2026 at the
+    # end of docs/notes/P1B_challis_detection.md. Not redrawn.
     "C2_date": "C2 chart, RA of date", "C3_S4": "C3 from S4",
     "C3_S4_prompt": "C3 from S4, prompt", "C3_S5": "C3 from S5",
     "C3_S5_prompt": "C3 from S5, prompt", "C4a": "C4a Le Verrier June",

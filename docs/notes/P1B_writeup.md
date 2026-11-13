@@ -67,7 +67,7 @@ noted); only events the history does not contain are drawn.
 | the 12 August comparison with 30 July, carried through | 0.71 (0.50 to 0.97) | depends on p_follow | complete by 16 August in 99 % of the draws that flag the planet; the record does not inform p_follow (prior mean 0.75, posterior 0.75) |
 | the 4 August sweep compared with 12 August | 0.28 (0.00 to 0.93) | depends on p_follow | |
 | the Berlin sheet he had, equinox of 1800 | 0.00 | very probably not | the planet is off the sheet |
-| the same sheet, right ascension of date | 0.92 (0.77 to 1.00) | depends on p_follow | prior-dependent |
+| the same sheet, its limits as read from the sheet (N1: equinox of 1800) | 0.00 | very probably not | the planet is off the sheet. v1.2.0 printed 0.92 here in error: its limits were applied in the wrong frame (see the correction at the end) |
 | zones from Adams's first place (S4) | 0.41 (0.04 to 0.81) | depends on p_disc_routine | prior-dependent |
 | from S4, with prompt comparison | 0.79 (0.22 to 0.99) | depends on the number of later sessions | |
 | zones from Adams's second place (S5), with or without prompt comparison | 0.00 | very probably not | by timing |
@@ -75,7 +75,7 @@ noted); only events the history does not contain are drawn.
 | from Le Verrier's June place, with prompt comparison | 0.85 (0.63 to 0.99) | depends on p_follow | |
 | the 29 September procedure, begun on 29 July | 0.35 (0.02 to 0.90) | depends on the breadth of the sweep | |
 
-The chart case as a whole depends on the Berlin sheet's limits, taken from a secondary source.
+The chart case rests on the Berlin sheet's limits as read from the sheet itself (N1).
 No case reaches "very probably".
 
 **Deviations that bear on these claims.**
@@ -190,3 +190,10 @@ The tables above stand as written for v1.2.0. One of their rows is withdrawn.
 Krajnović's chapter is in *Neptune: From Grand Discovery to a World Revealed* (Cham:
 Springer, 2021), pp. 185–244, doi:10.1007/978-3-030-54218-4_6; v1.2.0 gave the book's title
 wrongly.
+
+## Correction, 13 November 2026: the table of Q2 brought into line
+
+The chart row of the table in Q2 now gives the reading under N1, 0.00 ("would very probably
+not have"), in place of the withdrawn 0.92, with a note that v1.2.0 printed 0.92 in error; the
+sentence below the table says the chart case rests on the sheet's limits as read from the
+sheet. Nothing else in the table changed.

@@ -836,3 +836,16 @@ The nominal hour in the title (22h to 23h) is narrower than the plotted field. N
 plotted field, 21h 56m to 23h 04m, as above; the C2 figures and the § 7 reading are not
 changed by this. With the nominal hour instead, the planet (21h 55m 43s and 21h 54m 54s for
 1800 on 4 and 12 August) is further outside the sheet, so the reading would be the same.
+
+## Correction, 13 November 2026: the withdrawn chart case, and one reference
+
+- The case "C2 chart, RA of date" (0.92, 0.77 to 1.00; replay 0.94) was withdrawn in v1.2.1
+  (§ "Named input N1" above): it applied the sheet's limits, which are for the equinox of 1800,
+  to right ascensions of date. It still stands in the tables of § 7 and of the post hoc
+  sections above, and those tables are left as written. Under N1 the chart case is 0.00,
+  "would very probably not have" (`P1B_challis_detection_n1.json`, `case.held.primary`).
+- The figure `P1B_challis_detection.png` still draws a panel for that case. It is not
+  redrawn; this line is its correction, and the label in `src/fork/export/p1b_challis.py`
+  carries the same note.
+- Le Verrier's paper of 1 June 1846 is *Comptes rendus* 22, 907–918; the place quoted
+  above is on p. 917. The citation "Comptes rendus 22, 917" above means that page.

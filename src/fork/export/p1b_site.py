@@ -328,7 +328,7 @@ REFERENCES = [
      "{Neptune: From Grand Discovery to a World Revealed}",
      ". Cham: Springer, 185–244. doi:10.1007/978-3-030-54218-4_6. arXiv:2108.06305."],
     ["lv-june", "Le Verrier, U. J. 1846. Recherches sur les mouvements d'Uranus. ",
-     "{Comptes rendus}", " 22, 917 (1 June)."],
+     "{Comptes rendus}", " 22, 907–918, at 917 (1 June)."],
     ["lv-aug", "Le Verrier, U. J. 1846. Sur la planète qui produit les anomalies observées dans "
      "le mouvement d'Uranus. ", "{Comptes rendus}", " 23, 428–438 (31 August)."],
     ["mallama", "Mallama, A. and Hilton, J. L. 2018. Computing apparent planetary magnitudes "

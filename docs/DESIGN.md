@@ -686,3 +686,13 @@ step, gradient or typeface was added or removed; only where blocks start and end
   2 px. Where a page has no such heading after a paragraph, the reference is the
   heading's own top margin.
 - UI-rule audit: no new pattern; spacing only.
+
+## Page ranges (2026-11-13)
+
+A page range in the text ("Comptes rendus 22, 907–918", "pp. 185–244", "cols. 131–148") does not
+break at its dash. After a page is filled, `keepRanges` (`site/js/plate.js`) wraps each range,
+found by `PAGE_RANGE` (digits, an en dash, digits, after a comma, "p.", "pp.", "col." or
+"cols."), in `span.range`, which is `white-space: nowrap`. The text is unchanged, so the number
+audit is not affected. `tools/check_layout.py` fails if a range is not wrapped or spans two
+lines, in both engines and at every width. Year ranges after a comma are caught by the same
+pattern and kept whole too, which does no harm.

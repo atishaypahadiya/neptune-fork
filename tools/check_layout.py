@@ -32,6 +32,8 @@ checks of Plates II and III apply where the page has them). Loads the page with 
 - **Space above headings:** the gap between a section heading (an h3, or an h2 with its
   "§ n" label) and the figure, caption, table or plate that ends above it is at least the
   gap the same kind of heading has after a paragraph, within 2 px.
+- **Page ranges:** every page range in the text ("22, 907–918", "pp. 185–244") is in a
+  ``span.range`` and on one line.
 - Print: nothing sticky, controls hidden, every caption under its figure.
 
     uv run --group site python tools/check_layout.py _site [--engine webkit] [--shots DIR]
@@ -463,6 +465,25 @@ GRID = r"""({ exempt, print }) => {
 # last block of the previous section when it opens a section. The gap from that block's
 # bottom edge to the heading's top edge, after a figure, a caption, a table or a plate, must
 # be at least the gap the same kind of heading has after a paragraph (2 px tolerance).
+RANGES = r"""() => {
+  // Every page range in the text (see site/js/plate.js, PAGE_RANGE) sits in a span.range on
+  // one line. Text inside figures (SVG) is not prose and is left out.
+  const re = /(?<=(?:,|pp?\.|cols?\.)\s)\d{1,4}–\d{1,4}(?!\d|\.\d)/g;
+  const fails = [];
+  const walk = document.createTreeWalker(document.querySelector("main"), NodeFilter.SHOW_TEXT);
+  for (let n = walk.nextNode(); n; n = walk.nextNode()) {
+    if (n.parentElement.closest("svg, script, style")) continue;
+    const inRange = n.parentElement.closest(".range");
+    for (const m of n.data.matchAll(re)) {
+      if (!inRange) { fails.push(`not wrapped: ${m[0]}`); continue; }
+      const rects = [...inRange.getClientRects()].filter((r) => r.width > 0);
+      if (rects.length > 1) fails.push(`broken: ${m[0]}`);
+    }
+  }
+  return { fails };
+}"""
+
+
 HEADINGS = r"""() => {
   const lastBlock = (el) => { while (el && el.lastElementChild && !el.matches("p, figure, table, ul, ol, blockquote, .cite, .split, h2, h3")) el = el.lastElementChild; return el; };
   const before = (el) => {
@@ -588,9 +609,11 @@ def check(
             )
             g = page.evaluate(GRID, {"exempt": GRID_EXEMPT, "print": False})
             hd = page.evaluate(HEADINGS)
+            rg = page.evaluate(RANGES)
             res = {
                 "page": problems, "overflow": r["overflowX"], "grid lines": g["fails"],
                 "space above headings": hd["fails"],
+                "page ranges": rg["fails"],
                 "emoji": r["emoji"],
                 "sticky": r["sticky"], "blocks": r["blocks"], "table": r["table"],
                 "columns": r["columns"], "gaps": r["gaps"], "links": r["links"],

@@ -245,6 +245,8 @@ input[type="range"] { flex: 1; min-width: 0; margin: 0; accent-color: var(--prus
 }
 .refs { margin-top: 0; padding-left: 1.6em; font-size: 15px; }
 .refs li { margin-bottom: 0.6em; }
+/* A page range never breaks at its dash (site/js/plate.js, keepRanges). */
+.range { white-space: nowrap; }
 
 /* ---------- stacked plates: tablet and phone ---------- */
 @media (max-width: 899px) {

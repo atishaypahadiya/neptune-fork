@@ -304,8 +304,9 @@ full-likelihood check of the eccentricity test 98, the profile likelihood in the
 This is well-trodden ground. I credit and benchmark against:
 
 - Jonathan Whitmore, *discoverneptune* (2026): <https://jbwhit.github.io/discoverneptune/>.
-  A REBOUND-based reconstruction reaching ~2.5–2.9″ RMS, and the benchmark for the historical
-  fit.
+  A REBOUND-based reconstruction with a residual of 2.52″ RMS, fitted to JPL-derived annual
+  longitudes, not to historical observations, so not directly comparable with the residuals of
+  the fit here ([novelty note](docs/notes/prior_work/novelty.md)).
 - Lai, H. M., Lam, C. C., & Young, K. (1990): forward and inverse treatment of Uranus's
   perturbations by Neptune.
 - CoFI (Common Framework for Inference): the example "Finding Neptune using Uranus".
@@ -316,12 +317,20 @@ This is well-trodden ground. I credit and benchmark against:
   magnitude; Kollerstrom (2006) and Krajnović (2016, 2021) on the British and German sides of
   the discovery.
 
-What this project does differently:
+What this project does differently, as far as the prior work I have read goes
+([docs/notes/prior_work/novelty.md](docs/notes/prior_work/novelty.md)):
 
-- its own Wisdom–Holman integrator, with REBOUND used only in tests;
-- full posteriors from partitioned nested sampling, with evidence;
-- the mass–distance degeneracy made explicit;
-- a forward-model interface built for comparing models in later work.
+- the fit is to the historical observations, Le Verrier's Table n° 77 transcribed twice,
+  where *discoverneptune* fits a JPL-derived proxy for them;
+- Bayesian evidence over a partitioned prior, by nested sampling;
+- an error model with offsets by group of observations;
+- a profile likelihood over the planet's distance on the historical table, under two error
+  models;
+- its own Wisdom–Holman integrator, with REBOUND used only in tests (an implementation
+  choice, not a result).
+
+Sampling a posterior and tracing the mass–distance degeneracy are not on this list:
+*discoverneptune* does both.
 
 ## Citing and license
 
