@@ -816,3 +816,19 @@ that the sheet supports is the first. The companion page is not changed here.
 Not settled by this: the sheet's faintest magnitude in modern terms (the key's last class is
 9-10; Neptune was about 7.8, so the planet's absence from the sheet is not in question), and
 whether the Cambridge copy was the same printing as the Potsdam one.
+
+**N1, the author's verification, 12 Nov 2026.** The author checked Hora XXII against the
+sheet images by eye on 12 November 2026. Read from the sheet:
+
+| item | reading |
+|---|---|
+| title cartouche | "zwischen XXII^h und XXIII^h … 15° südlicher bis 15° nördlicher Abweichung, für 1800" |
+| author and engraver | Argelander (Åbo); engraved by Kalbe, Berlin |
+| plotted field | 21h 56m to 23h 04m: a 4-minute overlap column beyond each hour line |
+| southern edge | −15° |
+| key | down to class 9-10 |
+
+The nominal hour in the title (22h to 23h) is narrower than the plotted field. N1 uses the
+plotted field, 21h 56m to 23h 04m, as above; the C2 figures and the § 7 reading are not
+changed by this. With the nominal hour instead, the planet (21h 55m 43s and 21h 54m 54s for
+1800 on 4 and 12 August) is further outside the sheet, so the reading would be the same.
