@@ -599,3 +599,33 @@ arguments), within the budget plus the allowance, but does not say where it come
 
 A ruling is needed on the 1789 instant before any consequence is drawn, and on whether
 the ancient instants are close enough.
+
+## Amendment, 13 November 2026: rulings on V1′; S5; d for the propagation check
+
+Ruled by the author on 13 November 2026, after the V1′ results above were pushed
+(821b9c0). Written and pushed before V2 or V3 is run. No earlier text is changed.
+
+1. **Table XII, row 2600, is 3.31,6.** Both printed difference columns agree on it. It
+   and Table X, row 25 (2.33.14,3 by the differences) are logged as misprints of the
+   tables in `data/historical/adams_challis/bouvard_1821/bouvard_1821_misprints.csv`.
+   Table XXXII, row 80, stays as read (17,7), with 17,1 noted as the alternative.
+2. **V1′ passes at all seven instants** under the rule of the amendment above (budget
+   plus allowance). **The corrected formula is C_Bouvard for all 30 epochs**, the ancient
+   ones included. This replaces "the printed formula (route A …)" in the definition of
+   C_Bouvard in § 2; the five terms of § 7 are added as before.
+3. **S5, a new named sensitivity, reported and not read.** Cells B and C are solved once
+   more with C_Bouvard at the 1789 normal place changed to what a computer using row
+   2600 as printed would have got: the equation of argument III interpolated by the
+   tables' rule (four rows) with 3.41,6 in place of 3.31,6, at the argument of that
+   epoch. At the V1′ instant of 1789 this is +1″.90 in the tables' longitude. The change
+   of each cell's offset is reported for both methods. It bounds the question of the
+   tables as used at that epoch. Any other normal place whose argument III falls on the
+   same four rows is changed in the same way and listed.
+4. **1715 stays unexplained** (+0″.73). The differences at the ancient instants (−1″.05,
+   +0″.65, −0″.48, and +0″.73 at 1715) are small against the residuals his solution
+   leaves at the ancient places, which reach ±12″.8.
+5. **The propagation check of V3 uses d = 1″.05**, the largest V1′ difference under the
+   adopted readings, in place of the largest V1 difference, at the two periods and two
+   phases of § 5. S5 is separate from it.
+
+Next: V2 and V3; then the work stops and is reported before any cell.

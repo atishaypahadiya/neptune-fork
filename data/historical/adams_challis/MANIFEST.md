@@ -309,3 +309,4 @@ more readings (Table X row 25, Table XII row 2600) are replaced in `value_used`.
 |---|---|---|
 | `bouvard_1821/passes/bouvard_1821_table_rows_v1p_pass1.csv` | first entry | `108e0ff316b64bfa492ab1119c256f1a8ea6d77cfbad6865007279f97259b139` |
 | `bouvard_1821/passes/bouvard_1821_table_rows_v1p_pass2.csv` | second entry | `dad67bfcc3116bb2e30dbb514c1caefdf9be34b32ff8f54f84c4e678dbda729e` |
+| `bouvard_1821/bouvard_1821_misprints.csv` | readings the tables' own figures contradict, with what was used | `459eb0914691df29e9acaae265b2d85db94413ee91da0c196424fec0ae9c0a89` |
