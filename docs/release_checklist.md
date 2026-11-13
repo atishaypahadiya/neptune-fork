@@ -270,3 +270,15 @@ local branches):
 | Phase 2 scoping, physics, validation and first data set | merged (16c78d2, 10ca793, 407f4dc); nothing fitted; no plan frozen | a pre-registered plan before any fit of Mercury's observations |
 | The attribution to Bouvard's tables | done and released in v1.3.0 (`docs/notes/P1B_bouvard_attribution.md`) | none |
 | Changelog | the Unreleased section covers `main` since v1.3.0 | date it at the release |
+
+## v1.4 runs, 13 November 2026 (local branch `v14-runs`, not on the site)
+
+| item | plan pushed | state on this branch |
+|---|---|---|
+| S1 cell 0 by sub-cells | `docs/notes/S1_cell0.md` | runner and tests; results appended below the plan's line when the runs end |
+| M6c variants, modern track (`bouvard`, `adams`) | `docs/notes/M6c_variants.md` | runner and tests; runs after S1 |
+| M6c variants, 1846 track | none | blocked: the 1846 reduction track has no specification |
+| M6d shape model against free distance | `docs/notes/M6d.md` | same runner; runs after the variants |
+
+Nothing here changes the site or `release/`. Each result needs its own review before it
+enters the page.

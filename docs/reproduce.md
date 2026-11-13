@@ -522,3 +522,27 @@ uv run pytest -q tests/test_mercury_transcription.py                # the two en
 ```
 
 The method and the counts are in `docs/phase2/transcription.md`.
+
+## v1.4 runs: S1 cell 0 by sub-cells, the two data choices, the shape model (13 November 2026)
+
+Plans: `docs/notes/S1_cell0.md`, `docs/notes/M6c_variants.md`, `docs/notes/M6d.md`, each
+pushed before its run. Every command resumes from its checkpoints when run again.
+
+```sh
+uv run pytest -q tests/test_s1_cell0.py tests/test_v14_fits.py      # settings, seeds, readings
+nohup caffeinate -is uv run python -m fork.export.s1_cell0 pipeline --n-workers 12 > s1.out 2>&1 &
+uv run python -m fork.export.s1_cell0 plan                          # which runs are done
+nohup caffeinate -is uv run python -m fork.export.v14_fits all --n-workers 12 > v14.out 2>&1 &
+uv run python -m fork.export.v14_fits plan
+```
+
+- S1 cell 0: 24 fast-likelihood runs (six sub-cells, four seeds), reweighting, two
+  full-likelihood runs in the sub-cell with the most evidence, the summary. Cache
+  `data/cache/nested/s1_cell0/`, output `docs/notes/S1_cell0.json`.
+- `v14_fits all`: for each of `bouvard`, `adams`, `shape38`, `shape36`, the synthetic gate
+  first, then the real rows only if it passes. Cache `data/cache/nested/v14_fits/`, outputs
+  `docs/notes/M6c_variants.json` and `docs/notes/M6d.json`. The shape model's comparison
+  rebuilds the published free-distance fit from `data/cache/m8/runs_m8b/` and stops if its
+  median or ln Z does not reproduce.
+- Smoke runs need a scratch cache: `--cache DIR --synthetic SEED --maxiter N` for
+  `s1_cell0`; `FORK_V14_CACHE=DIR FORK_V14_MAXITER=N` for `v14_fits`.
