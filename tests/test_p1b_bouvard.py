@@ -256,3 +256,21 @@ def test_s8_as_recorded():
     assert c["delta_arcsec"]["1780"] == pytest.approx(2.797, abs=2e-3)
     assert b["H1"]["d1c"]["change_B"] == pytest.approx(4.81, abs=0.01)
     assert c["H1"]["d1c"]["change_B"] == pytest.approx(3.90, abs=0.01)
+
+
+@pytest.mark.slow
+def test_cells_b_and_c_recomputed_from_the_transcribed_inputs():
+    """Cells B and C solved again from the transcribed tables, the memoir and the model,
+    without the recorded JSON, against the recorded offsets."""
+    import json
+
+    got = P.cells(sensitivities=False)["cells"]
+    want = json.loads(P.OUT_JSON.read_text(encoding="utf-8"))["cells"]["cells"]
+    for hyp in ("H1", "H2"):
+        for cell in ("B", "C"):
+            for method in ("d1c", "chain"):
+                assert got[hyp][cell][method]["offset"] == pytest.approx(
+                    want[hyp][cell][method]["offset"], abs=1e-3
+                ), (hyp, cell, method)
+    assert got["H1"]["B"]["d1c"]["offset"] == pytest.approx(-3.170, abs=2e-3)
+    assert got["H1"]["C"]["d1c"]["offset"] == pytest.approx(-3.801, abs=2e-3)

@@ -551,7 +551,7 @@ def _d_1780_interpolated(years: list, t: np.ndarray, d0: np.ndarray) -> float:
     return float(total)
 
 
-def cells() -> dict:
+def cells(sensitivities: bool = True) -> dict:
     """The four cells for both methods and both hypotheses, the attribution, the reading
     and the sensitivities (the plan's §§ 2 to 7 and its amendments)."""
     from fork.export import p1b_adams_repro as R
@@ -641,6 +641,9 @@ def cells() -> dict:
         notes.append("Hypothesis II falls in different classes")
     reading["overrides_and_remarks"] = notes
     out["reading"] = reading
+
+    if not sensitivities:
+        return out
 
     # sensitivities: a change δ of C_Bouvard (arcseconds, true longitude) at the 30 epochs
     form = [B.corrected_formula_at(x) for x in t]
