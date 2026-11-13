@@ -1,8 +1,8 @@
 """Layout, print and interaction acceptance checks for the site (docs/DESIGN.md, Acceptance).
 
 Runs on every page of the site (the main paper and its companion, site/adams-challis/; the
-checks of Plates II and III apply where the page has them). Loads the page with JavaScript at 360, 390, 430, 768, 899, 900, 1024 and 1440 px (phones as touch
-devices) and in print (A4 from an 800 px window), and fails on any of:
+checks of Plates II and III apply where the page has them). Loads the page with JavaScript at
+360, 390, 430, 768, 899, 900, 1024 and 1440 px (phones as touch devices) and in print (A4 from an 800 px window), and fails on any of:
 
 - **Text over marks:** in every plate and figure, a text box (SVG text, the lettering along
   orbits glyph by glyph, and the HTML text laid over a plate) that intersects a stroke, a
@@ -11,6 +11,14 @@ devices) and in print (A4 from an 800 px window), and fails on any of:
 - **Labels along a path** (``textPath``) longer than their path, so that their ends would be
   cut off. The length is measured with letter-spacing, which some engines leave out.
 - Text leaving its figure; horizontal overflow of the page.
+- **Grid lines** (docs/DESIGN.md, "Widths"): the six named column lines are read from the page
+  at each width (and at 660 and 720 px, either side of where wide meets body). They must be
+  the ones the page's own ``--measure``, ``--overhang`` and ``--gutter`` give, with wide
+  centred on body and full on the window's edges. Every figure, plate and table has exactly
+  one of the classes ``body``, ``wide``, ``full``, and its left and right edges are on the two
+  lines of its class within 1 px; so are every block of the header and of the sections (body
+  without a class) and every caption. None has an inline width or a transform. The exceptions
+  are ``GRID_EXEMPT``, each with a rule of its own. In print the three widths are one.
 - **Emoji:** any emoji or emoji-presentation character (pictographs, dingbats such as ❚,
   geometric shapes such as ▶, media symbols such as ⏸, variation selector 16) in the rendered
   text. Icons are inline SVG.
@@ -53,6 +61,24 @@ WIDTHS = [
     (1440, 900),
 ]
 PHONE = 600  # below this width the page is loaded as a touch device
+# Widths at which only the grid lines and the overflow are checked: either side of the width at
+# which wide meets body (the measure plus twice the side padding, about 696 px).
+GRID_WIDTHS = [(660, 900), (720, 900)]
+
+# Figures that are not on two lines of the grid, each with the rule it is held to instead.
+#   half:   one half of a full section: an outer line to the centre line (full when stacked).
+#   column: fills the text column it stands in.
+#   pair:   one half of the wide pair, less half the gap (wide when one is above the other).
+GRID_EXEMPT = [
+    {"sel": "#plate-ii > .plate", "rule": "half",
+     "why": "Plate II is the right half of its full section, beside its text"},
+    {"sel": "#plate-iii > .plate", "rule": "half",
+     "why": "Plate III is the left half of its full section, beside its text"},
+    {"sel": "#plate-iii .side > [data-fig]", "rule": "column",
+     "why": "Fig. 3 stands in Plate III's text column and takes that column's width"},
+    {"sel": ".pair > [data-fig]", "rule": "pair",
+     "why": "Figs. 8 and 9 stand side by side from 900 px, each on half the wide pair"},
+]  # fmt: skip
 
 # The rendered text must hold no emoji or emoji-presentation character.
 EMOJI = (
@@ -310,6 +336,125 @@ PAGE = r"""({ emoji, narrow }) => {
   return out;
 }"""
 
+# The named column lines, read from the page, and every block against them. Runs in the page.
+GRID = r"""({ exempt, print }) => {
+  const out = { fails: [], lines: {}, boxes: [] };
+  const TOL = 1, near = (a, b) => Math.abs(a - b) <= TOL, f1 = (v) => (Math.round(v * 10) / 10).toFixed(1);
+  const vw = document.documentElement.clientWidth;
+  const NAMES = ["full-start", "wide-start", "body-start", "body-end", "wide-end", "full-end"];
+  // The lines of a grid container: its content edge plus the resolved tracks, by line name.
+  // In print there is no grid: one column of blocks, every line on a content edge.
+  const read = (c) => {
+    const cs = getComputedStyle(c), pos = {};
+    let x = c.getBoundingClientRect().left + parseFloat(cs.borderLeftWidth) + parseFloat(cs.paddingLeft);
+    if (print && cs.display === "block") {
+      const r = c.getBoundingClientRect().right - parseFloat(cs.borderRightWidth) - parseFloat(cs.paddingRight);
+      return Object.fromEntries(NAMES.map((n) => [n, n.endsWith("start") ? x : r]));
+    }
+    if (cs.display !== "grid") return pos;
+    for (const t of cs.gridTemplateColumns.match(/\[[^\]]*\]|[\d.]+px/g) ?? []) {
+      if (t[0] === "[") for (const n of t.slice(1, -1).split(/\s+/).filter(Boolean)) pos[n] = x;
+      else x += parseFloat(t);
+    }
+    return pos;
+  };
+  const grids = [...document.querySelectorAll("body > header, main")];
+  const L = read(grids.at(-1));
+  out.lines = Object.fromEntries(NAMES.map((n) => [n, L[n]]));
+  for (const c of grids) {
+    const l = read(c), tag = c.tagName.toLowerCase();
+    for (const n of NAMES) {
+      if (!(n in l)) out.fails.push(`${tag}: no line ${n}`);
+      else if (!near(l[n], L[n])) out.fails.push(`${tag}: line ${n} at ${f1(l[n])}, main's at ${f1(L[n])}`);
+    }
+  }
+  if (NAMES.some((n) => !(n in L))) return out;
+
+  // The lines are the ones the page's three lengths give.
+  const px = (v) => {
+    const d = document.createElement("div");
+    d.style.cssText = `position:absolute;visibility:hidden;height:0;width:var(${v})`;
+    document.body.append(d);
+    const w = d.getBoundingClientRect().width;
+    d.remove();
+    return w;
+  };
+  const pad = px("--gutter"), over = px("--overhang"), measure = px("--measure");
+  const body = print ? vw : Math.min(measure, vw - 2 * pad);
+  const hang = print ? 0 : Math.max(0, Math.min(over, (vw - 2 * pad - body) / 2));
+  const want = { "full-start": 0, "wide-start": (vw - body) / 2 - hang, "body-start": (vw - body) / 2,
+                 "body-end": (vw + body) / 2, "wide-end": (vw + body) / 2 + hang, "full-end": vw };
+  for (const n of NAMES) {
+    if (!near(L[n], want[n])) out.fails.push(`line ${n} at ${f1(L[n])}, the page's lengths give ${f1(want[n])}`);
+  }
+  if (!near(L["body-start"] - L["wide-start"], L["wide-end"] - L["body-end"])) out.fails.push("wide is not centred on body");
+  if (!print && L["wide-start"] - L["full-start"] < pad - TOL) out.fails.push("wide reaches into the side padding");
+
+  const span = (c) => [L[`${c}-start`], L[`${c}-end`]];
+  const name = (e) => e.id ? `#${e.id}` : e.dataset.fig ? `[data-fig=${e.dataset.fig}]`
+    : `${e.parentElement.id ? `#${e.parentElement.id} > ` : ""}${e.tagName.toLowerCase()}${e.className ? `.${String(e.className).trim().split(/\s+/).join(".")}` : ""}`;
+  const shown = (e) => e.getClientRects().length > 0;
+  const classes = (e) => ["body", "wide", "full"].filter((c) => e.classList.contains(c));
+  const inner = (e) => {  // content box; a display: contents parent has none, so its own parent's
+    while (getComputedStyle(e).display === "contents") e = e.parentElement;
+    const b = e.getBoundingClientRect(), cs = getComputedStyle(e);
+    return [b.left + parseFloat(cs.paddingLeft), b.right - parseFloat(cs.paddingRight)];
+  };
+  // The rule of each exception: the edges it must have, or null where its class holds.
+  const rules = {
+    half(e) {
+      const s = e.parentElement.getBoundingClientRect(), mid = (L["full-start"] + L["full-end"]) / 2;
+      if (e.getBoundingClientRect().width > s.width - TOL) return span("full");
+      return e === e.parentElement.firstElementChild ? [L["full-start"], mid] : [mid, L["full-end"]];
+    },
+    column: (e) => inner(e.parentElement),
+    pair(e) {
+      const p = e.parentElement, g = parseFloat(getComputedStyle(p).columnGap) || 0;
+      if (e.getBoundingClientRect().width > p.getBoundingClientRect().width - TOL) return null;
+      const mid = (L["wide-start"] + L["wide-end"]) / 2;
+      return e === p.firstElementChild ? [L["wide-start"], mid - g / 2] : [mid + g / 2, L["wide-end"]];
+    },
+  };
+  const FIGS = "[data-fig], .table, .pair, .split";
+  const blocks = new Set([
+    ...document.querySelectorAll("body > header > *, main > section, main > section:not(.split) > *"),
+    ...document.querySelectorAll(FIGS), ...document.querySelectorAll(".body, .wide, .full"),
+    ...document.querySelectorAll("[data-fig] > .canvas, [data-fig] > figcaption"),
+  ]);
+  const held = (e) => {  // the exception that holds this figure here, with the edges it gives
+    const ex = exempt.find((x) => e.matches(x.sel)), edges = ex ? rules[ex.rule](e) : null;
+    return edges ? [edges, `the exception "${ex.rule}"`] : null;
+  };
+  // The edges a block must have and what gives them, or [null, what is wrong with it].
+  const expect = (e) => {
+    const cs = classes(e), host = e.parentElement, hb = host.getBoundingClientRect();
+    if (cs.length > 1) return [null, `has the classes ${cs.join(" and ")}`];
+    if (held(e)) return held(e);
+    if (e.matches("main > section:not(.split)")) return [span("full"), "full"];  // hands the lines on
+    // A drawing follows its figure; so does the caption of a figure an exception holds.
+    if (e.matches("[data-fig] > .canvas") || (e.matches("[data-fig] > figcaption") && held(host))) {
+      return [[hb.left, hb.right], "its figure"];
+    }
+    if (e.matches("[data-fig] > figcaption") && cs[0] !== "body") return [null, "is a caption under a figure on the grid without the class body"];
+    if (e.matches(FIGS) && !cs.length) return [null, "has none of the classes body, wide, full"];
+    return [span(cs[0] ?? "body"), cs[0] ?? "body"];
+  };
+  for (const e of blocks) {
+    if (!shown(e)) continue;
+    const b = e.getBoundingClientRect(), [edges, what] = expect(e), id = name(e);
+    out.boxes.push({ name: id, on: what, left: b.left, right: b.right });
+    if (!edges) { out.fails.push(`${id} ${what}`); continue; }
+    if (!near(b.left, edges[0]) || !near(b.right, edges[1])) {
+      out.fails.push(`${id} runs ${f1(b.left)} to ${f1(b.right)}; ${what} is ${f1(edges[0])} to ${f1(edges[1])}`);
+    }
+    for (const prop of ["width", "max-width", "min-width", "margin-left", "margin-right"]) {
+      if (e.style.getPropertyValue(prop)) out.fails.push(`${id} sets its own ${prop}`);
+    }
+    if (getComputedStyle(e).transform !== "none") out.fails.push(`${id} is moved by a transform`);
+  }
+  return out;
+}"""
+
 PRINT = r"""() => {
   const out = { sticky: [], captions: [], controls: [] };
   for (const e of document.querySelectorAll("body *")) {
@@ -401,8 +546,10 @@ def check(
             audit = page.evaluate(
                 AUDIT, {"json": data, "derived": derived, "structure": STRUCTURE[path]}
             )
+            g = page.evaluate(GRID, {"exempt": GRID_EXEMPT, "print": False})
             res = {
-                "page": problems, "overflow": r["overflowX"], "emoji": r["emoji"],
+                "page": problems, "overflow": r["overflowX"], "grid lines": g["fails"],
+                "emoji": r["emoji"],
                 "sticky": r["sticky"], "blocks": r["blocks"], "table": r["table"],
                 "columns": r["columns"], "gaps": r["gaps"], "links": r["links"],
                 "text over marks": m["collisions"], "labels longer than their path": m["paths"],
@@ -427,6 +574,23 @@ def check(
                     page.screenshot(path=str(shots / f"{engine}_{w}_page.png"), full_page=True)
             ctx.close()
 
+        # Either side of the width at which wide meets body: the grid lines and the overflow.
+        for w, h in GRID_WIDTHS if widths is WIDTHS else []:
+            problems = []
+            page = open_rendered(browser, url, {"width": w, "height": h}, problems)
+            g = page.evaluate(GRID, {"exempt": GRID_EXEMPT, "print": False})
+            over = page.evaluate(
+                "document.documentElement.scrollWidth > document.documentElement.clientWidth"
+            )
+            res = {"page": problems, "overflow": ["page wider than the window"] if over else [],
+                   "grid lines": g["fails"]}  # fmt: skip
+            bad = {k: v for k, v in res.items() if v}
+            print(
+                f"{engine} {w}px: grid lines only, {'ok' if not bad else 'FAIL ' + ', '.join(bad)}"
+            )
+            fails += [f"{w}px {k}: {x}" for k, v in bad.items() for x in v]
+            page.close()
+
         # Print: A4 from an 800 px window.
         ctx = browser.new_context(viewport={"width": 800, "height": 1000}, reduced_motion="reduce")
         problems = []
@@ -440,8 +604,10 @@ def check(
         page.wait_for_timeout(800)
         pr = page.evaluate(PRINT)
         m = page.evaluate(MARKS)
+        g = page.evaluate(GRID, {"exempt": GRID_EXEMPT, "print": True})
         res = {"page": problems, "sticky": pr["sticky"], "captions": pr["captions"],
-               "controls": pr["controls"], "text over marks": m["collisions"],
+               "controls": pr["controls"], "grid lines": g["fails"],
+               "text over marks": m["collisions"],
                "labels longer than their path": m["paths"], "text leaving its figure": m["leaves"]}  # fmt: skip
         bad = {k: v for k, v in res.items() if v}
         print(f"{engine} print: {'ok' if not bad else 'FAIL ' + ', '.join(bad)}")
