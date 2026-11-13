@@ -22,12 +22,12 @@ export function fig1(fig, D) {
     { id: "P", label: "Printed solution, first hypothesis", v: printedAt("H1") },
     { id: "Q", label: "Printed solution, second hypothesis", v: printedAt("H2") },
     { id: "R", label: "His data, his least squares", v: A.H1_o_real_least_squares },
-    { id: "F", label: `Project fit, distance held at ${fmt(A.S5_a_au)} AU`, v: f1.med, lo: f1.lo, hi: f1.hi },
-    { id: "G", label: `Project fit, distance held at ${fmt(A.S6_a_au, 2)} AU`, v: f2.med, lo: f2.lo, hi: f2.hi },
+    { id: "F", label: `Full-model fit, distance held at ${fmt(A.S5_a_au)} AU`, v: f1.med, lo: f1.lo, hi: f1.hi },
+    { id: "G", label: `Full-model fit, distance held at ${fmt(A.S6_a_au, 2)} AU`, v: f2.med, lo: f2.lo, hi: f2.hi },
     { label: "Noise-free Neptune: his least squares", short: "Noise-free: his least squares", v: A.o_clean_least_squares, open: true },
     { label: "Noise-free Neptune: his elimination", short: "Noise-free: his elimination", v: A.o_clean_his_procedure, open: true },
-    { label: "Noise-free Neptune: project model on his places", short: "Noise-free: project model, his places", v: A.o_clean_project_on_his_places, open: true },
-    { label: "Noise-free Neptune: project fit", short: "Noise-free: project fit", v: A.o_clean_project_fit, lo: c68[0], hi: c68[1], open: true },
+    { label: "Noise-free Neptune: full model on his places", short: "Noise-free: full model, his places", v: A.o_clean_project_on_his_places, open: true },
+    { label: "Noise-free Neptune: full-model fit", short: "Noise-free: full-model fit", v: A.o_clean_project_fit, lo: c68[0], hi: c68[1], open: true },
   ];
   const tip = probe(fig);
   mount(fig, (svg, w, h) => {

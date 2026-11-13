@@ -419,7 +419,7 @@ GRID = r"""({ exempt, print }) => {
   const blocks = new Set([
     ...document.querySelectorAll("body > header > *, main > section, main > section:not(.split) > *"),
     ...document.querySelectorAll(FIGS), ...document.querySelectorAll(".body, .wide, .full"),
-    ...document.querySelectorAll("[data-fig] > .canvas, [data-fig] > figcaption"),
+    ...document.querySelectorAll("[data-fig] > .canvas, [data-fig] > figcaption, .table > figcaption"),
   ]);
   const held = (e) => {  // the exception that holds this figure here, with the edges it gives
     const ex = exempt.find((x) => e.matches(x.sel)), edges = ex ? rules[ex.rule](e) : null;
@@ -435,7 +435,7 @@ GRID = r"""({ exempt, print }) => {
     if (e.matches("[data-fig] > .canvas") || (e.matches("[data-fig] > figcaption") && held(host))) {
       return [[hb.left, hb.right], "its figure"];
     }
-    if (e.matches("[data-fig] > figcaption") && cs[0] !== "body") return [null, "is a caption under a figure on the grid without the class body"];
+    if (e.matches("[data-fig] > figcaption, .table.wide > figcaption") && cs[0] !== "body") return [null, "is a caption under a figure on the grid without the class body"];
     if (e.matches(FIGS) && !cs.length) return [null, "has none of the classes body, wide, full"];
     return [span(cs[0] ?? "body"), cs[0] ?? "body"];
   };

@@ -406,7 +406,7 @@ function s3Effect(D, it) {
 
 export function robustText(D) {
   const k = D.checks, rp = k.repeat, v = k.verdicts, f = k.fits;
-  const ratio = drv(rp.r1Spread / rp.r1RunError, "R1 spread / run error");
+  const ratio = drv(rp.r1Spread / rp.r1RunError, "repeatability spread / run error");
   const shift = (key) => fmt(Math.abs(f[key].vs_headline.galle_median_shift_headline_half_widths), 2);
   const jplAll = ["headline", ...Object.keys(SENS(f))].every((key) => f[key].galle_lon_ecl_of_date_deg.vs.jpl.in_68);
   const s1 = v.s1_e05;

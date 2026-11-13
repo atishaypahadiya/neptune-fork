@@ -13,7 +13,8 @@ Versions follow semver. Dates are the release dates; the DOIs are in `CITATION.c
   sheet's own limits (21h 56m to 23h 04m, 15° south to 15° north, for 1800; read from the
   sheet and the Academy's rules of 1859, and checked against the sheet images) the planet
   lay off the sheet on every night Challis recorded it: 0.00, would very probably not have.
-  Table 1, Figs. 3 and 4, the limitations and the write-up follow.
+  Table 1, Figs. 3 and 4, the limitations and the write-up follow. Fig. 3 loses the second
+  edge line, the sheet's edge read as right ascension of date, with the row.
 - Krajnović 2021 is a chapter of *Neptune: From Grand Discovery to a World Revealed*
   (Springer), pp. 185–244, doi:10.1007/978-3-030-54218-4_6. v1.2.0 gave another title.
 - The link to the Lille scan of Le Verrier's memoir: its handle no longer resolves, and the

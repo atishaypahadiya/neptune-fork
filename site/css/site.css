@@ -63,10 +63,10 @@ body > header, main {
 /* A section spans the grid and hands its lines on to its blocks; a wide figure hands them on
    to its drawing (wide) and its caption (body). */
 main > section { grid-column: full; }
-main > section, figure.wide[data-fig] { display: grid; grid-template-columns: subgrid; }
+main > section, figure.wide[data-fig], figure.table.wide { display: grid; grid-template-columns: subgrid; }
 body > header > *, main > section > * { grid-column: body; } /* prose is body without the class */
 .body { grid-column: body; }
-.wide, .wide > .canvas { grid-column: wide; }
+.wide, .wide > .canvas, .table.wide > table { grid-column: wide; }
 .full { grid-column: full; }
 
 /* ---------- figures: the archive layer ---------- */
@@ -150,6 +150,7 @@ main > section > .wide { margin: var(--fig-space) 0; }
 }
 .canvas .error { position: absolute; inset: auto 20px 20px; margin: 0; color: var(--line); font-size: 15px; }
 figure[data-fig] > figcaption { margin-top: 10px; }
+.table > figcaption { margin-top: 12px; }
 .fig-1 .canvas { height: 380px; }
 .fig-2 .canvas { height: 420px; }
 .fig-4 .canvas { height: 420px; }
@@ -286,7 +287,7 @@ input[type="range"] { flex: 1; min-width: 0; margin: 0; accent-color: var(--prus
   main { padding: 0; }
   /* One column of blocks, no grid: the three widths are all the page's text width. (On a grid
      Chrome drops the space under a paragraph that a page break divides.) */
-  body > header, main, main > section, figure.wide[data-fig], .pair { display: block; }
+  body > header, main, main > section, figure.wide[data-fig], figure.table.wide, .pair { display: block; }
   .pair > figure[data-fig] + figure[data-fig] { margin-top: 24px; }
   .sec { margin: 28pt 0 4pt; }
   h2 { font-size: 22pt; margin-bottom: 10pt; }

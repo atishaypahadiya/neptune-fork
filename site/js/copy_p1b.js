@@ -377,7 +377,7 @@ export function captions(D) {
       `${p2(W.A0_mean)} with no line is a case that is ${p2(W.A0_mean)} in every draw: by ` +
       `construction for his actual procedure (the realised events are held fixed), off the sheet for the chart, ` +
       `by timing for Adams's second place.`,
-    cap_table_1: `Table 1. The cases: probability that the planet is flagged before ` +
+    cap_table_1: `The cases: probability that the planet is flagged before ` +
       `${galle(K)} (mean, with the ${R.low} to ${R.high} % range), the row of the ` +
       `pre-registered reading rule, and what the case is conditional on.`,
   };

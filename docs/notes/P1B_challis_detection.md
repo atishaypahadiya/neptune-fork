@@ -823,10 +823,14 @@ sheet images by eye on 12 November 2026. Read from the sheet:
 | item | reading |
 |---|---|
 | title cartouche | "zwischen XXII^h und XXIII^h … 15° südlicher bis 15° nördlicher Abweichung, für 1800" |
-| author and engraver | Argelander (Åbo); engraved by Kalbe, Berlin |
+| author | Argelander (Åbo) |
 | plotted field | 21h 56m to 23h 04m: a 4-minute overlap column beyond each hour line |
 | southern edge | −15° |
 | key | down to class 9-10 |
+
+The engraver's line is under the lower right corner. In the reproduction used for N1 its
+letters are about 8 px high and the name cannot be confirmed letter by letter; the result
+file's reading, "K. Kolbe sculps. Berlin", stands.
 
 The nominal hour in the title (22h to 23h) is narrower than the plotted field. N1 uses the
 plotted field, 21h 56m to 23h 04m, as above; the C2 figures and the § 7 reading are not

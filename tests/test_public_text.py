@@ -14,9 +14,11 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 
-# Internal labels. S4, S5 and S6 are the companion study's own defined labels and are allowed.
+# Internal labels: phases, milestones, check and run identifiers. S4, S5 and S6 are the
+# companion study's own defined labels and are allowed.
 LABELS = re.compile(
-    r"\bphase[ -]?(?:1b|1|2|one|two)\b|\bP1B\b|\bM\d{1,2}[a-e]?\b|\bS1 cell 0\b",
+    r"\bphase[ -]?(?:1b|1|2|one|two)\b|\bP1B\b|\bM\d{1,2}[a-e]?\b|\bS1 cell 0\b"
+    r"|\bA\d[a-f]?\b|\b[SR][1-3]\b",  # milestones, checks (A6b), sensitivity and repeat runs
     re.IGNORECASE,
 )
 PLURAL = re.compile(r"\b(?:we|our|ours|us|ourselves)\b", re.IGNORECASE)
@@ -103,6 +105,7 @@ def test_no_possessive_for_the_work(name):
 def test_the_patterns_catch_what_they_should():
     bad = "In Phase 1b we ran M10 and the project's fit, see P1B and phase 2; our M6c."
     assert len(_hits(LABELS, bad)) == 5
+    assert len(_hits(LABELS, "A6b passed; S1 and R2 agree; A3")) == 4
     assert len(_hits(PLURAL, bad)) == 2
     assert len(_hits(POSSESSIVE, bad)) == 1
     ok = _markdown_prose(
