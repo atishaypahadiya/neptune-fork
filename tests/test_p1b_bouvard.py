@@ -197,3 +197,50 @@ def test_v3_gates_and_frame_tests_as_recorded():
         assert abs(v3["frame_test_offset"][method]["change_deg"]) <= P.TOL_FRAME_OFFSET_DEG
     assert v3["frame_test_curve"]["max_abs_difference_arcsec"] <= P.TOL_FRAME_CURVE_ARCSEC
     assert v3["propagation_check"]["d_arcsec"] == pytest.approx(1.05)
+
+
+def test_attribution_algebra_and_classes():
+    a = P.attribute(1.6, -3.2, -3.8, -9.5)
+    assert a["R"] + a["Ob"] == pytest.approx(a["A"] - a["D"])
+    assert a["R"] - a["Ob"] == pytest.approx(a["C"] - a["B"])
+    assert a["I"] == pytest.approx(0.5 * ((1.6 + 3.2) - (-3.8 + 9.5)))
+    assert [P.effect_class(v) for v in (6.0, 5.99, 3.01, 3.0, -3.0, -3.01)] == [
+        "carries", "partial", "partial", "does not carry", "does not carry", "works against",
+    ]  # fmt: skip
+
+
+@pytest.mark.parametrize(
+    ("cells", "row", "override"),
+    [
+        ((2.0, -8.0, 1.0, -9.0), "The reference carries the shift.", False),
+        ((2.0, 1.0, -8.0, -9.0), "The observations carry the shift.", False),
+        ((2.0, -3.5, -3.5, -9.0), "Both, in the shares found.", False),
+        ((2.0, -12.0, 6.0, -9.0), "The reference carries more than the whole shift", False),
+        ((2.0, -9.0, -9.0, -9.0), "Both, in the shares found.", True),
+    ],
+)
+def test_reading_rows_on_constructed_effects(cells, row, override):
+    a = P.attribute(*cells)
+    assert a["row"].startswith(row)
+    assert a["interaction_override"] is override
+
+
+def test_cells_as_recorded():
+    """The cells take minutes and need the ephemeris cache: the recorded run is checked."""
+    import json
+
+    c = json.loads(P.OUT_JSON.read_text(encoding="utf-8"))["cells"]
+    h1 = c["cells"]["H1"]
+    for cell, key in (("A", "A"), ("D", "D")):
+        assert h1[cell]["d1c"]["offset"] == pytest.approx(P.GATES["H1"][f"{key}_d1c"], abs=1e-3)
+        assert h1[cell]["chain"]["offset"] == pytest.approx(P.GATES["H1"][f"{key}_chain"], abs=1e-3)
+    r = c["reading"]
+    assert (r["B"], r["C"]) == pytest.approx((-3.170, -3.801), abs=2e-3)
+    assert (r["R"], r["Ob"], r["I"]) == pytest.approx((5.264, 5.895, -0.447), abs=2e-3)
+    assert r["R"] + r["Ob"] == pytest.approx(r["A"] - r["D"])
+    assert (r["R_class"], r["Ob_class"]) == ("partial", "partial")
+    assert len(r["overrides_and_remarks"]) == 2
+    chain = c["attribution"]["H1"]["chain"]
+    assert (chain["R_class"], chain["Ob_class"]) == ("carries", "does not carry")
+    assert set(c["sensitivities"]) >= {"S2 eccentricity of p. ii", "S3 without § 7"}
+    assert len(c["D"]["years"]) == 30

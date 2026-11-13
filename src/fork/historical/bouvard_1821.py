@@ -330,6 +330,47 @@ def c_bouvard_deg(t: float) -> float:
     return (corrected_formula_at(t)["longitude"] * 0.9e-4 + s7_correction(t) / 3600.0) % 360.0
 
 
+def s7_correction_of_date(t: float) -> float:
+    """S7: the five terms with the mean longitudes counted from the equinox of date."""
+    prec = _num(formula_cells()[27]) * 0.9e-4 * t
+    lon = [x + prec for x in mean_longitudes_deg(t)]
+    return sum(
+        coef * math.sin(math.radians(sum(m * x for m, x in zip(mult, lon, strict=True)) + const))
+        for coef, mult, const in s7_terms()
+    )
+
+
+def _kepler_centre(mean_anomaly: float, e: float) -> float:
+    """True minus mean anomaly, radians."""
+    ecc = mean_anomaly
+    for _ in range(60):
+        ecc = mean_anomaly + e * math.sin(ecc)
+    true = 2.0 * math.atan2(
+        math.sqrt(1 + e) * math.sin(ecc / 2), math.sqrt(1 - e) * math.cos(ecc / 2)
+    )
+    return (true - mean_anomaly + math.pi) % (2 * math.pi) - math.pi
+
+
+def eccentricity_shift(t: float, e_from: float, e_to: float) -> float:
+    """S2: the change of the equation of the centre (arcseconds) when the eccentricity goes
+    from ``e_from`` to ``e_to``, at the anomaly of t."""
+    m = corrected_formula_at(t)["anomaly_grades"] * math.pi / 200.0
+    return math.degrees(_kepler_centre(m, e_to) - _kepler_centre(m, e_from)) * 3600.0
+
+
+def misprint_row_25_shift(t: float) -> float:
+    """S5b: the change of the tables' longitude (arcseconds) when Table X's row 25 is used as
+    printed (2.35.14,3) instead of 2.33.14,3, by the four-row interpolation at the anomaly
+    of t."""
+    anomaly = corrected_formula_at(t)["anomaly_grades"]
+    k = math.floor(anomaly)
+    grid = [k - 1, k, k + 1, k + 2]
+    if 25 not in grid:
+        return 0.0
+    weight = _lagrange(grid, [1.0 if g == 25 else 0.0 for g in grid], anomaly)
+    return 200.0 * weight * CENTESIMAL_SEC_IN_ARCSEC
+
+
 def misprint_row_2600_shift(t: float) -> float:
     """S5: the change of the tables' longitude (arcseconds) when Table XII's row 2600 is used
     as printed (3.41,6) instead of 3.31,6, by the tables' four-row interpolation at the

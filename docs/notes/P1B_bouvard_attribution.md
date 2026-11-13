@@ -740,3 +740,148 @@ Ruled by the author on 13 November 2026, after the V2 and V3 results above were 
 3. **The run.** Cells A to D, both methods, both hypotheses, with S2, S3, S5, S5b, S6, S7
    and the propagation check (d = 1″.05). S1 is not run: no primary source for Bouvard's
    mass of Saturn has been found. S4 was reported with V1.
+
+## Results, 13 November 2026: the cells
+
+Run after the amendment above was pushed (98e08c7). Runner:
+`uv run python -m fork.export.p1b_bouvard` (about six minutes, not under a minute as § 9
+expected: 4 cells and 12 variants, each by both methods and both hypotheses). Numbers:
+`P1B_bouvard_attribution.json`; figure: `P1B_bouvard_attribution.png`.
+
+**In one sentence:** by the rule fixed in advance the reading is "both" (reference +5.3°,
+observations +5.9° of the +11.16° shift), but it depends on the method, on the
+hypothesis, and on a few arcseconds at single places near 1780 to 1790, so no
+attribution is supported.
+
+### R5, D = C_Bouvard − C_clean at the 30 places
+
+A constant of −14″.5 (at 1800) and a trend of −0″.81 a year, fitted to the 29 places
+used. What is left runs from −10″.5 (1792) to +10″.5 (1750), a wave of about Uranus's
+period (figure).
+
+| year | D | less constant and trend | year | D | less constant and trend |
+|---|---|---|---|---|---|
+| 1690 | +75″.9 | +1″.9 | 1801 | −23″.2 | −7″.7 |
+| 1712 | +57″.7 | +1″.0 | 1804 | −22″.5 | −4″.6 |
+| 1715 | +58″.1 | +3″.8 | 1807 | −21″.3 | −0″.9 |
+| 1750 | +35″.9 | +10″.5 | 1810 | −21″.5 | +1″.3 |
+| 1753 | +32″.1 | +9″.2 | 1813 | −21″.6 | +3″.6 |
+| 1756 | +28″.7 | +8″.0 | 1816 | −22″.4 | +5″.3 |
+| 1764 | +18″.7 | +4″.0 | 1819 | −23″.0 | +7″.2 |
+| 1769 | +10″.3 | −0″.3 | 1822 | −25″.8 | +6″.9 |
+| 1771 | +5″.0 | −3″.3 | 1825 | −29″.1 | +6″.1 |
+| 1780 | −7″.3 | −9″.1 | 1828 | −32″.5 | +5″.1 |
+| 1783 | −7″.8 | −7″.2 | 1831 | −35″.5 | +4″.5 |
+| 1786 | −12″.0 | −8″.9 | 1834 | −39″.1 | +3″.4 |
+| 1789 | −16″.0 | −10″.4 | 1837 | −43″.0 | +2″.0 |
+| 1792 | −18″.5 | −10″.5 | 1840 | −47″.4 | +0″.1 |
+| 1795 | −20″.6 | −10″.1 | | | |
+| 1798 | −22″.0 | −9″.0 | | | |
+
+The 1780 place stands 2″ off its neighbours. Its epoch is 1779.96, so the rule of the
+first amendment gives it the row of Table I a century later, whose mean longitude is
+3″.4 from Table I's own branch. See the post hoc check below.
+
+### R6, the four cells (offset from Neptune at 1846.762, degrees)
+
+| cell | O | C | Hyp. I, D1(c) | Hyp. I, chain | Hyp. II, D1(c) | Hyp. II, chain |
+|---|---|---|---|---|---|---|
+| A | real | Bouvard | +1.647 | +1.021 | +4.964 | +4.447 |
+| B | real | clean | −3.170 | −10.914 | −1.418 | −10.326 |
+| C | clean | Bouvard | −3.801 | −1.187 | −0.714 | +3.722 |
+| D | clean | clean | −9.512 | −9.923 | −7.621 | −8.127 |
+
+Cells A and D are the gates. The chain found two positive-mass roots in every cell. In
+cell B the two methods are 7.7° apart (χ² 22.5 for D1(c), 24.4 for the chain's root under
+the same weights); in cell C 2.6° apart. D1(c)'s residuals: A 1″.23 modern and 6″.15
+ancient; B 1″.08 and 5″.68; C 1″.00 and 2″.08; D 0″.43 and 1″.84.
+
+### R7, attribution and reading
+
+| | shift | R, the reference | Ob, the observations | I | classes |
+|---|---|---|---|---|---|
+| **Hyp. I, D1(c) (the reading)** | +11.16 | **+5.26** | **+5.89** | −0.45 | partial, partial |
+| Hyp. I, chain | +10.94 | +10.34 | +0.61 | +1.60 | carries, does not carry |
+| Hyp. II, D1(c) | +12.59 | +6.65 | +5.94 | −0.26 | carries, partial |
+| Hyp. II, chain | +12.57 | +13.31 | −0.74 | +1.46 | carries, does not carry |
+
+By § 6:
+
+- The row for D1(c) on Hypothesis I is **"Both, in the shares found"**: +5.3° from the
+  reference and +5.9° from the observations.
+- The interaction is under 3° everywhere, so that override does not apply.
+- **D1(c) and his chain fall in different rows.** The chain's row is "The reference
+  carries the shift". By § 6 both rows are given and **the reading is "depends on the
+  method"**.
+- Hypothesis II with D1(c) falls in a different class for the reference (+6.65°,
+  "carries"; the row "Mostly the reference").
+
+Both partial effects of D1(c) lie within 1° of a class boundary (3° and 6°).
+
+### R8, sensitivities: reported, not read
+
+Change of the offset of cells B and C, degrees, Hypothesis I.
+
+| | δ in C_Bouvard | B, D1(c) | C, D1(c) | B, chain | C, chain |
+|---|---|---|---|---|---|
+| S2, eccentricity of p. ii | ±28″ at Uranus's period | −0.09 | +0.04 | −0.16 | +0.03 |
+| S3, without § 7 | +9″.9 to +29″.9 | −5.42 | +1.66 | −7.74 | −1.10 |
+| S5, Table XII row 2600 as printed | +1″.91 at 1789 | −2.07 | +1.15 | +171.94 | +0.55 |
+| S5b, Table X row 25 as printed | −0″.73 at 1804 | −0.68 | +0.36 | −1.05 | +0.18 |
+| S6, § 7 with the great inequalities | +1″.4 to +3″.7 | −0.16 | +0.12 | −0.15 | +0.07 |
+| S7, § 7 from the equinox of date | −0″.1 to +0″.7 | +0.10 | −0.08 | +0.09 | −0.08 |
+| propagation, d sin M | ±1″.05 | −0.32 | +0.20 | −0.32 | +0.12 |
+| propagation, d cos M | ±1″.05 | −0.11 | +0.05 | −0.14 | −0.02 |
+| propagation, d sin III | ±1″.05 | −0.01 | +0.08 | +0.01 | +0.12 |
+| propagation, d cos III | ±1″.05 | −0.07 | +0.12 | +0.00 | +0.18 |
+
+S1 was not run: no primary source for Bouvard's mass of Saturn. S4 is with V1.
+
+- **S2** changes little, as expected in § 7: a change of eccentricity is taken up by his
+  δx₁, δy₁.
+- **The propagation check:** a periodic error of the size V1′ could not exclude moves a
+  cell by at most 0.32°. Smooth errors of that size do not threaten the 3° and 6° classes.
+- **S3:** his five terms are worth several degrees. Without them R is +8.8° and Ob +2.4°
+  (D1(c)).
+- **S5:** one place changed by 1″.9 moves cell B by 2.1° and cell C by 1.2°; R becomes
+  +6.9° ("carries") and Ob +4.3°. In the chain the same change makes cell B take its
+  other root (offset +161°).
+- **S5b, S6, S7** move a cell by under 0.7° (D1(c)).
+
+### Post hoc, not in the plan
+
+1. **The 1780 place.** Adams says its error was "found by interpolating between the errors
+   of 1781, 1782, and 1783, and those given by the Ancient Observations of 1769 and
+   1771". It was not computed from the tables at its own date, and the two table branches
+   differ there by 3″.4 in mean longitude. With C_Bouvard at 1780 taken on Table I's own
+   branch (+3″.40 at that one place), cell B moves by +4.81° and cell C by −2.76°
+   (D1(c)); by +13.24° and −6.49° in the chain. The attribution becomes:
+
+   | | R | Ob | I |
+   |---|---|---|---|
+   | Hyp. I, D1(c) | +1.48 | +9.68 | −1.47 |
+   | Hyp. I, chain | +0.47 | +10.47 | −1.77 |
+   | Hyp. II, D1(c) | +1.98 | +10.61 | −1.31 |
+   | Hyp. II, chain | +0.60 | +11.97 | −1.84 |
+
+   That is "the observations carry the shift" by both methods and both hypotheses, the
+   opposite of what the chain gives under the rule as fixed. Which branch stands for an
+   interpolated place the memoir does not say.
+2. **A frame rate.** A trend of 0″.1 a year in true longitude (a difference of
+   precession constants is of this size) moves cell B by +0.21° and cell C by −0.22°.
+   Frame test 1 of V3 added the trend to the mean-longitude column, where it is taken up
+   exactly; in true longitude a small part is not.
+
+### R9, what this leaves
+
+- The pre-registered reading stands as computed: "both", with "depends on the method"
+  and a different class on Hypothesis II.
+- It is not robust. Changes of 2″ to 3″ at one normal place (1789 in S5, 1780 post hoc)
+  move a cell by 2° to 5° under D1(c) and switch roots or rows in the chain. The classes
+  of § 6 are 3° wide. Step 3c found the same sensitivity to noise of this size.
+- So this step does not attribute the shift. What it does show: smooth, periodic errors
+  in the reference of the size the validation left open do not matter (under 0.4°); the
+  five terms of § 7 matter (several degrees); and the result turns on single places
+  between 1780 and 1790.
+- Unseparated, as in § 8: the observations' errors, their reductions and the
+  construction of the normal places. To this is added the treatment of the 1780 place.

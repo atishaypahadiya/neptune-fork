@@ -428,6 +428,293 @@ def v3() -> dict:
     }
 
 
+# ------------------------------------------------------------------ the cells
+
+SHIFT_CLASSES = ((6.0, "carries"), (3.0, "partial"), (-3.0, "does not carry"))
+INTERACTION_OVERRIDE_DEG = 3.0
+E_P_II = 0.0466108
+
+
+def effect_class(v: float) -> str:
+    """§ 6: ≥ +6 carries; over +3 partial; −3 to +3 does not carry; under −3 works against."""
+    if v >= 6.0:
+        return "carries"
+    if v > 3.0:
+        return "partial"
+    if v >= -3.0:
+        return "does not carry"
+    return "works against"
+
+
+READING_ROWS = {
+    ("carries", "does not carry"): "The reference carries the shift.",
+    ("does not carry", "carries"): "The observations carry the shift.",
+    ("carries", "partial"): "Mostly the reference, with a share from the observations.",
+    ("partial", "carries"): "Mostly the observations, with a share from the reference.",
+    ("partial", "partial"): "Both, in the shares found.",
+    ("carries", "works against"): "The reference carries more than the whole shift and the "
+    "observations take some back.",
+    ("works against", "carries"): "The observations carry more than the whole shift and the "
+    "reference takes some back.",
+}
+
+
+def attribute(a: float, b: float, c: float, d: float) -> dict:
+    """§ 4 and § 6 on four offsets."""
+    r = 0.5 * ((a - b) + (c - d))
+    ob = 0.5 * ((a - c) + (b - d))
+    inter = 0.5 * ((a - b) - (c - d))
+    cls = (effect_class(r), effect_class(ob))
+    out = {
+        "A": a, "B": b, "C": c, "D": d,
+        "shift": a - d,
+        "R": r,
+        "Ob": ob,
+        "I": inter,
+        "R_class": cls[0],
+        "Ob_class": cls[1],
+        "row": READING_ROWS.get(cls, "no row of § 6 fits these classes"),
+        "reference_effect_at_each_level": {"real observations": a - b, "clean observations": c - d},
+        "observations_effect_at_each_level": {"Bouvard": a - c, "clean reference": b - d},
+    }  # fmt: skip
+    out["interaction_override"] = abs(inter) >= INTERACTION_OVERRIDE_DEG
+    return out
+
+
+def _of_date_lon(x: np.ndarray, s) -> float:
+    """A solution's true longitude at 1846.762 with his ε and precession (cells A and C)."""
+    from fork.historical import adams_1846 as A
+
+    eps_prime = (s.eps - float(x[4])) % 360.0
+    mean = (eps_prime + 12.0 * s.n_prime_deg + s.prec) % 360.0
+    varpi = (s.eps - float(x[7]) + s.prec) % 360.0
+    return A.true_longitude(mean, float(x[6]) / 20.0, varpi)
+
+
+def solve_cell(m, hyp: int, col: dict, frame: str, ctx: dict) -> dict:
+    """One column by both methods. ``frame`` is "bouvard" (his ε, of date) or "clean"
+    (the C_clean orbit's ε, ecl_j2000), the frame of the cell's C."""
+    import copy
+
+    from fork.export import p1b_adams_noise as N
+    from fork.export import p1b_adams_repro as R
+    from fork.historical import adams_1846 as A
+
+    s = A.setup_from_print(m, hyp)
+    rows = A.place_rows(m, s, oc=col)
+    w = A.weights_for(m, hyp, "c", rows)
+    ls = A.solve_least_squares(rows, w, s, A.printed_solution(m, hyp))
+    x = np.array([ls["x"][k] for k in A.PARAMS])
+    ms = copy.deepcopy(m)
+    for p in ms.places:
+        p["oc_mean"] = col[p["year"]]
+    ch = N.chain_solve(ms, hyp, rows, w, s)
+
+    def offset(v):
+        if frame == "clean":
+            lon = N.longitudes_of(v, ctx["eps_c"], s.n_prime_deg)["true_lon_1846_ecl_j2000"]
+            return R._wrap(lon - ctx["truth"]["ecl_j2000"])
+        return R._wrap(_of_date_lon(v, s) - ctx["truth"]["of_date"])
+
+    return {
+        "d1c": {
+            "offset": offset(x),
+            "theta": float(x[4]),
+            "m_prime": float(x[5]),
+            "e_prime_units": float(x[6]),
+            "chi2": ls["chi2"],
+            "rms_arcsec": ls["rms_arcsec"],
+            "n_distinct_minima": ls["n_distinct_minima"],
+        },
+        "chain": {
+            "offset": offset(ch["x"]) if ch["converged"] else None,
+            "converged": ch["converged"],
+            "n_positive_mass_roots": ch["n_positive"],
+            "theta": float(ch["x"][4]) if ch["converged"] else None,
+            "m_prime": float(ch["x"][5]) if ch["converged"] else None,
+            "chi2_c_weights": ch.get("chi2"),
+        },
+    }
+
+
+def cells() -> dict:
+    """The four cells for both methods and both hypotheses, the attribution, the reading
+    and the sensitivities (the plan's §§ 2 to 7 and its amendments)."""
+    from fork.export import p1b_adams_repro as R
+    from fork.historical import adams_1846 as A
+
+    m = A.load_memoir()
+    syn = R.synthetic_normal_places(m)
+    ctx = {
+        "truth": R.perturber_lon_1846(syn["truth_theta"], syn["ctx"]),
+        "eps_c": syn["c_fit"]["eps_1810_ecl_j2000_deg"],
+    }
+    years = syn["years"]
+    jd = syn["jd"]
+    t = np.array([B.t_of_jd(x) for x in jd])
+    clean_true = np.array([syn["oc_true_arcsec"][y] for y in years])
+    clean_mean = np.array([syn["oc_mean_arcsec"][y] for y in years])
+    factor_clean = clean_mean / clean_true  # r²/(ab) of the C_clean ellipse
+    v2r = v2()["s8_to_s9"]
+    factor_his = np.array([v2r[y]["factor"] for y in years])
+    s8 = np.array([p["oc_true"] for p in m.places])
+    s9 = {p["year"]: p["oc_mean"] for p in m.places}
+    lon_c = np.degrees(syn["lon_true_rad"]) - clean_true / 3600.0
+    lon_c_date = np.array(
+        [R.lon_j2000_to_of_date(v % 360.0, x) for v, x in zip(lon_c, jd, strict=True)]
+    )
+    lon_b = np.array([B.c_bouvard_deg(x) for x in t])
+    d0 = ((lon_b - lon_c_date + 180.0) % 360.0 - 180.0) * 3600.0  # D, arcseconds
+    use = np.array([y != 1690 for y in years])
+    design = np.vstack([np.ones(use.sum()), t[use]]).T
+    coef, *_ = np.linalg.lstsq(design, d0[use], rcond=None)
+    d_detr = d0 - (coef[0] + coef[1] * t)
+
+    def columns(delta: np.ndarray) -> tuple[dict, dict]:
+        d = d0 + delta
+        col_b = dict(zip(years, ((s8 + d) * factor_clean).tolist(), strict=True))
+        col_c = dict(zip(years, ((clean_true - d) * factor_his).tolist(), strict=True))
+        return col_b, col_c
+
+    zero = np.zeros(len(years))
+    col_b, col_c = columns(zero)
+    col_d = dict(zip(years, clean_mean.tolist(), strict=True))
+    out: dict = {
+        "D": {
+            "years": years,
+            "t_years_from_1800": t.tolist(),
+            "c_bouvard_of_date_deg": lon_b.tolist(),
+            "c_clean_of_date_deg": lon_c_date.tolist(),
+            "D_arcsec": d0.tolist(),
+            "constant_arcsec": float(coef[0]),
+            "trend_arcsec_per_year": float(coef[1]),
+            "D_less_constant_and_trend_arcsec": d_detr.tolist(),
+            "columns_arcsec": {"A": s9, "B": col_b, "C": col_c, "D": col_d},
+        },
+        "cells": {},
+        "attribution": {},
+    }
+    base = {}
+    for hyp in (1, 2):
+        c = {
+            "A": solve_cell(m, hyp, s9, "bouvard", ctx),
+            "B": solve_cell(m, hyp, col_b, "clean", ctx),
+            "C": solve_cell(m, hyp, col_c, "bouvard", ctx),
+            "D": solve_cell(m, hyp, col_d, "clean", ctx),
+        }
+        out["cells"][f"H{hyp}"] = c
+        base[hyp] = c
+        out["attribution"][f"H{hyp}"] = {
+            meth: attribute(*(c[k][meth]["offset"] for k in "ABCD"))
+            if all(c[k][meth]["offset"] is not None for k in "ABCD")
+            else None
+            for meth in ("d1c", "chain")
+        }
+    h1 = out["attribution"]["H1"]
+    reading = dict(h1["d1c"])
+    notes = []
+    if h1["d1c"]["interaction_override"]:
+        notes.append("interaction of 3° or more: no single attribution is stated")
+    if h1["chain"] is None:
+        notes.append("his chain gave no solution in a cell")
+    elif (h1["chain"]["R_class"], h1["chain"]["Ob_class"]) != (
+        h1["d1c"]["R_class"],
+        h1["d1c"]["Ob_class"],
+    ):
+        notes.append("D1(c) and his chain fall in different rows: depends on the method")
+    h2 = out["attribution"]["H2"]["d1c"]
+    if h2 and (h2["R_class"], h2["Ob_class"]) != (h1["d1c"]["R_class"], h1["d1c"]["Ob_class"]):
+        notes.append("Hypothesis II falls in different classes")
+    reading["overrides_and_remarks"] = notes
+    out["reading"] = reading
+
+    # sensitivities: a change δ of C_Bouvard (arcseconds, true longitude) at the 30 epochs
+    form = [B.corrected_formula_at(x) for x in t]
+    anomaly = np.array([f["anomaly_grades"] for f in form]) * math.pi / 200.0
+    arg3 = np.array([f["arg_III"] for f in form]) * 2 * math.pi / B.ARG_PARTS["III"]
+    e_tables = eccentricity_of(CENTRE_FROM_TABLES)
+    d = PROPAGATION_D_ARCSEC
+    deltas = {
+        "S2 eccentricity of p. ii": np.array(
+            [B.eccentricity_shift(x, e_tables, E_P_II) for x in t]
+        ),
+        "S3 without § 7": -np.array([B.s7_correction(x) for x in t]),
+        "S5 Table XII row 2600 as printed": np.array([B.misprint_row_2600_shift(x) for x in t]),
+        "S5b Table X row 25 as printed": np.array([B.misprint_row_25_shift(x) for x in t]),
+        "S6 § 7 with the great inequalities": np.array(
+            [B.s7_correction(x, great_inequalities=True) - B.s7_correction(x) for x in t]
+        ),
+        "S7 § 7 from the equinox of date": np.array(
+            [B.s7_correction_of_date(x) - B.s7_correction(x) for x in t]
+        ),
+        "propagation d sin M": d * np.sin(anomaly),
+        "propagation d cos M": d * np.cos(anomaly),
+        "propagation d sin III": d * np.sin(arg3),
+        "propagation d cos III": d * np.cos(arg3),
+        # post hoc, not in the plan: a frame rate in true longitude
+        "post hoc: 0.1 arcsec a year in true longitude": 0.1 * (t - t[use].mean()),
+        # post hoc: the 1780 place falls 0.04 year before 1780, so the amendment's rule gives
+        # it the century row; here it is put on Table I's own branch instead
+        "post hoc: the 1780 place on Table I's branch": np.array(
+            [B.MEAN_SLIP_PER_YEAR * 100.0 * CS if y == 1780 else 0.0 for y in years]
+        ),
+    }
+    sens = {}
+    for name, delta in deltas.items():
+        cb, cc = columns(delta)
+        entry = {
+            "delta_arcsec": {
+                y: float(v) for y, v in zip(years, delta, strict=True) if abs(v) > 0.005
+            }
+            if name.startswith(("S5", "post hoc: the 1780"))
+            else {"min": float(delta.min()), "max": float(delta.max())},
+        }
+        for hyp in (1, 2):
+            sb = solve_cell(m, hyp, cb, "clean", ctx)
+            sc = solve_cell(m, hyp, cc, "bouvard", ctx)
+            entry[f"H{hyp}"] = {
+                meth: {
+                    "B": sb[meth]["offset"],
+                    "C": sc[meth]["offset"],
+                    "change_B": None
+                    if sb[meth]["offset"] is None or base[hyp]["B"][meth]["offset"] is None
+                    else sb[meth]["offset"] - base[hyp]["B"][meth]["offset"],
+                    "change_C": None
+                    if sc[meth]["offset"] is None or base[hyp]["C"][meth]["offset"] is None
+                    else sc[meth]["offset"] - base[hyp]["C"][meth]["offset"],
+                }
+                for meth in ("d1c", "chain")
+            }
+        sens[name] = entry
+    out["sensitivities"] = sens
+    out["S1"] = "not run: no primary source for Bouvard's mass of Saturn"
+    return out
+
+
+def figure(c: dict) -> None:
+    """D at the 29 places with its constant and trend removed."""
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    d = c["D"]
+    yr = 1800.0 + np.array(d["t_years_from_1800"])
+    keep = np.array([y != 1690 for y in d["years"]])
+    fig, ax = plt.subplots(figsize=(7.2, 3.6))
+    ax.axhline(0.0, color="0.75", lw=0.8)
+    ax.plot(yr[keep], np.array(d["D_less_constant_and_trend_arcsec"])[keep], "o-",
+            color="#1f4e79", ms=4, lw=1.2)  # fmt: skip
+    ax.set_xlabel("year")
+    ax.set_ylabel("arcseconds")
+    ax.set_title("Bouvard's reference minus the clean one, constant and trend removed")
+    for side in ("top", "right"):
+        ax.spines[side].set_visible(False)
+    fig.tight_layout()
+    fig.savefig(OUT_JSON.with_suffix(".png"), dpi=160)
+    plt.close(fig)
+
+
 def main() -> None:
     payload = {
         "plan": "docs/notes/P1B_bouvard_attribution.md",
@@ -435,10 +722,15 @@ def main() -> None:
         "V1_prime": v1p(),
         "V2": v2(),
         "V3": v3(),
-        "cells": "not run",
+        "cells": cells(),
     }
     OUT_JSON.write_text(
         json.dumps(payload, default=_plain, indent=1, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+    figure(payload["cells"])
+    print(
+        "reading:",
+        {k: payload["cells"]["reading"][k] for k in ("A", "B", "C", "D", "R", "Ob", "I", "row")},
     )
     print("V2: § 8 to § 9", payload["V2"]["s8_to_s9_worst_arcsec"])
     print("V3: gates", payload["V3"]["gates_pass"], payload["V3"]["frame_test_offset"])
