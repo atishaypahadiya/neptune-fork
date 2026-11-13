@@ -1,0 +1,64 @@
+name: links
+
+# Link check of the published text: both prerendered pages, the README and the notes.
+# Weekly and on demand, apart from the `test` workflow, so that an outside site's outage
+# never fails the main check. A failure opens (or updates) one issue titled "Broken links"
+# and leaves the run red.
+on:
+  schedule:
+    - cron: "41 5 * * 3"  # Wednesdays, 05:41 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  links:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      issues: write  # the "Broken links" issue
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2  # v10.3.3
+        with:
+          enable-cache: true
+      # The pages are built as the `pages` workflow builds them, so the links checked are
+      # the ones a reader without JavaScript gets.
+      - name: Install Playwright
+        run: |
+          uv sync --locked --only-group site
+          test -x /opt/google/chrome/chrome || uv run --no-sync playwright install --with-deps chromium
+      - name: Prerender
+        run: uv run --no-sync python tools/prerender_site.py --out _site
+      - name: Check links
+        id: lychee
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8  # v2.9.0
+        with:
+          lycheeVersion: v0.24.2
+          args: >-
+            --config .github/lychee.toml
+            --root-dir "${{ github.workspace }}/_site"
+            _site/index.html _site/adams-challis/index.html README.md "docs/notes/*.md"
+          output: lychee-report.md
+          fail: false
+      - name: Open or update the issue
+        if: steps.lychee.outputs.exit_code != 0
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          {
+            echo "The weekly link check found links that do not answer. Run: $RUN_URL"
+            echo
+            cat lychee-report.md
+          } > issue-body.md
+          number=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search 'in:title "Broken links"' \
+            --json number,title --jq '[.[] | select(.title == "Broken links")][0].number // empty')
+          if [ -n "$number" ]; then
+            gh issue edit "$number" --repo "$GITHUB_REPOSITORY" --body-file issue-body.md
+          else
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "Broken links" --body-file issue-body.md
+          fi
+          exit 1
