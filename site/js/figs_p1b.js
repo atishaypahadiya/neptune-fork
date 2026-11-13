@@ -176,9 +176,8 @@ export function fig3(fig, D) {
     }
     g.append("text").attr("class", "lbl row").attr("x", xr - 8).attr("y", Y(north.hi) - 8)
       .attr("text-anchor", "end").text("zone");
-    // the sheet's western edge, under each reading of its limits
-    for (const [ra, label, side] of [[edge1800, String(K.sheet_west_edge_ra.equinox), -1],
-                                     [edgeDate, "of date", 1]]) {
+    // the sheet's western edge: its limit for the equinox of 1800, carried to the date
+    for (const [ra, label, side] of [[edge1800, "sheet edge", -1]]) {
       g.append("path").attr("class", "ln").attr("d", L([[X(ra), mg.t], [X(ra), yb]]));
       g.append("text").attr("class", "lbl row").attr("x", X(ra) + 7 * side).attr("y", mg.t + 14)
         .attr("text-anchor", side < 0 ? "end" : "start").text(label);

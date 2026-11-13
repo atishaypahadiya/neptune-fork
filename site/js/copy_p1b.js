@@ -34,8 +34,7 @@ export const CASE = {
   A0: "His actual procedure",
   C1a: "The comparison of 12 August with 30 July, carried through",
   C1b: "The 4 August sweep compared with 12 August",
-  C2_1800: "The Berlin sheet he had, limits for the equinox of 1800",
-  C2_date: "The same sheet, limits applied to right ascension of date",
+  C2_N1: "The Berlin sheet he had (Hora XXII), under its own limits",
   C3_S4: "Zones laid from Adams's first place (S4)",
   C3_S4_prompt: "From S4, with prompt comparison",
   C3_S5: "Zones laid from Adams's second place (S5)",
@@ -48,18 +47,16 @@ export const CASE = {
 // p1b_challis.json (`*_conditional_on`).
 const COND = {
   record: "the printed record and the declared priors",
-  s1800: "the sheet's limits read for the equinox of 1800",
-  sdate: "the sheet's limits read as right ascension of date",
+  sheet: "the sheet's limits as read from the sheet and the Academy's rules of 1859",
   zones: "zones alternating outward from the start place; session dates from the priors",
 };
-const COND_OF = { A0: "record", C1a: "record", C1b: "record", C2_1800: "s1800", C2_date: "sdate" };
+const COND_OF = { A0: "record", C1a: "record", C1b: "record", C2_N1: "sheet" };
 // The same cases in fewer words, for Fig. 4 on phones.
 const CASE_SHORT = {
   A0: "His actual procedure",
   C1a: "12 August compared with 30 July",
   C1b: "4 August compared with 12 August",
-  C2_1800: "Berlin sheet, equinox of 1800",
-  C2_date: "Berlin sheet, right ascension of date",
+  C2_N1: "Berlin sheet, its own limits",
   C3_S4: "From Adams's first place",
   C3_S4_prompt: "First place, prompt comparison",
   C3_S5: "From Adams's second place",
@@ -70,7 +67,7 @@ const CASE_SHORT = {
 };
 const ZERO_WHY = {
   A0: "by construction (the realised events are held fixed)",
-  C2_1800: "the planet lies off the sheet",
+  C2_N1: "the planet lies off the sheet",
   C3_S5: "by timing: the zones do not reach the planet",
   C3_S5_prompt: "by timing: the zones do not reach the planet",
 };
@@ -103,7 +100,7 @@ export function titleBlock(D) {
     subtitle: "A companion study to ",
     main_title: D.page.main_title,
     author: D.dataset.creators.map((c) => c.split(", ").reverse().join(" ")).join(", "),
-    status: `Phase 1b of the project: ${D.page.status}.`,
+    status: `${D.page.status[0].toUpperCase()}${D.page.status.slice(1)}.`,
   };
 }
 
@@ -288,7 +285,7 @@ export function challisText(D) {
       `${p2(W.A0_mean)} by construction: the realised events are held fixed, so the cases measure what a change would have added. The pre-registered rule for paired differences ` +
       `against his actual procedure is therefore uninformative, and we do not quote its ` +
       `statements.`,
-    c42_p3: `Three readings change when every prior interval is halved, and are marked ` +
+    c42_p3: `${{ 2: "Two", 3: "Three" }[dep.length]} readings change when every prior interval is halved, and are marked ` +
       `prior-dependent (†): ${list(names(dep))}. The priors on the zone's setting were not ` +
       `halved; that check used ${count(W.halved_n_accepted)} kept draws and the ranking of ` +
       `inputs the first ${count(W.tornado_n_draws)}.`,
@@ -305,11 +302,18 @@ export function challisText(D) {
     c43_p2: `The place he started from matters less than the method. From Adams's first ` +
       `place or Le Verrier's the planet is recorded within weeks, but a routine recording ` +
       `is recognised only through a noted disc, and the evidence on that points low. From ` +
-      `Adams's second place the zones do not reach the planet in time ({B@fig-3}). The ` +
-      `chart he had helps only if its limits are read one way: the case ` +
-      `${W.c2_combined}.`,
+      `Adams's second place the zones do not reach the planet in time ({B@fig-3}). Under ` +
+      `the sheet's own limits (${W.sheet_ra_limits[0]}–${W.sheet_ra_limits[1]}, ` +
+      `${Math.abs(W.sheet_dec_limits_deg[0])}° south to ${W.sheet_dec_limits_deg[1]}° north, for ` +
+      `${W.sheet_equinox}; read from the sheet and the Academy's 1859 rules), the planet lay ` +
+      `off Hora XXII on every night Challis recorded it: ${p2(W.C2_N1_mean)}, ` +
+      `${W.C2_N1_row}.`,
     table_note: `† Prior-dependent: the row's reading changes when every prior interval is ` +
-      `halved. A delay of a week before either comparison leaves its probability unchanged.`,
+      `halved. A delay of a week before either comparison leaves its probability unchanged. ` +
+      `The chart case: v1.2.0 printed ${p2(W.v120_C2_date_mean)} ` +
+      `(${rng(W.v120_C2_date_q05, W.v120_C2_date_q95)}) for the same sheet with its limits ` +
+      `applied to right ascension of date. That was a fallback applied in the wrong frame, ` +
+      `and the row is withdrawn.`,
   };
 }
 
@@ -363,16 +367,16 @@ export function captions(D) {
       `${dayOf(E.recorded_second)} at the middle of the settings the record allows, between the ` +
       `two hairlines. Open marks, on ${dayOf(D.challis.map_night)}: {C@fig-3} the place ` +
       `Adams's ephemeris gave Challis, {A@fig-3} and {B@fig-3} Adams's first and second ` +
-      `places, {J@fig-3} and {L@fig-3} Le Verrier's of June and August. Vertical lines: the ` +
-      `western edge of the Berlin sheet he had, with its limits read for the equinox of ` +
-      `${K.sheet_west_edge_ra.equinox} and as right ascension of date.`,
+      `places, {J@fig-3} and {L@fig-3} Le Verrier's of June and August. Vertical line: the ` +
+      `western edge of the Berlin sheet he had, ${W.sheet_ra_limits[0]} for the equinox of ` +
+      `${K.sheet_west_edge_ra.equinox}, carried to the date.`,
     cap_fig_4: `Each case's probability of recognition before ${galle(K)}: the mean (dot) ` +
       `and the ${R.low} to ${R.high} % range (line), against the rule's thresholds at ` +
       `${K.rule_thresholds.low} and ${K.rule_thresholds.high}. † rows are prior-dependent; ` +
       `the thin line under each is its range with the priors halved. A dot at ` +
       `${p2(W.A0_mean)} with no line is a case that is ${p2(W.A0_mean)} in every draw: by ` +
-      `construction for his actual procedure (the realised events are held fixed), off the sheet for the chart under the first ` +
-      `limits, by timing for Adams's second place.`,
+      `construction for his actual procedure (the realised events are held fixed), off the sheet for the chart, ` +
+      `by timing for Adams's second place.`,
     cap_table_1: `Table 1. The cases: probability that the planet is flagged before ` +
       `${galle(K)} (mean, with the ${R.low} to ${R.high} % range), the row of the ` +
       `pre-registered reading rule, and what the case is conditional on.`,
@@ -386,8 +390,9 @@ export function limits(D) {
       "model uses declared priors, and every probability in § 4 is conditional on them.",
     "Under the reading we report, his actual procedure cannot succeed before Galle's night by " +
       "construction: the realised events are held fixed, so the cases measure what a change would have added.",
-    "The limits of the Berlin sheet he had are taken from a secondary source, and the chart " +
-      `case ${W.c2_combined}.`,
+    "The limits of the Berlin sheet he had were read from the sheet and from the Academy's " +
+      "rules of 1859, and I checked them against the sheet images. Whether the Cambridge copy " +
+      "was the same printing is not known.",
     "The noise test of § 3.4 was read post hoc after its pre-registered statistic proved " +
       "unsuitable for an angle; its verdict is weak either way.",
     "The fit of § 3.1 uses the project's data and error model, not Adams's own reductions; " +

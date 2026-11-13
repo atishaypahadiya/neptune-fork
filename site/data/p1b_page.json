@@ -2,7 +2,7 @@
  "description": "Companion page: where it lives and what it was built from.",
  "path": "adams-challis/",
  "title": "The British search for Neptune: Adams's solutions and Challis's sweeps",
- "status": "part of release v1.2.0",
+ "status": "part of release v1.2.1",
  "main_title": "Refitting Le Verrier's prediction of Neptune",
  "main_link": "A companion study treats the British search of the same years: ",
  "references": [
@@ -63,11 +63,19 @@
    ]
   },
   {
+   "id": "cataloge",
+   "parts": [
+    "Königliche Akademie der Wissenschaften zu Berlin. 1859. ",
+    "{Cataloge zu den 24 Stunden der akademischen Sternkarten}",
+    ". Berlin: Dümmler."
+   ]
+  },
+  {
    "id": "krajnovic",
    "parts": [
-    "Krajnović, D. 2021. “That star is not on the map”: the German side of the discovery. In ",
-    "{The Discovery of Neptune}",
-    ". Springer. arXiv:2108.06305."
+    "Krajnović, D. 2021. “That star is not on the map”: the German side of the discovery. In W. Sheehan, T. E. Bell, C. Kennett and R. Smith (eds), ",
+    "{Neptune: From Grand Discovery to a World Revealed}",
+    ". Cham: Springer, 185–244. doi:10.1007/978-3-030-54218-4_6. arXiv:2108.06305."
    ]
   },
   {
@@ -126,6 +134,7 @@
   "docs/notes/P1B_adams_noise.json": "7611c757f07f0d6bd007f87c11e160ca1a1be0c31f8f20bc1d3839b6c015e652",
   "docs/notes/P1B_adams_noise_hist.json": "a0ca3937bd9ce47ddcd2cb5d62584587dfc51ac073a677c70aabc12493dbfa95",
   "docs/notes/P1B_challis_detection.json": "eeb8f4e8bfbd7bb52d85d77e2479bf6106a8808cff67b45d6ad193f441e70079",
+  "docs/notes/P1B_challis_detection_n1.json": "c78605bfedbe942ac4a4949f9512185787bd888118659535bb7e3498daf5cf8d",
   "docs/notes/P1B_challis_prerun.json": "5d2dfad0842d164712014a526c1ee8b191cd2d59e06d21e963f9d06f89a1aba5",
   "data/historical/adams_challis/prediscovery_recordings.csv": "9fb014c020fc5eeb0dc312866a60a4d748c6f2301cd7b8cd23cb1988c5ee9f47"
  }

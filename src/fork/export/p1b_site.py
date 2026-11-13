@@ -22,11 +22,12 @@ NOISE = NOTES + "P1B_adams_noise.json"
 HIST = NOTES + "P1B_adams_noise_hist.json"
 DET = NOTES + "P1B_challis_detection.json"
 PRERUN = NOTES + "P1B_challis_prerun.json"
+N1 = NOTES + "P1B_challis_detection_n1.json"  # the chart case under the sheet's own limits
 RECORDINGS = "data/historical/adams_challis/prediscovery_recordings.csv"
 SITE_DATA = ROOT / "site" / "data"
 GALLE = "1846-09-23"
 MAP_NIGHT = "1846-08-12"
-CASES = ("A0", "C1a", "C1b", "C2_1800", "C2_date", "C3_S4", "C3_S4_prompt", "C3_S5",
+CASES = ("A0", "C1a", "C1b", "C2_N1", "C3_S4", "C3_S4_prompt", "C3_S5",
          "C3_S5_prompt", "C4a", "C4a_prompt", "C4b")  # fmt: skip
 
 
@@ -142,7 +143,13 @@ def challis_sources() -> dict:
         "acceptance_condition_4": [DET, "acceptance", "condition_4"],
         "halved_n_accepted": [DET, "acceptance_halved_priors", "n_accepted"],
         "tornado_n_draws": [DET, "tornado", "n_draws"],
-        "c2_combined": [DET, "c2_combined_reading_row"],
+        # What v1.2.0 printed for the chart case under its second fallback (withdrawn).
+        "v120_C2_date_mean": [DET, "cases", "C2_date", "held", "primary", "mean"],
+        "v120_C2_date_q05": [DET, "cases", "C2_date", "held", "primary", "q05"],
+        "v120_C2_date_q95": [DET, "cases", "C2_date", "held", "primary", "q95"],
+        "sheet_ra_limits": [N1, "n1", "ra_limits_text"],
+        "sheet_dec_limits_deg": [N1, "n1", "dec_limits_deg"],
+        "sheet_equinox": [N1, "n1", "equinox"],
         "replay_a0": [DET, "cases", "A0", "replay", "primary", "mean"],
         "c1a_done_by": [DET, "c1_completion", "C1a", "date_95_percent_of_flags"],
         "c1a_p_by_0816": [DET, "c1_completion", "C1a", "p_by", "1846-08-16"],
@@ -156,11 +163,12 @@ def challis_sources() -> dict:
         for w in ("prior", "posterior"):
             s[f"{p}_{w}_mean"] = [DET, "posterior_against_prior", p, w, "mean"]
     for c in CASES:
-        b = [DET, "cases", c]
+        b = [N1, "case"] if c == "C2_N1" else [DET, "cases", c]
         for q in ("mean", "q05", "q95"):
             s[f"{c}_{q}"] = [*b, "held", "primary", q]
         s[f"{c}_row"] = [*b, "reading_row"]
-        s[f"{c}_top_input"] = [*b, "top_input"]
+        if c != "C2_N1":  # the N1 run ranks no inputs: the case is 0 in every draw
+            s[f"{c}_top_input"] = [*b, "top_input"]
         s[f"{c}_conditional_on"] = [*b, "conditional_on"]
         s[f"{c}_prior_dependent"] = [*b, "prior_dependent"]
         s[f"{c}_halved_q05"] = [*b, "halved_priors", "primary", "q05"]
@@ -200,8 +208,9 @@ CONSTANTS = {
     "aperture": {"text": "a little more than 11½ inches", "citation": "Airy 1844, Account of "
                  "the Northumberland Equatoreal and Dome"},
     "sheet_west_edge_ra": {"h": 21, "m": 56, "equinox": 1800,
-                           "citation": "Krajnović 2021 (secondary): Hora "
-                           "XXII, one hour of right ascension with a 4-minute overlap"},
+                           "citation": "Hora XXII as read from the sheet (Krajnović 2021, "
+                           "Fig. 6.10) and the Academy's rules (Cataloge, Berlin 1859): one "
+                           "hour of right ascension with a 4-minute overlap"},
     "rule_thresholds": {"low": 0.2, "high": 0.8, "citation": "the pre-registered reading rule, "
                         "docs/notes/P1B_challis_detection.md § 7"},
     "galle_night": {"day": 23, "month": "September", "year": 1846},
@@ -238,8 +247,12 @@ REFERENCES = [
      "{Astronomische Nachrichten}", " 30, 257–258."],
     ["kowal", "Kowal, C. T. and Drake, S. 1980. Galileo's observations of Neptune. ", "{Nature}",
      " 287, 311."],
+    ["cataloge", "Königliche Akademie der Wissenschaften zu Berlin. 1859. ",
+     "{Cataloge zu den 24 Stunden der akademischen Sternkarten}", ". Berlin: Dümmler."],
     ["krajnovic", "Krajnović, D. 2021. “That star is not on the map”: the German side of the "
-     "discovery. In ", "{The Discovery of Neptune}", ". Springer. arXiv:2108.06305."],
+     "discovery. In W. Sheehan, T. E. Bell, C. Kennett and R. Smith (eds), ",
+     "{Neptune: From Grand Discovery to a World Revealed}",
+     ". Cham: Springer, 185–244. doi:10.1007/978-3-030-54218-4_6. arXiv:2108.06305."],
     ["lv-june", "Le Verrier, U. J. 1846. Recherches sur les mouvements d'Uranus. ",
      "{Comptes rendus}", " 22, 917 (1 June)."],
     ["lv-aug", "Le Verrier, U. J. 1846. Sur la planète qui produit les anomalies observées dans "
@@ -259,7 +272,7 @@ def _sha(name: str) -> str:
 
 def build() -> dict[str, dict]:
     a, c = adams_sources(), challis_sources()
-    files = (FIT, REPRO, NOISE, HIST, DET, PRERUN, RECORDINGS)
+    files = (FIT, REPRO, NOISE, HIST, DET, N1, PRERUN, RECORDINGS)
     return {
         "p1b_adams.json": {
             "description": "Companion page, § 3: values copied from the committed step 3, 3b "
@@ -279,7 +292,7 @@ def build() -> dict[str, dict]:
             "description": "Companion page: where it lives and what it was built from.",
             "path": "adams-challis/",
             "title": "The British search for Neptune: Adams's solutions and Challis's sweeps",
-            "status": "part of release v1.2.0",
+            "status": "part of release v1.2.1",
             "main_title": "Refitting Le Verrier's prediction of Neptune",
             "main_link": "A companion study treats the British search of the same years: ",
             "references": [{"id": r[0], "parts": r[1:]} for r in REFERENCES],

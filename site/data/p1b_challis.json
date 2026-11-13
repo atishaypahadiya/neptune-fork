@@ -35,9 +35,44 @@
    "tornado",
    "n_draws"
   ],
-  "c2_combined": [
+  "v120_C2_date_mean": [
    "docs/notes/P1B_challis_detection.json",
-   "c2_combined_reading_row"
+   "cases",
+   "C2_date",
+   "held",
+   "primary",
+   "mean"
+  ],
+  "v120_C2_date_q05": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C2_date",
+   "held",
+   "primary",
+   "q05"
+  ],
+  "v120_C2_date_q95": [
+   "docs/notes/P1B_challis_detection.json",
+   "cases",
+   "C2_date",
+   "held",
+   "primary",
+   "q95"
+  ],
+  "sheet_ra_limits": [
+   "docs/notes/P1B_challis_detection_n1.json",
+   "n1",
+   "ra_limits_text"
+  ],
+  "sheet_dec_limits_deg": [
+   "docs/notes/P1B_challis_detection_n1.json",
+   "n1",
+   "dec_limits_deg"
+  ],
+  "sheet_equinox": [
+   "docs/notes/P1B_challis_detection_n1.json",
+   "n1",
+   "equinox"
   ],
   "replay_a0": [
    "docs/notes/P1B_challis_detection.json",
@@ -341,145 +376,59 @@
    "halved_priors",
    "reading_row"
   ],
-  "C2_1800_mean": [
-   "docs/notes/P1B_challis_detection.json",
-   "cases",
-   "C2_1800",
+  "C2_N1_mean": [
+   "docs/notes/P1B_challis_detection_n1.json",
+   "case",
    "held",
    "primary",
    "mean"
   ],
-  "C2_1800_q05": [
-   "docs/notes/P1B_challis_detection.json",
-   "cases",
-   "C2_1800",
+  "C2_N1_q05": [
+   "docs/notes/P1B_challis_detection_n1.json",
+   "case",
    "held",
    "primary",
    "q05"
   ],
-  "C2_1800_q95": [
-   "docs/notes/P1B_challis_detection.json",
-   "cases",
-   "C2_1800",
+  "C2_N1_q95": [
+   "docs/notes/P1B_challis_detection_n1.json",
+   "case",
    "held",
    "primary",
    "q95"
   ],
-  "C2_1800_row": [
-   "docs/notes/P1B_challis_detection.json",
-   "cases",
-   "C2_1800",
+  "C2_N1_row": [
+   "docs/notes/P1B_challis_detection_n1.json",
+   "case",
    "reading_row"
   ],
-  "C2_1800_top_input": [
-   "docs/notes/P1B_challis_detection.json",
-   "cases",
-   "C2_1800",
-   "top_input"
-  ],
-  "C2_1800_conditional_on": [
-   "docs/notes/P1B_challis_detection.json",
-   "cases",
-   "C2_1800",
+  "C2_N1_conditional_on": [
+   "docs/notes/P1B_challis_detection_n1.json",
+   "case",
    "conditional_on"
   ],
-  "C2_1800_prior_dependent": [
-   "docs/notes/P1B_challis_detection.json",
-   "cases",
-   "C2_1800",
+  "C2_N1_prior_dependent": [
+   "docs/notes/P1B_challis_detection_n1.json",
+   "case",
    "prior_dependent"
   ],
-  "C2_1800_halved_q05": [
-   "docs/notes/P1B_challis_detection.json",
-   "cases",
-   "C2_1800",
+  "C2_N1_halved_q05": [
+   "docs/notes/P1B_challis_detection_n1.json",
+   "case",
    "halved_priors",
    "primary",
    "q05"
   ],
-  "C2_1800_halved_q95": [
-   "docs/notes/P1B_challis_detection.json",
-   "cases",
-   "C2_1800",
+  "C2_N1_halved_q95": [
+   "docs/notes/P1B_challis_detection_n1.json",
+   "case",
    "halved_priors",
    "primary",
    "q95"
   ],
-  "C2_1800_halved_row": [
-   "docs/notes/P1B_challis_detection.json",
-   "cases",
-   "C2_1800",
-   "halved_priors",
-   "reading_row"
-  ],
-  "C2_date_mean": [
-   "docs/notes/P1B_challis_detection.json",
-   "cases",
-   "C2_date",
-   "held",
-   "primary",
-   "mean"
-  ],
-  "C2_date_q05": [
-   "docs/notes/P1B_challis_detection.json",
-   "cases",
-   "C2_date",
-   "held",
-   "primary",
-   "q05"
-  ],
-  "C2_date_q95": [
-   "docs/notes/P1B_challis_detection.json",
-   "cases",
-   "C2_date",
-   "held",
-   "primary",
-   "q95"
-  ],
-  "C2_date_row": [
-   "docs/notes/P1B_challis_detection.json",
-   "cases",
-   "C2_date",
-   "reading_row"
-  ],
-  "C2_date_top_input": [
-   "docs/notes/P1B_challis_detection.json",
-   "cases",
-   "C2_date",
-   "top_input"
-  ],
-  "C2_date_conditional_on": [
-   "docs/notes/P1B_challis_detection.json",
-   "cases",
-   "C2_date",
-   "conditional_on"
-  ],
-  "C2_date_prior_dependent": [
-   "docs/notes/P1B_challis_detection.json",
-   "cases",
-   "C2_date",
-   "prior_dependent"
-  ],
-  "C2_date_halved_q05": [
-   "docs/notes/P1B_challis_detection.json",
-   "cases",
-   "C2_date",
-   "halved_priors",
-   "primary",
-   "q05"
-  ],
-  "C2_date_halved_q95": [
-   "docs/notes/P1B_challis_detection.json",
-   "cases",
-   "C2_date",
-   "halved_priors",
-   "primary",
-   "q95"
-  ],
-  "C2_date_halved_row": [
-   "docs/notes/P1B_challis_detection.json",
-   "cases",
-   "C2_date",
+  "C2_N1_halved_row": [
+   "docs/notes/P1B_challis_detection_n1.json",
+   "case",
    "halved_priors",
    "reading_row"
   ],
@@ -1314,7 +1263,18 @@
   "acceptance_condition_4": 0.30897850581708675,
   "halved_n_accepted": 20000,
   "tornado_n_draws": 10000,
-  "c2_combined": "depends on the Berlin sheet's limits",
+  "v120_C2_date_mean": 0.916714839003403,
+  "v120_C2_date_q05": 0.7742020810217533,
+  "v120_C2_date_q95": 0.9993792055951611,
+  "sheet_ra_limits": [
+   "21h 56m",
+   "23h 04m"
+  ],
+  "sheet_dec_limits_deg": [
+   -15.0,
+   15.0
+  ],
+  "sheet_equinox": 1800,
   "replay_a0": 0.33594461585071944,
   "c1a_done_by": "1846-08-15",
   "c1a_p_by_0816": 0.7073867917060852,
@@ -1365,26 +1325,15 @@
   "C1b_halved_q05": 0.0,
   "C1b_halved_q95": 0.8398696947996303,
   "C1b_halved_row": "depends on",
-  "C2_1800_mean": 0.0,
-  "C2_1800_q05": 0.0,
-  "C2_1800_q95": 0.0,
-  "C2_1800_row": "would very probably not have",
-  "C2_1800_top_input": null,
-  "C2_1800_conditional_on": "N1's first fallback (the sheet's limits for the equinox of 1800)",
-  "C2_1800_prior_dependent": false,
-  "C2_1800_halved_q05": 0.0,
-  "C2_1800_halved_q95": 0.0,
-  "C2_1800_halved_row": "would very probably not have",
-  "C2_date_mean": 0.916714839003403,
-  "C2_date_q05": 0.7742020810217533,
-  "C2_date_q95": 0.9993792055951611,
-  "C2_date_row": "depends on",
-  "C2_date_top_input": "p_follow",
-  "C2_date_conditional_on": "N1's second fallback (the sheet's limits applied to right ascension of date)",
-  "C2_date_prior_dependent": true,
-  "C2_date_halved_q05": 0.868728548761366,
-  "C2_date_halved_q95": 0.9812457576660403,
-  "C2_date_halved_row": "would very probably have recognised the planet before Galle's night",
+  "C2_N1_mean": 0.0,
+  "C2_N1_q05": 0.0,
+  "C2_N1_q95": 0.0,
+  "C2_N1_row": "would very probably not have",
+  "C2_N1_conditional_on": "N1 as read from the sheet on 12 November 2026 (no fallback)",
+  "C2_N1_prior_dependent": false,
+  "C2_N1_halved_q05": 0.0,
+  "C2_N1_halved_q95": 0.0,
+  "C2_N1_halved_row": "would very probably not have",
   "C3_S4_mean": 0.40872367574917634,
   "C3_S4_q05": 0.03729786149530766,
   "C3_S4_q95": 0.8078202989161122,
@@ -1882,7 +1831,7 @@
    "h": 21,
    "m": 56,
    "equinox": 1800,
-   "citation": "Krajnović 2021 (secondary): Hora XXII, one hour of right ascension with a 4-minute overlap"
+   "citation": "Hora XXII as read from the sheet (Krajnović 2021, Fig. 6.10) and the Academy's rules (Cataloge, Berlin 1859): one hour of right ascension with a 4-minute overlap"
   },
   "rule_thresholds": {
    "low": 0.2,
@@ -1932,8 +1881,7 @@
   "A0",
   "C1a",
   "C1b",
-  "C2_1800",
-  "C2_date",
+  "C2_N1",
   "C3_S4",
   "C3_S4_prompt",
   "C3_S5",
