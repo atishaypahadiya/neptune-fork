@@ -334,6 +334,18 @@ Pre-registered in `docs/notes/M10.md` (amendment, code hashes and the relaunch r
 ledger rows `m10/profile/*`, 3.1 CPU-h in all. `FORK_HORIZONS_CACHE_ONLY=1` makes a cache miss
 raise instead of fetching. Resumable per grid point from `data/cache/m10/`.
 
+## M6e: the check against Lalande's places of 1795 (pre-registered in `docs/notes/M6e.md`)
+
+Needs the posteriors of M6c (headline, the R2 runs and S3) in `data/cache/nested/`; the
+runner refuses any other file by its hash.
+
+```sh
+uv run python -m fork.export.m6e fetch    # JPL's apparent place of Uranus at the two instants (the frame test's reference)
+uv run python -m fork.export.m6e checks   # the transit and frame tests
+uv run python -m fork.export.m6e run      # docs/notes/M6e.{json,png}; about 1 CPU-minute
+uv run python -m fork.export.m6e_site     # site/data/m6e.json (§ 4.4 and Fig. 10 of the main page)
+```
+
 ## Toy example (not a result)
 
 ```sh
