@@ -17,7 +17,11 @@ import hashlib
 import sys
 from pathlib import Path
 
+import numpy as np
+
 from fork.historical import bouvard_1821 as B
+
+CS = B.CENTESIMAL_SEC_IN_ARCSEC  # centesimal seconds to arcseconds
 
 ROOT = Path(__file__).resolve().parents[3]
 OUT_JSON = ROOT / "docs" / "notes" / "P1B_bouvard_tables.json"
@@ -394,7 +398,518 @@ def write_misprint_log(path: Path | None = None) -> Path:
     return path
 
 
+# ------------------------------------------------------------------ R1
+
+FAIL_ARCSEC = 2.0  # § 3: over this, the entries of the epoch's rows are checked again
+OUTCOMES = (
+    "inside the rounding",
+    "inside the rounding of the arguments",
+    "outside: the formula does not stand for the tables at that epoch",
+    "outside, over 2″: the entry of every row the epoch uses is to be checked again",
+)
+
+
+def r1_outcome(diff_cs: float, budget_cs: float, allowance_cs: float) -> str:
+    """§ 3's rule (that of V1′), on the absolute difference, formula minus tables."""
+    a = abs(diff_cs)
+    if a <= budget_cs:
+        return OUTCOMES[0]
+    if a <= budget_cs + allowance_cs:
+        return OUTCOMES[1]
+    if a * CS <= FAIL_ARCSEC:
+        return OUTCOMES[2]
+    return OUTCOMES[3]
+
+
+def _wrap(x: float) -> float:
+    return (x + B.CIRCLE_CS / 2) % B.CIRCLE_CS - B.CIRCLE_CS / 2
+
+
+def epochs() -> dict[int, float]:
+    """The 30 epochs of step 3d as t (Julian years from the Paris midnight of 1800)."""
+    from fork.export import p1b_adams_repro as R
+    from fork.historical import adams_1846 as A
+
+    return {y: B.t_of_jd(jd) for y, jd in R.place_epochs(A.load_memoir()).items()}
+
+
+def compared_before(t: float) -> str | None:
+    """The instant of V1 or V1′ within a day of t, if any (§ 3: those epochs share most of
+    their rows with it, and three corrections of the formula were found from five of them)."""
+    for inst in (*B.INSTANTS, *B.INSTANTS_V1P):
+        if abs(t - inst.t) * 365.25 < 1.0:
+            return f"{inst.name} ({'V1' if inst in B.INSTANTS else 'V1′'})"
+    return None
+
+
+def r1_row(t: float, branch: str = "century") -> dict:
+    tab = B.table_longitude_at(t, branch=branch)
+    printed = B.table_longitude_at(t, used=False, branch=branch)
+    f = B.corrected_formula_at(t, branch=branch)
+    diff = _wrap(f["longitude"] - tab["longitude"])
+    diff_printed = _wrap(f["longitude"] - printed["longitude"])
+    out = r1_outcome(diff, tab["budget_cs"], tab["argument_allowance_cs"])
+    out_printed = r1_outcome(diff_printed, printed["budget_cs"], printed["argument_allowance_cs"])
+    return {
+        "t_years_from_1800": t,
+        "paris_date": "{:04d}-{:02d}-{:02d}".format(*tab["date"]),
+        "decimal_time": "{h}h {m:02d}m {s:02d}s".format(**tab["time_of_day"]),
+        "epoch_rows": [f"{'−' if s < 0 else ''}{tb} {r}" for tb, r, s in tab["epoch_rows"]],
+        "anomaly_grades": tab["anomaly_grades"],
+        "entries": tab["entries"],
+        "budget_arcsec": tab["budget_arcsec"],
+        "argument_allowance_arcsec": tab["argument_allowance_cs"] * CS,
+        "limit_arcsec": (tab["budget_cs"] + tab["argument_allowance_cs"]) * CS,
+        "tables_cs": tab["longitude"],
+        "formula_cs": f["longitude"],
+        "formula_minus_tables_arcsec": diff * CS,
+        "outcome": out,
+        "as_printed": {
+            "formula_minus_tables_arcsec": diff_printed * CS,
+            "outcome": out_printed,
+            "differs": abs(diff_printed - diff) > 1e-9,
+        },
+        "parts_cs": {
+            "mean_longitude": _wrap(f["mean_longitude"] - tab["mean_longitude"]),
+            "great_inequality": f["great_inequality"] - tab["great_inequality"],
+            "equation_of_centre": f["centre"] - tab["centre"] - tab["secular"],
+            "perturbations": f["perturbations"] - tab["perturbations"],
+            "reduction": f["reduction"] - tab["reduction"],
+        },
+        "argument_formula_minus_table_parts": {
+            a: (f[f"arg_{a}"] - tab["args"][a] + B.ARG_PARTS[a] / 2) % B.ARG_PARTS[a]
+            - B.ARG_PARTS[a] / 2
+            for a in B.ARGS
+        },
+        "compared_before": compared_before(t),
+        "rows_read": len(tab["rows_read"]),
+        "reads_a_route_b_ruling": bool(set(tab["rows_read"]) & set(B.route_b_rulings())),
+    }
+
+
+def r1() -> dict:
+    ep = epochs()
+    rows = {str(y): r1_row(t) for y, t in ep.items() if y != 1780}
+    beside = {
+        "1780 (S8(a), the century branch)": r1_row(ep[1780], "century"),
+        "1780 (S8(b), Table I's own branch)": r1_row(ep[1780], "own"),
+    }
+    fresh = [y for y, r in rows.items() if r["compared_before"] is None]
+    seen = [y for y, r in rows.items() if r["compared_before"] is not None]
+
+    def summary(names: list[str]) -> dict:
+        diffs = {y: rows[y]["formula_minus_tables_arcsec"] for y in names}
+        worst = max(diffs, key=lambda y: abs(diffs[y]))
+        return {
+            "n": len(names),
+            "counts": {o: sum(rows[y]["outcome"] == o for y in names) for o in OUTCOMES},
+            "largest": {"epoch": worst, "arcsec": diffs[worst]},
+            "outside": [y for y in names if rows[y]["outcome"] in OUTCOMES[2:]],
+        }
+
+    return {
+        "epochs": rows,
+        "beside_1780": beside,
+        "all_29": summary(list(rows)),
+        "fresh_17": summary(fresh),
+        "near_v1_or_v1p_12": summary(seen),
+        # § 2: an epoch that reads a reading replaced under its rule, whose outcome differs
+        # with the reading as printed (no reading of the new rows was replaced)
+        "stop_and_ask": [
+            y
+            for y, r in rows.items()
+            if r["reads_a_route_b_ruling"] and r["as_printed"]["outcome"] != r["outcome"]
+        ],
+        "over_2_arcsec": [y for y, r in rows.items() if r["outcome"] == OUTCOMES[3]],
+    }
+
+
+# ------------------------------------------------------------------ R2, the cells
+
+GATE_TOL_DEG = 0.001
+BOUNDARIES = (6.0, 3.0, -3.0)
+
+
+def context() -> dict:
+    """Step 3d's inputs to the cells (``fork.export.p1b_bouvard.cells``), unchanged: the
+    memoir, the clean truth and reference, the conversions to mean longitude."""
+    from fork.export import p1b_adams_repro as R
+    from fork.export import p1b_bouvard as P
+    from fork.historical import adams_1846 as A
+
+    m = A.load_memoir()
+    syn = R.synthetic_normal_places(m)
+    years = syn["years"]
+    jd = syn["jd"]
+    clean_true = np.array([syn["oc_true_arcsec"][y] for y in years])
+    clean_mean = np.array([syn["oc_mean_arcsec"][y] for y in years])
+    v2r = P.v2()["s8_to_s9"]
+    lon_c = np.degrees(syn["lon_true_rad"]) - clean_true / 3600.0
+    return {
+        "m": m,
+        "ctx": {
+            "truth": R.perturber_lon_1846(syn["truth_theta"], syn["ctx"]),
+            "eps_c": syn["c_fit"]["eps_1810_ecl_j2000_deg"],
+        },
+        "years": years,
+        "t": np.array([B.t_of_jd(x) for x in jd]),
+        "clean_true": clean_true,
+        "clean_mean": clean_mean,
+        "factor_clean": clean_mean / clean_true,
+        "factor_his": np.array([v2r[y]["factor"] for y in years]),
+        "s8": np.array([p["oc_true"] for p in m.places]),
+        "s9": {p["year"]: p["oc_mean"] for p in m.places},
+        "lon_c_date": np.array(
+            [R.lon_j2000_to_of_date(v % 360.0, x) for v, x in zip(lon_c, jd, strict=True)]
+        ),
+    }
+
+
+def d_of(cx: dict, lon_b_deg) -> np.ndarray:
+    """D = C − C_clean in arcseconds, of date, at the 30 places (step 3d's formula)."""
+    return ((np.asarray(lon_b_deg) - cx["lon_c_date"] + 180.0) % 360.0 - 180.0) * 3600.0
+
+
+def columns(cx: dict, d) -> tuple[dict, dict]:
+    """Cells B and C's columns from D, as step 3d forms them."""
+    years = cx["years"]
+    col_b = dict(zip(years, ((cx["s8"] + d) * cx["factor_clean"]).tolist(), strict=True))
+    col_c = dict(zip(years, ((cx["clean_true"] - d) * cx["factor_his"]).tolist(), strict=True))
+    return col_b, col_c
+
+
+def c_tables_deg(t: float, **kw) -> float:
+    """C_tables: the tables' longitude of date (degrees of 360) plus the five terms of § 7."""
+    return (
+        B.table_longitude_at(t, **kw)["longitude"] * 0.9e-4 + B.s7_correction(t) / 3600.0
+    ) % 360.0
+
+
+def d_tables(cx: dict, place_1780: str = "interpolated", **kw):
+    """D from the tables at the 30 places. The 1780 place: "interpolated" (the cubic through
+    1769, 1771, 1783, 1786, § 1), "century" (S-a) or "own" (S-b), at its own date."""
+    from fork.export import p1b_bouvard as P
+
+    years = cx["years"]
+    i80 = years.index(1780)
+    lon = [
+        c_tables_deg(t, branch=("own" if place_1780 == "own" else "century"), **kw)
+        if y == 1780
+        else c_tables_deg(t, **kw)
+        for y, t in zip(years, cx["t"], strict=True)
+    ]
+    d = d_of(cx, lon)
+    if place_1780 == "interpolated":
+        d[i80] = P._d_1780_interpolated(years, cx["t"], d)
+    return d
+
+
+def solve_bc(cx: dict, d, log=None) -> dict:
+    from fork.export import p1b_bouvard as P
+
+    col_b, col_c = columns(cx, d)
+    out = {}
+    for hyp in (1, 2):
+        out[f"H{hyp}"] = {
+            "B": P.solve_cell(cx["m"], hyp, col_b, "clean", cx["ctx"]),
+            "C": P.solve_cell(cx["m"], hyp, col_c, "bouvard", cx["ctx"]),
+        }
+        if log:
+            log(f"  B and C solved, Hypothesis {'I' * hyp}")
+    return out
+
+
+def near_boundary(v: float) -> list[float]:
+    return [b for b in BOUNDARIES if abs(v - b) < 1.0]
+
+
+def reading(att: dict) -> dict:
+    """§ 4's reading rule (step 3d's § 6) on the attributions of both methods and both
+    hypotheses, as step 3d's runner states it, with the remarks of § 4."""
+    h1, h2 = att["H1"], att["H2"]
+    r = {k: h1["d1c"][k] for k in ("A", "B", "C", "D", "shift", "R", "Ob", "I", "R_class",
+                                    "Ob_class", "row")}  # fmt: skip
+    notes = []
+    if h1["d1c"]["interaction_override"]:
+        notes.append("interaction of 3° or more: no single attribution is stated")
+    if (h1["chain"]["R_class"], h1["chain"]["Ob_class"]) != (
+        h1["d1c"]["R_class"],
+        h1["d1c"]["Ob_class"],
+    ):
+        notes.append("D1(c) and his chain fall in different rows: depends on the method")
+    if (h2["d1c"]["R_class"], h2["d1c"]["Ob_class"]) != (
+        h1["d1c"]["R_class"],
+        h1["d1c"]["Ob_class"],
+    ):
+        notes.append("Hypothesis II falls in different classes")
+    for k in ("R", "Ob"):
+        for b in near_boundary(h1["d1c"][k]):
+            notes.append(f"{k} ({h1['d1c'][k]:+.2f}°) lies within 1° of the boundary {b:+.0f}°")
+    r["overrides_and_remarks"] = notes
+    r["chain_row"] = h1["chain"]["row"]
+    r["state"] = reading_state(h1["d1c"], h1["chain"])
+    return r
+
+
+def reading_state(d1c: dict, chain: dict) -> dict:
+    """What § 5's three conditions compare, on Hypothesis I."""
+    return {
+        "d1c_classes": [d1c["R_class"], d1c["Ob_class"]],
+        "d1c_row": d1c["row"],
+        "chain_classes": [chain["R_class"], chain["Ob_class"]],
+        "depends_on_the_method": (chain["R_class"], chain["Ob_class"])
+        != (d1c["R_class"], d1c["Ob_class"]),
+        "interaction_override": abs(d1c["I"]) >= 3.0,
+    }
+
+
+def same_reading(tables: dict, formula: dict) -> dict:
+    """§ 5, fixed in advance: the reading with the tables is the same as with the formula
+    when (1) D1(c)'s pair of classes falls in the same row; (2) "depends on the method"
+    applies in both or neither (and where it does not, his chain falls in that same row in
+    both); (3) the interaction override applies in both or neither. Hypothesis I."""
+    c1 = tables["d1c_classes"] == formula["d1c_classes"]
+    c2_override = tables["depends_on_the_method"] == formula["depends_on_the_method"]
+    c2_chain = (
+        tables["depends_on_the_method"]
+        or formula["depends_on_the_method"]
+        or tables["chain_classes"] == formula["chain_classes"]
+    )
+    c3 = tables["interaction_override"] == formula["interaction_override"]
+    differs = []
+    if not c1:
+        differs.append("1: D1(c)'s row")
+    if not c2_override:
+        differs.append("2: depends on the method")
+    elif not c2_chain:
+        differs.append("2: his chain's row (the override applies in neither)")
+    if not c3:
+        differs.append("3: the interaction override")
+    return {
+        "same": not differs,
+        "conditions": {
+            "1: D1(c)'s row": c1,
+            "2: depends on the method": c2_override,
+            "2: his chain's row where the override applies in neither": c2_chain,
+            "3: the interaction override": c3,
+        },
+        "differs_in": differs,
+    }
+
+
+def attribution(cells_: dict) -> dict:
+    from fork.export import p1b_bouvard as P
+
+    return {
+        h: {meth: P.attribute(*(cells_[h][k][meth]["offset"] for k in "ABCD"))
+            for meth in ("d1c", "chain")}
+        for h in ("H1", "H2")
+    }  # fmt: skip
+
+
+def _formula_side() -> dict:
+    """Step 3d's recorded numbers, the formula side of § 5's comparisons."""
+    import json
+
+    from fork.export import p1b_bouvard as P
+
+    c = json.loads(P.OUT_JSON.read_text(encoding="utf-8"))["cells"]
+    sides = {}
+    for key, name in (("c", "primary: S8(c), 1780 interpolated"),
+                      ("a", "beside: the registered run, 1780 on the century branch"),
+                      ("b", "beside: S8(b), 1780 on Table I's own branch")):  # fmt: skip
+        v = c["S8"]["variants"][key]
+        att = {}
+        for h in ("H1", "H2"):
+            att[h] = {}
+            for meth in ("d1c", "chain"):
+                a = P.attribute(
+                    c["cells"][h]["A"][meth]["offset"], v[h][meth]["B"], v[h][meth]["C"],
+                    c["cells"][h]["D"][meth]["offset"],
+                )  # fmt: skip
+                att[h][meth] = a
+        sides[key] = {"name": name, "attribution": att}
+    return sides
+
+
+def compare(tab_att: dict, form_att: dict) -> dict:
+    t1, f1 = tab_att["H1"], form_att["H1"]
+    st, sf = reading_state(t1["d1c"], t1["chain"]), reading_state(f1["d1c"], f1["chain"])
+    beside = {}
+    for h in ("H1", "H2"):
+        for meth in ("d1c", "chain"):
+            ta, fa = tab_att[h][meth], form_att[h][meth]
+            beside[f"{h} {meth}"] = {
+                "change_B": ta["B"] - fa["B"], "change_C": ta["C"] - fa["C"],
+                "change_R": ta["R"] - fa["R"], "change_Ob": ta["Ob"] - fa["Ob"],
+                "tables": {k: ta[k] for k in ("R", "Ob", "I", "R_class", "Ob_class")},
+                "formula": {k: fa[k] for k in ("R", "Ob", "I", "R_class", "Ob_class")},
+            }  # fmt: skip
+    h2t, h2f = tab_att["H2"]["d1c"], form_att["H2"]["d1c"]
+    return {
+        "tables_state": st,
+        "formula_state": sf,
+        **same_reading(st, sf),
+        "beside": beside,
+        "hypothesis_II_changes_class": (h2t["R_class"], h2t["Ob_class"])
+        != (h2f["R_class"], h2f["Ob_class"]),
+    }
+
+
+def run(log=print) -> dict:
+    """The whole order of § 8 after the misprint log: R1, the gates, R2, R3, § 6."""
+    import json
+
+    from fork.export import p1b_bouvard as P
+
+    check_inputs()
+    out: dict = {"plan": "docs/notes/P1B_bouvard_tables.md", "inputs": "hashes as in § 1"}
+    out["difference_check"] = {
+        "counts": difference_check()["counts"],
+        "logged": len(misprint_rows()),
+        "replaced": B.route_b_rulings(),
+    }
+    log("R1")
+    out["R1"] = r1()
+    cx = context()
+    # step 3d's columns from step 3d's C_Bouvard through this runner's code
+    rec = json.loads(P.OUT_JSON.read_text(encoding="utf-8"))["cells"]["D"]
+    d3d = d_of(cx, [B.c_bouvard_deg(x) for x in cx["t"]])
+    cb, cc = columns(cx, d3d)
+    out["step_3d_columns_reproduced_max_abs_arcsec"] = max(
+        max(abs(cb[y] - rec["columns_arcsec"]["B"][str(y)]) for y in cx["years"]),
+        max(abs(cc[y] - rec["columns_arcsec"]["C"][str(y)]) for y in cx["years"]),
+    )
+    log("gates: cells A and D")
+    col_d = dict(zip(cx["years"], cx["clean_mean"].tolist(), strict=True))
+    ad = {
+        f"H{h}": {
+            "A": P.solve_cell(cx["m"], h, cx["s9"], "bouvard", cx["ctx"]),
+            "D": P.solve_cell(cx["m"], h, col_d, "clean", cx["ctx"]),
+        }
+        for h in (1, 2)
+    }
+    gates = {}
+    for h, g in P.GATES.items():
+        for name, must in g.items():
+            cell, meth = name.split("_")
+            got = ad[h][cell]["d1c" if meth == "d1c" else "chain"]["offset"]
+            gates[f"{h} {name}"] = {
+                "must_give": must, "gives": got,
+                "pass": got is not None and abs(got - must) <= GATE_TOL_DEG,
+            }  # fmt: skip
+    out["gates"] = gates
+    out["gates_pass"] = all(v["pass"] for v in gates.values())
+    if not out["gates_pass"]:
+        log("a gate failed: the work stops (§ 4)")
+        return out
+    log("R2: cells B and C, the 1780 place interpolated")
+    d0 = d_tables(cx)
+    out["D"] = {
+        "years": cx["years"],
+        "t_years_from_1800": cx["t"].tolist(),
+        "D_tables_arcsec": d0.tolist(),
+        "D_formula_arcsec_step_3d": d3d.tolist(),
+        "tables_minus_formula_arcsec": (d0 - d3d).tolist(),
+    }
+    bc = solve_bc(cx, d0, log)
+    cells_ = {h: {**ad[h], **bc[h]} for h in ("H1", "H2")}
+    att = attribution(cells_)
+    out["R2"] = {"cells": cells_, "attribution": att, "reading": reading(att)}
+    form = _formula_side()
+    variants = {"interpolated": (att, form["c"]["attribution"])}
+    out["sensitivities"] = {}
+    for name, kw in (("S-a", {"place_1780": "century"}), ("S-b", {"place_1780": "own"}),
+                     ("S-printed", {"used": False}),
+                     ("S-two-row", {"interpolation": "two-row"})):  # fmt: skip
+        log(name)
+        d = d_tables(cx, **kw)
+        bc = solve_bc(cx, d, log)
+        c = {h: {**ad[h], **bc[h]} for h in ("H1", "H2")}
+        a = attribution(c)
+        out["sensitivities"][name] = {
+            "delta_D_arcsec": {
+                str(y): float(v)
+                for y, v in zip(cx["years"], d - d0, strict=True)
+                if abs(v) > 0.005
+            },
+            "change": {
+                h: {meth: {"B": c[h]["B"][meth]["offset"] - cells_[h]["B"][meth]["offset"],
+                           "C": c[h]["C"][meth]["offset"] - cells_[h]["C"][meth]["offset"]}
+                    for meth in ("d1c", "chain")}
+                for h in ("H1", "H2")
+            },
+            "cells": {h: {k: {meth: c[h][k][meth]["offset"] for meth in ("d1c", "chain")}
+                          for k in "BC"} for h in ("H1", "H2")},
+            "attribution": a,
+            "reading": reading(a),
+        }  # fmt: skip
+        if name == "S-a":
+            variants["century"] = (a, form["a"]["attribution"])
+        if name == "S-b":
+            variants["own"] = (a, form["b"]["attribution"])
+    out["sensitivities"]["S-midnight"] = s_midnight_status(cx)
+    out["R3"] = {
+        "primary (1780 interpolated; S8(c))": compare(*variants["interpolated"]),
+        "beside (1780 on the century branch; S-a against the registered run)": compare(
+            *variants["century"]
+        ),
+        "beside (1780 on Table I's own branch; S-b against S8(b))": compare(*variants["own"]),
+    }
+    return out
+
+
+def s_midnight_status(cx: dict) -> dict:
+    """S-midnight needs the rows of each epoch's nearest Paris midnight. Where one was not
+    entered, § 2 stops at that epoch and nothing is filled in; the variant is not run."""
+    missing = {}
+    for y, t in zip(cx["years"], cx["t"], strict=True):
+        if y == 1780:
+            continue  # interpolated from its neighbours in the primary treatment
+        try:
+            B.table_longitude_at(float(t), midnight=True)
+        except B.MissingRow as e:
+            missing[str(y)] = {
+                "midnight": "{:04d}-{:02d}-{:02d}".format(
+                    *B.paris_date_and_time(float(t), midnight=True)["date"]
+                ),
+                "row_not_entered": list(e.args[0]),
+            }
+    return {
+        "run": not missing,
+        "status": "not run: rows not entered at these epochs' nearest midnights" if missing else "",
+        "missing": missing,
+    }
+
+
+def main() -> None:
+    import json
+    import time
+
+    from fork.export import p1b_bouvard as P
+
+    t0 = time.time()
+    progress = ROOT / "data" / "cache" / "p1b_bouvard_tables_progress.log"
+
+    def log(msg: str) -> None:
+        line = f"[{time.time() - t0:7.1f} s] {msg}"
+        print(line, flush=True)
+        try:
+            with progress.open("a", encoding="utf-8") as f:
+                f.write(line + "\n")
+        except OSError:
+            pass
+
+    out = run(log)
+    OUT_JSON.write_text(
+        json.dumps(out, default=P._plain, indent=1, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+    log(f"written {OUT_JSON.relative_to(ROOT)}")
+
+
 if __name__ == "__main__":
     check_inputs()
     if "--misprints" in sys.argv:
         print(write_misprint_log())
+    else:
+        main()
