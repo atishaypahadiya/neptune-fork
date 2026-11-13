@@ -136,3 +136,64 @@ def test_v1_prime_as_reported():
     for n in names:
         assert abs(rows[n]["parts_cs"]["mean_longitude"]) < 0.1
         assert abs(rows[n]["parts_cs"]["equation_of_centre"]) < 0.4
+
+
+def test_v1_prime_ruling_all_pass_with_the_adopted_readings():
+    r = P.v1p()["ruled_2026_11_13"]
+    assert set(r["outcomes"].values()) == {"pass"}
+
+
+def test_misprint_log_matches_the_rows_used():
+    log = read(D / "bouvard_1821" / "bouvard_1821_misprints.csv")
+    rows = {
+        (r["table"], r["row"]): r
+        for r in read(D / "bouvard_1821" / "bouvard_1821_uranus_table_rows.csv")
+        if r["column"] in ("eq", "red")
+    }
+    for entry in log:
+        if not entry["place"].startswith("Table"):
+            continue
+        table, row = (
+            entry["place"].split(",")[0].split()[1],
+            entry["place"].split("row ")[1].split(",")[0],
+        )
+        assert rows[table, row]["value_as_printed"] == entry["reads"]
+        assert rows[table, row]["value_used"] == entry["used"]
+
+
+def test_v2_s8_times_the_factor_is_s9():
+    r = P.v2()
+    assert r["s8_to_s9_worst_arcsec"]["modern"] <= P.TOL_S9_MODERN
+    assert r["s8_to_s9_worst_arcsec"]["ancient"] <= P.TOL_S9_ANCIENT
+    assert r["s8_to_s9_pass"]
+
+
+def test_v2_s7_terms_at_his_epochs():
+    r = P.v2()
+    lo, hi = r["s7_range_arcsec"]
+    assert lo == pytest.approx(-29.91, abs=0.02) and hi == pytest.approx(-9.89, abs=0.02)
+    # the 32″ term is nearly a constant and a trend over his 150 years
+    assert r["each_term_after_constant_and_trend_max_abs_arcsec"][2] < 1.0
+    assert sorted(r["s5_shift_arcsec"]) == [1690, 1789]
+    assert abs(r["s5_shift_arcsec"][1690]) < 0.03
+    assert r["s5_shift_arcsec"][1789] == pytest.approx(1.91, abs=0.01)
+
+
+def test_c_bouvard_is_the_corrected_formula_plus_s7():
+    inst = B.INSTANTS_V1P[2]
+    want = B.corrected_formula(inst)["longitude"] * 0.9e-4 + B.s7_correction(inst.t) / 3600.0
+    assert B.c_bouvard_deg(inst.t) == pytest.approx(want % 360.0, abs=1e-6)
+
+
+def test_v3_gates_and_frame_tests_as_recorded():
+    """V3 needs the ephemeris at his 30 epochs, so the recorded run is checked, not rerun."""
+    import json
+
+    v3 = json.loads((P.OUT_JSON).read_text(encoding="utf-8"))["V3"]
+    for hyp, gates in P.GATES.items():
+        for name, must in gates.items():
+            assert v3["gates"][hyp][name]["gives"] == pytest.approx(must, abs=P.TOL_GATE_DEG)
+    for method in ("d1c", "chain"):
+        assert abs(v3["frame_test_offset"][method]["change_deg"]) <= P.TOL_FRAME_OFFSET_DEG
+    assert v3["frame_test_curve"]["max_abs_difference_arcsec"] <= P.TOL_FRAME_CURVE_ARCSEC
+    assert v3["propagation_check"]["d_arcsec"] == pytest.approx(1.05)

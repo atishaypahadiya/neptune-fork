@@ -629,3 +629,80 @@ Ruled by the author on 13 November 2026, after the V1′ results above were push
    phases of § 5. S5 is separate from it.
 
 Next: V2 and V3; then the work stops and is reported before any cell.
+
+## Results, 13 November 2026: V2 and V3 pass; stopped before any cell
+
+Run after the amendment above was pushed (ed463f4). No cell has been run: nothing has
+been solved with D in its column, and no sensitivity.
+
+### V2, the corrections of § 7
+
+| check | result | tolerance | |
+|---|---|---|---|
+| two entries of the five terms | 15 cells, 0 differences | | pass |
+| § 8 × r²/(ab) against § 9, modern places | largest 0″.009 | 0″.02 | pass |
+| § 8 × r²/(ab) against § 9, ancient places | largest 0″.051 | 0″.1 | pass |
+
+The factor uses his ellipse: e = 0.046679, ε − ϖ = 50° 15′.8 at 1810.328, n = 13°.01 a
+unit. So the true-to-mean conversion that cell C needs is his.
+
+The definition of C in § 2 was checked against the memoir's §§ 6 to 8 and stands: the
+"errors of the Tables in heliocentric longitude" at the mean oppositions, after "the
+corrections to be applied to Bouvard's Tables" (two terms) and "the terms to be added to
+the longitude" (three); the Greenwich reductions already carried the Jupiter term.
+
+The five terms at his 30 epochs, arguments from the mean longitudes of p. ii:
+
+| term | coefficient | argument | largest after a constant and a trend are removed |
+|---|---|---|---|
+| 1 | +1″.918 | φ₁ − 2φ₂ − 13° 1′.5 | 2″.25 |
+| 2 | +1″.085 | φ − φ₂ | 1″.07 |
+| 3 | +32″.00 | 3φ₂ − 6φ₁ + 2φ + 22° 18′.8 | 0″.82 |
+| 4 | −8″.35 | 2φ₂ − 6φ₁ + 2φ + 39° 10′.5 | 8″.56 |
+| 5 | −1″.49 | 4φ₂ − 6φ₁ + 2φ + 34° 48′.4 | 1″.82 |
+
+The sum runs from −29″.9 (1715) to −9″.9 (1780); with a constant and a trend removed it
+is within ±10″.0. Term 3 is close to a constant and a trend over his 150 years, as he
+says of the terms of long period; term 4 has Uranus's period and carries most of what
+is left.
+
+Two things the memoir does not settle, measured and not ruled:
+
+- "Mean longitudes" with or without the great inequalities of Jupiter and Saturn. With
+  them the sum differs by 1″.45 to 3″.66, and by up to 1″.09 after a constant and a trend
+  are removed. The primary is without, as § 5 says (p. ii).
+- Counted from the fixed equinox of 1800 (p. ii, the primary) or from the equinox of
+  date: up to 0″.23 after a constant and a trend are removed.
+
+The first is the same size as d of the propagation check.
+
+### V3, the gates and the frame tests
+
+| check | must give | gives | |
+|---|---|---|---|
+| cell A, D1(c), Hypothesis I | +1.647° | +1.6469° | pass |
+| cell A, his chain | +1.021° | +1.0211° | pass |
+| cell D, D1(c) | −9.512° | −9.5115° | pass |
+| cell D, his chain | −9.923° | −9.9230° | pass |
+| Hypothesis II, cell A, D1(c) and chain | +4.964°, +4.447° | +4.9641°, +4.4470° | pass |
+| Hypothesis II, cell D, D1(c) and chain | −7.621°, −8.127° | −7.6206°, −8.1267° | pass |
+| cell D with 10″ + 0″.2 a year added to its column, D1(c) | no change, 0.05° | +0.00002° | pass |
+| the same, his chain | no change, 0.05° | 0.00000° | pass |
+| ephemeris Uranus minus C_clean at the 30 epochs, of date against ecl_j2000, constant and trend removed (the curve runs −58″ to +45″) | 0″.05 | 0″.0009 | pass |
+
+The pipeline of this step is the pipeline of steps 3b and 3c, and a constant or a trend
+in D reaches neither method's offset.
+
+**The propagation check**, to be computed with cells B and C: d = 1″.05; the four errors
+are d sin M and d cos M (M Uranus's mean anomaly) and d sin III and d cos III (III the
+argument φ′ − 2φ″), added to D.
+
+**S5**, to be computed with the cells: the printed row 2600 changes the tables' longitude
+by +1″.91 at the 1789 normal place and by −0″.02 at 1690, and at no other place.
+
+Seen while preparing S5 and not ruled: Table X's row 25 as printed (2.35.14,3) is 200
+centesimal seconds from the value its differences give. The 1804 normal place has an
+anomaly of 26.9, where the four-row interpolation gives it a weight of +0″.72; a computer
+interpolating between rows 26 and 27 alone would not have touched it.
+
+Next, on approval: the cells.

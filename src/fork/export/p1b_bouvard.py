@@ -26,6 +26,10 @@ V1_NAMES = ("1783", "1798", "1813", "1828", "1846")
 RAD_IN_CS = 4_000_000.0 / (2.0 * math.pi)
 
 
+def _plain(v):
+    return bool(v) if isinstance(v, np.bool_) else float(v)
+
+
 def _wrap(x: float) -> float:
     return (x + B.CIRCLE_CS / 2) % B.CIRCLE_CS - B.CIRCLE_CS / 2
 
@@ -191,7 +195,236 @@ def v1p() -> dict:
         "instants": rows,
         "outcomes": outcomes,
         "consequence": consequence,
+        "ruled_2026_11_13": {
+            "table_xii_row_2600": "3.31,6",
+            "outcomes": dict.fromkeys(outcomes, "pass")
+            if all(
+                abs(r["corrected_minus_tables_arcsec"]) <= r["limit_arcsec"] for r in rows.values()
+            )
+            else None,
+            "consequence": "the corrected formula is C_Bouvard for all 30 epochs",
+        },
         "not_part_of_the_rule": {i.name: v1p_row(i) for i in B.INSTANTS},
+    }
+
+
+# ------------------------------------------------------------------ V2
+
+TOL_S9_MODERN = 0.02  # arcseconds, his printing precision
+TOL_S9_ANCIENT = 0.1
+
+
+def _detrended_max(t: np.ndarray, y: np.ndarray) -> float:
+    design = np.vstack([np.ones(len(t)), t]).T
+    coef, *_ = np.linalg.lstsq(design, y, rcond=None)
+    return float(np.abs(y - design @ coef).max())
+
+
+def v2() -> dict:
+    """The § 7 terms at his 30 epochs, and his § 8 column times r²/(ab) against his § 9."""
+    from fork.export import p1b_adams_repro as R
+    from fork.historical import adams_1846 as A
+
+    m = A.load_memoir()
+    e = m.const(1, 22, "e")
+    beta = A.setup_from_print(m, 1).beta
+    n = m.angle(1, 13, "n")
+    conv = {}
+    for p in m.places:
+        mean_anom = math.radians(beta + n * float(p["t_h1"]))
+        ecc_anom = mean_anom
+        for _ in range(60):
+            ecc_anom = mean_anom + e * math.sin(ecc_anom)
+        factor = (1 - e * math.cos(ecc_anom)) ** 2 / math.sqrt(1 - e * e)
+        conv[p["year"]] = {
+            "kind": p["kind"],
+            "factor": factor,
+            "s8": p["oc_true"],
+            "s9": p["oc_mean"],
+            "s8_times_factor_minus_s9": p["oc_true"] * factor - p["oc_mean"],
+        }
+    worst = {
+        k: max(abs(v["s8_times_factor_minus_s9"]) for v in conv.values() if v["kind"] == k)
+        for k in ("modern", "ancient")
+    }
+    epochs = R.place_epochs(m)
+    t = np.array([B.t_of_jd(jd) for jd in epochs.values()])
+    s7 = np.array([B.s7_correction(x) for x in t])
+    s7_great = np.array([B.s7_correction(x, great_inequalities=True) for x in t])
+    lon_date = []
+    for x in t:  # the same terms with the mean longitudes counted from the equinox of date
+        lon = [v + 154.63 * 0.324 * x / 3600.0 for v in B.mean_longitudes_deg(x)]
+        lon_date.append(
+            sum(
+                c * math.sin(math.radians(sum(k * v for k, v in zip(mu, lon, strict=True)) + k0))
+                for c, mu, k0 in B.s7_terms()
+            )
+        )
+    lon_date = np.array(lon_date)
+    return {
+        "terms": [
+            {
+                "coefficient_arcsec": c,
+                "multipliers_jupiter_saturn_uranus": list(mu),
+                "constant_deg": k,
+            }
+            for c, mu, k in B.s7_terms()
+        ],
+        "s7_at_the_30_epochs_arcsec": dict(zip(epochs, s7.tolist(), strict=True)),
+        "s7_range_arcsec": [float(s7.min()), float(s7.max())],
+        "s7_after_constant_and_trend_max_abs_arcsec": _detrended_max(t, s7),
+        "each_term_after_constant_and_trend_max_abs_arcsec": [
+            _detrended_max(t, np.array([B.s7_correction(x, terms=(k,)) for x in t]))
+            for k in range(5)
+        ],
+        "ambiguity_great_inequalities_after_constant_and_trend_max_abs_arcsec": _detrended_max(
+            t, s7_great - s7
+        ),
+        "ambiguity_equinox_of_date_after_constant_and_trend_max_abs_arcsec": _detrended_max(
+            t, lon_date - s7
+        ),
+        "s8_to_s9": conv,
+        "s8_to_s9_worst_arcsec": worst,
+        "s8_to_s9_pass": worst["modern"] <= TOL_S9_MODERN and worst["ancient"] <= TOL_S9_ANCIENT,
+        "s5_shift_arcsec": {
+            y: B.misprint_row_2600_shift(x)
+            for y, x in zip(epochs, t, strict=True)
+            if abs(B.misprint_row_2600_shift(x)) > 0.005
+        },
+    }
+
+
+# ------------------------------------------------------------------ V3
+
+GATES = {  # § 0 and § 5 of the plan, degrees
+    "H1": {"A_d1c": 1.647, "A_chain": 1.021, "D_d1c": -9.512, "D_chain": -9.923},
+    "H2": {"A_d1c": 4.964, "A_chain": 4.447, "D_d1c": -7.621, "D_chain": -8.127},
+}
+TOL_GATE_DEG = 0.001
+TOL_FRAME_OFFSET_DEG = 0.05
+TOL_FRAME_CURVE_ARCSEC = 0.05
+PROPAGATION_D_ARCSEC = 1.05  # the amendment of 13 November 2026, ruling 5
+
+
+def _solve_column(m, hyp: int, col: dict, eps_c: float, lon_truth: float) -> dict:
+    """A cell's column by both methods: the offset of the solution's true longitude at
+    1846.762 from the truth, in the data's frame (as steps 3b and 3c)."""
+    import copy
+
+    from fork.export import p1b_adams_noise as N
+    from fork.export import p1b_adams_repro as R
+    from fork.historical import adams_1846 as A
+
+    s = A.setup_from_print(m, hyp)
+    rows = A.place_rows(m, s, oc=col)
+    w = A.weights_for(m, hyp, "c", rows)
+    ls = A.solve_least_squares(rows, w, s, A.printed_solution(m, hyp))
+    x = np.array([ls["x"][k] for k in A.PARAMS])
+    lon = N.longitudes_of(x, eps_c, s.n_prime_deg)
+    ms = copy.deepcopy(m)
+    for p in ms.places:
+        p["oc_mean"] = col[p["year"]]
+    ch = N.chain_solve(ms, hyp, rows, w, s)
+    out = {"d1c": R._wrap(lon["true_lon_1846_ecl_j2000"] - lon_truth), "chain": None}
+    if ch["converged"]:
+        lon_ch = N.longitudes_of(ch["x"], eps_c, s.n_prime_deg)
+        out["chain"] = R._wrap(lon_ch["true_lon_1846_ecl_j2000"] - lon_truth)
+    return out
+
+
+def v3() -> dict:
+    """The regression gates (cells A and D by both methods, both hypotheses) and the two
+    frame tests. Cells B and C are not touched."""
+    from fork.data.horizons import states_about_inner_barycenter_ecl_j2000 as about
+    from fork.export import p1b_adams_noise as N
+    from fork.export import p1b_adams_repro as R
+    from fork.historical import adams_1846 as A
+    from fork.model.forward import predict_states_ecl_j2000
+    from fork.model.observation import I_URANUS
+
+    m = A.load_memoir()
+    syn = R.synthetic_normal_places(m)
+    truth = R.perturber_lon_1846(syn["truth_theta"], syn["ctx"])
+    col = {int(k): float(v) for k, v in syn["oc_mean_arcsec"].items()}
+    eps_c = syn["c_fit"]["eps_1810_ecl_j2000_deg"]
+    got, gates = {}, {}
+    for hyp in (1, 2):
+        real = N._real_data_offsets(m, hyp, truth["of_date"])["O"]
+        clean = _solve_column(m, hyp, col, eps_c, truth["ecl_j2000"])
+        got[f"H{hyp}"] = {
+            "A_d1c": real["d1c"],
+            "A_chain": real["C2"],
+            "D_d1c": clean["d1c"],
+            "D_chain": clean["chain"],
+        }
+        gates[f"H{hyp}"] = {
+            k: {
+                "must_give": GATES[f"H{hyp}"][k],
+                "gives": v,
+                "pass": v is not None and abs(v - GATES[f"H{hyp}"][k]) <= TOL_GATE_DEG,
+            }
+            for k, v in got[f"H{hyp}"].items()
+        }
+    # frame test 1: a constant and a trend added to cell D's column
+    shifted = {
+        y: v + 10.0 + 0.2 * (A.EPOCH_YEAR + A.UNIT_YR * float(p["t_h1"]) - A.EPOCH_YEAR)
+        for (y, v), p in zip(col.items(), m.places, strict=True)
+    }
+    moved = _solve_column(m, 1, shifted, eps_c, truth["ecl_j2000"])
+    frame1 = {
+        k: {
+            "cell_D": got["H1"][f"D_{k}"],
+            "with_10_arcsec_and_0.2_arcsec_a_year": moved[k],
+            "change_deg": moved[k] - got["H1"][f"D_{k}"],
+            "pass": abs(moved[k] - got["H1"][f"D_{k}"]) <= TOL_FRAME_OFFSET_DEG,
+        }
+        for k in ("d1c", "chain")
+    }
+    # frame test 2: the ephemeris's Uranus minus C_clean, in ecl_j2000 and of date
+    jd = syn["jd"]
+    pos_c, _ = predict_states_ecl_j2000(syn["c_fit"]["theta"], jd, syn["ctx"])
+    pos_c = pos_c[:, I_URANUS]
+    pos_e = about("uranus", jd)[:, :3]
+
+    def lon_j(p):
+        return np.degrees(np.arctan2(p[:, 1], p[:, 0]))
+
+    def lon_d(p):
+        return np.array([R.lon_of_date_deg(q, t) for q, t in zip(p, jd, strict=True)])
+
+    def wrap(d):
+        return ((d + 180.0) % 360.0 - 180.0) * 3600.0
+
+    years = (jd - R.JD_1810) / 365.25
+    design = np.vstack([np.ones(len(jd)), years]).T
+    curves = {}
+    for name, f in (("ecl_j2000", lon_j), ("of_date", lon_d)):
+        y = wrap(f(pos_e) - f(pos_c))
+        coef, *_ = np.linalg.lstsq(design, y, rcond=None)
+        curves[name] = y - design @ coef
+    diff = float(np.abs(curves["ecl_j2000"] - curves["of_date"]).max())
+    return {
+        "gates": gates,
+        "gates_pass": all(v["pass"] for g in gates.values() for v in g.values()),
+        "frame_test_offset": frame1,
+        "frame_test_curve": {
+            "curve_range_arcsec": [
+                float(curves["ecl_j2000"].min()),
+                float(curves["ecl_j2000"].max()),
+            ],
+            "max_abs_difference_arcsec": diff,
+            "pass": diff <= TOL_FRAME_CURVE_ARCSEC,
+        },
+        "propagation_check": {
+            "d_arcsec": PROPAGATION_D_ARCSEC,
+            "errors": [
+                "d sin(M), M Uranus's mean anomaly",
+                "d cos(M)",
+                "d sin(III), III the argument φ′ − 2φ″",
+                "d cos(III)",
+            ],
+            "status": "needs cells B and C; computed with the cells",
+        },
     }
 
 
@@ -200,12 +433,16 @@ def main() -> None:
         "plan": "docs/notes/P1B_bouvard_attribution.md",
         "V1": v1(),
         "V1_prime": v1p(),
-        "V2": "the five terms of § 7 are transcribed (two entries, 15 cells, no disagreement); "
-        "its checks are not run: the work stops after V1′ for a report",
-        "V3": "not run",
+        "V2": v2(),
+        "V3": v3(),
         "cells": "not run",
     }
-    OUT_JSON.write_text(json.dumps(payload, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    OUT_JSON.write_text(
+        json.dumps(payload, default=_plain, indent=1, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+    print("V2: § 8 to § 9", payload["V2"]["s8_to_s9_worst_arcsec"])
+    print("V3: gates", payload["V3"]["gates_pass"], payload["V3"]["frame_test_offset"])
+    print("V3: frame curve", payload["V3"]["frame_test_curve"])
     r = payload["V1"]
     print("V1′:", payload["V1_prime"]["outcomes"], "->", payload["V1_prime"]["consequence"])
     print("V1:", r["outcome"], f"largest {r['largest_difference_arcsec']:.2f} arcsec")

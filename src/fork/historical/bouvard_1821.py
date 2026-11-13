@@ -276,6 +276,73 @@ def corrected_formula(inst: Instant) -> dict[str, float]:
     )
 
 
+JD_1800_PARIS_MIDNIGHT = 2378496.5 - (9 * 60 + 21) / 86400.0  # Paris is 9 m 21 s east
+
+
+def t_of_jd(jd: float) -> float:
+    """Julian years from the Paris mean midnight that begins 1 January 1800."""
+    return (jd - JD_1800_PARIS_MIDNIGHT) / 365.25
+
+
+def corrected_formula_at(t: float) -> dict[str, float]:
+    """``corrected_formula`` at any time t (Julian years from 1800)."""
+    year = 1800.0 + t
+    row_year = year + (100.0 if year < MEAN_SLIP_FROM else 0.0)
+    return formula(
+        t,
+        centre_coefficient=CENTRE_FROM_TABLES,
+        mean_slip=MEAN_SLIP_PER_YEAR * (row_year - MEAN_SLIP_FROM),
+        precession=precession_inequality(year),
+    )
+
+
+def mean_longitudes_deg(t: float, great_inequalities: bool = False) -> tuple[float, float, float]:
+    """The mean longitudes of Jupiter, Saturn and Uranus of p. ii in degrees of 360, from the
+    fixed equinox of 1800; with the great inequalities of pp. ii and iii if asked."""
+    c = formula_cells()
+    out = [_num(c[4]) + _num(c[5]) * t, _num(c[6]) + _num(c[7]) * t, _num(c[8]) + _num(c[9]) * t]
+    if great_inequalities:
+        with_a = formula(t)
+        without = formula(t, great_inequalities=False)
+        # arguments VII, IX carry the longitudes of Saturn and Jupiter; Uranus by A″ itself
+        out[0] += (with_a["arg_IX"] - without["arg_IX"]) * 400.0 / ARG_PARTS["IX"]
+        out[1] += (with_a["arg_VII"] - without["arg_VII"]) * 400.0 / ARG_PARTS["VII"]
+        out[2] += with_a["great_inequality"] * 1e-4
+    return tuple(x * 0.9 for x in out)
+
+
+def s7_correction(t: float, great_inequalities: bool = False, terms=None) -> float:
+    """Adams's § 7: the sum of his five terms in arcseconds, the arguments built from the
+    mean longitudes of p. ii."""
+    lon = mean_longitudes_deg(t, great_inequalities)
+    total = 0.0
+    for k, (coef, mult, const) in enumerate(s7_terms()):
+        if terms is not None and k not in terms:
+            continue
+        arg = sum(m * x for m, x in zip(mult, lon, strict=True)) + const
+        total += coef * math.sin(math.radians(arg))
+    return total
+
+
+def c_bouvard_deg(t: float) -> float:
+    """C_Bouvard: the corrected formula's heliocentric longitude of Uranus (mean equinox of
+    date, degrees of 360) plus the five terms of § 7."""
+    return (corrected_formula_at(t)["longitude"] * 0.9e-4 + s7_correction(t) / 3600.0) % 360.0
+
+
+def misprint_row_2600_shift(t: float) -> float:
+    """S5: the change of the tables' longitude (arcseconds) when Table XII's row 2600 is used
+    as printed (3.41,6) instead of 3.31,6, by the tables' four-row interpolation at the
+    argument III of t."""
+    arg = corrected_formula_at(t)["arg_III"]
+    lo = math.floor(arg / 100) * 100
+    grid = [lo - 100, lo, lo + 100, lo + 200]
+    if 2600 not in grid:
+        return 0.0
+    weight = _lagrange(grid, [1.0 if g == 2600 else 0.0 for g in grid], arg)
+    return 10.0 * weight * CENTESIMAL_SEC_IN_ARCSEC
+
+
 def _centre_row(d: dict, row: int) -> tuple[float, float]:
     """Table X: the equation (the constant of p. xix subtracted, as printed) and the secular
     variation at a whole degree. Rows print the degrees in full (39x, a negative equation) or
