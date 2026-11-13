@@ -1,10 +1,7 @@
 /* The companion page (docs/DESIGN.md, "Companion page"): the main page's system, with a title
    block on paper in place of Plate I and its own figure heights. No new colour or pattern. */
 
-.p1b .paper-title {
-  max-width: calc(var(--measure) + 2 * var(--gutter)); margin: 0 auto;
-  padding: clamp(48px, 9vh, 112px) var(--gutter) 0;
-}
+.p1b .paper-title { padding-top: clamp(48px, 9vh, 112px); }
 .p1b .paper-title h1 { margin: 0 0 0.3em; font-size: clamp(32px, 3.6vw, 50px); line-height: 1.08; text-wrap: balance; }
 .p1b .paper-title .back { margin: 0 0 1.4em; font-size: 15px; color: var(--prussian); }
 .p1b .paper-title .byline { color: var(--prussian); }
@@ -16,14 +13,7 @@
 .p1b .fig-3 .canvas { height: 460px; }
 .p1b .fig-4 .canvas { height: 520px; }
 
-/* Table 1 runs at the figures' width where there is room; the condition drops under the case
-   on phones. */
-@media (min-width: 900px) {
-  .p1b #table-1 {
-    width: min(calc(100vw - 2 * var(--gutter)), 1040px); margin: 36px 0 36px 50%;
-    transform: translateX(-50%);
-  }
-}
+/* Table 1 is wide, as the figures are; the condition drops under the case on phones. */
 .p1b #table-1 td { font-size: clamp(15px, 0.4vw + 12px, 17px); padding-top: 7px; padding-bottom: 7px; }
 .p1b #table-1 td.n { white-space: nowrap; }
 .p1b #table-1 td.cond { font-size: 14px; color: var(--prussian); }
@@ -40,9 +30,6 @@
 }
 
 @media print {
-  .p1b .paper-title { max-width: none; padding: 0 0 12pt; }
+  .p1b .paper-title { padding: 0 0 12pt; }
   .p1b .paper-title h1 { font-size: 24pt; }
-}
-@media print {
-  .p1b #table-1 { width: 100%; margin: 14pt 0; transform: none; }
 }

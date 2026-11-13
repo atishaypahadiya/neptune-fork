@@ -12,7 +12,9 @@
   --didot: "GFS Didot", "Didot", "Bodoni 72", Georgia, serif;
   --serif: "Source Serif 4", "Source Serif Pro", Georgia, serif;
   --measure: 40rem;
+  --overhang: 12.5rem;
   --gutter: clamp(16px, 4vw, 56px);
+  --fig-space: 36px; /* above and below a wide block */
   color-scheme: light;
 }
 
@@ -38,6 +40,34 @@ i, em { font-style: italic; }
   position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%);
   white-space: nowrap;
 }
+
+/* ---------- the three widths (docs/DESIGN.md, "Widths") ----------
+   One grid of named column lines, on the header and on main. A block takes one of three
+   classes and sets no width of its own:
+     body  the text measure;
+     wide  the measure plus the same overhang on each side, so it stays centred on the text;
+     full  edge to edge (the set-piece plates only).
+   The side padding is the least width of the two outer tracks, so full reaches the window's
+   edges at every width while body and wide keep the padding. The overhang tracks take what
+   is left, up to --overhang each: where there is none left they are 0 wide and wide is body.
+   That point comes from the track sizes; no media query sets it. */
+body > header, main {
+  display: grid;
+  grid-template-columns:
+    [full-start] minmax(var(--gutter), 1fr)
+    [wide-start] minmax(0, var(--overhang))
+    [body-start] min(var(--measure), 100% - 2 * var(--gutter)) [body-end]
+    minmax(0, var(--overhang)) [wide-end]
+    minmax(var(--gutter), 1fr) [full-end];
+}
+/* A section spans the grid and hands its lines on to its blocks; a wide figure hands them on
+   to its drawing (wide) and its caption (body). */
+main > section { grid-column: full; }
+main > section, figure.wide[data-fig] { display: grid; grid-template-columns: subgrid; }
+body > header > *, main > section > * { grid-column: body; } /* prose is body without the class */
+.body { grid-column: body; }
+.wide, .wide > .canvas { grid-column: wide; }
+.full { grid-column: full; }
 
 /* ---------- figures: the archive layer ---------- */
 .plate { position: relative; margin: 0; background: var(--prussian); overflow: hidden; }
@@ -90,16 +120,10 @@ h1 { margin: 0 auto 0.22em; font: 400 clamp(40px, 6.4vw, 100px) / 1.02 var(--did
   h1 { font-size: clamp(44px, 5.6vw, 92px); }
   .subtitle { margin-left: 0; }
 }
-.plate-i > .caption { max-width: var(--measure); margin: 14px auto 0; padding: 0 var(--gutter); }
-@media (min-width: 721px) {
-  .plate-i > .caption { padding: 0; }
-}
+.plate-i > .caption { margin: 14px 0 0; }
 
 /* ---------- the journal layer ---------- */
 main { padding: 0 0 96px; }
-main > section:not(.split) {
-  max-width: calc(var(--measure) + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter);
-}
 .sec { margin: 88px 0 6px; font-size: 15px; color: var(--prussian); letter-spacing: 0.08em; }
 h2 { margin: 0 0 22px; font: 400 clamp(30px, 2.4vw + 12px, 42px) / 1.05 var(--didot); }
 h3 { margin: 48px 0 12px; font: 600 1em / 1.4 var(--serif); }
@@ -114,11 +138,8 @@ p { margin: 0 0 1em; }
   text-underline-offset: 0.2em; cursor: pointer;
 }
 
-/* figures inside the text column run wider than the measure; the caption is on paper below */
-main > section:not(.split) > figure[data-fig] {
-  width: min(calc(100vw - 2 * var(--gutter)), 1040px);
-  margin: 36px 0 36px 50%; transform: translateX(-50%);
-}
+/* figures in the text are wide; the caption is on paper below, on the measure */
+main > section > .wide { margin: var(--fig-space) 0; }
 .canvas { position: relative; background: var(--prussian); overflow: hidden; }
 .canvas > svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .canvas > svg.ground { pointer-events: none; }
@@ -128,24 +149,31 @@ main > section:not(.split) > figure[data-fig] {
   pointer-events: none;
 }
 .canvas .error { position: absolute; inset: auto 20px 20px; margin: 0; color: var(--line); font-size: 15px; }
-figure[data-fig] > figcaption { margin-top: 10px; max-width: var(--measure); }
+figure[data-fig] > figcaption { margin-top: 10px; }
 .fig-1 .canvas { height: 380px; }
 .fig-2 .canvas { height: 420px; }
 .fig-4 .canvas { height: 420px; }
 .fig-5 .canvas { height: 420px; }
 .fig-6 .canvas { height: 400px; }
 .fig-7 .canvas { height: 400px; }
-/* Figs. 8 and 9 side by side at the figure width; one above the other below 900 px */
-main > section > .pair {
-  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px 32px;
-  width: min(calc(100vw - 2 * var(--gutter)), 1040px); margin: 36px 0 36px 50%;
-  transform: translateX(-50%);
-}
+/* Figs. 8 and 9: the pair is wide and hands the lines on. One above the other, each is a wide
+   figure with a body caption, as any figure in the text. On screens from 900 px they stand
+   side by side, each on half the pair: the one place a figure in the text is not on a line. */
+.pair { display: grid; grid-template-columns: subgrid; row-gap: 24px; }
 .pair > figure[data-fig] { margin: 0; min-width: 0; }
+@media screen and (min-width: 900px) {
+  .pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 32px; }
+  .pair > figure.wide[data-fig] { grid-column: auto; display: block; }
+}
 .fig-8 .canvas, .fig-9 .canvas { height: 400px; }
+/* Margins of blocks on a grid do not collapse. The space above a heading, a figure, the pair
+   or the citation block is that block's top margin alone: the block before it gives up its
+   bottom margin, and so do the last block of a section and the last item of a list. */
+main > section > :is(:has(+ :is(h3, figure, .pair, .cite)), :last-child) { margin-bottom: 0; }
+main > section > h3:first-child { margin-top: 0; }
 
 /* ---------- archival quotes (journal layer) ---------- */
-.quote { margin: 8px 0 28px; padding-left: 1.6em; }
+.quote { margin: 0 0 28px; padding-left: 1.6em; }
 .quote .q-text { margin: 0 0 6px; font-size: 1.06em; line-height: 1.5; }
 .quote .q-trans { margin: 0 0 6px; font-size: 15px; color: var(--prussian); }
 .quote .q-src { font-size: 14px; color: var(--prussian); }
@@ -166,12 +194,14 @@ tfoot td { border-top: 1px solid var(--deep); padding-top: 8px; }
 tfoot tr + tr td { border-top: 0; font-size: 14px; color: var(--prussian); padding-top: 2px; }
 
 /* ---------- half-bleed plates with a text column (Plates II and III) ----------
+   The section is full; inside it is a set piece with columns of its own, not the three widths.
    Two equal columns (minmax(0, 1fr): a plate's drawing never widens its track). Below 900 px
    the text column would hold fewer than about 45 characters, so the plate and its text stack. */
 .split {
   display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); margin: 96px 0;
   min-height: min(100svh, 900px);
 }
+.split > * { grid-column: auto; }
 .split > .plate { position: sticky; top: 0; height: min(100svh, 900px); align-self: start; }
 .split > .side { min-width: 0; padding: 64px var(--gutter); max-width: calc(34rem + 2 * var(--gutter)); }
 .split .side h3 { margin-top: 0; }
@@ -197,8 +227,9 @@ tfoot tr + tr td { border-top: 0; font-size: 14px; color: var(--prussian); paddi
 input[type="range"] { flex: 1; min-width: 0; margin: 0; accent-color: var(--prussian); min-height: 44px; }
 
 /* ---------- limitations, availability, references ---------- */
-.limits { padding-left: 1.1em; }
+.limits { margin-top: 0; padding-left: 1.1em; }
 .limits li { margin-bottom: 0.7em; }
+.limits li:last-child, .refs li:last-child { margin-bottom: 0; }
 .cite { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 16px; margin: 24px 0; }
 .cite-key { grid-column: 1 / -1; margin: 12px 0 0; font-size: 15px; color: var(--prussian); }
 .cite-text { margin: 0; font-size: 15px; overflow-wrap: anywhere; } /* long DOIs and URLs on phones */
@@ -206,12 +237,11 @@ input[type="range"] { flex: 1; min-width: 0; margin: 0; accent-color: var(--prus
   align-self: start; min-height: 44px; padding: 0 14px; border: 1px solid var(--prussian);
   background: transparent; color: var(--prussian); font: 14px var(--serif); cursor: pointer;
 }
-.refs { padding-left: 1.6em; font-size: 15px; }
+.refs { margin-top: 0; padding-left: 1.6em; font-size: 15px; }
 .refs li { margin-bottom: 0.6em; }
 
 /* ---------- stacked plates: tablet and phone ---------- */
 @media (max-width: 899px) {
-  main > section > .pair { grid-template-columns: minmax(0, 1fr); }
   .split { grid-template-columns: minmax(0, 1fr); margin: 64px 0; min-height: 0; }
   .split > .plate { position: relative; height: min(92svh, 96vw); order: 0; }
   .split > .side {
@@ -249,27 +279,28 @@ input[type="range"] { flex: 1; min-width: 0; margin: 0; accent-color: var(--prus
    controls. The cyanotype grounds print as they are on screen. */
 @media print {
   @page { margin: 14mm 14mm 16mm; }
+  :root { --fig-space: 14pt; }
   html, body { background: var(--paper); }
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   body { font-size: 10.5pt; line-height: 1.5; }
   main { padding: 0; }
-  main > section:not(.split) { max-width: none; padding: 0; }
+  /* One column of blocks, no grid: the three widths are all the page's text width. (On a grid
+     Chrome drops the space under a paragraph that a page break divides.) */
+  body > header, main, main > section, figure.wide[data-fig], .pair { display: block; }
+  .pair > figure[data-fig] + figure[data-fig] { margin-top: 24px; }
   .sec { margin: 28pt 0 4pt; }
   h2 { font-size: 22pt; margin-bottom: 10pt; }
   h3 { margin-top: 18pt; }
   .plate, .split > .plate, .plate-i .plate {
     position: relative; top: auto; height: auto; min-height: 0; max-height: none;
-    width: 100%; break-inside: avoid;
+    break-inside: avoid;
   }
   .plate > svg.fig, .canvas > svg.fig { position: relative; inset: auto; height: auto; aspect-ratio: var(--ar, 1.6); }
   .canvas { height: auto !important; }
-  main > section:not(.split) > figure[data-fig] { width: 100%; margin: 14pt 0; transform: none; }
-  main > section > .pair { grid-template-columns: minmax(0, 1fr); width: 100%; margin: 14pt 0; transform: none; }
   figure[data-fig], .table, .quote { break-inside: avoid; }
-  figure[data-fig] > figcaption, .caption { max-width: none; }
   .split { display: flex; flex-direction: column; margin: 18pt 0; min-height: 0; }
   .split > .side { display: contents; }
-  .split > .plate { order: 1; }
+  .split > .plate { order: 1; align-self: stretch; }
   .split .caption { order: 2; margin-top: 8pt; }
   .split .side > :not(.caption) { order: 3; }
   .split .side > :is(.sec, h3) { order: 0; }
@@ -289,7 +320,7 @@ input[type="range"] { flex: 1; min-width: 0; margin: 0; accent-color: var(--prus
     padding: 0 24pt 22pt; text-align: left;
   }
   h1 { font-size: 30pt; }
-  .plate-i > .caption { max-width: none; margin: 8pt 0 0; padding: 0; }
+  .plate-i > .caption { margin: 8pt 0 0; }
   .controls, .copy, .tip, .error { display: none !important; }
   .cite { grid-template-columns: 1fr; }
   .year { font-size: 30pt; margin: 8pt 0 4pt; }
