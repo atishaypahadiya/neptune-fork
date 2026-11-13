@@ -160,3 +160,13 @@ is added with the results; no number is computed for it.
   `data/cache/phase2/identifiability_study/`. Results `docs/phase2/identifiability_study.json`.
 
 ---
+
+## Amendment, 13 November 2026, before any code exists: the centre of the J2 prior in R3
+
+R3 widens and narrows each prior "about the centre of its range". For J2 the range is
+10⁻⁷ to 10⁻² and its centre is 10⁻⁴·⁵, while the tuned value of truth d is about 3 × 10⁻⁴.
+A prior of 1 or 2 decades about 10⁻⁴·⁵ would leave the tuned value outside, and R3 would
+then measure where the prior is centred, not how wide it is. In R3 only, the J2 prior is
+centred on 10⁻³·⁵. The mass priors keep their centre, 10⁻⁷ M☉. The fits of § 5 and the
+readings R1, R2 and R4 are unchanged. No code of this plan existed and no data set had
+been drawn when this was written.
