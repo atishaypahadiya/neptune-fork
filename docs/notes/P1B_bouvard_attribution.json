@@ -1,0 +1,2225 @@
+{
+ "plan": "docs/notes/P1B_bouvard_attribution.md",
+ "V1": {
+  "instants": {
+   "1783": {
+    "instant": "1783",
+    "date_paris_midnight": "1783-01-01",
+    "t_years_from_1800": -16.999315537303218,
+    "anomaly_grades": 325.77802225242,
+    "entries": 17,
+    "budget_cs": 0.8500000000000001,
+    "budget_arcsec": 0.27540000000000003,
+    "argument_allowance_cs": 1.8409999999999989,
+    "formula_minus_tables_cs": -9.040210879873484,
+    "formula_minus_tables_arcsec": -2.9290283250790092,
+    "formula_minus_tables_as_read_cs": -0.4055476326029748,
+    "parts_cs": {
+     "mean_longitude": 0.22811772744171321,
+     "precession_inequality": -0.3163721,
+     "great_inequality": 0.02893764474731597,
+     "equation_of_centre": -8.911528036920398,
+     "perturbations": -0.036382132933056255,
+     "reduction": -0.03298398202976216
+    },
+    "mean_longitude_drift_cs_per_year_since_1780": 0.07603924248057108,
+    "with_centre_from_tables_cs": 0.15053630620241165,
+    "with_centre_from_tables_less_mean_and_precession_cs": 0.23879067876069843,
+    "argument_formula_minus_table_parts": {
+     "II": -0.11429583041007163,
+     "III": -0.23756259636411414,
+     "IV": -0.465056382339867,
+     "V": -0.17451681156649101,
+     "VI": 0.06194790995346011,
+     "VII": -0.40483540118373185,
+     "VIII": -0.22065233545367846,
+     "IX": 0.24440404688630224,
+     "X": -1.3569729484992195,
+     "XI": -0.5191312315938603,
+     "XII": -0.05234792045649783
+    }
+   },
+   "1798": {
+    "instant": "1798",
+    "date_paris_midnight": "1798-03-07",
+    "t_years_from_1800": -1.8206707734428473,
+    "anomaly_grades": 398.02852920903086,
+    "entries": 19,
+    "budget_cs": 0.9500000000000001,
+    "budget_arcsec": 0.3078,
+    "argument_allowance_cs": 3.211999999999997,
+    "formula_minus_tables_cs": 0.8111460164655,
+    "formula_minus_tables_arcsec": 0.262811309334822,
+    "formula_minus_tables_as_read_cs": 0.8111460164655,
+    "parts_cs": {
+     "mean_longitude": 1.906844626646489,
+     "precession_inequality": -0.7377815004560183,
+     "great_inequality": 0.07249367762176462,
+     "equation_of_centre": -0.2598296749350095,
+     "perturbations": -0.20210280351937016,
+     "reduction": 0.03152169102312152
+    },
+    "mean_longitude_drift_cs_per_year_since_1780": 0.10489800885093774,
+    "with_centre_from_tables_cs": 1.1207783503923565,
+    "with_centre_from_tables_less_mean_and_precession_cs": -0.04828477579811408,
+    "argument_formula_minus_table_parts": {
+     "II": -0.4825691782649528,
+     "III": -0.4688108232276136,
+     "IV": -0.5164586385521943,
+     "V": -0.8807705426099233,
+     "VI": 0.6705497394124222,
+     "VII": 0.8817427257927193,
+     "VIII": -0.6686053730467165,
+     "IX": -1.1521467344945222,
+     "X": -1.058074068703263,
+     "XI": -0.6008264524721767,
+     "XII": -0.8120194388526443
+    }
+   },
+   "1813": {
+    "instant": "1813",
+    "date_paris_midnight": "1813-05-13",
+    "t_years_from_1800": 13.360711841204655,
+    "anomaly_grades": 70.29136812164326,
+    "entries": 19,
+    "budget_cs": 0.9500000000000001,
+    "budget_arcsec": 0.3078,
+    "argument_allowance_cs": 1.235999999999998,
+    "formula_minus_tables_cs": 10.484546370338649,
+    "formula_minus_tables_arcsec": 3.3969930239897224,
+    "formula_minus_tables_as_read_cs": 10.484546370338649,
+    "parts_cs": {
+     "mean_longitude": 3.4580424367450178,
+     "precession_inequality": -1.3323011491406047,
+     "great_inequality": -0.03848343277672939,
+     "equation_of_centre": 8.664751358106244,
+     "perturbations": -0.28696650967395954,
+     "reduction": 0.019503667925309998
+    },
+    "mean_longitude_drift_cs_per_year_since_1780": 0.1036532388447017,
+    "with_centre_from_tables_cs": 1.5544552714563906,
+    "with_centre_from_tables_less_mean_and_precession_cs": -0.5712860161480224,
+    "argument_formula_minus_table_parts": {
+     "II": -0.7645718512850408,
+     "III": -1.142075786735404,
+     "IV": -0.37712229621968163,
+     "V": -0.42675802360821535,
+     "VI": -0.5787794299586722,
+     "VII": 0.2850638761034361,
+     "VIII": 0.29539113494917046,
+     "IX": -0.3274865688311479,
+     "X": -1.6780508847354554,
+     "XI": -0.4795079751816047,
+     "XII": -1.3433512812435993
+    }
+   },
+   "1828": {
+    "instant": "1828",
+    "date_paris_midnight": "1828-07-18",
+    "t_years_from_1800": 28.542094455852155,
+    "anomaly_grades": 142.55333383559415,
+    "entries": 19,
+    "budget_cs": 0.9500000000000001,
+    "budget_arcsec": 0.3078,
+    "argument_allowance_cs": 2.4759999999999986,
+    "formula_minus_tables_cs": 8.884084680117667,
+    "formula_minus_tables_arcsec": 2.878443436358124,
+    "formula_minus_tables_as_read_cs": 8.884084680117667,
+    "parts_cs": {
+     "mean_longitude": 5.109240246005356,
+     "precession_inequality": -2.0990264677840225,
+     "great_inequality": -0.08666001539614854,
+     "equation_of_centre": 6.988830608518966,
+     "perturbations": -1.0301133549519363,
+     "reduction": 0.0018136644589965556
+    },
+    "mean_longitude_drift_cs_per_year_since_1780": 0.10525029155388996,
+    "with_centre_from_tables_cs": 1.0360889532603323,
+    "with_centre_from_tables_less_mean_and_precession_cs": -1.9741248249610015,
+    "argument_formula_minus_table_parts": {
+     "II": -1.021213621269112,
+     "III": -1.3981223424098062,
+     "IV": -1.245520018157663,
+     "V": -0.9786814726596731,
+     "VI": -0.7755886970402344,
+     "VII": -0.2880521667671019,
+     "VIII": 1.2421214181866844,
+     "IX": -0.5123585636556527,
+     "X": -1.2419116060442548,
+     "XI": -2.309265788036214,
+     "XII": -2.7968023183093464
+    }
+   },
+   "1846": {
+    "instant": "1846",
+    "date_paris_midnight": "1846-10-05",
+    "t_years_from_1800": 46.757015742642025,
+    "anomaly_grades": 229.25402068648754,
+    "entries": 19,
+    "budget_cs": 0.9500000000000001,
+    "budget_arcsec": 0.3078,
+    "argument_allowance_cs": 3.0039999999999982,
+    "formula_minus_tables_cs": -1.1700805022846907,
+    "formula_minus_tables_arcsec": -0.3791060827402398,
+    "formula_minus_tables_as_read_cs": -1.1700805022846907,
+    "parts_cs": {
+     "mean_longitude": 7.058206707471982,
+     "precession_inequality": -3.245258879409038,
+     "great_inequality": -0.14524602458843106,
+     "equation_of_centre": -4.594759649786601,
+     "perturbations": -0.257389953034302,
+     "reduction": 0.014367296251844408
+    },
+    "mean_longitude_drift_cs_per_year_since_1780": 0.10572682103776704,
+    "with_centre_from_tables_cs": 3.2653972243424505,
+    "with_centre_from_tables_less_mean_and_precession_cs": -0.5475506037204934,
+    "argument_formula_minus_table_parts": {
+     "II": -1.3573256184571392,
+     "III": -3.438643657906141,
+     "IV": 0.5037075361237839,
+     "V": -0.015242170113538123,
+     "VI": -1.2336009431516004,
+     "VII": -0.8383759122195897,
+     "VIII": 0.5263647784854584,
+     "IX": -0.9773427576383256,
+     "X": -2.2715003556273814,
+     "XI": -1.1957015306763878,
+     "XII": -2.5909265616087396
+    }
+   },
+   "1715": {
+    "instant": "1715",
+    "date_paris_midnight": "1715-03-04",
+    "t_years_from_1800": -84.82956878850102,
+    "anomaly_grades": 2.8917515356950005,
+    "entries": 20,
+    "budget_cs": 1.0,
+    "budget_arcsec": 0.324,
+    "argument_allowance_cs": 3.02,
+    "formula_minus_tables_cs": 6.15210728161037,
+    "formula_minus_tables_arcsec": 1.99328275924176,
+    "formula_minus_tables_as_read_cs": 6.15210728161037,
+    "parts_cs": {
+     "mean_longitude": 3.6613141684792936,
+     "precession_inequality": -0.5639889669586649,
+     "great_inequality": -0.04912941616470334,
+     "equation_of_centre": 0.7903049956566008,
+     "perturbations": 2.2805144843421203,
+     "reduction": 0.03309201531953132
+    },
+    "mean_longitude_drift_cs_per_year_since_1780": -0.05647549640768046,
+    "with_centre_from_tables_cs": 5.697948936838657,
+    "with_centre_from_tables_less_mean_and_precession_cs": 2.600623735318028,
+    "argument_formula_minus_table_parts": {
+     "II": -1.199587186785834,
+     "III": -0.16767909782265633,
+     "IV": -0.5241894224980115,
+     "V": 0.10693122436850899,
+     "VI": 0.23194627329479545,
+     "VII": 1.1692921663479297,
+     "VIII": 0.3205005081363197,
+     "IX": -1.155310069364532,
+     "X": -1.9888261316027638,
+     "XI": -0.030295020437620224,
+     "XII": -1.4506546121217525
+    }
+   }
+  },
+  "largest_difference_arcsec": 3.3969930239897224,
+  "over_budget": [
+   "1783",
+   "1813",
+   "1828",
+   "1846"
+  ],
+  "outcome": "fail",
+  "constant_and_trend_removed": {
+   "formula_minus_tables_cs": {
+    "constant_cs": 1.480298823267744,
+    "trend_cs_per_year": 0.14266619824582885,
+    "residual_cs": {
+     "1783": -6.668522350503849,
+     "1798": 1.0428415721477022,
+     "1813": 8.576248952333419,
+     "1828": 4.835794288425003,
+     "1846": -7.786362462402273
+    }
+   },
+   "with_centre_from_tables_cs": {
+    "constant_cs": 1.28114498095818,
+    "trend_cs_per_year": 0.040085066714613406,
+    "residual_cs": {
+     "1783": -0.04831187346120647,
+     "1798": 0.32065417000953733,
+     "1813": 0.15305509035437037,
+     "1828": -0.966587228560889,
+     "1846": 0.5411898416581877
+    }
+   }
+  },
+  "sum_of_added_constants_cs": 717.5,
+  "eccentricity": {
+   "p_ii": 0.0466108,
+   "of_printed_coefficient_59427.54": 0.04668699530760639,
+   "of_table_x_59417.54": 0.04667913490699394,
+   "adams": 0.046679
+  },
+  "sign_before_group_iii": {
+   "used": "-",
+   "largest_difference_arcsec_with_plus": 270.00607853346503
+  }
+ },
+ "V1_prime": {
+  "instants": {
+   "1789": {
+    "instant": "1789",
+    "date_paris_midnight": "1789-01-26",
+    "t_years_from_1800": -10.929500342231348,
+    "anomaly_grades": 354.67058276868386,
+    "entries": 18,
+    "budget_arcsec": 0.2916,
+    "argument_allowance_arcsec": 0.8023859999999999,
+    "limit_arcsec": 1.093986,
+    "corrected_minus_tables_arcsec": -0.5018229614747688,
+    "corrected_minus_tables_as_read_arcsec": -2.3969239027770235,
+    "within_budget_alone": false,
+    "outcome": "stop and ask",
+    "printed_formula_minus_tables_arcsec": -2.446773662187159,
+    "parts_cs": {
+     "mean_longitude": -0.05606583971530199,
+     "great_inequality": -0.016631929889740604,
+     "equation_of_centre": 0.11409472851154945,
+     "perturbations": -1.583477309074567,
+     "reduction": -0.00675595080473812
+    },
+    "argument_formula_minus_table_parts": {
+     "II": -0.30095104329825517,
+     "III": -0.5307205395001802,
+     "IV": -1.0036712007222377,
+     "V": -0.9557922113742734,
+     "VI": -0.5540230972484324,
+     "VII": -1.3488300326462195,
+     "VIII": -0.055221390792439706,
+     "IX": -0.05155019007031569,
+     "X": -1.4582651185519921,
+     "XI": -0.649781075944361,
+     "XII": -0.854974140546517
+    }
+   },
+   "1804": {
+    "instant": "1804",
+    "date_paris_midnight": "1804-04-03",
+    "t_years_from_1800": 4.251882272416153,
+    "anomaly_grades": 26.933728691912233,
+    "entries": 19,
+    "budget_arcsec": 0.3078,
+    "argument_allowance_arcsec": 1.025136000000001,
+    "limit_arcsec": 1.3329360000000008,
+    "corrected_minus_tables_arcsec": 0.00319011938944459,
+    "corrected_minus_tables_as_read_arcsec": 0.7158053448032587,
+    "within_budget_alone": true,
+    "outcome": "pass",
+    "printed_formula_minus_tables_arcsec": 1.901957980753854,
+    "parts_cs": {
+     "mean_longitude": 0.0006434223614633083,
+     "great_inequality": 0.0627492102385645,
+     "equation_of_centre": -0.030863697936914347,
+     "perturbations": 0.009799125532481412,
+     "reduction": -0.0324820129236123
+    },
+    "argument_formula_minus_table_parts": {
+     "II": -0.5984560778723562,
+     "III": -0.7967565313447267,
+     "IV": 0.1401891622044218,
+     "V": -0.49848942945106955,
+     "VI": 0.16440925259956884,
+     "VII": 0.040222513783078284,
+     "VIII": -0.08094308393572192,
+     "IX": -0.22113224614008686,
+     "X": -1.1129479307115844,
+     "XI": -0.5582335640893348,
+     "XII": -0.4340468252727874
+    }
+   },
+   "1822": {
+    "instant": "1822",
+    "date_paris_midnight": "1822-06-22",
+    "t_years_from_1800": 22.469541409993155,
+    "anomaly_grades": 113.6485964045082,
+    "entries": 19,
+    "budget_arcsec": 0.3078,
+    "argument_allowance_arcsec": 0.8735040000000015,
+    "limit_arcsec": 1.1813040000000017,
+    "corrected_minus_tables_arcsec": 0.024892264952883124,
+    "corrected_minus_tables_as_read_arcsec": 0.024892264952883124,
+    "within_budget_alone": true,
+    "outcome": "pass",
+    "printed_formula_minus_tables_arcsec": 4.036198985237628,
+    "parts_cs": {
+     "mean_longitude": 0.009281669743359089,
+     "great_inequality": -0.07682837761191763,
+     "equation_of_centre": -0.31675134292901674,
+     "perturbations": 0.4820962055327982,
+     "reduction": -0.02097017695986736
+    },
+    "argument_formula_minus_table_parts": {
+     "II": -1.921551655132987,
+     "III": -1.0620859545479107,
+     "IV": -0.8972190765319397,
+     "V": -1.3571636880865299,
+     "VI": -0.303047921820621,
+     "VII": -0.4616070435783399,
+     "VIII": 0.6655064584907677,
+     "IX": -0.4372744649772926,
+     "X": -1.2229371449299151,
+     "XI": -1.383158698711327,
+     "XII": -2.2245995769533238
+    }
+   },
+   "1837": {
+    "instant": "1837",
+    "date_paris_midnight": "1837-08-27",
+    "t_years_from_1800": 37.65092402464066,
+    "anomaly_grades": 185.91036683470983,
+    "entries": 19,
+    "budget_arcsec": 0.3078,
+    "argument_allowance_arcsec": 1.0167120000000014,
+    "limit_arcsec": 1.3245120000000012,
+    "corrected_minus_tables_arcsec": -0.12488317054510117,
+    "corrected_minus_tables_as_read_arcsec": -0.12488317054510117,
+    "within_budget_alone": true,
+    "outcome": "pass",
+    "printed_formula_minus_tables_arcsec": 1.5770533461011946,
+    "parts_cs": {
+     "mean_longitude": -0.033506820909678936,
+     "great_inequality": -0.1262044305762231,
+     "equation_of_centre": -0.014064949553439288,
+     "perturbations": -0.1807656085972411,
+     "reduction": -0.030900073759921654
+    },
+    "argument_formula_minus_table_parts": {
+     "II": -2.163373400901719,
+     "III": -3.0593692656211715,
+     "IV": -0.7703542431217443,
+     "V": -0.9129177687821084,
+     "VI": -1.2345158069162494,
+     "VII": -1.0208098752414116,
+     "VIII": 0.6018550394171598,
+     "IX": -1.6277907174613802,
+     "X": -1.7544373787843597,
+     "XI": -3.1841832761431874,
+     "XII": -4.397889207817741
+    }
+   },
+   "1690": {
+    "instant": "1690",
+    "date_paris_midnight": "1690-12-20",
+    "t_years_from_1800": -109.02943189596166,
+    "anomaly_grades": 287.6906357040301,
+    "entries": 20,
+    "budget_arcsec": 0.324,
+    "argument_allowance_arcsec": 1.280609999999999,
+    "limit_arcsec": 1.604609999999999,
+    "corrected_minus_tables_arcsec": -1.0488663220591843,
+    "corrected_minus_tables_as_read_arcsec": -1.052001064259559,
+    "within_budget_alone": false,
+    "outcome": "pass",
+    "printed_formula_minus_tables_arcsec": -4.341970054691657,
+    "parts_cs": {
+     "mean_longitude": -0.06061023147776723,
+     "great_inequality": -0.0742053173083832,
+     "equation_of_centre": 0.09372128168324423,
+     "perturbations": -3.1695447877991683,
+     "reduction": -0.02660268084701478
+    },
+    "argument_formula_minus_table_parts": {
+     "II": -1.485554668001953,
+     "III": 2.0381680076043267,
+     "IV": -0.6760985476187216,
+     "V": 0.0036016882672811334,
+     "VI": -0.29140910011847154,
+     "VII": -0.1652549038876714,
+     "VIII": 1.9681026688754173,
+     "IX": -0.35579878350472427,
+     "X": -1.9320086283464661,
+     "XI": -0.6508095718893401,
+     "XII": -1.7769637681201402
+    }
+   },
+   "1750": {
+    "instant": "1750",
+    "date_paris_midnight": "1750-11-05",
+    "t_years_from_1800": -49.15537303216975,
+    "anomaly_grades": 172.7104572468773,
+    "entries": 20,
+    "budget_arcsec": 0.324,
+    "argument_allowance_arcsec": 0.8748000000000001,
+    "limit_arcsec": 1.1988,
+    "corrected_minus_tables_arcsec": 0.6547267186436803,
+    "corrected_minus_tables_as_read_arcsec": 0.6547267186436803,
+    "within_budget_alone": false,
+    "outcome": "pass",
+    "printed_formula_minus_tables_arcsec": 4.216175875660032,
+    "parts_cs": {
+     "mean_longitude": 0.018673098646104336,
+     "great_inequality": -0.04957415424576084,
+     "equation_of_centre": 0.03967392875668985,
+     "perturbations": 1.709373673942011,
+     "reduction": 0.3026149305293089
+    },
+    "argument_formula_minus_table_parts": {
+     "II": -0.947568941408349,
+     "III": -2.304881539374037,
+     "IV": 1.3818592842036423,
+     "V": 0.398940071674474,
+     "VI": -0.8780570953457527,
+     "VII": 1.0353502711208193,
+     "VIII": 0.746637780936453,
+     "IX": -0.6352215032671893,
+     "X": -2.8438955204040894,
+     "XI": -0.912218670287416,
+     "XII": -1.825626036754329
+    }
+   },
+   "1769": {
+    "instant": "1769",
+    "date_paris_midnight": "1769-01-12",
+    "t_years_from_1800": -30.967830253251197,
+    "anomaly_grades": 259.28587227531756,
+    "entries": 19,
+    "budget_arcsec": 0.3078,
+    "argument_allowance_arcsec": 0.8631360000000019,
+    "limit_arcsec": 1.170936000000002,
+    "corrected_minus_tables_arcsec": -0.47745240529440347,
+    "corrected_minus_tables_as_read_arcsec": -0.47745240529440347,
+    "within_budget_alone": false,
+    "outcome": "pass",
+    "printed_formula_minus_tables_arcsec": -0.24627276121638716,
+    "parts_cs": {
+     "mean_longitude": 0.03336881287395954,
+     "great_inequality": 0.015482734816600896,
+     "equation_of_centre": 0.2421329177835183,
+     "perturbations": -1.7638791580180282,
+     "reduction": -0.0007238430396938611
+    },
+    "argument_formula_minus_table_parts": {
+     "II": -1.0441365309633284,
+     "III": -7.995138580347884,
+     "IV": 0.1945748423802911,
+     "V": -0.2608024846913395,
+     "VI": -0.5436503889980031,
+     "VII": 0.41124079610807485,
+     "VIII": -0.15547298816852617,
+     "IX": 0.6499521694514669,
+     "X": -2.4544050431408664,
+     "XI": -1.6328957348551398,
+     "XII": -1.5877869199612178
+    }
+   }
+  },
+  "outcomes": {
+   "1789": "stop and ask",
+   "1804": "pass",
+   "1822": "pass",
+   "1837": "pass",
+   "1690": "pass",
+   "1750": "pass",
+   "1769": "pass"
+  },
+  "consequence": "stop and ask",
+  "ruled_2026_11_13": {
+   "table_xii_row_2600": "3.31,6",
+   "outcomes": {
+    "1789": "pass",
+    "1804": "pass",
+    "1822": "pass",
+    "1837": "pass",
+    "1690": "pass",
+    "1750": "pass",
+    "1769": "pass"
+   },
+   "consequence": "the corrected formula is C_Bouvard for all 30 epochs"
+  },
+  "not_part_of_the_rule": {
+   "1783": {
+    "instant": "1783",
+    "date_paris_midnight": "1783-01-01",
+    "t_years_from_1800": -16.999315537303218,
+    "anomaly_grades": 325.77802225242,
+    "entries": 17,
+    "budget_arcsec": 0.27540000000000003,
+    "argument_allowance_arcsec": 0.5964839999999997,
+    "limit_arcsec": 0.8718839999999997,
+    "corrected_minus_tables_arcsec": 0.048445973572321235,
+    "corrected_minus_tables_as_read_arcsec": 2.8460768656879663,
+    "within_budget_alone": true,
+    "outcome": "stop and ask",
+    "printed_formula_minus_tables_arcsec": -2.9290283250790092,
+    "parts_cs": {
+     "mean_longitude": -0.08688227250240743,
+     "great_inequality": 0.02893764474731597,
+     "equation_of_centre": 0.27742566901196586,
+     "perturbations": -0.036382132933056255,
+     "reduction": -0.03357429838522208
+    },
+    "argument_formula_minus_table_parts": {
+     "II": -0.11429583041007163,
+     "III": -0.23756259636411414,
+     "IV": -0.465056382339867,
+     "V": -0.17451681156649101,
+     "VI": 0.06194790995346011,
+     "VII": -0.40483540118373185,
+     "VIII": -0.22065233545367846,
+     "IX": 0.24440404688630224,
+     "X": -1.3569729484992195,
+     "XI": -0.5191312315938603,
+     "XII": -0.05234792045649783
+    }
+   },
+   "1798": {
+    "instant": "1798",
+    "date_paris_midnight": "1798-03-07",
+    "t_years_from_1800": -1.8206707734428473,
+    "anomaly_grades": 398.02852920903086,
+    "entries": 19,
+    "budget_arcsec": 0.3078,
+    "argument_allowance_arcsec": 1.0406879999999992,
+    "limit_arcsec": 1.3484879999999992,
+    "corrected_minus_tables_arcsec": -0.05976755647547543,
+    "corrected_minus_tables_as_read_arcsec": -0.05976755647547543,
+    "within_budget_alone": true,
+    "outcome": "pass",
+    "printed_formula_minus_tables_arcsec": 0.262811309334822,
+    "parts_cs": {
+     "mean_longitude": -0.0018540034070611,
+     "great_inequality": 0.07249367762176462,
+     "equation_of_centre": -0.08442740207492647,
+     "perturbations": -0.20210280351937016,
+     "reduction": 0.03142276455430659
+    },
+    "argument_formula_minus_table_parts": {
+     "II": -0.4825691782649528,
+     "III": -0.4688108232276136,
+     "IV": -0.5164586385521943,
+     "V": -0.8807705426099233,
+     "VI": 0.6705497394124222,
+     "VII": 0.8817427257927193,
+     "VIII": -0.6686053730467165,
+     "IX": -1.1521467344945222,
+     "X": -1.058074068703263,
+     "XI": -0.6008264524721767,
+     "XII": -0.8120194388526443
+    }
+   },
+   "1813": {
+    "instant": "1813",
+    "date_paris_midnight": "1813-05-13",
+    "t_years_from_1800": 13.360711841204655,
+    "anomaly_grades": 70.29136812164326,
+    "entries": 19,
+    "budget_arcsec": 0.3078,
+    "argument_allowance_arcsec": 0.4004639999999994,
+    "limit_arcsec": 0.7082639999999994,
+    "corrected_minus_tables_arcsec": -0.23086213538981976,
+    "corrected_minus_tables_as_read_arcsec": -0.23086213538981976,
+    "within_budget_alone": true,
+    "outcome": "pass",
+    "printed_formula_minus_tables_arcsec": 3.3969930239897224,
+    "parts_cs": {
+     "mean_longitude": -0.044930166099220514,
+     "great_inequality": -0.03848343277672939,
+     "equation_of_centre": -0.3625168022684164,
+     "perturbations": -0.28696650967395954,
+     "reduction": 0.020359455970261564
+    },
+    "argument_formula_minus_table_parts": {
+     "II": -0.7645718512850408,
+     "III": -1.142075786735404,
+     "IV": -0.37712229621968163,
+     "V": -0.42675802360821535,
+     "VI": -0.5787794299586722,
+     "VII": 0.2850638761034361,
+     "VIII": 0.29539113494917046,
+     "IX": -0.3274865688311479,
+     "X": -1.6780508847354554,
+     "XI": -0.4795079751816047,
+     "XII": -1.3433512812435993
+    }
+   },
+   "1828": {
+    "instant": "1828",
+    "date_paris_midnight": "1828-07-18",
+    "t_years_from_1800": 28.542094455852155,
+    "anomaly_grades": 142.55333383559415,
+    "entries": 19,
+    "budget_arcsec": 0.3078,
+    "argument_allowance_arcsec": 0.8022239999999996,
+    "limit_arcsec": 1.1100239999999997,
+    "corrected_minus_tables_arcsec": -0.5681133352406323,
+    "corrected_minus_tables_as_read_arcsec": -0.5681133352406323,
+    "within_budget_alone": false,
+    "outcome": "pass",
+    "printed_formula_minus_tables_arcsec": 2.878443436358124,
+    "parts_cs": {
+     "mean_longitude": 0.012150082271546125,
+     "great_inequality": -0.08666001539614854,
+     "equation_of_centre": -0.6505510950378985,
+     "perturbations": -1.0301133549519363,
+     "reduction": 0.001738164036812151
+    },
+    "argument_formula_minus_table_parts": {
+     "II": -1.021213621269112,
+     "III": -1.3981223424098062,
+     "IV": -1.245520018157663,
+     "V": -0.9786814726596731,
+     "VI": -0.7755886970402344,
+     "VII": -0.2880521667671019,
+     "VIII": 1.2421214181866844,
+     "IX": -0.5123585636556527,
+     "X": -1.2419116060442548,
+     "XI": -2.309265788036214,
+     "XII": -2.7968023183093464
+    }
+   },
+   "1846": {
+    "instant": "1846",
+    "date_paris_midnight": "1846-10-05",
+    "t_years_from_1800": 46.757015742642025,
+    "anomaly_grades": 229.25402068648754,
+    "entries": 19,
+    "budget_arcsec": 0.3078,
+    "argument_allowance_arcsec": 0.9732959999999995,
+    "limit_arcsec": 1.2810959999999996,
+    "corrected_minus_tables_arcsec": -0.04124323246534914,
+    "corrected_minus_tables_as_read_arcsec": -0.04124323246534914,
+    "within_budget_alone": true,
+    "outcome": "pass",
+    "printed_formula_minus_tables_arcsec": -0.3791060827402398,
+    "parts_cs": {
+     "mean_longitude": 0.04852177598513663,
+     "great_inequality": -0.14524602458843106,
+     "equation_of_centre": 0.21241976517890215,
+     "perturbations": -0.257389953034302,
+     "reduction": 0.014400508632800069
+    },
+    "argument_formula_minus_table_parts": {
+     "II": -1.3573256184571392,
+     "III": -3.438643657906141,
+     "IV": 0.5037075361237839,
+     "V": -0.015242170113538123,
+     "VI": -1.2336009431516004,
+     "VII": -0.8383759122195897,
+     "VIII": 0.5263647784854584,
+     "IX": -0.9773427576383256,
+     "X": -2.2715003556273814,
+     "XI": -1.1957015306763878,
+     "XII": -2.5909265616087396
+    }
+   },
+   "1715": {
+    "instant": "1715",
+    "date_paris_midnight": "1715-03-04",
+    "t_years_from_1800": -84.82956878850102,
+    "anomaly_grades": 2.8917515356950005,
+    "entries": 20,
+    "budget_arcsec": 0.324,
+    "argument_allowance_arcsec": 0.97848,
+    "limit_arcsec": 1.3024799999999999,
+    "corrected_minus_tables_arcsec": 0.7268116835653782,
+    "corrected_minus_tables_as_read_arcsec": 0.7268116835653782,
+    "within_budget_alone": false,
+    "outcome": "pass",
+    "printed_formula_minus_tables_arcsec": 1.99328275924176,
+    "parts_cs": {
+     "mean_longitude": -0.0315214479342103,
+     "great_inequality": -0.04912941616470334,
+     "equation_of_centre": 0.010641907833263575,
+     "perturbations": 2.2805144843421203,
+     "reduction": 0.032740407609725075
+    },
+    "argument_formula_minus_table_parts": {
+     "II": -1.199587186785834,
+     "III": -0.16767909782265633,
+     "IV": -0.5241894224980115,
+     "V": 0.10693122436850899,
+     "VI": 0.23194627329479545,
+     "VII": 1.1692921663479297,
+     "VIII": 0.3205005081363197,
+     "IX": -1.155310069364532,
+     "X": -1.9888261316027638,
+     "XI": -0.030295020437620224,
+     "XII": -1.4506546121217525
+    }
+   }
+  }
+ },
+ "V2": {
+  "terms": [
+   {
+    "coefficient_arcsec": 1.918,
+    "multipliers_jupiter_saturn_uranus": [
+     0,
+     1,
+     -2
+    ],
+    "constant_deg": -13.025
+   },
+   {
+    "coefficient_arcsec": 1.085,
+    "multipliers_jupiter_saturn_uranus": [
+     1,
+     0,
+     -1
+    ],
+    "constant_deg": 0.0
+   },
+   {
+    "coefficient_arcsec": 32.0,
+    "multipliers_jupiter_saturn_uranus": [
+     2,
+     -6,
+     3
+    ],
+    "constant_deg": 22.313333333333333
+   },
+   {
+    "coefficient_arcsec": -8.35,
+    "multipliers_jupiter_saturn_uranus": [
+     2,
+     -6,
+     2
+    ],
+    "constant_deg": 39.175
+   },
+   {
+    "coefficient_arcsec": -1.49,
+    "multipliers_jupiter_saturn_uranus": [
+     2,
+     -6,
+     4
+    ],
+    "constant_deg": 34.806666666666665
+   }
+  ],
+  "s7_at_the_30_epochs_arcsec": {
+   "1690": -18.220983696464874,
+   "1712": -27.017610650696973,
+   "1715": -29.910498172855498,
+   "1750": -22.657002795870046,
+   "1753": -20.91780921636135,
+   "1756": -20.283073005796222,
+   "1764": -14.189110552315222,
+   "1769": -12.752280789626093,
+   "1771": -12.854389828010495,
+   "1780": -9.889962877270543,
+   "1783": -11.343740323940734,
+   "1786": -12.948874852530977,
+   "1789": -13.068520377946419,
+   "1792": -12.899286161551158,
+   "1795": -14.441241267487001,
+   "1798": -17.150625225646344,
+   "1801": -18.712610493102808,
+   "1804": -18.68472084055085,
+   "1807": -19.10238506691459,
+   "1810": -21.06857249915429,
+   "1813": -22.86715012175304,
+   "1816": -22.666022080525785,
+   "1819": -21.42601845063355,
+   "1822": -21.296767882553027,
+   "1825": -22.104739262027017,
+   "1828": -21.63420002691671,
+   "1831": -19.244812313018894,
+   "1834": -16.95314951634201,
+   "1837": -16.220731900939885,
+   "1840": -15.65893713457407
+  },
+  "s7_range_arcsec": [
+   -29.910498172855498,
+   -9.889962877270543
+  ],
+  "s7_after_constant_and_trend_max_abs_arcsec": 10.005820053303008,
+  "each_term_after_constant_and_trend_max_abs_arcsec": [
+   2.2538500015302785,
+   1.0741695650231942,
+   0.8240826376561401,
+   8.559700144320102,
+   1.8224066044151142
+  ],
+  "ambiguity_great_inequalities_after_constant_and_trend_max_abs_arcsec": 1.0889128383389735,
+  "ambiguity_equinox_of_date_after_constant_and_trend_max_abs_arcsec": 0.23438413836941874,
+  "s8_to_s9": {
+   "1690": {
+    "kind": "ancient",
+    "factor": 1.0234406641396676,
+    "s8": 61.2,
+    "s9": 62.6,
+    "s8_times_factor_minus_s9": 0.034568645347661686
+   },
+   "1712": {
+    "kind": "ancient",
+    "factor": 0.9112895351666352,
+    "s8": 92.7,
+    "s9": 84.5,
+    "s8_times_factor_minus_s9": -0.02346009005290739
+   },
+   "1715": {
+    "kind": "ancient",
+    "factor": 0.9099082319036601,
+    "s8": 73.8,
+    "s9": 67.2,
+    "s8_times_factor_minus_s9": -0.04877248550988611
+   },
+   "1750": {
+    "kind": "ancient",
+    "factor": 1.0886105444945182,
+    "s8": -47.6,
+    "s9": -51.8,
+    "s8_times_factor_minus_s9": -0.017861917939072214
+   },
+   "1753": {
+    "kind": "ancient",
+    "factor": 1.09495075698845,
+    "s8": -39.5,
+    "s9": -43.2,
+    "s8_times_factor_minus_s9": -0.05055490104377469
+   },
+   "1756": {
+    "kind": "ancient",
+    "factor": 1.096731605113529,
+    "s8": -45.7,
+    "s9": -50.1,
+    "s8_times_factor_minus_s9": -0.02063435368827271
+   },
+   "1764": {
+    "kind": "ancient",
+    "factor": 1.0832355868680277,
+    "s8": -34.9,
+    "s9": -37.8,
+    "s8_times_factor_minus_s9": -0.004921981694167243
+   },
+   "1769": {
+    "kind": "ancient",
+    "factor": 1.0604553525816636,
+    "s8": -19.3,
+    "s9": -20.5,
+    "s8_times_factor_minus_s9": 0.03321169517389322
+   },
+   "1771": {
+    "kind": "ancient",
+    "factor": 1.0433388736869722,
+    "s8": -2.3,
+    "s9": -2.4,
+    "s8_times_factor_minus_s9": 0.00032059051996391474
+   },
+   "1780": {
+    "kind": "modern",
+    "factor": 0.9889105209441152,
+    "s8": 3.46,
+    "s9": 3.42,
+    "s8_times_factor_minus_s9": 0.001630402466638703
+   },
+   "1783": {
+    "kind": "modern",
+    "factor": 0.9683715985050163,
+    "s8": 8.45,
+    "s9": 8.19,
+    "s8_times_factor_minus_s9": -0.007259992632612011
+   },
+   "1786": {
+    "kind": "modern",
+    "factor": 0.9495571368040391,
+    "s8": 12.36,
+    "s9": 11.74,
+    "s8_times_factor_minus_s9": -0.003473789102077518
+   },
+   "1789": {
+    "kind": "modern",
+    "factor": 0.9334963707311251,
+    "s8": 19.02,
+    "s9": 17.75,
+    "s8_times_factor_minus_s9": 0.005100971305999735
+   },
+   "1792": {
+    "kind": "modern",
+    "factor": 0.92109190136898,
+    "s8": 18.7,
+    "s9": 17.22,
+    "s8_times_factor_minus_s9": 0.0044185555999263215
+   },
+   "1795": {
+    "kind": "modern",
+    "factor": 0.9130566001629736,
+    "s8": 21.38,
+    "s9": 19.52,
+    "s8_times_factor_minus_s9": 0.0011501114843746052
+   },
+   "1798": {
+    "kind": "modern",
+    "factor": 0.9098598065882643,
+    "s8": 20.95,
+    "s9": 19.06,
+    "s8_times_factor_minus_s9": 0.0015629480241372562
+   },
+   "1801": {
+    "kind": "modern",
+    "factor": 0.9116899311872396,
+    "s8": 22.21,
+    "s9": 20.24,
+    "s8_times_factor_minus_s9": 0.008633371668594236
+   },
+   "1804": {
+    "kind": "modern",
+    "factor": 0.918438992801644,
+    "s8": 24.16,
+    "s9": 22.19,
+    "s8_times_factor_minus_s9": -0.0005139339122841591
+   },
+   "1807": {
+    "kind": "modern",
+    "factor": 0.9297115123478445,
+    "s8": 22.07,
+    "s9": 20.52,
+    "s8_times_factor_minus_s9": -0.0012669224830688108
+   },
+   "1810": {
+    "kind": "modern",
+    "factor": 0.9448563602317284,
+    "s8": 23.16,
+    "s9": 21.89,
+    "s8_times_factor_minus_s9": -0.007126697033172036
+   },
+   "1813": {
+    "kind": "modern",
+    "factor": 0.9630167491224685,
+    "s8": 22.0,
+    "s9": 21.19,
+    "s8_times_factor_minus_s9": -0.0036315193056957185
+   },
+   "1816": {
+    "kind": "modern",
+    "factor": 0.983191519894809,
+    "s8": 22.88,
+    "s9": 22.5,
+    "s8_times_factor_minus_s9": -0.004578024806772163
+   },
+   "1819": {
+    "kind": "modern",
+    "factor": 1.004300529122482,
+    "s8": 20.69,
+    "s9": 20.78,
+    "s8_times_factor_minus_s9": -0.00102205245584841
+   },
+   "1822": {
+    "kind": "modern",
+    "factor": 1.0252480196506588,
+    "s8": 20.97,
+    "s9": 21.5,
+    "s8_times_factor_minus_s9": -0.0005490279256861186
+   },
+   "1825": {
+    "kind": "modern",
+    "factor": 1.0449796908604019,
+    "s8": 18.16,
+    "s9": 18.97,
+    "s8_times_factor_minus_s9": 0.006831186024900404
+   },
+   "1828": {
+    "kind": "modern",
+    "factor": 1.0625311231370558,
+    "s8": 10.82,
+    "s9": 11.5,
+    "s8_times_factor_minus_s9": -0.0034132476570558623
+   },
+   "1831": {
+    "kind": "modern",
+    "factor": 1.0770668071729097,
+    "s8": -3.98,
+    "s9": -4.29,
+    "s8_times_factor_minus_s9": 0.0032741074518192192
+   },
+   "1834": {
+    "kind": "modern",
+    "factor": 1.0879100994019022,
+    "s8": -20.8,
+    "s9": -22.63,
+    "s8_times_factor_minus_s9": 0.0014699324404325864
+   },
+   "1837": {
+    "kind": "modern",
+    "factor": 1.0945649800168937,
+    "s8": -42.66,
+    "s9": -46.7,
+    "s8_times_factor_minus_s9": 0.005857952479317419
+   },
+   "1840": {
+    "kind": "modern",
+    "factor": 1.0967306363621832,
+    "s8": -66.64,
+    "s9": -73.09,
+    "s8_times_factor_minus_s9": 0.0038703928241119456
+   }
+  },
+  "s8_to_s9_worst_arcsec": {
+   "modern": 0.008633371668594236,
+   "ancient": 0.05055490104377469
+  },
+  "s8_to_s9_pass": true,
+  "s5_shift_arcsec": {
+   "1690": -0.020691794615601923,
+   "1789": 1.9141583043158208
+  }
+ },
+ "V3": {
+  "gates": {
+   "H1": {
+    "A_d1c": {
+     "must_give": 1.647,
+     "gives": 1.6469392299364358,
+     "pass": true
+    },
+    "A_chain": {
+     "must_give": 1.021,
+     "gives": 1.021073404743845,
+     "pass": true
+    },
+    "D_d1c": {
+     "must_give": -9.512,
+     "gives": -9.511517009512716,
+     "pass": true
+    },
+    "D_chain": {
+     "must_give": -9.923,
+     "gives": -9.923016981580417,
+     "pass": true
+    }
+   },
+   "H2": {
+    "A_d1c": {
+     "must_give": 4.964,
+     "gives": 4.96413596047779,
+     "pass": true
+    },
+    "A_chain": {
+     "must_give": 4.447,
+     "gives": 4.446959735893131,
+     "pass": true
+    },
+    "D_d1c": {
+     "must_give": -7.621,
+     "gives": -7.620557596225581,
+     "pass": true
+    },
+    "D_chain": {
+     "must_give": -8.127,
+     "gives": -8.12666513736309,
+     "pass": true
+    }
+   }
+  },
+  "gates_pass": true,
+  "frame_test_offset": {
+   "d1c": {
+    "cell_D": -9.511517009512716,
+    "with_10_arcsec_and_0.2_arcsec_a_year": -9.511500057925218,
+    "change_deg": 1.6951587497260334e-05,
+    "pass": true
+   },
+   "chain": {
+    "cell_D": -9.923016981580417,
+    "with_10_arcsec_and_0.2_arcsec_a_year": -9.923016981578314,
+    "change_deg": 2.1032064978498966e-12,
+    "pass": true
+   }
+  },
+  "frame_test_curve": {
+   "curve_range_arcsec": [
+    -58.295049350730295,
+    45.08538611939774
+   ],
+   "max_abs_difference_arcsec": 0.0009342357989226002,
+   "pass": true
+  },
+  "propagation_check": {
+   "d_arcsec": 1.05,
+   "errors": [
+    "d sin(M), M Uranus's mean anomaly",
+    "d cos(M)",
+    "d sin(III), III the argument φ′ − 2φ″",
+    "d cos(III)"
+   ],
+   "status": "needs cells B and C; computed with the cells"
+  }
+ },
+ "cells": {
+  "D": {
+   "years": [
+    1690,
+    1712,
+    1715,
+    1750,
+    1753,
+    1756,
+    1764,
+    1769,
+    1771,
+    1780,
+    1783,
+    1786,
+    1789,
+    1792,
+    1795,
+    1798,
+    1801,
+    1804,
+    1807,
+    1810,
+    1813,
+    1816,
+    1819,
+    1822,
+    1825,
+    1828,
+    1831,
+    1834,
+    1837,
+    1840
+   ],
+   "t_years_from_1800": [
+    -109.02911099916341,
+    -87.74534899916328,
+    -84.83059699916262,
+    -49.1552469991632,
+    -46.08868499916279,
+    -43.3561049991636,
+    -35.97813899916311,
+    -30.968408999162676,
+    -28.053656999163284,
+    -20.038088999163364,
+    -17.001888999163413,
+    -13.96568899916346,
+    -10.929488999163508,
+    -7.893288999163558,
+    -4.857088999163607,
+    -1.8208889991623807,
+    1.2153110008375703,
+    4.251511000837521,
+    7.287711000837472,
+    10.323911000837423,
+    13.360111000837374,
+    16.396311000837326,
+    19.432511000837277,
+    22.468711000837228,
+    25.50491100083718,
+    28.54111100083713,
+    31.57731100083708,
+    34.61351100083703,
+    37.64971100083698,
+    40.68591100083693
+   ],
+   "c_bouvard_of_date_deg": [
+    59.62851611554176,
+    155.40043595963712,
+    169.14777108738502,
+    324.3223972953258,
+    336.38745926796287,
+    347.0896837053824,
+    16.15847874296616,
+    36.23026848110745,
+    48.129717726510535,
+    82.06475508598733,
+    95.38916833739334,
+    108.9907429286589,
+    122.87233709287146,
+    136.9733855847743,
+    151.21294010974106,
+    165.5252144300754,
+    179.8651756747034,
+    194.15554324220665,
+    208.29736107239998,
+    222.21304071048462,
+    235.8825548742437,
+    249.30389508021273,
+    262.4557317556456,
+    275.31430787523334,
+    287.8986825572552,
+    300.27065291399316,
+    312.47794803755016,
+    324.5399339432154,
+    336.4816591901054,
+    348.37292655616875
+   ],
+   "c_clean_of_date_deg": [
+    59.607432537141484,
+    155.38442106028216,
+    169.1316238939744,
+    324.3124139848404,
+    336.37853090379014,
+    347.08170162986426,
+    16.153277989142254,
+    36.22740422599934,
+    48.128340310008745,
+    82.06678586202487,
+    95.39134794221451,
+    108.99407963359154,
+    122.87677061123597,
+    136.97853104159356,
+    151.21866841873648,
+    165.5313274311465,
+    179.87161603997473,
+    194.16179927517103,
+    208.303278167191,
+    222.2190229852467,
+    235.88856662167507,
+    249.31012474037192,
+    262.46212936024665,
+    275.3214782956133,
+    287.9067552405744,
+    300.2796710748722,
+    312.4878214226418,
+    324.5507932042028,
+    336.4936063379841,
+    348.3860835100896
+   ],
+   "D_arcsec": [
+    75.90088224095553,
+    57.65363767784493,
+    58.12989627827392,
+    35.93991774737333,
+    32.14211102183526,
+    28.73547186536598,
+    18.722713766089782,
+    10.311318389187818,
+    4.95869940641569,
+    -7.31079373515513,
+    -7.846577356144735,
+    -12.012137757437813,
+    -15.960666112277977,
+    -18.523644549350138,
+    -20.621912383546714,
+    -22.00680385595888,
+    -23.1853149767403,
+    -22.521718671794133,
+    -21.30154124765795,
+    -21.536189143523643,
+    -21.642290752890858,
+    -22.426776573092866,
+    -23.031376563722006,
+    -25.813513367870655,
+    -29.061659949115892,
+    -32.46537916463694,
+    -35.5441863298438,
+    -39.09333955480179,
+    -43.009732363270814,
+    -47.36503411497779
+   ],
+   "constant_arcsec": -14.456806242738384,
+   "trend_arcsec_per_year": -0.8108848757867207,
+   "D_less_constant_and_trend_arcsec": [
+    1.9476313540006913,
+    0.9590674965343311,
+    3.798854410432952,
+    10.53747763292969,
+    9.22629965385423,
+    8.03546829126157,
+    4.005391235454418,
+    -0.3436898526721883,
+    -3.332780521975714,
+    -9.102570801506584,
+    -7.176345762632588,
+    -8.879897504062063,
+    -10.366417199038626,
+    -10.467386976247184,
+    -10.10364615058016,
+    -9.026528963127687,
+    -7.743031424045508,
+    -4.6174264592357375,
+    -0.9352403752359564,
+    1.2921203887619548,
+    3.6480274392583425,
+    5.325550278919934,
+    7.1829589481544005,
+    6.86283080386935,
+    6.07669288248772,
+    5.134982326830269,
+    4.518183821487014,
+    3.431039256392623,
+    1.9766551077871952,
+    0.08336201594381976
+   ],
+   "columns_arcsec": {
+    "A": {
+     "1690": 62.6,
+     "1712": 84.5,
+     "1715": 67.2,
+     "1750": -51.8,
+     "1753": -43.2,
+     "1756": -50.1,
+     "1764": -37.8,
+     "1769": -20.5,
+     "1771": -2.4,
+     "1780": 3.42,
+     "1783": 8.19,
+     "1786": 11.74,
+     "1789": 17.75,
+     "1792": 17.22,
+     "1795": 19.52,
+     "1798": 19.06,
+     "1801": 20.24,
+     "1804": 22.19,
+     "1807": 20.52,
+     "1810": 21.89,
+     "1813": 21.19,
+     "1816": 22.5,
+     "1819": 20.78,
+     "1822": 21.5,
+     "1825": 18.97,
+     "1828": 11.5,
+     "1831": -4.29,
+     "1834": -22.63,
+     "1837": -46.7,
+     "1840": -73.09
+    },
+    "B": {
+     "1690": 141.00311636831728,
+     "1712": 137.75507452237142,
+     "1715": 120.71827339075526,
+     "1750": -12.774497370154073,
+     "1753": -8.103456134414683,
+     "1756": -18.715120607805208,
+     "1764": -17.635649625991817,
+     "1769": -9.581796745953485,
+     "1771": 2.7888490529987737,
+     "1780": -3.826278466910596,
+     "1783": 0.5868815967309436,
+     "1786": 0.33191099747724145,
+     "1789": 2.8712908234578576,
+     "1792": 0.16328135148203954,
+     "1795": 0.6954328073441206,
+     "1798": -0.9663115166363602,
+     "1801": -0.89444860761025,
+     "1804": 1.5142886000452205,
+     "1807": 0.7187118008477834,
+     "1810": 1.5426668588844672,
+     "1813": 0.34648233245810245,
+     "1816": 0.4484367752795052,
+     "1819": -2.366023568815938,
+     "1822": -4.992967567310272,
+     "1825": -11.452994234764258,
+     "1828": -23.13587228593356,
+     "1831": -42.84177744858035,
+     "1834": -65.54784463987728,
+     "1837": -94.29744148140497,
+     "1840": -125.78829809253527
+    },
+    "C": {
+     "1690": 59.532165282512565,
+     "1712": 67.98550665445283,
+     "1715": 57.79585476119862,
+     "1750": -41.899252218649224,
+     "1753": -40.73462627548223,
+     "1756": -38.54509502291397,
+     "1764": -27.7340171813862,
+     "1769": -16.746527360336398,
+     "1771": -9.71639221885245,
+     "1780": 5.981774649659363,
+     "1783": 7.194937907388858,
+     "1786": 11.532756216786838,
+     "1789": 15.245862719668427,
+     "1792": 17.36922407195011,
+     "1795": 18.92701712592734,
+     "1798": 19.857468283453585,
+     "1801": 20.77628684062677,
+     "1804": 20.30000071774993,
+     "1807": 19.62322078975715,
+     "1810": 20.56018445948445,
+     "1813": 21.441694898206745,
+     "1816": 22.595315279950857,
+     "1819": 22.389256882289807,
+     "1822": 22.023105140538025,
+     "1825": 18.422505032739593,
+     "1828": 10.066517654011284,
+     "1831": -4.1741041655300775,
+     "1834": -23.338653238762962,
+     "1837": -46.76026953690795,
+     "1840": -73.14850274926303
+    },
+    "D": {
+     "1690": 137.88549007459923,
+     "1712": 121.17505068861756,
+     "1715": 111.31036031271485,
+     "1750": -2.7924305779155194,
+     "1753": -5.572871986221834,
+     "1756": -7.071401449639643,
+     "1764": -7.50047201852886,
+     "1769": -5.842138020162936,
+     "1771": -4.56723003287081,
+     "1780": -1.2539065752880427,
+     "1783": -0.4052214640899094,
+     "1786": 0.12715648546718733,
+     "1789": 0.3485097088153083,
+     "1792": 0.30883726092592334,
+     "1795": 0.09850510134264107,
+     "1798": -0.16645939328642345,
+     "1801": -0.36367155514588917,
+     "1804": -0.3872860812425192,
+     "1807": -0.18214872043239486,
+     "1810": 0.21273739234445363,
+     "1813": 0.6032928690137189,
+     "1816": 0.5489647950172177,
+     "1819": -0.7457616692448267,
+     "1822": -4.466448784968639,
+     "1825": -12.010287673777972,
+     "1828": -24.57445899198655,
+     "1831": -42.728437220168594,
+     "1834": -66.26221028700158,
+     "1837": -94.36394015529766,
+     "1840": -125.85104811121505
+    }
+   }
+  },
+  "cells": {
+   "H1": {
+    "A": {
+     "d1c": {
+      "offset": 1.6469392299364358,
+      "theta": 310.2715503953141,
+      "m_prime": 0.7985909609965322,
+      "e_prime_units": 3.163507370426424,
+      "chi2": 28.487458208205286,
+      "rms_arcsec": {
+       "modern": 1.2290077303828801,
+       "ancient": 6.149671344412081
+      },
+      "n_distinct_minima": 2
+     },
+     "chain": {
+      "offset": 1.021073404743845,
+      "converged": true,
+      "n_positive_mass_roots": 2,
+      "theta": 309.9449361279039,
+      "m_prime": 0.8279338933431505,
+      "chi2_c_weights": 28.797377309511628
+     }
+    },
+    "B": {
+     "d1c": {
+      "offset": -3.1696294171355817,
+      "theta": 317.356079624932,
+      "m_prime": 0.7647219078084151,
+      "e_prime_units": 2.6020518108594826,
+      "chi2": 22.485160315930305,
+      "rms_arcsec": {
+       "modern": 1.0751726078901378,
+       "ancient": 5.677720873209968
+      },
+      "n_distinct_minima": 2
+     },
+     "chain": {
+      "offset": -10.913836548468623,
+      "converged": true,
+      "n_positive_mass_roots": 2,
+      "theta": 320.9861301624245,
+      "m_prime": 0.8801105024051811,
+      "chi2_c_weights": 24.362823401682345
+     }
+    },
+    "C": {
+     "d1c": {
+      "offset": -3.8006261744221206,
+      "theta": 312.1585417156758,
+      "m_prime": 0.8336526605285716,
+      "e_prime_units": 2.5197873820545804,
+      "chi2": 14.656660015604869,
+      "rms_arcsec": {
+       "modern": 1.003348702299908,
+       "ancient": 2.080150217192132
+      },
+      "n_distinct_minima": 2
+     },
+     "chain": {
+      "offset": -1.186764913192519,
+      "converged": true,
+      "n_positive_mass_roots": 2,
+      "theta": 307.1776450150384,
+      "m_prime": 0.8357574566409154,
+      "chi2_c_weights": 16.04523849729489
+     }
+    },
+    "D": {
+     "d1c": {
+      "offset": -9.511517009512716,
+      "theta": 318.88389432283924,
+      "m_prime": 0.8166129333268646,
+      "e_prime_units": 1.9300526105400537,
+      "chi2": 3.227624020219479,
+      "rms_arcsec": {
+       "modern": 0.4300501006300153,
+       "ancient": 1.8370668013031264
+      },
+      "n_distinct_minima": 2
+     },
+     "chain": {
+      "offset": -9.923016981580417,
+      "converged": true,
+      "n_positive_mass_roots": 2,
+      "theta": 318.7698787430376,
+      "m_prime": 0.8341356752466333,
+      "chi2_c_weights": 3.322957547238945
+     }
+    }
+   },
+   "H2": {
+    "A": {
+     "d1c": {
+      "offset": 4.96413596047779,
+      "theta": 311.8512567500674,
+      "m_prime": 0.7169831633638598,
+      "e_prime_units": 2.8698153048792054,
+      "chi2": 28.593778125871964,
+      "rms_arcsec": {
+       "modern": 1.2367553415906616,
+       "ancient": 5.960609216538191
+      },
+      "n_distinct_minima": 3
+     },
+     "chain": {
+      "offset": 4.446959735893131,
+      "converged": true,
+      "n_positive_mass_roots": 2,
+      "theta": 311.3234451239254,
+      "m_prime": 0.740866053919548,
+      "chi2_c_weights": 28.87612851682525
+     }
+    },
+    "B": {
+     "d1c": {
+      "offset": -1.4181128600411625,
+      "theta": 318.7834458493495,
+      "m_prime": 0.6971896657152403,
+      "e_prime_units": 2.2373641712354426,
+      "chi2": 22.389960735453748,
+      "rms_arcsec": {
+       "modern": 1.0749746711899417,
+       "ancient": 5.544569323873187
+      },
+      "n_distinct_minima": 2
+     },
+     "chain": {
+      "offset": -10.326064417174734,
+      "converged": true,
+      "n_positive_mass_roots": 2,
+      "theta": 322.1344218783652,
+      "m_prime": 0.8129025505716221,
+      "chi2_c_weights": 24.35170786399947
+     }
+    },
+    "C": {
+     "d1c": {
+      "offset": -0.7135233259747906,
+      "theta": 313.51028117805316,
+      "m_prime": 0.7456609044456908,
+      "e_prime_units": 2.2631535231898288,
+      "chi2": 15.266843245520146,
+      "rms_arcsec": {
+       "modern": 1.021583724444969,
+       "ancient": 1.7971951357342217
+      },
+      "n_distinct_minima": 2
+     },
+     "chain": {
+      "offset": 3.722254535107652,
+      "converged": true,
+      "n_positive_mass_roots": 2,
+      "theta": 308.38451892498904,
+      "m_prime": 0.7348346379406653,
+      "chi2_c_weights": 16.774415928440376
+     }
+    },
+    "D": {
+     "d1c": {
+      "offset": -7.620557596225581,
+      "theta": 320.13610442650656,
+      "m_prime": 0.7401788518280399,
+      "e_prime_units": 1.6190219544695117,
+      "chi2": 3.4003281911845287,
+      "rms_arcsec": {
+       "modern": 0.4480893936922188,
+       "ancient": 1.707335590332099
+      },
+      "n_distinct_minima": 2
+     },
+     "chain": {
+      "offset": -8.12666513736309,
+      "converged": true,
+      "n_positive_mass_roots": 2,
+      "theta": 320.0057701876161,
+      "m_prime": 0.7569356563722587,
+      "chi2_c_weights": 3.5036105743889046
+     }
+    }
+   }
+  },
+  "attribution": {
+   "H1": {
+    "d1c": {
+     "A": 1.6469392299364358,
+     "B": -3.1696294171355817,
+     "C": -3.8006261744221206,
+     "D": -9.511517009512716,
+     "shift": 11.158456239449151,
+     "R": 5.263729741081306,
+     "Ob": 5.894726498367845,
+     "I": -0.4471610940092887,
+     "R_class": "partial",
+     "Ob_class": "partial",
+     "row": "Both, in the shares found.",
+     "reference_effect_at_each_level": {
+      "real observations": 4.8165686470720175,
+      "clean observations": 5.710890835090595
+     },
+     "observations_effect_at_each_level": {
+      "Bouvard": 5.447565404358556,
+      "clean reference": 6.341887592377134
+     },
+     "interaction_override": false
+    },
+    "chain": {
+     "A": 1.021073404743845,
+     "B": -10.913836548468623,
+     "C": -1.186764913192519,
+     "D": -9.923016981580417,
+     "shift": 10.944090386324262,
+     "R": 10.335581010800183,
+     "Ob": 0.6085093755240791,
+     "I": 1.599328942412285,
+     "R_class": "carries",
+     "Ob_class": "does not carry",
+     "row": "The reference carries the shift.",
+     "reference_effect_at_each_level": {
+      "real observations": 11.934909953212468,
+      "clean observations": 8.736252068387898
+     },
+     "observations_effect_at_each_level": {
+      "Bouvard": 2.207838317936364,
+      "clean reference": -0.9908195668882058
+     },
+     "interaction_override": false
+    }
+   },
+   "H2": {
+    "d1c": {
+     "A": 4.96413596047779,
+     "B": -1.4181128600411625,
+     "C": -0.7135233259747906,
+     "D": -7.620557596225581,
+     "shift": 12.584693556703371,
+     "R": 6.6446415453848715,
+     "Ob": 5.9400520113185,
+     "I": -0.2623927248659186,
+     "R_class": "carries",
+     "Ob_class": "partial",
+     "row": "Mostly the reference, with a share from the observations.",
+     "reference_effect_at_each_level": {
+      "real observations": 6.382248820518953,
+      "clean observations": 6.90703427025079
+     },
+     "observations_effect_at_each_level": {
+      "Bouvard": 5.677659286452581,
+      "clean reference": 6.202444736184418
+     },
+     "interaction_override": false
+    },
+    "chain": {
+     "A": 4.446959735893131,
+     "B": -10.326064417174734,
+     "C": 3.722254535107652,
+     "D": -8.12666513736309,
+     "shift": 12.573624873256222,
+     "R": 13.310971912769304,
+     "Ob": -0.7373470395130823,
+     "I": 1.4620522402985614,
+     "R_class": "carries",
+     "Ob_class": "does not carry",
+     "row": "The reference carries the shift.",
+     "reference_effect_at_each_level": {
+      "real observations": 14.773024153067865,
+      "clean observations": 11.848919672470743
+     },
+     "observations_effect_at_each_level": {
+      "Bouvard": 0.7247052007854791,
+      "clean reference": -2.1993992798116437
+     },
+     "interaction_override": false
+    }
+   }
+  },
+  "reading": {
+   "A": 1.6469392299364358,
+   "B": -3.1696294171355817,
+   "C": -3.8006261744221206,
+   "D": -9.511517009512716,
+   "shift": 11.158456239449151,
+   "R": 5.263729741081306,
+   "Ob": 5.894726498367845,
+   "I": -0.4471610940092887,
+   "R_class": "partial",
+   "Ob_class": "partial",
+   "row": "Both, in the shares found.",
+   "reference_effect_at_each_level": {
+    "real observations": 4.8165686470720175,
+    "clean observations": 5.710890835090595
+   },
+   "observations_effect_at_each_level": {
+    "Bouvard": 5.447565404358556,
+    "clean reference": 6.341887592377134
+   },
+   "interaction_override": false,
+   "overrides_and_remarks": [
+    "D1(c) and his chain fall in different rows: depends on the method",
+    "Hypothesis II falls in different classes"
+   ]
+  },
+  "sensitivities": {
+   "S2 eccentricity of p. ii": {
+    "delta_arcsec": {
+     "min": -28.107239645206743,
+     "max": 28.205296796202706
+    },
+    "H1": {
+     "d1c": {
+      "B": -3.254983390623181,
+      "C": -3.759305724920466,
+      "change_B": -0.08535397348759943,
+      "change_C": 0.041320449501654366
+     },
+     "chain": {
+      "B": -11.074858570216975,
+      "C": -1.1578885357314448,
+      "change_B": -0.16102202174835156,
+      "change_C": 0.0288763774610743
+     }
+    },
+    "H2": {
+     "d1c": {
+      "B": -1.5172868029019355,
+      "C": -0.657362041088561,
+      "change_B": -0.09917394286077297,
+      "change_C": 0.05616128488622962
+     },
+     "chain": {
+      "B": -10.501161029305194,
+      "C": 3.7786387845773675,
+      "change_B": -0.17509661213046002,
+      "change_C": 0.05638424946971554
+     }
+    }
+   },
+   "S3 without § 7": {
+    "delta_arcsec": {
+     "min": 9.889962877270543,
+     "max": 29.910498172855498
+    },
+    "H1": {
+     "d1c": {
+      "B": -8.592277669522275,
+      "C": -2.1447169811380036,
+      "change_B": -5.4226482523866935,
+      "change_C": 1.655909193284117
+     },
+     "chain": {
+      "B": -18.652346016236663,
+      "C": -2.2897341664911437,
+      "change_B": -7.73850946776804,
+      "change_C": -1.1029692532986246
+     }
+    },
+    "H2": {
+     "d1c": {
+      "B": -7.972141285068403,
+      "C": 2.8749469002835326,
+      "change_B": -6.554028425027241,
+      "change_C": 3.5884702262583232
+     },
+     "chain": {
+      "B": -18.735310797003876,
+      "C": 4.529719198851808,
+      "change_B": -8.409246379829142,
+      "change_C": 0.807464663744156
+     }
+    }
+   },
+   "S5 Table XII row 2600 as printed": {
+    "delta_arcsec": {
+     "1690": -0.020691794615601923,
+     "1789": 1.9141583043158208
+    },
+    "H1": {
+     "d1c": {
+      "B": -5.240414477209185,
+      "C": -2.6465677242383663,
+      "change_B": -2.0707850600736037,
+      "change_C": 1.1540584501837543
+     },
+     "chain": {
+      "B": 161.02405972607653,
+      "C": -0.632249322210555,
+      "change_B": 171.93789627454515,
+      "change_C": 0.5545155909819641
+     }
+    },
+    "H2": {
+     "d1c": {
+      "B": -3.8135819967784528,
+      "C": 0.9539805845253113,
+      "change_B": -2.3954691367372902,
+      "change_C": 1.667503910500102
+     },
+     "chain": {
+      "B": -14.385165389989538,
+      "C": 5.2881244050303735,
+      "change_B": -4.059100972814804,
+      "change_C": 1.5658698699227216
+     }
+    }
+   },
+   "S5b Table X row 25 as printed": {
+    "delta_arcsec": {
+     "1804": -0.7312026224543768
+    },
+    "H1": {
+     "d1c": {
+      "B": -3.847636284291241,
+      "C": -3.4372656807922226,
+      "change_B": -0.6780068671556592,
+      "change_C": 0.363360493629898
+     },
+     "chain": {
+      "B": -11.967193862236968,
+      "C": -1.0069637777924072,
+      "change_B": -1.0533573137683447,
+      "change_C": 0.1798011354001119
+     }
+    },
+    "H2": {
+     "d1c": {
+      "B": -2.240464073698888,
+      "C": -0.18584926154414916,
+      "change_B": -0.8223512136577256,
+      "change_C": 0.5276740644306415
+     },
+     "chain": {
+      "B": -11.4850827551968,
+      "C": 4.152484075050779,
+      "change_B": -1.159018338022065,
+      "change_C": 0.4302295399431273
+     }
+    }
+   },
+   "S6 § 7 with the great inequalities": {
+    "delta_arcsec": {
+     "min": 1.4459087880079373,
+     "max": 3.659824972615315
+    },
+    "H1": {
+     "d1c": {
+      "B": -3.3344396584377023,
+      "C": -3.681576184970538,
+      "change_B": -0.16481024130212063,
+      "change_C": 0.1190499894515824
+     },
+     "chain": {
+      "B": -11.066644516464976,
+      "C": -1.1163669825439229,
+      "change_B": -0.15280796799635255,
+      "change_C": 0.07039793064859623
+     }
+    },
+    "H2": {
+     "d1c": {
+      "B": -1.6002853087945823,
+      "C": -0.5884381435298565,
+      "change_B": -0.18217244875341976,
+      "change_C": 0.12508518244493416
+     },
+     "chain": {
+      "B": -10.485233439881824,
+      "C": 3.772139471263472,
+      "change_B": -0.15916902270708988,
+      "change_C": 0.049884936155820014
+     }
+    }
+   },
+   "S7 § 7 from the equinox of date": {
+    "delta_arcsec": {
+     "min": -0.13000336989290062,
+     "max": 0.7372663225460876
+    },
+    "H1": {
+     "d1c": {
+      "B": -3.072984257004066,
+      "C": -3.8823892316849538,
+      "change_B": 0.0966451601315157,
+      "change_C": -0.08176305726283317
+     },
+     "chain": {
+      "B": -10.8236578482244,
+      "C": -1.264482371533859,
+      "change_B": 0.09017870024422336,
+      "change_C": -0.0777174583413398
+     }
+    },
+    "H2": {
+     "d1c": {
+      "B": -1.330596274228128,
+      "C": -0.7933084485227937,
+      "change_B": 0.08751658581303445,
+      "change_C": -0.07978512254800307
+     },
+     "chain": {
+      "B": -10.24111686982235,
+      "C": 3.637248884425958,
+      "change_B": 0.0849475473523853,
+      "change_C": -0.08500565068169408
+     }
+    }
+   },
+   "propagation d sin M": {
+    "delta_arcsec": {
+     "min": -1.0334670154235885,
+     "max": 1.0499155617465572
+    },
+    "H1": {
+     "d1c": {
+      "B": -3.4936989437777015,
+      "C": -3.6013248004098273,
+      "change_B": -0.32406952664211985,
+      "change_C": 0.1993013740122933
+     },
+     "chain": {
+      "B": -11.233423201186042,
+      "C": -1.0688011004403961,
+      "change_B": -0.31958665271741893,
+      "change_C": 0.11796381275212298
+     }
+    },
+    "H2": {
+     "d1c": {
+      "B": -1.7839865737703349,
+      "C": -0.4397758987159932,
+      "change_B": -0.3658737137291723,
+      "change_C": 0.2737474272587974
+     },
+     "chain": {
+      "B": -10.668330837010217,
+      "C": 3.9613036090831315,
+      "change_B": -0.34226641983548234,
+      "change_C": 0.2390490739754796
+     }
+    }
+   },
+   "propagation d cos M": {
+    "delta_arcsec": {
+     "min": -1.049987068019226,
+     "max": 1.0494960420714294
+    },
+    "H1": {
+     "d1c": {
+      "B": -3.283594783786043,
+      "C": -3.7512995874994886,
+      "change_B": -0.11396536665046142,
+      "change_C": 0.04932658692263203
+     },
+     "chain": {
+      "B": -11.055108063248383,
+      "C": -1.2103828064383606,
+      "change_B": -0.14127151477975985,
+      "change_C": -0.023617893245841515
+     }
+    },
+    "H2": {
+     "d1c": {
+      "B": -1.5842162912801427,
+      "C": -0.636818187924348,
+      "change_B": -0.1661034312389802,
+      "change_C": 0.07670513805044266
+     },
+     "chain": {
+      "B": -10.495604072550577,
+      "C": 3.684756170543892,
+      "change_B": -0.1695396553758428,
+      "change_C": -0.03749836456375988
+     }
+    }
+   },
+   "propagation d sin III": {
+    "delta_arcsec": {
+     "min": -1.0487772006761304,
+     "max": 1.045495794575913
+    },
+    "H1": {
+     "d1c": {
+      "B": -3.1771898591821355,
+      "C": -3.7224912020893157,
+      "change_B": -0.007560442046553817,
+      "change_C": 0.07813497233280486
+     },
+     "chain": {
+      "B": -10.90222117776375,
+      "C": -1.0630235251876456,
+      "change_B": 0.01161537070487384,
+      "change_C": 0.12374138800487344
+     }
+    },
+    "H2": {
+     "d1c": {
+      "B": -1.363681889006159,
+      "C": -0.7203185439022946,
+      "change_B": 0.054430971035003495,
+      "change_C": -0.006795217927503927
+     },
+     "chain": {
+      "B": -10.277817421132625,
+      "C": 3.7176897894551075,
+      "change_B": 0.04824699604210991,
+      "change_C": -0.004564745652544389
+     }
+    }
+   },
+   "propagation d cos III": {
+    "delta_arcsec": {
+     "min": -1.0474105923967587,
+     "max": 1.0476326922904176
+    },
+    "H1": {
+     "d1c": {
+      "B": -3.2377527824722847,
+      "C": -3.681612409590457,
+      "change_B": -0.06812336533670305,
+      "change_C": 0.1190137648316636
+     },
+     "chain": {
+      "B": -10.909048618075985,
+      "C": -1.0063279583544045,
+      "change_B": 0.004787930392637918,
+      "change_C": 0.18043695483811462
+     }
+    },
+    "H2": {
+     "d1c": {
+      "B": -1.4071200428637667,
+      "C": -0.6535583843283348,
+      "change_B": 0.010992817177395864,
+      "change_C": 0.05996494164645583
+     },
+     "chain": {
+      "B": -10.273121489414166,
+      "C": 3.8610109547880143,
+      "change_B": 0.05294292776056864,
+      "change_C": 0.13875641968036234
+     }
+    }
+   },
+   "post hoc: 0.1 arcsec a year in true longitude": {
+    "delta_arcsec": {
+     "min": -10.249897110344872,
+     "max": 4.721605089655163
+    },
+    "H1": {
+     "d1c": {
+      "B": -2.9614706084275895,
+      "C": -4.019397581315729,
+      "change_B": 0.2081588087079922,
+      "change_C": -0.21877140689360886
+     },
+     "chain": {
+      "B": -10.754834657567471,
+      "C": -1.4376770229134763,
+      "change_B": 0.1590018909011519,
+      "change_C": -0.25091210972095723
+     }
+    },
+    "H2": {
+     "d1c": {
+      "B": -1.2778318898030534,
+      "C": -0.8806949943846121,
+      "change_B": 0.14028097023810915,
+      "change_C": -0.16717166840982145
+     },
+     "chain": {
+      "B": -10.206902485777505,
+      "C": 3.507836447057855,
+      "change_B": 0.11916193139722964,
+      "change_C": -0.214418088049797
+     }
+    }
+   },
+   "S8c the 1780 place: D interpolated from its neighbours": {
+    "delta_arcsec": {
+     "1780": 2.7972610129331343
+    },
+    "H1": {
+     "d1c": {
+      "B": 0.7313899345611503,
+      "C": -6.072965085080398,
+      "change_B": 3.901019351696732,
+      "change_C": -2.272338910658277
+     },
+     "chain": {
+      "B": -0.05594031552885781,
+      "C": -6.228458187358058,
+      "change_B": 10.857896232939765,
+      "change_C": -5.041693274165539
+     }
+    },
+    "H2": {
+     "d1c": {
+      "B": 3.186518424708993,
+      "C": -3.713261073512683,
+      "change_B": 4.604631284750155,
+      "change_C": -2.9997377475378926
+     },
+     "chain": {
+      "B": 2.4746734821127916,
+      "C": -3.839420626450874,
+      "change_B": 12.800737899287526,
+      "change_C": -7.561675161558526
+     }
+    }
+   },
+   "S8b the 1780 place on Table I's branch": {
+    "delta_arcsec": {
+     "1780": 3.402
+    },
+    "H1": {
+     "d1c": {
+      "B": 1.6354386327171255,
+      "C": -6.563310971273779,
+      "change_B": 4.805068049852707,
+      "change_C": -2.7626847968516586
+     },
+     "chain": {
+      "B": 2.321726204919969,
+      "C": -7.676064357585119,
+      "change_B": 13.235562753388592,
+      "change_C": -6.4892994443926
+     }
+    },
+    "H2": {
+     "d1c": {
+      "B": 4.2967672778910355,
+      "C": -4.330140129471374,
+      "change_B": 5.714880137932198,
+      "change_C": -3.6166168034965835
+     },
+     "chain": {
+      "B": 5.684917336974081,
+      "C": -5.680015983306362,
+      "change_B": 16.010981754148816,
+      "change_C": -9.402270518414014
+     }
+    }
+   }
+  },
+  "S1": "not run: no primary source for Bouvard's mass of Saturn"
+ }
+}

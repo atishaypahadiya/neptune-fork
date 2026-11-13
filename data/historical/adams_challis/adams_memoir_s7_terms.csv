@@ -1,0 +1,16 @@
+term,cell,value_as_printed
+1,coef,+1.918
+1,arg,phi1-2phi2
+1,const,-13 1.5
+2,coef,+1.085
+2,arg,phi-phi2
+2,const,
+3,coef,+32.00
+3,arg,3phi2-6phi1+2phi
+3,const,+22 18.8
+4,coef,-8.35
+4,arg,2phi2-6phi1+2phi
+4,const,+39 10.5
+5,coef,-1.49
+5,arg,4phi2-6phi1+2phi
+5,const,+34 48.4
