@@ -231,15 +231,20 @@ link, public names and voice, the manuscript check, Bouvard's tables, the CI che
 - A human spot check of the Phase 1b tables (`data/historical/adams_challis/`), then a separate
   dataset record for them.
 
-Status, 2026-11-12 (local branch `overnight/v1.3-prep`, not pushed; nothing launched):
+Status, 2026-11-13 (the preparation is merged into `main` and pushed, 736bcd3; nothing
+launched, no plan frozen; this table replaces the one of 12 November, which described
+local branches):
 
 | item | status | next step |
 |---|---|---|
 | M6d | no plan existed; draft in `docs/notes/V13_drafts.md` | settle the open choices, move the plan into `M6.md`, push, then run (about 7 CPU-h) |
 | M6c variants, modern track | no plan existed; draft in the same file | as above (about 55 CPU-h with the full likelihood) |
 | M6c variants, 1846 track | blocked: the 1846 reduction track is not built | decide whether v1.3 includes it |
-| M6e | positions not sourced; draft in the same file | source and transcribe Lalande 1795 and Galileo 1612–13, then the plan |
+| M6e | Lalande's two places of 1795 sourced and transcribed (`data/historical/precoveries/`); Galileo's not sourced; draft in the same file | source Galileo 1612–13 or drop it, then the plan |
 | S1 cell 0 | no plan existed; draft in the same file (sub-cell partition) | choose the sub-cells, push, then run |
 | Spot check of the Phase 1b tables | kit ready: 42 rows drawn with seed 20261112 (`docs/review/p1b_spotcheck_rows.csv`), 36 from the nine tables read from printed pages; 0 rows in error among the 36 gives an exact two-sided 95 % upper bound of 9.7 % on the row error rate; results template `docs/review/p1b_spotcheck_results_template.json` | the review itself, by a person; the HTML kit is built outside the repository by `docs/notes/scripts/p1b_spotcheck.py kit` |
 | Dataset record for the Phase 1b tables | not started | after the spot check |
-| Named input N1 of Phase 1b step 4 | obtained on local branch `overnight/berlin-sheet` | review; whether the companion page's C2 line changes is a decision for the next release |
+| Named input N1 of Phase 1b step 4 | done: merged and released in v1.2.1, where the companion page's chart case was corrected | none |
+| Manuscript check of Adams's solutions | merged (29fa136), with the author's spot check of 13 Nov 2026 | none |
+| Phase 2 scoping, physics, validation and first data set | merged (16c78d2, 10ca793, 407f4dc); nothing fitted; no plan frozen | a pre-registered plan before any fit of Mercury's observations |
+| Changelog | the Unreleased section covers `main` since v1.2.1 | date it at the release |

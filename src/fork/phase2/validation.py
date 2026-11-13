@@ -382,7 +382,7 @@ def run(fresh: bool = False) -> None:
             _log(f"{name}: done in {res['seconds']} s")
         result[name] = json.loads(path.read_text(encoding="utf-8"))
     OUT_JSON.parent.mkdir(parents=True, exist_ok=True)
-    OUT_JSON.write_text(json.dumps(result, indent=1) + "\n", encoding="utf-8")
+    OUT_JSON.write_text(json.dumps(result) + "\n", encoding="utf-8")
     _log(f"wrote {OUT_JSON}")
 
 

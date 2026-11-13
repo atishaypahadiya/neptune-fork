@@ -2,6 +2,55 @@
 
 Versions follow semver. Dates are the release dates; the DOIs are in `CITATION.cff`.
 
+## Unreleased
+
+Everything on `main` since 1.2.1. Nothing here changes a number on either page.
+
+### Security
+
+- soupsieve is 4.1, for advisory GHSA-mmhr-3c5m-f64f (a denial of service in selector
+  matching). It comes in through astroquery. No patched soupsieve supports Python 3.11.0
+  to 3.11.4, so the minimum Python is now 3.11.5.
+
+### Added
+
+- The manuscript check of Adams's solutions (St John's College, Cambridge, MS W16) has a
+  spot check by the author: 20 cells read against the images, all matching. The two
+  readings the entries left doubtful are resolved. 11 of the 20 cells were chosen and 9
+  were random, so the check confirms every disputed reading but bounds the cell error rate
+  only to about 34 % (`docs/notes/P1B_adams_solutions.md`).
+- For a later study of Mercury's perihelion, the first data set: Newcomb's observed times
+  of contact for the transits of 1677 to 1881 (1882, pp. 451–452), 58 rows in two entries
+  that agree in all 696 cells, with a misprint log (`data/historical/mercury/`). The
+  author's spot check of 20 cells, 7 chosen and 13 random, found no discrepancy; the random
+  part bounds the cell error rate to about 25 %. Nothing is fitted to these data. A
+  blinding record says what has already been seen (`docs/phase2/blinding.md`); the
+  tabular times and the observed-minus-computed table are not in the repository.
+- Scoping of that study, with nothing frozen: a survey of prior art that tags each
+  statement by how it was checked, an inventory of the observations, a design sketch and a
+  draft list of milestones (`docs/phase2/`). The survey is not a checked literature review.
+- The forces that study needs, all off by default: the Sun's post-Newtonian term, the
+  Sun's oblateness, a circular ring and a planet inside Mercury's orbit, with a forward
+  model to Mercury's longitude. The validation reports five checks: the relativistic advance
+  of 42.98″ per century is reproduced within 0.00001″, the oblateness and interior-mass rates agree
+  with their formulas, and against the JPL ephemeris of 1800 to 2000 the longitude stays
+  within 0.054″ with the term and drifts by 43.01″ per century in the perihelion without
+  it (`docs/phase2/validation.md`). No existing source file is edited.
+- A tool that generates Mercury's longitude under each competing model and reports how
+  the predictions differ. Built and tested only; it reads no observation.
+- Draft plans for the next release's runs, with their costs, and the code they need,
+  exercised on synthetic data only (`docs/notes/V13_drafts.md`, `fork.export.v13`). No
+  draft is frozen and none has been run on Le Verrier's table.
+- Lalande's two places of Neptune of May 1795, in two entries with a misprint log
+  (`data/historical/precoveries/`). Galileo's are not sourced.
+- A spot-check kit for the companion study's tables: the script, 42 drawn rows and a
+  results template (`docs/review/`).
+- The README links the site and the companion study under its title.
+
+### Changed
+
+- The weekly link check also reads `docs/phase2/`.
+
 ## 1.2.1 (2026-11-13)
 
 ### Corrected
