@@ -304,8 +304,9 @@ full-likelihood check of the eccentricity test 98, the profile likelihood in the
 This is well-trodden ground. I credit and benchmark against:
 
 - Jonathan Whitmore, *discoverneptune* (2026): <https://jbwhit.github.io/discoverneptune/>.
-  A REBOUND-based reconstruction reaching ~2.5–2.9″ RMS, and the benchmark for the historical
-  fit.
+  A REBOUND-based reconstruction with a residual of 2.52″ RMS, fitted to JPL-derived annual
+  longitudes, not to historical observations, so not directly comparable with the residuals of
+  the fit here ([novelty note](docs/notes/prior_work/novelty.md)).
 - Lai, H. M., Lam, C. C., & Young, K. (1990): forward and inverse treatment of Uranus's
   perturbations by Neptune.
 - CoFI (Common Framework for Inference): the example "Finding Neptune using Uranus".

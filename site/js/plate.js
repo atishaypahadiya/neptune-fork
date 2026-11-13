@@ -143,6 +143,35 @@ export function fill(el, template) {
   if (at < template.length) el.append(template.slice(at));
 }
 
+/**
+ * A page range ("22, 907–918", "pp. 185–244", "cols. 131–148") never breaks at its dash: each
+ * is wrapped in a span.range (white-space: nowrap). The text itself is unchanged. Called once,
+ * after the page is filled; figures (SVG) are left alone.
+ */
+export const PAGE_RANGE = /(?<=(?:,|pp?\.|cols?\.)\s)\d{1,4}–\d{1,4}(?!\d|\.\d)/g;
+export function keepRanges(root) {
+  const walk = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode: (n) => (n.parentElement.closest("svg, script, style, .range")
+      ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT),
+  });
+  const nodes = [];
+  for (let n = walk.nextNode(); n; n = walk.nextNode()) if (n.data.search(PAGE_RANGE) >= 0) nodes.push(n);
+  for (const n of nodes) {
+    const frag = document.createDocumentFragment();
+    let at = 0;
+    for (const m of n.data.matchAll(PAGE_RANGE)) {
+      frag.append(n.data.slice(at, m.index));
+      const s = document.createElement("span");
+      s.className = "range";
+      s.textContent = m[0];
+      frag.append(s);
+      at = m.index + m[0].length;
+    }
+    frag.append(n.data.slice(at));
+    n.replaceWith(frag);
+  }
+}
+
 const figName = (fig) => fig.replace("plate-", "Plate ").replace("fig-", "Fig. ")
   .replace(/Plate (i+)$/, (_, r) => `Plate ${r.toUpperCase()}`);
 
