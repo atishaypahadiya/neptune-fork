@@ -128,3 +128,31 @@ Also needed, and not in this book:
 
 This is preparation. A fit of Adams's data in the project's model is a new analysis and
 needs its plan committed and pushed first.
+
+## Route A done: the printed formula, 12 November 2026
+
+Ruled by the author on 12 November 2026: route A, two entries; the mass of Saturn stays as
+printed with the misprint question open; no fit of Adams's data until a pre-registered plan
+is approved.
+
+| | |
+|---|---|
+| cells | 104 (masses 3, mean elements 23, longitude 42 with the precession and one sign, reduction 1, radius vector 22, polar distance 9, aberration 4) |
+| differences between the entries | 0 |
+| flags by the second entry | 2: the first digit of Saturn's mass (5, alternative 3); the sign before group III (−, alternative a broken +) |
+
+Files: `data/historical/adams_challis/bouvard_1821/`. Values are in the book's units
+(centesimal degrees and seconds, comma written as a point). Conversion is in
+`src/fork/data/centesimal.py`: a centesimal degree is 0.9°, a centesimal second 0″.324.
+`tests/test_centesimal.py` tests the conversion by itself; `tests/test_bouvard_formula.py`
+tests that the entries agree and that the units are what the book says (the precession is
+50″.10 a year, the mean motions give periods of 84.0 and 11.86 years).
+
+Found while testing, not explained: the first term of the equation of the centre
+(59427″.54) corresponds to an eccentricity near 0.04669, while p. ii prints e″ = 0.0466108,
+0.16 % less. Adams's memoir uses 0.046679. The elements on p. ii come with the Jupiter and
+Saturn solution; the series on p. xv may carry the Uranus solution's corrected elements.
+Which elements the tables use is part of the check of route A against the tables.
+
+Weak points: both entries share one method of reading; no person has spot-checked them; the
+sign before group III rests on a worn piece of type. No place of Uranus has been computed.

@@ -208,3 +208,18 @@ XXVIII + 110 pages are present, as the catalogue record states. The Uranus pages
 200 dpi under `data/cache/adams_challis/bouvard/pages/`; they follow from the PDF and are
 not hashed one by one. The structure is in `docs/notes/P1B_bouvard_1821.md`. Nothing is
 transcribed.
+
+## Bouvard 1821, the printed formula for Uranus (transcribed 12 November 2026)
+
+Route A of `docs/notes/P1B_bouvard_1821.md`: the numbers of the introduction's formulas
+(pp. ii, xv, xvi, xx), 104 cells, in the book's centesimal units as printed. Two entries from
+four bands cut from the page images (`data/cache/adams_challis/bouvard/bands/`, not
+committed); the second from the bands and a list of labels alone. 0 differences.
+
+| file | content | SHA-256 |
+|---|---|---|
+| `bouvard_1821/bouvard_1821_uranus_formula.csv` | the table, with page, group, label and notes | `42ceb111a5d0aece67cd43a7d57e5f0a46aaac889c15aa7b35a160ef2c7be1d3` |
+| `bouvard_1821/passes/bouvard_1821_formula_pass1.csv` | first entry | `fb8dd26922b86f51d939543d74380e59a8e33579fe1c6ff20c88b9f4628ce318` |
+| `bouvard_1821/passes/bouvard_1821_formula_pass2.csv` | second entry | `9b81a4e1efd5eb5a34d1dfee0c706d56cc05c72404747e378d0adb0b13357378` |
+
+The mass of Saturn is entered as printed, 1/5512; the misprint question is open.
