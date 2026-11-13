@@ -1,0 +1,16 @@
+{
+ "source": "JPL Horizons, Uranus system barycenter (7, the body of the cached vectors), geocentric, apparent RA and DEC (airless), extra precision",
+ "delta_t_s": 15.0,
+ "places": {
+  "1795-05-08": {
+   "jd_ut": 2376798.455439815,
+   "ra_app_deg": 151.495514252,
+   "dec_app_deg": 12.523825802
+  },
+  "1795-05-10": {
+   "jd_ut": 2376800.449861111,
+   "ra_app_deg": 151.500718579,
+   "dec_app_deg": 12.520507413
+  }
+ }
+}
