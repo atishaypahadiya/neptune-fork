@@ -170,3 +170,23 @@ then measure where the prior is centred, not how wide it is. In R3 only, the J2 
 centred on 10⁻³·⁵. The mass priors keep their centre, 10⁻⁷ M☉. The fits of § 5 and the
 readings R1, R2 and R4 are unchanged. No code of this plan existed and no data set had
 been drawn when this was written.
+
+## Disclosure, 13 November 2026, before the gates run: what I saw while writing the code
+
+No gate, reading or tolerance is changed by this entry. It records what I looked at
+before `validate` first ran, so that the gates' outcome can be judged with it in view.
+
+- **One timing run** of a real task (truth b, noisy seed 1, error level σ₁), in a scratch
+  cache that was then deleted. I saw its five ln Z (Newtonian about −682, the four others
+  between −28.4 and −26.9) and, for the four non-Newtonian models, nested minus quadrature
+  of 0.02 to 0.12 with nested errors of about 0.07. V3's tolerance is 0.1, below three
+  times the sampler's own error, so V3 may fail on sampler noise alone. I keep 0.1: it was
+  fixed before any number existed, and widening it after seeing these would be a choice
+  made on the data. If V3 fails, the study stops there as § 6 says, and the failure is the
+  result.
+- **V2 by hand at a few points** (noise-free data of truths a and c, a ring, a planet and
+  a J2 value I chose). With the six elements marginalised linearly as § 3 fixes, a full
+  integration at the linear best elements gave χ² up to about 8 above the linear value
+  for the planet model. With the inclination and the node held, most of the excess goes.
+  That is not the method of § 3, and I have not changed § 3. V2 decides on its own 30
+  draws per fit as written.
