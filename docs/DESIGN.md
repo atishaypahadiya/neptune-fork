@@ -118,10 +118,19 @@ sit above the texture and stay sharp.
 
 ## Voice
 
-A scientific paper.
+A scientific paper by one author, in the first person singular.
 - Titles say what was done. Every number carries its interval, or says why it has none.
-- The verbs are "we find", "consistent with" and "we did not test". No promotional language,
-  no rhetorical questions, no exclamation marks.
+- Actions and choices take "I" and "my": "I transcribed", "I pre-registered", "I fitted",
+  "I report", "I did not test".
+- Reasoning the reader follows is impersonal ("the residual grows", "with the distance held
+  fixed"). The first person plural is not used.
+- Artifacts take no possessive: "the model", "the fit", "the pipeline". Never "the project's".
+  Where "the fit" could be Adams's or Le Verrier's own, say which in plain words ("the fit of
+  § 3.1", "the model used here").
+- A quotation from a historical source is printed as written. An imperative or a rhetorical
+  question addressed to the reader may stand.
+- Claims are worded as "consistent with" or "is not established" where that is all the
+  evidence gives. No promotional language, no exclamation marks.
 
 **Structure.** Sections are numbered, because the text cross-references them ("§ 4.2"):
 1. Abstract (on Plate I)

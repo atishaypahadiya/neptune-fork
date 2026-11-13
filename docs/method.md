@@ -1,7 +1,7 @@
 # Method
 
 This is the short version of the milestone notes (`docs/notes/M0.md` to `M6.md`). It covers
-Phase 1 up to M5b, plus the M6 data and observation model. It reports no real-data results:
+the main study up to M5b, plus the M6 data and observation model. It reports no real-data results:
 the M6c headline fit on Table 77 is in `docs/notes/M6.md`. Every number here is from synthetic
 data or from a validation against JPL Horizons or REBOUND. Each section names the note it condenses.
 
@@ -11,7 +11,7 @@ radians inside the code and arcseconds only at input, output and in plots.
 ## The problem
 
 Uranus drifted about 2′ off any Keplerian orbit that Jupiter and Saturn could explain. The
-reason was Neptune. We fit Uranus's observed positions with Neptune left out of the model and
+reason was Neptune. I fit Uranus's observed positions with Neptune left out of the model and
 an unseen perturber put in, then ask where that perturber is on **1846-09-23**, the night Galle
 found Neptune. The answer is a posterior distribution, not a single best fit. The data allow a
 lighter planet closer in or a heavier one farther out (the mass–distance degeneracy), and the
@@ -37,7 +37,7 @@ posterior has to show that spread.
 
 ## Integrator (M2, M3)
 
-`src/fork/integrators/` holds our own integrators, compiled with numba. REBOUND is used only
+`src/fork/integrators/` holds the integrators, written for this study and compiled with numba. REBOUND is used only
 in tests.
 
 - **Kepler step.** A universal-variable f–g propagator with Stumpff functions. It uses Newton
@@ -180,11 +180,11 @@ dynesty's quoted ln Z error understates the run-to-run scatter on these posterio
 each cell was run with different sampler seeds (two seeds, three for cell 0). The pooled
 single-run standard deviation of ln Z_k was **0.40**, against a quoted **0.22**: a factor of
 1.8. With 5 degrees of freedom, that factor's own 68 % range is about 1.5–2.6. So every ln Z
-error we report or compare is
+error reported or compared is
 
   σ_eff = 1.8 × σ_quoted  (`nested.ERR_INFLATION`),
 
-and cell-share errors scale with it. Phase 2's model comparison uses the same factor.
+and cell-share errors scale with it. Later model comparison uses the same factor.
 
 ## Calibration tests
 

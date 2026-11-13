@@ -115,21 +115,21 @@ export function abstract(D) {
     : W.C3_S4_prior_dependent || W.C4a_prior_dependent ? " (one prior-dependent, † in Table 1)" : "";
   const share = drv(Math.round((100 * W.c1a_p_by_0816) / W.C1a_mean), "percent of flags by a date");
   return {
-    abstract: `We put two questions to the British search for Neptune of ` +
+    abstract: `I put two questions to the British search for Neptune of ` +
       `${A.S4_date.slice(0, 4)} and ${K.galle_night.year}, using the printed record alone. How ` +
       `good were Adams's solutions? And could Challis's sweeps at Cambridge have recognised ` +
       `the planet before Galle found it on ${galle(K)} ${K.galle_night.year}?`,
     abstract_p2: `Adams's two final solutions place the planet ${abs(printed("S5"))}° and ` +
-      `${abs(printed("S6"))}° from Neptune on that night. We reproduce both from his memoir to ` +
-      `within ${fmt(Math.max(A.H1_c0_theta_delta, A.H2_c0_theta_delta), 2)}°. The project's ` +
+      `${abs(printed("S6"))}° from Neptune on that night. I reproduce both from his memoir to ` +
+      `within ${fmt(Math.max(A.H1_c0_theta_delta, A.H2_c0_theta_delta), 2)}°. The main paper's ` +
       `model, fitted to comparable data at his assumed distance, puts the planet ` +
-      `${abs(fit("H1").med)}° short of Neptune, and every method we tried on a noise-free ` +
+      `${abs(fit("H1").med)}° short of Neptune, and every method I tried on a noise-free ` +
       `Neptune at that distance is ${fmt(drv(cleanMin, "smallest clean shortfall"))}° to ` +
       `${fmt(drv(cleanMax, "largest clean shortfall"))}° short. The shortfall belongs to the ` +
       `assumed distance; his nearness belongs to his data or their reduction. Whether noise ` +
-      `alone could account for it we could not settle: the pre-registered statistic measured ` +
+      `alone could account for it I could not settle: the pre-registered statistic measured ` +
       `something else, and the post hoc one reads weak.`,
-    abstract_p3: `Under the reading we report, Challis's actual procedure has probability ` +
+    abstract_p3: `Under the reading I report, Challis's actual procedure has probability ` +
       `${p2(W.A0_mean)} of recognising the planet before ${galle(K)}. That is by ` +
       `construction and is not a finding: the realised events are held fixed, so the cases ` +
       `measure what a change would have added. Finishing the comparison of ` +
@@ -158,7 +158,7 @@ export function sourcesText(D) {
       `where that matters.`,
     src_p2: `The memoir's tables were transcribed in ${passes}, each decided on the page ` +
       `image. Challis's search is tabulated night by night from his own text, each row with ` +
-      `its page. For the fit of § 3.1 we took, from the observations of the main paper, the ` +
+      `its page. For the fit of § 3.1 I took, from the observations of the main paper, the ` +
       `groups comparable to what Adams used: ${d.total[0]} observations ` +
       `(${d.total[1]} measurements), of which ${d.ancient[0]} are the early chance ` +
       `observations, ${d.greenwich[0]} are from Greenwich and ` +
@@ -179,22 +179,22 @@ export function adamsText(D) {
   return {
     a31_p1: `Adams did not solve for the planet's distance; he assumed it. His first ` +
       `hypothesis put the mean distance at ${fmt(A.S5_a_au)} AU and his second at ` +
-      `${fmt(A.S6_a_au, 2)}; Neptune was then ${fmt(A.truth_r_au)} AU from the Sun. We fitted ` +
+      `${fmt(A.S6_a_au, 2)}; Neptune was then ${fmt(A.truth_r_au)} AU from the Sun. I fitted ` +
       `the main paper's model to the comparable data with the distance held at each value.`,
     a31_p2: `At ${fmt(EP.julian_year, 3)} (${dayOf(EP.date, { year: true })}), the epoch at ` +
-      `which we compare every solution, the posterior of the planet's true heliocentric ` +
+      `which I compare every solution, the posterior of the planet's true heliocentric ` +
       `longitude lies ` +
       `${abs(f1.med)}° short of Neptune under the first hypothesis (${F.inner} % range ` +
       `${signed(f1.lo)}° to ${signed(f1.hi)}°) and ${abs(f2.med)}° short under the second ` +
       `(${signed(f2.lo)}° to ${signed(f2.hi)}°); Neptune is ${A.H1_fit_status} the ` +
       `${F.outer} % range of the geocentric longitude in both. With the distance left free ` +
       `the same data put Neptune ${A.free_distance_status} the ${F.inner} % range. His ` +
-      `printed solutions are much nearer than our fits at his own distances: ` +
+      `printed solutions are much nearer than the fits at his own distances: ` +
       `${signed(printedAt("H1"))}° and ${signed(printedAt("H2"))}° (Fig. 1, {P@fig-1} and ` +
       `{Q@fig-1} against {F@fig-1} and {G@fig-1}).`,
-    a32_p1: `To see whether that nearness is in his method, we rebuilt his calculation from ` +
+    a32_p1: `To see whether that nearness is in his method, I rebuilt his calculation from ` +
       `the memoir: the series, the equations of condition, the normal equations and his ` +
-      `elimination. From his printed normal equations our solution agrees with his in the ` +
+      `elimination. From his printed normal equations the rebuilt solution agrees with his in the ` +
       `planet's longitude at epoch to ${fmt(A.H1_c0_theta_delta, 3)}° and ` +
       `${fmt(A.H2_c0_theta_delta, 3)}° for the two hypotheses.`,
     a32_p2: `From his tabulated data, the same method gives a mean longitude ` +
@@ -205,24 +205,24 @@ export function adamsText(D) {
       `longitude by ${abs(A.H1_dtheta_per_step)}° under the first hypothesis and ` +
       `${abs(A.H2_dtheta_per_step)}° under the second. His problem is that sensitive to its ` +
       `own arithmetic.`,
-    a33_p1: `We then gave every method a Neptune without noise: Uranus's motion computed with ` +
+    a33_p1: `I then gave every method a Neptune without noise: Uranus's motion computed with ` +
       `the real Neptune, sampled at his epochs, and solved at his first distance. His least ` +
       `squares lands ${abs(A.o_clean_least_squares)}° short, his own elimination ` +
-      `${abs(A.o_clean_his_procedure)}°, the project's model on his normal places ` +
+      `${abs(A.o_clean_his_procedure)}°, the main paper's model on his normal places ` +
       `${abs(A.o_clean_project_on_his_places)}°, and the fit of § 3.1 on synthetic data ` +
       `${abs(A.o_clean_project_fit)}° (Fig. 1, open marks). The fit of § 3.1 on the real ` +
       `data is ${abs(A.o_real_project_fit)}° short. So the shortfall is a property of the ` +
       `assumed distance, and his data through his method (${signed(A.H1_o_real_least_squares)}°, ` +
       `{R@fig-1}) are nearer Neptune than a noise-free Neptune allows.`,
-    a34_p1: `Is that nearness luck? We added independent noise to the noise-free places, ` +
+    a34_p1: `Is that nearness luck? I added independent noise to the noise-free places, ` +
       `${count(A.noise_n_draws)} times per noise model, and asked how often the solution moves ` +
       `toward Neptune by as much as his did (${fmt(A.H1_delta_obs)}° under Hypothesis I, ` +
       `{D@fig-2}). The two noise models are (a) the scatter of his own printed residuals and ` +
-      `(b) the scatter of the project's data carried to his normal places. The ` +
+      `(b) the scatter of the main paper's data carried to his normal places. The ` +
       `pre-registered statistic gives ${four("prereg")}, which the pre-registered rule reads ` +
       `as "${A.H1_prereg_verdict}" under both hypotheses (above ${T.suffices} under both ` +
       `models).`,
-    a34_p2: `That reading does not mean what it says, and we report it as a deviation. The ` +
+    a34_p2: `That reading does not mean what it says, and I report it as a deviation. The ` +
       `statistic treated the shift as a number on a line, and it is an angle. His ` +
       `least-squares problem has a second minimum, at an eccentricity of ` +
       `${fmt(A.H1_second_minimum_e_prime, 2)} and ${fmt(A.H1_second_minimum_O, 0)}° from ` +
@@ -235,7 +235,7 @@ export function adamsText(D) {
       `large as his occurs with probability ${four("post_hoc")}. By the same thresholds ` +
       `that is "${A.H1_post_hoc_verdict}" under both hypotheses: below ${T.suffices}, above ` +
       `${T.systematic}. Neither luck nor a systematic cause is established. The tables of ` +
-      `Bouvard that his reductions rested on are the route to an attribution, and we did ` +
+      `Bouvard that his reductions rested on are the route to an attribution, and I did ` +
       `not take it.`,
   };
 }
@@ -257,7 +257,7 @@ export function challisText(D) {
       `that night's series, and did not know it: his comparison of that series with the ` +
       `earlier one stopped at No. ${K.comparison_stopped_at.value}. On ` +
       `${dayOf(E.disc_noted)}, looking for a disc after reading Le Verrier, he noted one.`,
-    c41_p2: `We model each session as three events: the planet's place lies in the zone, it ` +
+    c41_p2: `I model each session as three events: the planet's place lies in the zone, it ` +
       `is recorded, and it is recognised, by a noted disc, by a comparison of two series, or ` +
       `against a chart. What the record does not print (the zone's setting, the dates and ` +
       `lengths of the later sessions, how readily a disc is noted) is drawn from declared ` +
@@ -283,7 +283,7 @@ export function challisText(D) {
       `shares with the history keeps what happened (no disc noted in August), and only the ` +
       `events the history does not contain are drawn. Under it his actual procedure is ` +
       `${p2(W.A0_mean)} by construction: the realised events are held fixed, so the cases measure what a change would have added. The pre-registered rule for paired differences ` +
-      `against his actual procedure is therefore uninformative, and we do not quote its ` +
+      `against his actual procedure is therefore uninformative, and I do not quote its ` +
       `statements.`,
     c42_p3: `${{ 2: "Two", 3: "Three" }[dep.length]} readings change when every prior interval is halved, and are marked ` +
       `prior-dependent (†): ${list(names(dep))}. The priors on the zone's setting were not ` +
@@ -348,14 +348,14 @@ export function captions(D) {
     cap_fig_1: `True heliocentric longitude minus Neptune's ({N@fig-1}) at ` +
       `${fmt(EP.julian_year, 3)}, per solution. {P@fig-1}, {Q@fig-1}: his printed solutions under his ` +
       `first and second hypotheses. {R@fig-1}: his data through his least squares. {F@fig-1}, ` +
-      `{G@fig-1}: the project's fit with the distance held at ${fmt(A.S5_a_au)} and ` +
+      `{G@fig-1}: the fit of § 3.1 with the distance held at ${fmt(A.S5_a_au)} and ` +
       `${fmt(A.S6_a_au, 2)} AU, with the ${F.inner} % range. Open marks: each method on a ` +
       `noise-free Neptune at the first distance; only the last has a range. Rows without a ` +
       `line are single solutions.`,
     cap_fig_2: `The shift of the least-squares solution toward Neptune over ` +
       `${count(A.noise_n_draws)} noise draws, on the circle, in bins of ` +
       `${A.hist_bin_deg}°. Heavy line: noise model (a), the scatter of his own residuals; ` +
-      `light line: model (b), the scatter of the project's data carried to his normal ` +
+      `light line: model (b), the scatter of the main paper's data carried to his normal ` +
       `places. {D@fig-2}: the shift of his real data under Hypothesis I; the unlettered line ` +
       `is the same under Hypothesis II. The clusters near the edges are draws on the second ` +
       `minimum. Pre-registered probabilities of a shift at least as large: ` +
@@ -388,17 +388,17 @@ export function limits(D) {
   return [
     "The printed record stands in for the Cambridge observing books. Where it is silent the " +
       "model uses declared priors, and every probability in § 4 is conditional on them.",
-    "Under the reading we report, his actual procedure cannot succeed before Galle's night by " +
+    "Under the reading I report, his actual procedure cannot succeed before Galle's night by " +
       "construction: the realised events are held fixed, so the cases measure what a change would have added.",
     "The limits of the Berlin sheet he had were read from the sheet and from the Academy's " +
       "rules of 1859, and I checked them against the sheet images. Whether the Cambridge copy " +
       "was the same printing is not known.",
     "The noise test of § 3.4 was read post hoc after its pre-registered statistic proved " +
       "unsuitable for an angle; its verdict is weak either way.",
-    "The fit of § 3.1 uses the project's data and error model, not Adams's own reductions; " +
+    "The fit of § 3.1 uses the main paper's data and error model, not Adams's own reductions; " +
       "Bouvard's tables, on which those rested, were not transcribed.",
     "Neptune's magnitude in 1846 is extrapolated from photometry of the twentieth century.",
-    "We do not say what Challis ought to have done, and the model is not a probability for " +
+    "I do not say what Challis ought to have done, and the model is not a probability for " +
       "the British search as a whole: it covers his nights and his instrument only.",
   ];
 }

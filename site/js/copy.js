@@ -81,8 +81,8 @@ export function abstract(D) {
   };
 }
 
-/** The abstract's sentences on the distance, from the two pre-registered profiles in a: M9 on
- * Gaussian errors (docs/notes/M9.md) and M10 on Student-t errors (docs/notes/M10.md). */
+/** The abstract's sentences on the distance, from the two pre-registered profiles in a: on
+ * Gaussian errors (docs/notes/M9.md) and on Student-t errors (docs/notes/M10.md). */
 export function distanceSentence(M, T) {
   const G = M.datasets.all, S = T.datasets.all, lv = S.reference_points.le_verrier;
   const [gLo, gHi] = G.intervals.dlnl_minus_2, [tLo, tHi] = S.intervals.dlnl_minus_2;
@@ -134,7 +134,7 @@ export function dataText(D) {
     data_p2: `Table 1 groups the observations by source: the four observers before Herschel, ` +
       `whom the error model pools into one group, and the three modern series that are its ` +
       `other groups. The last column is each source's median distance from JPL's Uranus taken ` +
-      `through our observation model (§ 3.3). These residuals set the error level of each group ` +
+      `through the observation model (§ 3.3). These residuals set the error level of each group ` +
       `in the likelihood; the error-level sensitivity test replaces them with levels estimated from the data ` +
       `alone (§ 5).`,
     cap_table_1: `Le Verrier's Table 77 by source. n: observations (rows). RA, Dec: measured ` +
@@ -261,8 +261,9 @@ export function modelText(D) {
   const mlo = drv(10 ** p.log10_m_earth[0], "10^log10 m lower"), mhi = drv(10 ** p.log10_m_earth[1], "10^log10 m upper");
   return {
     model_p1: `Each measured right ascension and declination is predicted by integrating the Sun ` +
-      `(with the inner planets folded in), Jupiter, Saturn, Uranus and one unseen planet with our ` +
-      `own Wisdom–Holman integrator, then carrying Uranus through light time, annual aberration, ` +
+      `(with the inner planets folded in), Jupiter, Saturn, Uranus and one unseen planet with a ` +
+      `Wisdom–Holman integrator written for this study, then carrying Uranus through light ` +
+      `time, annual aberration, ` +
       `precession and nutation (Capitaine et al. 2003) to the apparent place of date, the frame ` +
       `of Table 77. Jupiter and Saturn start from JPL states and are not fitted. Uranus's four ` +
       `in-plane elements are free; its inclination and node are held at their ` +
@@ -296,19 +297,19 @@ export function resultText(D) {
     : `The 95 % range, ${rng(i95.lo, i95.hi)}, is ${i95.note}.`;
   return {
     res_p1: `Every longitude and difference in this section is geocentric, ecliptic of date. On ` +
-      `Galle's night, ${dateOfJd(h.galleJd)}, we find the planet's longitude at ` +
+      `Galle's night, ${dateOfJd(h.galleJd)}, I find the planet's longitude at ` +
       `${deg(h.median)}, 68 % range ${rng(h.lo68, h.hi68)}. ` +
       `Neptune was at ${deg(h.jpl, 2)} (JPL Horizons), ` +
       `${fmt(Math.abs(g.vs.jpl.median_minus_target_deg), 2)}° from the median, ` +
       `${fmt(Math.abs(g.vs.jpl.offset_sigma), 2)} of the 68 % half-width. ${s95} Le Verrier's ` +
-      `published elements, carried to that night (our calculation; Kepler orbit, equinox 1847.0 ` +
-      `assumed), give {L@fig-4} at ${deg(h.leVerrier, 2)}, ${fmt(Math.abs(lvOff), 2)}° from our ` +
+      `published elements, carried to that night (my calculation; Kepler orbit, equinox 1847.0 ` +
+      `assumed), give {L@fig-4} at ${deg(h.leVerrier, 2)}, ${fmt(Math.abs(lvOff), 2)}° from the ` +
       `median (geocentric), inside the 68 % range.`,
     res_p2: `The same posterior gives a mass of ${fmt(h.mass.median)} Earth masses (68 %: ` +
       `${range(h.mass.lo68, h.mass.hi68)}; Neptune ${fmt(h.neptune.mass, 2)}), a semi-major axis ` +
       `of ${fmt(h.a.median)} AU (${range(h.a.lo68, h.a.hi68)}), osculating in ` +
       `${yr(D.motion.frames.t_year[0])}, and an eccentricity below ${rep.e.upper68_one_sided} ` +
-      `(68 %, one-sided). The inclination to Uranus's plane is dominated by its prior, and we ` +
+      `(68 %, one-sided). The inclination to Uranus's plane is dominated by its prior, and I ` +
       `do not report it as a result. The sampler's own systematic on the median is ` +
       `±${fmt(rep.sampler_systematic.galle_median_deg, 2)}°, not folded into the range.`,
     cap_fig_4: `Posterior of the planet's geocentric longitude on ${dateOfJd(h.galleJd)}, ` +
@@ -334,7 +335,7 @@ export function conjText(D) {
       `at ${deg(s.jpl_neptune.value, 2)}. Le Verrier's orbit puts his planet at {L@plate-ii}, ` +
       `${deg(lv.value, 2)}: the angle {C@plate-ii}{S@plate-ii}{L@plate-ii} is ` +
       `${deg(Math.abs(lv.minus_median_deg), 2)}, ${fmt(Math.abs(lv.in_half_widths), 2)} ` +
-      `half-widths of our 68 % range, ${lv.in_95 ? "inside" : "outside"} the 95 % range.`,
+      `half-widths of the 68 % range, ${lv.in_95 ? "inside" : "outside"} the 95 % range.`,
     conj_p2: `The date of {C@plate-ii} is the median, over the ${c.n_samples} posterior samples, of ` +
       `the date on which each sample's planet and Uranus share a heliocentric longitude (ecliptic ` +
       `of date); 68 % of those dates fall within ${c.epoch.sample_conjunction_years_68_width} yr. ` +
@@ -367,15 +368,15 @@ export function windowText(D) {
   return {
     win_p1: `Uranus's residuals fix the time of the conjunction of § 4.2 (Lyttleton 1958); away ` +
       `from that date the planet's place depends on its orbit, and this section measures how ` +
-      `far Le Verrier's departs from ours. Hold his published orbit fixed and carry it through ` +
-      `time. Every longitude ` +
-      `and difference in this section is heliocentric, ecliptic of date. His planet crosses our ` +
+      `far Le Verrier's departs from the posterior's. Hold his published orbit fixed and carry it ` +
+      `through time. Every longitude ` +
+      `and difference in this section is heliocentric, ecliptic of date. His planet crosses the ` +
       `posterior median once, at ${fmt(w.zero[0], 2)}, and stays inside the 68 % band from ` +
       `${fmt(a, 2)} to ${fmt(b, 2)}. On Galle's night it was ${miss("galle_night")} from ` +
       `Neptune in heliocentric longitude (the ${fmt(Math.abs(D.rep.galle_lon_ecl_of_date_deg.vs.le_verrier_derived.median_minus_target_deg), 2)}° ` +
-      `of § 4.1 is geocentric, and from our median). A search on ` +
+      `of § 4.1 is geocentric, and from the posterior median). A search on ` +
       `${dateOfJd(m.search_1836.jd_tdb)} would have been off by ${miss("search_1836")}; one on ` +
-      `${dateOfJd(m.search_1856.jd_tdb)}, by ${miss("search_1856")}. We did not model the ` +
+      `${dateOfJd(m.search_1856.jd_tdb)}, by ${miss("search_1856")}. I did not model the ` +
       `search fields or the star charts.`,
     cap_fig_5: `Heliocentric longitude (ecliptic of date) relative to the posterior median, ` +
       `${yr(w.series.year[0])}–${yr(w.series.year.at(-1))}: the 68 % band (solid edges) and 95 % ` +
@@ -473,8 +474,8 @@ function familiesSentence(A, S, A2) {
     `${main[0].a_au} AU on the main branch. `;
 }
 
-/** § 5's paragraph on the profile likelihood in a under Gaussian errors (M9) and the caption of
- * Fig. 8. */
+/** § 5's paragraph on the profile likelihood in a under Gaussian errors (docs/notes/M9.md) and
+ * the caption of Fig. 8. */
 export function profileText(M) {
   const A = M.datasets.all, B = M.datasets.post1781, S = M.settings, Cn = M.corner;
   const grid = S.grid_au, n = drv(grid.length, "grid points");
@@ -515,7 +516,7 @@ export function profileText(M) {
   };
 }
 
-/** § 5's paragraph on the same profile under Student-t errors (M10, docs/notes/M10.md), the
+/** § 5's paragraph on the same profile under Student-t errors (docs/notes/M10.md), the
  * caption of Fig. 7 (both error models) and the caption of Fig. 9 (the leave-one-out sets). */
 export function studentProfileText(T, M) {
   const A = T.datasets.all, B = T.datasets.post1781, G = M.datasets.all, S = T.settings;
@@ -561,8 +562,8 @@ export function studentProfileText(T, M) {
       `is constrained, so this is a description of the curves, not a reading.`,
     cap_fig_7: `The profile likelihood in the semi-major axis under the two error models: Δ ln {i:L} ` +
       `against the held {i:a}, for all observations (thick line) and for the observations from 1781 ` +
-      `on (thin line). Left, the pre-registered M9 run on ${M.error_model}; right, the pre-registered ` +
-      `M10 run on ${T.error_model}. Dots: the ${n} grid values, each the best of ` +
+      `on (thin line). Left, the pre-registered run on ${M.error_model}; right, the pre-registered ` +
+      `run on ${T.error_model}. Dots: the ${n} grid values, each the best of ` +
       `${S.n_random + S.n_posterior} starts polished with the full model. The horizontal line is the ` +
       `reading rule's threshold, Δ ln {i:L} = ${neg(S.reading.dlnl, 0)}. {N@fig-7} Neptune's {i:a} ` +
       `(${fmt(nep.a_au, 2)} AU) and {L@fig-7} Le Verrier's (${fmt(lv.a_au, 2)} AU), on the ` +
@@ -584,7 +585,8 @@ const andList = (xs) => (xs.length < 2 ? xs.join("") : `${xs.slice(0, -1).join("
 /** "all partial" when every reading agrees, the list otherwise. */
 const sameOr = (xs) => (new Set(xs).size === 1 ? `all ${xs[0]}` : andList(xs));
 
-/** The spec's M6c fits deferred to a later release (m7_timeline.json "deferred", from the release checklist). */
+/** The spec's variants of the headline fit deferred to a later release (m7_timeline.json
+ * "deferred", from the release checklist). */
 function deferredFits(d) {
   const variants = d.m6c_fits.filter((f) => f.kind === "variant").map((f) => f.name);
   const rest = d.m6c_fits.filter((f) => f.kind !== "variant").map((f) => `the ${f.name}`);

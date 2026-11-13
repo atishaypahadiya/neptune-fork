@@ -16,7 +16,7 @@ abstract: >-
   The pre-registered fit puts the unseen planet at 325.8° on the night Galle found Neptune,
   with a 68 % interval of 323.6°–327.8°, against Neptune's true 325.87°. The transcribed
   Table 77 is published as a separate dataset (concept DOI 10.5281/zenodo.24044791).
-  Phase 1b, a companion study of the British search, reads the printed record: at the distances Adams assumed, the project's fit is 10.5° and 9.1° short of Neptune at epoch 1846.762 (5 October 1846), and his solutions are reproduced from his memoir; a detection model conditioned on Challis's record gives, with the realised events held fixed, 0.71 (0.50 to 0.97) for recognising the planet before 23 September had he finished the comparison he broke off, a figure that rests on an input the record does not inform. The code
+  A companion study of the British search for Neptune reads the printed record: at the distances Adams assumed, the fit is 10.5° and 9.1° short of Neptune at epoch 1846.762 (5 October 1846), and his solutions are reproduced from his memoir; a detection model conditioned on Challis's record gives, with the realised events held fixed, 0.71 (0.50 to 0.97) for recognising the planet before 23 September had he finished the comparison he broke off, a figure that rests on an input the record does not inform. The code
   is MIT; the data in data/historical/ are dedicated to the public domain under CC0 1.0.
 authors:
   - family-names: Pahadiya
@@ -29,7 +29,7 @@ repository-code: "https://github.com/atishaypahadiya/neptune-fork"
 license:
   - MIT
   - CC0-1.0
-version: "1.2.0"
+version: "1.2.1"
 date-released: "2026-11-12"
 doi: "10.5281/zenodo.24159832"
 identifiers:
