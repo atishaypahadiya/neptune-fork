@@ -446,3 +446,79 @@ Files: `data/historical/adams_challis/bouvard_1821/` (rows, passes),
 `adams_memoir_s7_terms.csv`, `src/fork/historical/bouvard_1821.py`,
 `src/fork/export/p1b_bouvard.py`, `tests/test_p1b_bouvard.py`,
 `docs/notes/P1B_bouvard_attribution.json`.
+
+## Amendment, 13 November 2026: what C_Bouvard is after the failure of V1, and V1′
+
+Ruled by the author on 13 November 2026, after the results above were pushed (235bab4).
+Written and pushed before any new row is transcribed. It supersedes the first row of the
+consequence table of V1 in § 5 ("pass: C_Bouvard is the formula") and nothing else; no
+earlier text is changed.
+
+**V1 failed by its rule.** The formula as printed is not C_Bouvard.
+
+**What C_Bouvard is to represent.** The tables. Adams's "errors of the Tables" were taken
+against them, not against the formula of the introduction.
+
+**The corrected formula** stands in for the tables only if V1′ below passes. It is the
+formula of pp. ii, iii and xv as transcribed, with three changes, each fixed here:
+
+1. The leading coefficient of the equation of the centre is 59417″.54, not the printed
+   59427″.54.
+2. The mean longitude of Uranus that enters the longitude and the anomaly is reduced by
+   0″.105 centesimal × (Y − 1780), Y the date in years; for a date before 1780, which the
+   tables reach by the row of Table I a century later and Table II, Y is the date plus
+   100 years. The rate is the one V1 measured between Table I and the elements of p. ii.
+   The handwritten line at the head of Table I in the Harvard copy ("il faut ajouter à la
+   longitude moyenne + 0″,10 t, t étant le nombre d'années écoulées depuis 1780") names
+   the same difference; it is cited as a witness, and the printed table is what is
+   represented. The arguments II to XII are not changed: the tables carry them in their
+   own columns.
+3. The inequality of the precession is added to the longitude, the perihelion and the
+   node as the tables apply it: interpolated in the rows of Jupiter's Table III (p. 12),
+   by the same rule in the formula and in the table path. This part therefore cancels in
+   V1′ by construction and is not tested by it.
+
+Not known and not assumed: whether the copy of the tables that Greenwich or Adams used
+carried the correction of the handwritten line.
+
+**V1′.** The corrected formula against the tables at seven instants not used to find the
+corrections, each the Paris mean midnight nearest one of his normal epochs:
+
+| normal place | instant (Paris civil date, the midnight that begins it) | entries | budget |
+|---|---|---|---|
+| 1789 | 26 January 1789 | 18 | 0″.292 |
+| 1804 | 3 April 1804 | 19 | 0″.308 |
+| 1822 | 22 June 1822 | 19 | 0″.308 |
+| 1837 | 27 August 1837 | 19 | 0″.308 |
+| 1690 | 20 December 1690 | 20 | 0″.324 |
+| 1750 | 5 November 1750 | 20 | 0″.324 |
+| 1769 | 12 January 1769 | 19 | 0″.308 |
+
+The table rows these touch are transcribed in two entries, as for V1, with the rows of the
+precession table that bracket 1690. The table path, the interpolation and the count of
+entries are those of V1 (`fork.historical.bouvard_1821.table_longitude`), unchanged.
+
+Rule, as I read "the same budget-plus-allowance rule": an instant passes when the absolute
+difference, corrected formula minus tables, is at most its rounding budget plus its
+argument allowance, both computed as in V1; otherwise it fails. The difference against
+the budget alone is reported beside.
+
+| outcome | consequence |
+|---|---|
+| all seven pass | the corrected formula is C_Bouvard |
+| any modern instant fails | route B: the table rows of all 30 epochs |
+| the four modern pass, any ancient fails | route B for the ancient epochs only; the corrected formula for the modern |
+
+A reading that the table's printed first differences on both sides contradict is replaced
+only when both differences give the same value; the difference is reported both ways. If
+the two ways give different outcomes at an instant, that instant is "stop and ask".
+
+Reported with V1′ and not part of its rule: the corrected formula at the six instants of
+V1 (found with them, so no test); the 1715 instant, whose +0″.84 after the three
+corrections is unexplained and stays so unless V1′ explains it.
+
+A correction of fact to the results above: the 1783 instant of V1, 1 January 1783, is the
+epoch of Table I's row, 0.95 day after his normal epoch; the nearest midnight is that of
+31 December 1782. V1 compares both paths at one instant, so nothing in it changes.
+
+After V1′ the work stops and is reported before V2.

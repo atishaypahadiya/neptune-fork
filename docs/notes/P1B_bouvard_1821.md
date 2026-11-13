@@ -156,3 +156,24 @@ Which elements the tables use is part of the check of route A against the tables
 
 Weak points: both entries share one method of reading; no person has spot-checked them; the
 sign before group III rests on a worn piece of type. No place of Uranus has been computed.
+
+## Two findings from the check of the formula against the tables, 13 November 2026
+
+Description only; the numbers and the test are in `docs/notes/P1B_bouvard_attribution.md`.
+
+- **A misprint candidate on p. xv.** The first term of the equation of the centre is
+  printed 59427″,54. Table X, at the six anomalies compared, is the same series with
+  59417″.54. That coefficient corresponds to an eccentricity of 0.046679, which is the
+  value in Adams's memoir; the printed one gives 0.046687 and p. ii prints 0.0466108. So
+  the tables carry the Uranus solution's eccentricity, p. ii the earlier one, and p. xv
+  differs from the tables in one digit. This answers the open point of the section above
+  for the tables; that p. xv is a misprint is inferred, not shown.
+- **The handwritten line in the Harvard copy.** At the head of Table I a reader wrote "il
+  faut ajouter à la longitude moyenne + 0″,10 t, t étant le nombre d'années écoulées
+  depuis 1780". Table I's mean longitude does fall behind the mean motion of p. ii by
+  0″.105 centesimal a year from 1780 (measured at five years between 1783 and 1846). The
+  line is not part of the print; who wrote it, when, and whether other copies carry it is
+  not known.
+
+Also seen: three table readings contradicted by the tables' own printed differences
+(Table X rows 324 and 327, Table XIII row 720), recorded in the rows file.
