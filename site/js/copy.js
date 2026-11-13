@@ -70,7 +70,7 @@ export function abstract(D) {
       `under the pre-registered Gaussian errors and ${rng(g.lo68, g.hi68)} under Student-t ` +
       `errors, which the evidence favours (ln {i:B} = ${signed(t.vs_headline.ln_b, 1)}); ` +
       `Neptune is ${inside}. The 95 % range, ${rng(i95.lo, i95.hi)}, is ` +
-      `${i95.state === "final" ? "final" : "provisional"}.`,
+      `${i95.state === "final" ? "final" : "provisional"}.${lalandeClause(D.m6e)}`,
     abstract_p3: `The headline fit gives a mass of ${fmt(h.mass.median)} Earth masses ` +
       `(68 %: ${range(h.mass.lo68, h.mass.hi68)}; Neptune ${fmt(h.neptune.mass, 2)}) and a ` +
       `semi-major axis of ${fmt(h.a.median)} AU (${range(h.a.lo68, h.a.hi68)}). Le Verrier's ` +
@@ -387,6 +387,91 @@ export function windowText(D) {
 }
 
 /* ---------- § 5 Fig. 6 ---------- */
+
+/* ---------------- § 4.4: Lalande's places of 1795 (m6e.json) ---------------- */
+
+const LAL_MODELS = { headline: "Gaussian errors", student_t: "Student-t errors" };
+/** The values of one key over the nights of one model, or of every model. */
+const lalValues = (M, key, models = M.models) =>
+  models.flatMap((m) => M.nights.map((n) => M.values[`${m}.${n}.${key}`]));
+/** One formatted number when the values agree at that precision, otherwise their range. */
+const agree = (xs, n) => {
+  const t = [...new Set(xs.map((x) => fmt(Math.abs(x), n)))].sort();
+  return t.length === 1 ? t[0] : `${t[0]}–${t.at(-1)}`;
+};
+const lalYear = (M) => M.nights[0].slice(0, 4);
+const lalDay = (n) => String(Number(n.slice(8, 10)));
+const LAL_CLASS = {
+  "inside 68 %": "inside the 68 % region",
+  "inside 95 %": "inside the 95 % region and outside the 68 %",
+  outside: "outside the 95 % region",
+};
+/** The pre-registered reading in words: one phrase when every model and night agree. */
+function lalReading(M) {
+  const cls = lalValues(M, "class");
+  if (new Set(cls).size === 1) return `${LAL_CLASS[cls[0]] ?? cls[0]} for both error models on both nights`;
+  return M.models.map((m) => `${M.values[`${m}.reading`]} with ${LAL_MODELS[m]}`).join("; ");
+}
+/** Where Lalande's declination sits in each model's intervals, in words. */
+function lalDeclination(M) {
+  const where = M.models.flatMap((m) => M.nights.map((n) => {
+    const d = M.values[`lalande.${n}.dec_deg`], q = (k) => M.values[`${m}.${n}.dec.${k}`];
+    if (q("lo68") <= d && d <= q("hi68")) return "inside the 68 % interval";
+    if (q("lo95") <= d && d <= q("hi95")) return "outside the 68 % interval and inside the 95 %";
+    return "outside the 95 % interval";
+  }));
+  return new Set(where).size === 1 ? where[0] : "not in the same interval for every model and night";
+}
+
+/** The abstract's sentence: only what the reading supports. */
+function lalandeClause(M) {
+  const cls = new Set(lalValues(M, "class"));
+  if (cls.size === 1 && cls.has("inside 68 %")) {
+    return ` Without having seen them, the same posterior places Lalande's unrecognised star of ` +
+      `May ${lalYear(M)} inside its 68 % region under both error models (§ 4.4), a check within ` +
+      `the span of the data.`;
+  }
+  return ` A pre-registered check against Lalande's unrecognised star of May ${lalYear(M)}, ` +
+    `within the span of the data, is in § 4.4.`;
+}
+
+export function lalandeText(D) {
+  const M = D.m6e, v = M.values, n0 = M.histogram_night;
+  const span = D.table1.total.years;
+  const level = (m) => agree(lalValues(M, "level", [m]), 2);
+  const width = (m) => agree(lalValues(M, "lon.width68", [m]), 1);
+  // The other night, in the caption: its reading against the drawn night's, and its levels.
+  const n1 = M.nights.find((n) => n !== n0);
+  const same = M.models.every((m) => v[`${m}.${n1}.class`] === v[`${m}.${n0}.class`]);
+  const other = `On ${lalDay(n1)} May the result is ` +
+    `${same ? "the same" : M.models.map((m) => `${v[`${m}.${n1}.class`]} with ${LAL_MODELS[m]}`).join(", ")} ` +
+    `(central level ${fmt(v[`headline.${n1}.level`], 2)} with Gaussian errors, ` +
+    `${fmt(v[`student_t.${n1}.level`], 2)} with Student-t).`;
+  const prior = fmt(v[`headline.${n0}.prior_width68`], 0);
+  return {
+    lal_p1: `Lalande recorded Neptune as a star on ${andList(M.nights.map(lalDay))} May ` +
+      `${lalYear(M)} without recognising it (Mauvais 1847). The fits never saw these places, ` +
+      `or any place of Neptune. I fixed the test and its reading before computing it: carry ` +
+      `the posterior to those two nights and ask where Lalande's longitude {La@fig-10} (geocentric, ` +
+      `ecliptic of date) falls in it. It falls ${lalReading(M)} (central level ` +
+      `${level("headline")} with Gaussian errors, ${level("student_t")} with Student-t). ` +
+      `The posterior median is ` +
+      `${agree(lalValues(M, "median_minus_lalande_deg"), 1)}° from his longitude, and the 68 % ` +
+      `region is ${width("headline")}° wide (${width("student_t")}° with Student-t), against ` +
+      `${prior}° for the prior. ${lalYear(M)} lies within the span of the Uranus ` +
+      `observations (${span[0]}–${span[1]}), so this is an out-of-sample check within the data ` +
+      `span, not an extrapolation. It does not confirm the result of § 4.1 independently, ` +
+      `since orbits that are right on Galle's night are correlated at this date. In ` +
+      `declination the fits say little: Lalande's place is ${lalDeclination(M)}.`,
+    cap_fig_10: `Posterior of the planet's geocentric longitude on ${lalDay(n0)} May ` +
+      `${lalYear(M)}, ecliptic of date: histogram of ${v.n_draws} draws of the headline ` +
+      `posterior carried to that night. On the lines under the axis: the 68 % range of the ` +
+      `headline posterior (heavy) and of the posterior under Student-t errors (light). ` +
+      `{La@fig-10} Lalande's longitude that night (Mauvais 1847); no observational error is ` +
+      `folded in. ${other} The headline prior's 68 % range on ${lalDay(n0)} May is ` +
+      `${prior}° wide. Pre-registered; a check within the span of the data.`,
+  };
+}
 
 export const SENS = (fits) => ({
   s1_e05: `Eccentricity up to ${fits.s1_e05.config.e_max}`,

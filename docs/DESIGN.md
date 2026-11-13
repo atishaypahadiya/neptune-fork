@@ -642,3 +642,27 @@ between 640 and 720 px (it was narrower than the text there); the companion's Ta
 
 **UI-rule audit:** no new pattern. No pill, tag, border, divider, eyebrow, colour, opacity
 step, gradient or typeface was added or removed; only where blocks start and end.
+
+## § 4.4 and Fig. 10: Lalande's star of 1795 (2026-11-13)
+
+- **§ 4.4**, the last subsection of Results: one paragraph on the pre-registered check
+  against Lalande's places of 8 and 10 May 1795 (`docs/notes/M6e.md`). Its wording follows
+  the JSON: the reading's class, the place of his declination in the intervals and the
+  abstract's sentence are chosen from the values, not typed. The scope sentence (a check
+  within the span of the data, not an extrapolation) is part of the paragraph, the caption
+  and the abstract.
+- **Fig. 10** is on the measure (`body`), 320 px high: the one figure in the text that is
+  not `wide`, because it is a single small histogram and the paragraph beside it carries
+  the result. Drawn as Fig. 4: the histogram of the headline posterior's longitude on the
+  first night (2 px), the axis, and one hairline for Lalande's longitude on that night,
+  lettered *La* (defined in the caption; *L* is Le Verrier's planet). The second night is
+  not drawn, since the histogram is of the first; the caption states its result and level.
+  Under the axis, two lines: the 68 % range of the headline posterior (2 px) and of the
+  Student-t posterior (1 px), each named at its end. The prior's width is in the caption,
+  from the JSON; it cannot be drawn on a 9° axis.
+- **Data:** `site/data/m6e.json`, written by `fork.export.m6e_site`: each value a copy of
+  a named field of `docs/notes/M6e.json` (`tests/test_m6e_site.py`). Axis ticks are derived values.
+- **Reference:** Mauvais (1847) in `m7_references.json`, the source of Lalande's places.
+- UI-rule audit: no new pattern. No new colour, opacity step, dash, gradient, divider,
+  pill, eyebrow or typeface. The two range lines use the two line weights the figures
+  already have. The section number and the small-caps "Fig." are the existing conventions.

@@ -514,7 +514,7 @@ def plate_iii_controls(page: Page) -> list[str]:
 SHOTS = [("plate-i", "header"), ("table-1", "#table-1"), ("fig-1", "#fig-1"), ("fig-2", "#fig-2"),
          ("plate-iii", "#plate-iii"), ("plate-iii-side", "#plate-iii .side"), ("fig-4", "#fig-4"),
          ("plate-ii", "#plate-ii"), ("fig-5", "#fig-5"), ("fig-6", "#fig-6"), ("fig-7", "#fig-7"),
-         ("fig-8", "#fig-8"), ("fig-9", "#fig-9"), ("refs", "#s7")]  # fmt: skip
+         ("fig-8", "#fig-8"), ("fig-9", "#fig-9"), ("fig-10", "#fig-10"), ("refs", "#s7")]  # fmt: skip
 # The companion page: its title and abstract, each figure, Table 1 and the references.
 SHOTS_COMPANION = [("title", "header"), ("fig-1", "#fig-1"), ("fig-2", "#fig-2"), ("fig-3", "#fig-3"),
                    ("table-1", "#table-1"), ("fig-4", "#fig-4"), ("refs", "#s7")]  # fmt: skip
