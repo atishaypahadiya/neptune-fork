@@ -274,3 +274,22 @@ def test_cells_b_and_c_recomputed_from_the_transcribed_inputs():
                 ), (hyp, cell, method)
     assert got["H1"]["B"]["d1c"]["offset"] == pytest.approx(-3.170, abs=2e-3)
     assert got["H1"]["C"]["d1c"]["offset"] == pytest.approx(-3.801, abs=2e-3)
+
+
+def test_route_b_entries_agree_but_for_one_cell_decided_on_the_image():
+    """Route B rows (13 November 2026): two entries of 1,855 cells; one disagreement,
+    decided on the band and logged; the rows file is the entries' reading."""
+    a = read(PASSES / "bouvard_1821_table_rows_route_b_pass1.csv")
+    b = read(PASSES / "bouvard_1821_table_rows_route_b_pass2.csv")
+    key = lambda r: (r["table"], r["row"], r["column"])  # noqa: E731
+    va, vb = {key(r): r["value"] for r in a}, {key(r): r["value"] for r in b}
+    assert len(a) == len(b) == len(va) == 1855
+    assert {k for k in va if va[k] != vb[k]} == {("I", "1801", "VIII")}
+    rows = read(D / "bouvard_1821" / "bouvard_1821_uranus_table_rows_route_b.csv")
+    used = {key(r): r["value_used"] for r in rows}
+    assert used == {k: (v if v == vb[k] else "150") for k, v in va.items()}
+    assert all(r["value_as_printed"] == r["value_used"] for r in rows)
+    old = read(D / "bouvard_1821" / "bouvard_1821_uranus_table_rows.csv")
+    assert not {key(r) for r in old} & set(used)
+    rec = read(D / "bouvard_1821" / "bouvard_1821_route_b_reconciliation.csv")
+    assert [key(r) for r in rec if r["pass1"] != r["pass2"]] == [("I", "1801", "VIII")]

@@ -310,3 +310,22 @@ more readings (Table X row 25, Table XII row 2600) are replaced in `value_used`.
 | `bouvard_1821/passes/bouvard_1821_table_rows_v1p_pass1.csv` | first entry | `108e0ff316b64bfa492ab1119c256f1a8ea6d77cfbad6865007279f97259b139` |
 | `bouvard_1821/passes/bouvard_1821_table_rows_v1p_pass2.csv` | second entry | `dad67bfcc3116bb2e30dbb514c1caefdf9be34b32ff8f54f84c4e678dbda729e` |
 | `bouvard_1821/bouvard_1821_misprints.csv` | readings the tables' own figures contradict, with what was used | `459eb0914691df29e9acaae265b2d85db94413ee91da0c196424fec0ae9c0a89` |
+
+## Bouvard 1821, table rows at Adams's 30 epochs (route B; transcribed 13 November 2026)
+
+Every row of the tables that the 29 normal places with rows of their own need (the 1780 place
+is interpolated), with margins, the printed differences of Tables IX to XIV, the rows of the
+1780 place at its own date, and the printed differences beside rows already in the file
+above. Two entries from 128 bands cut from the page images by
+`docs/notes/scripts/bouvard_table_bands.py` (`data/cache/adams_challis/bouvard/bands_route_b/`,
+not committed), each from the bands and a column specification alone, one working forward
+and one backward. 1,855 cells, 1 difference, decided on the band (Table I, 1801, argument
+VIII: 150). Two cells are empty because nothing is printed there (Table X, rows 100 and 200,
+second difference). The file above is unchanged; these rows are in a file of their own.
+
+| file | content | SHA-256 |
+|---|---|---|
+| `bouvard_1821/bouvard_1821_uranus_table_rows_route_b.csv` | 1,855 cells, as read and as used (identical until a ruling) | `6b2efe05cf1f7844755bbc1e132ce441d204a2a1779c1ba8cfff1ee4d0cb07c1` |
+| `bouvard_1821/bouvard_1821_route_b_reconciliation.csv` | the one difference and the 135 cells with a note from either entry | `3fd4b42239d77cdcee976a2a572024febd011e444c30d82533c24956ccf5d098` |
+| `bouvard_1821/passes/bouvard_1821_table_rows_route_b_pass1.csv` | first entry | `540984f284ba7d1e2c5578c68843edf54fffebfa026bc908415e689940b1be76` |
+| `bouvard_1821/passes/bouvard_1821_table_rows_route_b_pass2.csv` | second entry | `faea3e0e47f3b38adf7f6ea54b0ba6192ed76fcb4f96507eea5c8285544225e8` |
