@@ -115,3 +115,35 @@ def test_predictive_places_on_prior_draws(synth):
 def test_smoke_runs_on_synthetic_data():
     out = v13.smoke(maxiter=40, nlive=50)
     assert len(out) == 6 and all(v["niter"] > 0 for v in out.values())
+
+
+def test_lalande_precovery_table_matches_both_entries_and_the_printed_differences():
+    import csv
+    from pathlib import Path
+
+    d = Path(__file__).resolve().parents[1] / "data" / "historical" / "precoveries"
+    read = lambda p: list(csv.DictReader((d / p).open(encoding="utf-8")))  # noqa: E731
+    p1, p2 = read("passes/lalande_1795_pass1.csv"), read("passes/lalande_1795_pass2.csv")
+    assert len(p1) == len(p2) == 9
+    for a, b in zip(p1, p2, strict=True):
+        assert all(a[k] == b[k] for k in a if k != "flag"), a
+    final = read("lalande_1795.csv")
+    cr = [r for r in p1 if r["witness"] == "cr24_p668" and r["item"] == "position"]
+    reads = [r for r in p1 if r["item"] == "reads"]
+    for f, c, e in zip(final, cr, reads, strict=True):
+        assert (f["ra_app_deg"], f["ra_app_min"], f["ra_app_sec"]) == (
+            c["ra_deg"],
+            c["ra_min"],
+            c["ra_sec"],
+        )
+        assert (f["dec_app_deg"], f["dec_app_min"], f["dec_app_sec"]) == (
+            c["dec_deg"],
+            c["dec_min"],
+            c["dec_sec"],
+        )
+        h, m, s = (int(x) for x in f["paris_mean_time"].split(":"))
+        assert (h, m, s) == (int(e["time_h"]), int(e["time_m"]), int(e["time_s"]))
+    sec = lambda r, q: int(r[f"{q}_min"]) * 60 + float(r[f"{q}_sec"])  # noqa: E731
+    diff = next(r for r in p1 if r["item"] == "difference")
+    assert sec(cr[0], "ra") - sec(cr[1], "ra") == pytest.approx(sec(diff, "ra"), abs=1e-9)
+    assert sec(cr[0], "dec") - sec(cr[1], "dec") == pytest.approx(sec(diff, "dec"), abs=1e-9)

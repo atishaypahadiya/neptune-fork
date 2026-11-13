@@ -106,9 +106,19 @@ geocentric right ascension and declination of date per posterior sample, one int
 sample, about 5 ms), `region_summary` (68 % and 95 % intervals, plane mean and covariance)
 and `region_level` (the smallest credible region that contains an observed place). Tests:
 `test_region_summary_and_level`, `test_predictive_places_on_prior_draws` (prior draws on
-synthetic data, at an epoch already in the cache). **Not ready:** the precovery positions
-(not sourced; no file exists), Earth's place at the 1612–13 and 1795 epochs (not fetched),
-and the extension of the A6d static check to name the file.
+synthetic data, at an epoch already in the cache). **Not ready:** Earth's place at the 1795 epochs (not fetched).
+
+**Positions: Lalande sourced, Galileo not** (12 November 2026;
+`data/historical/precoveries/MANIFEST.md`). Lalande, 8 and 10 May 1795: Mauvais's reduced
+apparent places from *Comptes rendus* 24, 668, with the observation times as corrected by
+the volume's erratum, checked against his letter in *Astronomische Nachrichten* 26, col. 97;
+two entries, 117 cells, 0 disagreements; equinox of date; no stated uncertainty. Galileo,
+1612–13: not sourced. Kowal and Drake 1980 is not readable here beyond its abstract, and by
+Standish's summary the record is a drawing that gives at best one dimension (Neptune on the
+line from Jupiter through a star), not a place. The existing A6d check
+(`test_no_reference_to_a_precovery_file`) already fails on any fit-path string that names a
+precovery file, so it covers the new directory without a change. **Open, added:** whether
+Galileo enters the test at all, and if so as a one-dimensional constraint.
 
 ## S1 cell 0 (draft)
 
