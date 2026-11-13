@@ -240,8 +240,11 @@ not done in v1.3.0 and are carried to v1.4.
   the deferred fits' target version (1.4) in `site/data/m7_timeline.json` and the README.
 - [x] Checks: ruff, tests, prerender, number audit on both pages, layout in Chromium and
   WebKit, citation validation, one link pass.
-- [ ] Tag `v1.3.0`, GitHub release, Zenodo version DOI.
-- [ ] Follow-up commit: that DOI in `CITATION.cff`, `README.md` and `site/data/release.json`.
+- [x] Tag `v1.3.0` on d6edabc (test and pages green), GitHub release published 2026-11-13
+  12:36:49 UTC, not a draft; Zenodo minted version DOI 10.5281/zenodo.24195990
+  (https://zenodo.org/records/24195990). The link pass run before the release reported one
+  link, the release page itself; it passes on rerun.
+- [x] Follow-up commit: that DOI in `CITATION.cff`, `README.md` and `site/data/release.json`.
 
 ## v1.4 list (opened 2026-11-12 as the v1.3 list; no release without the explicit word)
 
