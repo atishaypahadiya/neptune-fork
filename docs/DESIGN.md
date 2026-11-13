@@ -358,7 +358,10 @@ Review of the localhost page (2026-11-09):
    - Table 1's headers and year ranges each on one line;
    - Plate II's and Plate III's side panels lie inside the viewport;
    - side by side, each text column holds at least 45 characters per line;
-   - no vertical gap over 200 px between content blocks.
+   - no vertical gap over 200 px between content blocks;
+   - the grid lines (see "Widths"): every figure, plate and table has one of the three classes
+     and its left and right edges are on that class's two lines, within 1 px, bar the named
+     exceptions; also checked at 660 and 720 px, either side of where wide meets body.
    In print (Save as PDF), from an 800 px window: nothing sticky, plates and figures at the full
    text width, every caption under its figure, controls hidden, and no text over a mark. The PDF
    is saved beside the screenshots.
@@ -570,3 +573,63 @@ palette: white line on the cyanotype ground, with the lower line opacity in the 
 - Screenshots (390 and 1440 px, Chromium and WebKit) are written to `docs/notes/p1b_site/`
   by `tools/check_layout.py --shots` and are not tracked: the folder is in `.gitignore`.
 - The Pages workflow file is unchanged: its three commands now cover both pages.
+
+## Widths: body, wide, full (2026-11-12)
+
+Both pages are laid out on one CSS grid of named column lines, set on the header and on
+`main` (`site/css/site.css`, "the three widths"). A block takes one of three classes and sets
+no width of its own.
+
+| Class | Lines | What it is | At 1440 px | At 1024 px | At 390 px |
+|---|---|---|---|---|---|
+| `body` | `body-start` to `body-end` | the text measure, `--measure` (40rem) | 400 to 1040 | 192 to 832 | 16 to 374 |
+| `wide` | `wide-start` to `wide-end` | the measure plus up to `--overhang` (12.5rem) on each side, centred on the text | 200 to 1240 | 41 to 983 | 16 to 374 |
+| `full` | `full-start` to `full-end` | edge to edge | 0 to 1440 | 0 to 1024 | 0 to 390 |
+
+- **The side padding** is `--gutter`, `clamp(16px, 4vw, 56px)`. It is the least width of the
+  two outer tracks, so `full` reaches the window's edges at every width (plates run edge to
+  edge on phones) while `body` and `wide` keep the padding.
+- **Where wide becomes body** is not a chosen width. The two overhang tracks take what the
+  measure and the padding leave, up to `--overhang` each. In a window narrower than the
+  measure plus twice the padding (about 696 px) they are 0 wide, and `wide` and `body` are the
+  same two lines. No media query sets this.
+- **Sections** span the grid and pass its lines on (`subgrid`), so a block in a section is
+  placed on the page's lines. Prose (paragraphs, headings, quotes, lists, the citation block)
+  is `body` without the class. Figures, plates, tables and captions carry the class.
+- **full:** Plate I, and the sections of Plate II and Plate III. Nothing else, and nothing on
+  the companion page.
+- **wide:** Figs. 1, 2, 4 to 9 and the pair that holds Figs. 8 and 9 on the main page; Figs. 1
+  to 4 and Table 1 on the companion page.
+- **body:** everything else, among it Table 1 of the main page (seven short columns; the
+  companion's four hold sentences) and every caption: under a wide figure the caption is on
+  the text's lines, not the figure's.
+- **Space between blocks:** margins of blocks on a grid do not collapse, so the block before a
+  heading, a figure or the citation block gives up its bottom margin, as do the last block of
+  a section and the last item of a list. The distances are the ones the collapsed margins
+  gave.
+- **Print** uses no grid: one column of blocks, the three widths all the page's text width.
+
+**Not on the three widths**, each held to a rule of its own by `tools/check_layout.py`
+(`GRID_EXEMPT`):
+
+- **Plates II and III inside their sections.** The section is `full`. Inside it the plate
+  runs from an outer line to the centre line, and the text beside it has its own measure
+  (34rem), because the body measure with its padding does not fit half a 1440 px window.
+  Below 900 px the two stack: the plate is `full` and its text is on the body lines.
+- **Fig. 3** stands in Plate III's text column and takes that column's width.
+- **Figs. 8 and 9** from 900 px stand side by side, each on half of the wide pair less half
+  the 32 px gap. Below 900 px and in print each is `wide`, with a `body` caption.
+
+Not a block of the grid and not checked against it: **Plate I's title block**, lettering laid
+over the plate (from 900 px at most 44 % of it, from the plate's left padding).
+
+**What moved** when the grid replaced the per-element widths: the captions under wide figures,
+from the figure's left edge to the text's (200 px at 1440, 151 px at 1024). Text and figures
+are where they were at 1024 and 1440 px. Elsewhere: Plate I's caption is the full measure
+between 640 and 720 px (it was narrower than the text there); the companion's Table 1 is
+`wide` from about 696 px, not from 900 px, and has the figures' 36 px above it at every width
+(32 px below 900 px before); stacked, the captions of Figs. 8 and 9 are `body`; the page ends
+15 px sooner under the references.
+
+**UI-rule audit:** no new pattern. No pill, tag, border, divider, eyebrow, colour, opacity
+step, gradient or typeface was added or removed; only where blocks start and end.
