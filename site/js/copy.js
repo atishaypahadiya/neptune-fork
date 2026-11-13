@@ -440,8 +440,13 @@ export function lalandeText(D) {
   const span = D.table1.total.years;
   const level = (m) => agree(lalValues(M, "level", [m]), 2);
   const width = (m) => agree(lalValues(M, "lon.width68", [m]), 1);
-  const gap = drv(Math.abs(v[`lalande.${M.nights[0]}.ecl_lon_deg`] - v[`lalande.${M.nights[1]}.ecl_lon_deg`]),
-    "difference of Lalande's two longitudes");
+  // The other night, in the caption: its reading against the drawn night's, and its levels.
+  const n1 = M.nights.find((n) => n !== n0);
+  const same = M.models.every((m) => v[`${m}.${n1}.class`] === v[`${m}.${n0}.class`]);
+  const other = `On ${lalDay(n1)} May the result is ` +
+    `${same ? "the same" : M.models.map((m) => `${v[`${m}.${n1}.class`]} with ${LAL_MODELS[m]}`).join(", ")} ` +
+    `(central level ${fmt(v[`headline.${n1}.level`], 2)} with Gaussian errors, ` +
+    `${fmt(v[`student_t.${n1}.level`], 2)} with Student-t).`;
   const prior = fmt(v[`headline.${n0}.prior_width68`], 0);
   return {
     lal_p1: `Lalande recorded Neptune as a star on ${andList(M.nights.map(lalDay))} May ` +
@@ -462,8 +467,8 @@ export function lalandeText(D) {
       `${lalYear(M)}, ecliptic of date: histogram of ${v.n_draws} draws of the headline ` +
       `posterior carried to that night. On the lines under the axis: the 68 % range of the ` +
       `headline posterior (heavy) and of the posterior under Student-t errors (light). ` +
-      `{La@fig-10} Lalande's longitude on the two nights, ${fmt(gap, 2)}° apart (Mauvais ` +
-      `1847); no observational error is folded in. The prior's 68 % range at this date is ` +
+      `{La@fig-10} Lalande's longitude that night (Mauvais 1847); no observational error is ` +
+      `folded in. ${other} The headline prior's 68 % range on ${lalDay(n0)} May is ` +
       `${prior}° wide. Pre-registered; a check within the span of the data.`,
   };
 }

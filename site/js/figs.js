@@ -457,7 +457,7 @@ export function fig10(fig, D) {
   const edges = v["histogram.edges_deg"], counts = v["histogram.counts"];
   const bins = counts.map((n, k) => ({ x0: edges[k], x1: edges[k + 1], n }));
   const q = (model, k) => v[`${model}.${night}.lon.${k}`];
-  const lal = M.nights.map((n) => v[`lalande.${n}.ecl_lon_deg`]);
+  const lal = v[`lalande.${night}.ecl_lon_deg`]; // the night of the histogram only
   const tip = probe(fig);
   mount(fig, (svg, w, h) => {
     const phone = w < 600;
@@ -479,8 +479,8 @@ export function fig10(fig, D) {
       for (const e of [a, b]) g.append("path").attr("class", "ln").attr("d", L([[e, yy - 4], [e, yy + 4]]));
       g.append("text").attr("class", "lbl").attr("x", b + 10).attr("y", yy).attr("dominant-baseline", "middle").text(name);
     });
-    for (const l of lal) g.append("path").attr("class", "ln").attr("d", L([[x(l), mg.t - 6], [x(l), y0]]));
-    point(g, { id: "La", x: x(lal[0]), y: mg.t - 6, letter: "La", dx: 0, dy: -14, anchor: "middle", r: 2.6, title: "Lalande's star" });
+    g.append("path").attr("class", "ln").attr("d", L([[x(lal), mg.t - 6], [x(lal), y0]]));
+    point(g, { id: "La", x: x(lal), y: mg.t - 6, letter: "La", dx: 0, dy: -14, anchor: "middle", r: 2.6, title: "Lalande's star" });
     svg.on("pointermove pointerdown", (e) => {
       const [px] = d3.pointer(e);
       const b = bins.find((bb) => x(bb.x0) <= px && px < x(bb.x1));
