@@ -1,0 +1,32 @@
+# Link checker settings (.github/workflows/links.yml; `lychee --config .github/lychee.toml ...`).
+
+max_retries = 3
+retry_wait_time = 20
+timeout = 40
+max_concurrency = 8
+# 429 is a rate limit, not a broken link: retried, then accepted.
+accept = ["200..=299", "429"]
+user_agent = "Mozilla/5.0 (compatible; link check)"
+no_progress = true
+include_mail = false
+
+# Allowlist. Each entry answers scripted requests with a refusal while the link works in a
+# browser; the date is when that was last observed. Remove an entry when it stops being true.
+exclude = [
+  # Google Books: 429 with a browser check page for any scripted request (12 Nov 2026).
+  '^https?://books\.google\.[a-z.]+/',
+  '^https?://www\.google\.com/books/',
+  # Gallica's catalogue search API: 403 to scripts (12 Nov 2026). Gallica ark links are checked.
+  '^https?://gallica\.bnf\.fr/SRU',
+  '^https?://gallica\.bnf\.fr/services/',
+  # HathiTrust: 403 with a browser check on catalogue and full-text pages (12 Nov 2026).
+  '^https?://(catalog|babel)\.hathitrust\.org/',
+  # e-rara: browser verification page before any content (12 Nov 2026).
+  '^https?://www\.e-rara\.ch/',
+  # DOIs of Oxford University Press (10.1093) and EDP Sciences (10.1051): doi.org resolves,
+  # then the publisher answers 403 to scripts (12 Nov 2026). Other DOIs are checked.
+  '^https?://doi\.org/10\.1093/',
+  '^https?://doi\.org/10\.1051/',
+  # French defence libraries: connections time out from outside a browser (12 Nov 2026).
+  '^https?://bibliotheques-numeriques\.defense\.gouv\.fr/',
+]
