@@ -215,3 +215,38 @@ alone; the memoir (§ 53) uses 1843 to 1845. The 1845 errors reached Adams on or
 here. The many logarithms on the sheets were not entered, only the results and the lists
 that carry a total. No person has spot-checked the entries. Both entries share one method
 of reading, so their agreement is weaker evidence than two unrelated readers would give.
+
+### Spot check by the author, 13 Nov 2026
+
+Added below the amendment of 12 November, which stands as written. This section supersedes
+two of its statements: the table's row "left doubtful: 2" and the sentence "No person has
+spot-checked the entries" under "Not done".
+
+I checked 20 cells of the reconciled entries against the band images
+(`docs/review/stjohns_spotcheck_human_results.json`, exported 2026-11-13 04:40 UTC, seed
+20261112, first-entry file SHA-256 `3de30e11…`). All 20 match.
+
+| how the cell was chosen | cells | match |
+|---|---|---|
+| the two entries differed | 3 | 3 |
+| flagged doubtful in an entry or in the comparison | 4 | 4 |
+| one per image not otherwise covered | 4 | 4 |
+| random | 9 | 9 |
+
+**Resolved, no longer doubtful.** Every reading the entries disputed or doubted is confirmed:
+
+- the three differences in values: −23.27 (1846 column, term 4; the second entry's reading,
+  which the sheet's sum had already settled), and the first entry's +114″.88 (Main's table,
+  13 Jan 1845, error of geocentric longitude) and +2505 (18 Sep 1845, coefficient 4). The
+  last two are the "left doubtful" of the table above; `adams_solutions_ms_reconciliation.csv`
+  now gives them as resolved. The fourth difference was the same reading of the letter's
+  head written two ways and needed no check.
+- the cells flagged doubtful: in Main's table, coefficient 4 −9486 and the heliocentric
+  error +7″.79 for 13 Jan 1845, and the geocentric error +124″.05 for 14 Dec 1845; on
+  E VII 15, 2θ − α = −136° 16′ at θ = −43°.
+
+**Scope.** 11 of the 20 cells were chosen, not drawn: they are the cells above. 9 were
+random among the remaining cells. No discrepancy in 9 random cells bounds the cell error
+rate only weakly: the two-sided 95 % upper limit is 1 − 0.025^(1/9) ≈ 34 %. The check is
+therefore not an estimate of the error rate of the 200 cells. Its value is that every
+disputed or doubtful reading was confirmed by a person.

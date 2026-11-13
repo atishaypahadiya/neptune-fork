@@ -82,3 +82,40 @@ def test_manuscript_values_against_the_committed_tables():
     for r in ms:
         if r["image"] == "16869":
             assert r["value_ms"].lstrip("+").replace(".", "·") in a16e["other_values"]
+
+
+def test_the_authors_spot_check_covers_the_reconciled_entries():
+    import collections
+    import hashlib
+    import json
+
+    f = D.parents[2] / "docs" / "review" / "stjohns_spotcheck_human_results.json"
+    sc = json.loads(f.read_text(encoding="utf-8"))
+    p1 = D / "passes_ms" / "stjohns_w16_pass1.csv"
+    assert sc["pass1_sha256"] == hashlib.sha256(p1.read_bytes()).hexdigest()
+    assert sc["reviewer"] == "human" and sc["seed"] == 20261112
+    cells = sc["cells"]
+    assert len(cells) == 20 and all(c["matches"] is True and c["reading"] == "" for c in cells)
+    # The kit shows the reconciled table: the first entry, with the reconciliation applied.
+    first = {(r["image"], r["block"], r["label"]): r["value"] for r in P1}
+    first |= {
+        (r["image"], r["block"], r["label"]): r["resolved"]
+        for r in REC
+        if r["block"] != "letter head"
+    }
+    keys = [(c["image"], c["block"], c["label"]) for c in cells]
+    assert len(set(keys)) == 20
+    assert all(first[k] == c["value"] for k, c in zip(keys, cells, strict=True))
+    how = collections.Counter(c["reason"] for c in cells)
+    assert how == {"random": 9, "one per image": 4, "flagged doubtful": 4, "entries differed": 3}
+    # Every difference in a value is among the checked cells, and none is left doubtful.
+    differed = {k for k, c in zip(keys, cells, strict=True) if c["reason"] == "entries differed"}
+    values = {(r["image"], r["block"], r["label"]) for r in REC if r["pass1"] != r["pass2"]}
+    assert differed == {k for k in values if k[1] != "letter head"}
+    assert all(r["resolved"] != "doubtful" for r in REC)
+    assert all(
+        first[k] == r["resolved"]
+        for r in REC
+        if (k := (r["image"], r["block"], r["label"])) in differed
+    )
+    assert 1 - 0.025 ** (1 / 9) == pytest.approx(0.336, abs=0.001)

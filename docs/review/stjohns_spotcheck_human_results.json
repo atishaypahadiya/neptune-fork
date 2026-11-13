@@ -1,0 +1,189 @@
+{
+ "seed": 20261112,
+ "pass1_sha256": "3de30e11d667b66741477395b6b2e60efe09e88fb485ce6944a4c812abb4c3bd",
+ "exported": "2026-11-13T04:40:03.567Z",
+ "reviewer": "human",
+ "reviewer_name": "Atishay Pahadiya",
+ "cells": [
+  {
+   "image": "16867",
+   "block": "note of results",
+   "label": "eccentricity",
+   "value": "0.1428",
+   "reason": "one per image",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "image": "16872",
+   "block": "facsimile of the note of results",
+   "label": "eccentricity",
+   "value": "0.1428",
+   "reason": "one per image",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "image": "16870",
+   "block": "first approximation",
+   "label": "below the rule, line 2",
+   "value": "-32.4741",
+   "reason": "one per image",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "image": "16868",
+   "block": "theta = -45 sums",
+   "label": "left list 3",
+   "value": "31.493",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "image": "16868",
+   "block": "theta = -43",
+   "label": "2 theta - alpha",
+   "value": "-136:16",
+   "reason": "flagged doubtful",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "image": "16868",
+   "block": "theta = -43 sums",
+   "label": "left list 2",
+   "value": "15.369",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "image": "16869",
+   "block": "far-left short list",
+   "label": "line 2",
+   "value": "-0.000088",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "image": "16869",
+   "block": "far-left short list",
+   "label": "line 3",
+   "value": "-0.000093",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "image": "16869",
+   "block": "column 1840",
+   "label": "term 9",
+   "value": "-0.000014",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "image": "16869",
+   "block": "column 1840",
+   "label": "log line 4 (underlined)",
+   "value": "7.84271",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "image": "16869",
+   "block": "column 1846",
+   "label": "log line 1",
+   "value": "7.89867",
+   "reason": "one per image",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "image": "16869",
+   "block": "column 1846",
+   "label": "log line 2",
+   "value": "1.0418",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "image": "16871",
+   "block": "column 1843",
+   "label": "term 6",
+   "value": "-43.33",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "image": "16871",
+   "block": "column 1846",
+   "label": "term 4",
+   "value": "-23.27",
+   "reason": "entries differed",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "image": "16871",
+   "block": "radius-vector block, right column",
+   "label": "last line, arcsec (correction of heliocentric longitude)",
+   "value": "-146.92",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "image": "16873",
+   "block": "table row Jan 13 1845",
+   "label": "error of geocentric longitude, arcsec",
+   "value": "+114.88",
+   "reason": "entries differed",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "image": "16873",
+   "block": "table row Jan 13 1845",
+   "label": "coefficient 4",
+   "value": "-9486",
+   "reason": "flagged doubtful",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "image": "16873",
+   "block": "table row Jan 13 1845",
+   "label": "error in heliocentric longitude (last column), arcsec",
+   "value": "+7.79",
+   "reason": "flagged doubtful",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "image": "16873",
+   "block": "table row Sep 18 1845",
+   "label": "coefficient 4",
+   "value": "+2505",
+   "reason": "entries differed",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "image": "16873",
+   "block": "table row Dec 14 1845",
+   "label": "error of geocentric longitude, arcsec",
+   "value": "+124.05",
+   "reason": "flagged doubtful",
+   "matches": true,
+   "reading": ""
+  }
+ ]
+}
