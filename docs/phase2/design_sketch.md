@@ -392,3 +392,55 @@ therefore not an optimisation but a precondition, and its validation is a milest
 4. Does "modified law" include the fixed-parameter relativistic prediction as its own model?
 5. Is the Uranus data to be run through the same fork, with a modified-law branch added, so that
    the engine is shown on one case of each kind?
+
+## 8. Two candidate questions (scoping, added 12 Nov 2026)
+
+Neither is a plan. Nothing here has been run, and neither may be run on real data before a
+plan is frozen. Both sources they lean on are already in `prior_art.md` (Newcomb 1895,
+section 3; Seeliger 1906, section 4, whose volume and pages are still unverified).
+
+### 8.1 The Occam-factor question
+
+Compare the relativistic term with no free parameter against a ring or dust model with
+stated priors on mass and radius, and report how the Bayes factor depends on the prior
+volume instead of reporting one number.
+
+- Models: 1PN with its strength fixed (zero parameters); a circular ring (mass, radius);
+  optionally Seeliger's form, two ellipsoids, as the flexible end.
+- What is expected before any run: Mercury's advance fixes one combination of ring mass and
+  radius to about 5 % (8.48 ± 0.43 in section 5.2's units). The evidence for the ring then
+  falls roughly in proportion to the prior width of that combination; directions the data
+  do not constrain cost nothing. A log-uniform mass prior over D decades costs a factor
+  near D times 2.3 divided by 0.05 against a model that predicts the value outright.
+- The deliverable would be a curve: log Bayes factor against prior width, for two or three
+  prior shapes, with the widths at which the verdict changes sign or grade stated.
+- What must be stated first: the prior families and their ranges, with a reason from the
+  sources of the time (Le Verrier's and Newcomb's own mass limits, the visibility limits of
+  section 5.5), and whether the 1PN strength is fixed or carries the PPN factor.
+- Risk: the answer is known in outline (section 9 of `prior_art.md`). The new part would be
+  the dependence on the prior, on period data, with the mundane-error model in the same
+  comparison.
+
+### 8.2 The cross-planet signature
+
+1PN fixes the advance of every planet once Mercury's is given: it goes as n / (a (1 − e²)).
+A ring's goes as n / a² outside the ring, and also moves the nodes. The question is whether
+any period data can tell the two dependences apart.
+
+- What in Newcomb 1895 would test it: the table of observed minus theoretical secular
+  variations (pp. 109-110): e dϖ/dt for Mercury, Venus, the Earth and Mars with mean
+  errors, and di/dt and sin i dΩ/dt for Mercury and Venus. Behind it, the 62,030 meridian
+  observations of chapter I and the mass adjustments of chapters V and VI.
+- What section 5.2 already shows: with those mean errors the perihelia of Venus and the
+  Earth cannot separate the models (every prediction is under half a mean error), and for
+  Mars 1PN and a ring differ by 0.1 against 0.35. The perihelia alone are underpowered.
+- Where the leverage may be instead: the nodes. A ring in or near the ecliptic moves the
+  nodes of Mercury and Venus; 1PN does not. Newcomb's sin i dΩ/dt for Venus is
+  +0.60 ± 0.17. Whether that is signal or his mass of the Earth is the first thing to
+  establish (section 5.3).
+- What would be reported: for each model the predicted vector of the nine quantities, the
+  covariance Newcomb gives or implies, and the expected log Bayes factor from synthetic
+  data at his errors, before any real number is used.
+- Constraint: the 1895 digest has been read (section 5.4), so a test on it is not blind.
+  It can calibrate the method; it cannot be the result. See `blinding.md` on the data
+  branch.
