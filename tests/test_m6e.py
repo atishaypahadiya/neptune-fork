@@ -138,3 +138,55 @@ def test_the_recorded_run():
             assert abs(p["median_minus_observed_deg"]["ecl_lon"]) < 0.35
             assert e["width_ratio_posterior_to_prior"][date]["width68"] < 0.01
         assert e["posterior"]["n_failed"] == 0 and e["prior_predictive"]["n_failed"] == 0
+
+
+def _post_hoc_table() -> dict[str, list[str]]:
+    """The rows of the post hoc table in the note: label -> [headline cell, Student-t cell]."""
+    note = (m6e.ROOT / "docs" / "notes" / "M6e.md").read_text(encoding="utf-8")
+    body = note.split("### Post hoc, not in the plan")[1].split("###")[0]
+    rows = [[c.strip() for c in ln.strip().strip("|").split("|")] for ln in body.splitlines()
+            if ln.startswith("|")]  # fmt: skip
+    assert rows[0] == ["", "headline", "Student-t"]
+    return {r[0]: r[1:] for r in rows[2:]}
+
+
+def _printed(cell: str) -> list[tuple[float, int]]:
+    """Each number of a table cell with its count of printed decimals."""
+    import re
+
+    out = []
+    for sign, digits in re.findall(r"([+−-]?)(\d+\.\d+)°", cell):
+        value = float(digits) * (-1.0 if sign in ("−", "-") else 1.0)
+        out.append((value, len(digits.split(".")[1])))
+    return out
+
+
+def test_the_post_hoc_table_is_the_json():
+    """Every number of the post hoc latitude table equals the JSON at its printed precision,
+    on both nights."""
+    r = json.loads(m6e.OUT_JSON.read_text(encoding="utf-8"))
+    table = _post_hoc_table()
+    keys = {
+        "Lalande's ecliptic latitude of date": ("observed",),
+        "predicted latitude, median": ("median",),
+        "predicted latitude, 68 %": ("lo68", "hi68"),
+        "predicted latitude, 95 %": ("lo95", "hi95"),
+    }
+    galle_row = "68 % width of longitude on Galle's night, same draws"
+    assert set(table) == {*keys, galle_row}
+    n = 0
+    for col, model in enumerate(("headline", "student_t")):
+        post = r["models"][model]["post_hoc"]
+        for label, fields in keys.items():
+            printed = _printed(table[label][col])
+            assert len(printed) == len(fields), label
+            for (value, decimals), field in zip(printed, fields, strict=True):
+                for date in m6e.INSTANTS_TDB:
+                    got = post["ecl_lat_deg"][date][field]
+                    assert round(got, decimals) == pytest.approx(value, abs=1e-9), (label, date)
+                    n += 1
+        ((value, decimals),) = _printed(table[galle_row][col])
+        got = post["galle_night_ecl_lon_width68_deg"]
+        assert round(got, decimals) == pytest.approx(value, abs=1e-9)
+        n += 1
+    assert n == 26

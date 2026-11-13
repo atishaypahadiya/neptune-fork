@@ -264,6 +264,32 @@ def interval(x_deg: np.ndarray, centre_deg: float | None = None) -> dict:
     }
 
 
+def ecliptic_latitude_deg(ra_deg, dec_deg, obliquity_rad: float):
+    """Ecliptic latitude of places given on the equator of the same date."""
+    a, d = np.radians(ra_deg), np.radians(dec_deg)
+    return np.degrees(
+        np.arcsin(
+            np.sin(d) * math.cos(obliquity_rad) - np.cos(d) * math.sin(obliquity_rad) * np.sin(a)
+        )
+    )
+
+
+def latitude_summary(p: dict, o: dict) -> dict:
+    """Post hoc (docs/notes/M6e.md): the draws' ecliptic latitude of date and Lalande's."""
+    eps = p["true_obliquity_rad"]
+    q = np.percentile(
+        ecliptic_latitude_deg(p["ra_deg"], p["dec_deg"], eps), [2.5, 16, 50, 84, 97.5]
+    )
+    return {
+        "observed": float(ecliptic_latitude_deg(o["ra_deg"], o["dec_deg"], eps)),
+        "median": float(q[2]),
+        "lo68": float(q[1]),
+        "hi68": float(q[3]),
+        "lo95": float(q[0]),
+        "hi95": float(q[4]),
+    }
+
+
 def summarize_draws(places: dict, obs: dict) -> dict:
     """Per night: the levels of Lalande's place and the intervals of the draws."""
     from fork.export import v13
@@ -414,6 +440,7 @@ def run() -> dict:
         q = posterior_draws(model, cells)
         galle = np.array([math.degrees(galle_lon_of_date_rad(space.theta(v), ctx, geo)) for v in q])
         med = interval(galle)["median"] % 360.0
+        galle_width68 = interval(galle)["width68"]
         if abs(med - PUBLISHED_GALLE_MEDIAN_DEG[model]) > TOL_GALLE_MEDIAN_DEG:
             raise SystemExit(f"{model}: Galle-night median {med:.3f} is not the published one")
         post = predictive(space, ctx, q, epochs)
@@ -433,6 +460,10 @@ def run() -> dict:
             for d in INSTANTS_TDB
         }
         entry["histogram_8_may"] = _histogram(post["1795-05-08"]["lon_deg"])
+        entry["post_hoc"] = {
+            "ecl_lat_deg": {d: latitude_summary(post[d], obs[d]) for d in INSTANTS_TDB},
+            "galle_night_ecl_lon_width68_deg": galle_width68,
+        }
         classes = [entry["posterior"][d]["class"] for d in INSTANTS_TDB]
         entry["reading"] = (
             classes[0]

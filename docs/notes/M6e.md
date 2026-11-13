@@ -322,3 +322,11 @@ night, at which the posterior is usually quoted, to Lalande's nights; it is not 
 distance beyond the data.
 Likewise "never saw 1795" in § 3 and in the reading means that the fits never saw
 Lalande's places of 1795, not that they saw no observation of that time.
+
+## Addendum, 13 November 2026: the post hoc table is in the JSON
+
+The post hoc table above said its numbers were not in `M6e.json`. They now are, under
+`post_hoc` for each model (the latitude per night, and the Galle-night width), written by
+the runner on a rerun with the same seeds. Every other value in the JSON is identical to
+the first run's, apart from the run's timing. A test ties each cell of the table to the
+JSON at its printed precision, for both nights. No number above is changed.
