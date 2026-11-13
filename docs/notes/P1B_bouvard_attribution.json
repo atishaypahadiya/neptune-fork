@@ -1,0 +1,275 @@
+{
+ "plan": "docs/notes/P1B_bouvard_attribution.md",
+ "V1": {
+  "instants": {
+   "1783": {
+    "instant": "1783",
+    "date_paris_midnight": "1783-01-01",
+    "t_years_from_1800": -16.999315537303218,
+    "anomaly_grades": 325.77802225242,
+    "entries": 17,
+    "budget_cs": 0.8500000000000001,
+    "budget_arcsec": 0.27540000000000003,
+    "argument_allowance_cs": 1.8409999999999989,
+    "formula_minus_tables_cs": -9.040210879873484,
+    "formula_minus_tables_arcsec": -2.9290283250790092,
+    "formula_minus_tables_as_read_cs": -0.4055476326029748,
+    "parts_cs": {
+     "mean_longitude": 0.22811772744171321,
+     "precession_inequality": -0.3163721,
+     "great_inequality": 0.02893764474731597,
+     "equation_of_centre": -8.911528036920398,
+     "perturbations": -0.036382132933056255,
+     "reduction": -0.03298398202976216
+    },
+    "mean_longitude_drift_cs_per_year_since_1780": 0.07603924248057108,
+    "with_centre_from_tables_cs": 0.15053630620241165,
+    "with_centre_from_tables_less_mean_and_precession_cs": 0.23879067876069843,
+    "argument_formula_minus_table_parts": {
+     "II": -0.11429583041007163,
+     "III": -0.23756259636411414,
+     "IV": -0.465056382339867,
+     "V": -0.17451681156649101,
+     "VI": 0.06194790995346011,
+     "VII": -0.40483540118373185,
+     "VIII": -0.22065233545367846,
+     "IX": 0.24440404688630224,
+     "X": -1.3569729484992195,
+     "XI": -0.5191312315938603,
+     "XII": -0.05234792045649783
+    }
+   },
+   "1798": {
+    "instant": "1798",
+    "date_paris_midnight": "1798-03-07",
+    "t_years_from_1800": -1.8206707734428473,
+    "anomaly_grades": 398.02852920903086,
+    "entries": 19,
+    "budget_cs": 0.9500000000000001,
+    "budget_arcsec": 0.3078,
+    "argument_allowance_cs": 3.211999999999997,
+    "formula_minus_tables_cs": 0.8111460164655,
+    "formula_minus_tables_arcsec": 0.262811309334822,
+    "formula_minus_tables_as_read_cs": 0.8111460164655,
+    "parts_cs": {
+     "mean_longitude": 1.906844626646489,
+     "precession_inequality": -0.7377815004560183,
+     "great_inequality": 0.07249367762176462,
+     "equation_of_centre": -0.2598296749350095,
+     "perturbations": -0.20210280351937016,
+     "reduction": 0.03152169102312152
+    },
+    "mean_longitude_drift_cs_per_year_since_1780": 0.10489800885093774,
+    "with_centre_from_tables_cs": 1.1207783503923565,
+    "with_centre_from_tables_less_mean_and_precession_cs": -0.04828477579811408,
+    "argument_formula_minus_table_parts": {
+     "II": -0.4825691782649528,
+     "III": -0.4688108232276136,
+     "IV": -0.5164586385521943,
+     "V": -0.8807705426099233,
+     "VI": 0.6705497394124222,
+     "VII": 0.8817427257927193,
+     "VIII": -0.6686053730467165,
+     "IX": -1.1521467344945222,
+     "X": -1.058074068703263,
+     "XI": -0.6008264524721767,
+     "XII": -0.8120194388526443
+    }
+   },
+   "1813": {
+    "instant": "1813",
+    "date_paris_midnight": "1813-05-13",
+    "t_years_from_1800": 13.360711841204655,
+    "anomaly_grades": 70.29136812164326,
+    "entries": 19,
+    "budget_cs": 0.9500000000000001,
+    "budget_arcsec": 0.3078,
+    "argument_allowance_cs": 1.235999999999998,
+    "formula_minus_tables_cs": 10.484546370338649,
+    "formula_minus_tables_arcsec": 3.3969930239897224,
+    "formula_minus_tables_as_read_cs": 10.484546370338649,
+    "parts_cs": {
+     "mean_longitude": 3.4580424367450178,
+     "precession_inequality": -1.3323011491406047,
+     "great_inequality": -0.03848343277672939,
+     "equation_of_centre": 8.664751358106244,
+     "perturbations": -0.28696650967395954,
+     "reduction": 0.019503667925309998
+    },
+    "mean_longitude_drift_cs_per_year_since_1780": 0.1036532388447017,
+    "with_centre_from_tables_cs": 1.5544552714563906,
+    "with_centre_from_tables_less_mean_and_precession_cs": -0.5712860161480224,
+    "argument_formula_minus_table_parts": {
+     "II": -0.7645718512850408,
+     "III": -1.142075786735404,
+     "IV": -0.37712229621968163,
+     "V": -0.42675802360821535,
+     "VI": -0.5787794299586722,
+     "VII": 0.2850638761034361,
+     "VIII": 0.29539113494917046,
+     "IX": -0.3274865688311479,
+     "X": -1.6780508847354554,
+     "XI": -0.4795079751816047,
+     "XII": -1.3433512812435993
+    }
+   },
+   "1828": {
+    "instant": "1828",
+    "date_paris_midnight": "1828-07-18",
+    "t_years_from_1800": 28.542094455852155,
+    "anomaly_grades": 142.55333383559415,
+    "entries": 19,
+    "budget_cs": 0.9500000000000001,
+    "budget_arcsec": 0.3078,
+    "argument_allowance_cs": 2.4759999999999986,
+    "formula_minus_tables_cs": 8.884084680117667,
+    "formula_minus_tables_arcsec": 2.878443436358124,
+    "formula_minus_tables_as_read_cs": 8.884084680117667,
+    "parts_cs": {
+     "mean_longitude": 5.109240246005356,
+     "precession_inequality": -2.0990264677840225,
+     "great_inequality": -0.08666001539614854,
+     "equation_of_centre": 6.988830608518966,
+     "perturbations": -1.0301133549519363,
+     "reduction": 0.0018136644589965556
+    },
+    "mean_longitude_drift_cs_per_year_since_1780": 0.10525029155388996,
+    "with_centre_from_tables_cs": 1.0360889532603323,
+    "with_centre_from_tables_less_mean_and_precession_cs": -1.9741248249610015,
+    "argument_formula_minus_table_parts": {
+     "II": -1.021213621269112,
+     "III": -1.3981223424098062,
+     "IV": -1.245520018157663,
+     "V": -0.9786814726596731,
+     "VI": -0.7755886970402344,
+     "VII": -0.2880521667671019,
+     "VIII": 1.2421214181866844,
+     "IX": -0.5123585636556527,
+     "X": -1.2419116060442548,
+     "XI": -2.309265788036214,
+     "XII": -2.7968023183093464
+    }
+   },
+   "1846": {
+    "instant": "1846",
+    "date_paris_midnight": "1846-10-05",
+    "t_years_from_1800": 46.757015742642025,
+    "anomaly_grades": 229.25402068648754,
+    "entries": 19,
+    "budget_cs": 0.9500000000000001,
+    "budget_arcsec": 0.3078,
+    "argument_allowance_cs": 3.0039999999999982,
+    "formula_minus_tables_cs": -1.1700805022846907,
+    "formula_minus_tables_arcsec": -0.3791060827402398,
+    "formula_minus_tables_as_read_cs": -1.1700805022846907,
+    "parts_cs": {
+     "mean_longitude": 7.058206707471982,
+     "precession_inequality": -3.245258879409038,
+     "great_inequality": -0.14524602458843106,
+     "equation_of_centre": -4.594759649786601,
+     "perturbations": -0.257389953034302,
+     "reduction": 0.014367296251844408
+    },
+    "mean_longitude_drift_cs_per_year_since_1780": 0.10572682103776704,
+    "with_centre_from_tables_cs": 3.2653972243424505,
+    "with_centre_from_tables_less_mean_and_precession_cs": -0.5475506037204934,
+    "argument_formula_minus_table_parts": {
+     "II": -1.3573256184571392,
+     "III": -3.438643657906141,
+     "IV": 0.5037075361237839,
+     "V": -0.015242170113538123,
+     "VI": -1.2336009431516004,
+     "VII": -0.8383759122195897,
+     "VIII": 0.5263647784854584,
+     "IX": -0.9773427576383256,
+     "X": -2.2715003556273814,
+     "XI": -1.1957015306763878,
+     "XII": -2.5909265616087396
+    }
+   },
+   "1715": {
+    "instant": "1715",
+    "date_paris_midnight": "1715-03-04",
+    "t_years_from_1800": -84.82956878850102,
+    "anomaly_grades": 2.8917515356950005,
+    "entries": 20,
+    "budget_cs": 1.0,
+    "budget_arcsec": 0.324,
+    "argument_allowance_cs": 3.02,
+    "formula_minus_tables_cs": 6.15210728161037,
+    "formula_minus_tables_arcsec": 1.99328275924176,
+    "formula_minus_tables_as_read_cs": 6.15210728161037,
+    "parts_cs": {
+     "mean_longitude": 3.6613141684792936,
+     "precession_inequality": -0.5639889669586649,
+     "great_inequality": -0.04912941616470334,
+     "equation_of_centre": 0.7903049956566008,
+     "perturbations": 2.2805144843421203,
+     "reduction": 0.03309201531953132
+    },
+    "mean_longitude_drift_cs_per_year_since_1780": -0.05647549640768046,
+    "with_centre_from_tables_cs": 5.697948936838657,
+    "with_centre_from_tables_less_mean_and_precession_cs": 2.600623735318028,
+    "argument_formula_minus_table_parts": {
+     "II": -1.199587186785834,
+     "III": -0.16767909782265633,
+     "IV": -0.5241894224980115,
+     "V": 0.10693122436850899,
+     "VI": 0.23194627329479545,
+     "VII": 1.1692921663479297,
+     "VIII": 0.3205005081363197,
+     "IX": -1.155310069364532,
+     "X": -1.9888261316027638,
+     "XI": -0.030295020437620224,
+     "XII": -1.4506546121217525
+    }
+   }
+  },
+  "largest_difference_arcsec": 3.3969930239897224,
+  "over_budget": [
+   "1783",
+   "1813",
+   "1828",
+   "1846"
+  ],
+  "outcome": "fail",
+  "constant_and_trend_removed": {
+   "formula_minus_tables_cs": {
+    "constant_cs": 1.480298823267744,
+    "trend_cs_per_year": 0.14266619824582885,
+    "residual_cs": {
+     "1783": -6.668522350503849,
+     "1798": 1.0428415721477022,
+     "1813": 8.576248952333419,
+     "1828": 4.835794288425003,
+     "1846": -7.786362462402273
+    }
+   },
+   "with_centre_from_tables_cs": {
+    "constant_cs": 1.28114498095818,
+    "trend_cs_per_year": 0.040085066714613406,
+    "residual_cs": {
+     "1783": -0.04831187346120647,
+     "1798": 0.32065417000953733,
+     "1813": 0.15305509035437037,
+     "1828": -0.966587228560889,
+     "1846": 0.5411898416581877
+    }
+   }
+  },
+  "sum_of_added_constants_cs": 717.5,
+  "eccentricity": {
+   "p_ii": 0.0466108,
+   "of_printed_coefficient_59427.54": 0.04668699530760639,
+   "of_table_x_59417.54": 0.04667913490699394,
+   "adams": 0.046679
+  },
+  "sign_before_group_iii": {
+   "used": "-",
+   "largest_difference_arcsec_with_plus": 270.00607853346503
+  }
+ },
+ "V2": "the five terms of § 7 are transcribed (two entries, 15 cells, no disagreement); its checks were not run: the work stopped at V1",
+ "V3": "not run: the work stopped at V1",
+ "cells": "not run"
+}

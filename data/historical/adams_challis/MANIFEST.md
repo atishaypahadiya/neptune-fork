@@ -277,3 +277,24 @@ entries of 200 cells from 17 bands cut from the full-size images (under
 | `adams_solutions_ms_reconciliation.csv` | the four differences between the entries and the recut | `dff231d49845255e406ac8d875007f2590b9d213e64020f4c78c7efff0c63bca` |
 | `passes_ms/stjohns_w16_pass1.csv` | first entry | `3de30e11d667b66741477395b6b2e60efe09e88fb485ce6944a4c812abb4c3bd` |
 | `passes_ms/stjohns_w16_pass2.csv` | second entry, from the bands and a list of labels alone | `4f8184c4515d1ec304156e95eeaba52a34fc36c73add2e845fd0a233701381ee` |
+
+## Bouvard 1821, table rows for the check of the formula; Adams § 7 (transcribed 13 November 2026)
+
+For V1 and V2 of `docs/notes/P1B_bouvard_attribution.md`. Two entries from bands cut from the
+page images (`data/cache/adams_challis/bouvard/v1_bands/`, `data/cache/adams_challis/s7_bands/`,
+not committed); the second from the bands and a column specification alone. 803 cells, 0
+differences. Two readings of Table X are replaced in `value_used`, with the reason in the row.
+The § 7 terms are from the pamphlet printing of the memoir (the Nautical Almanac appendix
+listed above), p. 6.
+
+| file | content | SHA-256 |
+|---|---|---|
+| `bouvard_1821/bouvard_1821_uranus_table_rows.csv` | 764 cells of Tables I to IV, IX to XXI, XXXII and Jupiter's Table III (p. 12), as read and as used | `d2f317cfd1865801b034b73373c677d11ae45966537f832ecf1e139db17650b1` |
+| `bouvard_1821/bouvard_1821_great_inequalities.csv` | 24 cells of A, A′, A″ (pp. ii, iii) | `01b494d839ac2fa6079da5d18d3a08fc59302ebfdad8c723918e3c180747f25b` |
+| `adams_memoir_s7_terms.csv` | 15 cells: coefficient, argument and constant of his five terms | `53339c28a8e9f9ce223fb5d92a2699f94720d36ca14298eb2ce5485cbf1888e6` |
+| `bouvard_1821/passes/bouvard_1821_table_rows_pass1.csv` | first entry | `9030296aa6bab64e7b8bfd6b6013e9305582e83c5fc3f4c43aa5a1ef890e42ef` |
+| `bouvard_1821/passes/bouvard_1821_table_rows_pass2.csv` | second entry | `938a369e678ffe3807a28da0a7cba2373073ff84c431e0d5bdd1c41f1be74a7e` |
+| `bouvard_1821/passes/bouvard_1821_great_inequalities_pass1.csv` | first entry | `ea52fde902626b0c2b5862e59c3df36200830fb44039507bec70add24c3d4153` |
+| `bouvard_1821/passes/bouvard_1821_great_inequalities_pass2.csv` | second entry | `ea52fde902626b0c2b5862e59c3df36200830fb44039507bec70add24c3d4153` |
+| `bouvard_1821/passes/adams_memoir_s7_terms_pass1.csv` | first entry | `9b40b346d1c817c872cd1e550d54ffcc4f6eabd63f9255838300bba83f2a1396` |
+| `bouvard_1821/passes/adams_memoir_s7_terms_pass2.csv` | second entry | `5a18c66f2c79613b180fff57f08938c2b3ae367779157f42633eab42d0e3479f` |

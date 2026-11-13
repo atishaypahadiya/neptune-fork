@@ -338,3 +338,111 @@ for the results; no trailers.
    unchanged.
 
 ---
+
+## Results, 13 November 2026: V1 fails; the work stops before V2, V3 and every cell
+
+Nothing above the line is changed. No cell has been run, and no gate of V3.
+
+### Transcription
+
+Two entries of every cell, the first from bands cut from the page images, the second made
+independently from the same bands and a column specification alone.
+
+| what | cells | differences between the entries |
+|---|---|---|
+| table rows of Uranus the six instants touch (Tables I to IV, IX, X, XI to XXI, XXXII) and four rows of the precession table | 764 | 0 |
+| the great inequalities A, A′, A″ (pp. ii, iii) | 24 | 0 |
+| Adams's § 7, five terms | 15 | 0 |
+
+Instants (Paris civil date, the midnight that begins it): 1 January 1783, 7 March 1798,
+13 May 1813, 18 July 1828, 5 October 1846; S4: 4 March 1715.
+
+Deviations from the plan, all made before any comparison was read except the third:
+
+1. The great inequalities were transcribed as well. The formula of p. xv is written in φ,
+   φ′, φ″, which carry A, A′, A″ of pp. ii and iii; the 104 cells of the first
+   transcription do not hold them, and without them the formula is not the theory.
+2. The precession table is Jupiter's Table III on p. 12, not p. 16 as § 5 says.
+3. Two readings of Table X are replaced, because the table's own printed first differences
+   on both sides contradict them: row 324 reads 4.29.83,8 and is used as 4.28.83,8; row
+   327 reads 4.39.52,6 and is used as 4.38.52,6. Both entries read the same ink. Only the
+   1783 instant touches these rows. With the readings as they stand its difference is
+   −0″.13; with the replacements −2″.93. The outcome below does not depend on it. One more
+   reading the differences contradict (Table XIII, row 720, 2,6 against 2,5) is left as read.
+4. Interpolation: four points in Tables IX, X, XII and the precession table, two elsewhere.
+
+### V1
+
+Formula minus tables, heliocentric longitude of Uranus.
+
+| instant | budget | argument allowance | formula − tables | outcome |
+|---|---|---|---|---|
+| 1783 | 0″.275 | 0″.60 | −2″.93 | fail |
+| 1798 | 0″.308 | 1″.04 | +0″.26 | pass |
+| 1813 | 0″.308 | 0″.40 | +3″.40 | fail |
+| 1828 | 0″.308 | 0″.80 | +2″.88 | fail |
+| 1846 | 0″.308 | 0″.97 | −0″.38 | stop and ask |
+| S4, 1715 | 0″.324 | 0″.98 | +1″.99 | (not in the threshold) |
+
+**V1 fails: the largest difference is 3″.40, over 2″. The formula as transcribed is not the
+tables.** By § 5 the work stops here. d for the propagation check would be 3″.40.
+
+Where the difference sits (centesimal seconds, formula minus tables; × 0.324 for ″):
+
+| instant | mean longitude | precession inequality | great inequality | equation of the centre | perturbations | reduction |
+|---|---|---|---|---|---|---|
+| 1783 | +0.23 | −0.32 | +0.03 | −8.91 | −0.04 | −0.03 |
+| 1798 | +1.91 | −0.74 | +0.07 | −0.26 | −0.20 | +0.03 |
+| 1813 | +3.46 | −1.33 | −0.04 | +8.66 | −0.29 | +0.02 |
+| 1828 | +5.11 | −2.10 | −0.09 | +6.99 | −1.03 | +0.00 |
+| 1846 | +7.06 | −3.25 | −0.15 | −4.59 | −0.26 | +0.01 |
+| 1715 | +3.66 | −0.56 | −0.05 | +0.79 | +2.28 | +0.03 |
+
+Three causes, read off the parts:
+
+- **The equation of the centre.** Table X is the series of p. xv with a leading coefficient
+  of 59417″.54, ten seconds under the printed 59427″.54. With 59417″.54 the equation of the
+  centre agrees at every instant, and the eccentricity it implies is 0.046679, the value
+  Adams's memoir uses (the printed coefficient gives 0.046687; p. ii prints 0.0466108).
+  So the tables use the Uranus solution's eccentricity, and p. xv's first coefficient
+  looks like a misprint of one digit. This is inferred from six instants, not shown.
+- **The mean motion.** Table I's mean longitude falls behind the elements of p. ii by
+  0″.105 centesimal a year from 1780 (0.076, 0.105, 0.104, 0.105, 0.106 at the five
+  instants). The handwritten line in the Harvard copy at Table I says to add 0″,10 t to
+  the mean longitude, t in years from 1780: the same amount.
+- **The precession.** The tables apply the inequality of the precession from Jupiter's
+  Table III; the formula has the uniform precession only.
+
+Post hoc, and not a pass of V1: with 59417″.54 in the formula, the differences are +0″.05,
++0″.36, +0″.50, +0″.34, +1″.06 (1715: +1″.85). Taking out the mean-longitude and precession
+differences as well leaves +0″.08, −0″.02, −0″.19, −0″.64, −0″.18 (1715: +0″.84): inside
+the budget at four instants, and inside the budget plus the argument allowance at all
+five. A constant and a trend fitted to the five differences with 59417″.54 leave −0″.02,
++0″.10, +0″.05, −0″.31, +0″.18. A constant, a trend, and a change of eccentricity are the
+forms his δε, δn, δx₁, δy₁ take up, but that the differences reach no cell's offset is
+not tested here: no cell has been run.
+
+Also read off this stage:
+
+- The worn sign before group III is −. With + the largest difference is 270″.
+- The anomaly is the longitude of date less the perihelion of date.
+- Table IX is A″ of p. iii (agreement within 0″.2 centesimal at all six instants).
+- The sum of the constants added to the equations of the longitude is 717″.5 centesimal.
+- 1715 is not explained to the same level: +2.3 centesimal seconds remain in the
+  perturbations, with Table II's arguments for −100 years in the path.
+
+Second-entry flags kept with the rows: three damaged digits in Tables I and IV, read alike
+by both entries.
+
+### Not done
+
+V2's checks (the § 7 terms are transcribed; the arguments, the § 8 to § 9 conversion and
+the definition of C are not checked), V3, the cells, the sensitivities. A ruling is needed
+on what C_Bouvard is before anything further: the formula as printed has failed; the
+alternatives are the tables themselves at the 30 epochs (route B), or the formula with the
+three differences above built in and V1 run again on instants not used to find them.
+
+Files: `data/historical/adams_challis/bouvard_1821/` (rows, passes),
+`adams_memoir_s7_terms.csv`, `src/fork/historical/bouvard_1821.py`,
+`src/fork/export/p1b_bouvard.py`, `tests/test_p1b_bouvard.py`,
+`docs/notes/P1B_bouvard_attribution.json`.

@@ -1,0 +1,25 @@
+n,page,formula,cell,value_as_printed
+01,ii,"A, Jupiter",lead_sign,+
+02,ii,"A, Jupiter",coef,"3662,403"
+03,ii,"A, Jupiter",coef_t,"-0,1071"
+04,ii,"A, Jupiter",coef_t2,"+0,000103"
+05,ii,"A, Jupiter",arg_const,"+4,6311"
+06,ii,"A, Jupiter",arg_t,"-235,811"
+07,ii,"A, Jupiter",arg_t2,"+0,039"
+08,ii,"A, Jupiter",second_coef,"-37,079"
+09,iii,"A′, Saturn",lead_sign,-
+10,iii,"A′, Saturn",coef,"8866,202"
+11,iii,"A′, Saturn",coef_t,"-0,2477"
+12,iii,"A′, Saturn",coef_t2,"+0,000252"
+13,iii,"A′, Saturn",arg_const,"+4,6219"
+14,iii,"A′, Saturn",arg_t,"-236,646"
+15,iii,"A′, Saturn",arg_t2,"+0,041"
+16,iii,"A′, Saturn",second_coef,"+94,147"
+17,iii,"A′, Saturn",second_coef_t,"-0,0053"
+18,iii,"A′, Saturn",third_coef,"+104,23"
+19,iii,"A′, Saturn",third_arg_const,"-95,08"
+20,iii,"A″, Uranus",lead_sign,-
+21,iii,"A″, Uranus",coef,"392,21"
+22,iii,"A″, Uranus",coef_t,"-0,045"
+23,iii,"A″, Uranus",arg_const,"-98,3983"
+24,iii,"A″, Uranus",arg_t,"-53,40"
