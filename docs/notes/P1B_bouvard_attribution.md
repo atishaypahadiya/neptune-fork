@@ -522,3 +522,80 @@ epoch of Table I's row, 0.95 day after his normal epoch; the nearest midnight is
 31 December 1782. V1 compares both paths at one instant, so nothing in it changes.
 
 After V1′ the work stops and is reported before V2.
+
+## Results, 13 November 2026: V1′; one instant is "stop and ask"; stopped before V2
+
+Run after the amendment above was pushed (7306594). Nothing above is changed. No cell
+has been run, and neither V2 nor V3.
+
+### Transcription
+
+609 cells of table rows for the seven instants, two entries (the first from bands cut from
+the page images, the second made independently from the same bands and a column
+specification alone). 0 differences. The row of Jupiter's Table III above 1700 is the row
+of 1600; for the 1690 instant the precession inequality is interpolated in the rows of
+1600, 1700, 1750 and 1800, for every other instant as in V1.
+
+Readings the neighbouring figures contradict, read alike by both entries:
+
+| table, row | reads | the printed differences on both sides give | used | instant it touches |
+|---|---|---|---|---|
+| X, 25 | 2.35.14,3 | 2.33.14,3 | 2.33.14,3 | 1804 |
+| XII, 2600 | 3.41,6 | 3.31,6 | 3.31,6 | 1789 |
+| XXXII, 80 | 17,7 | no differences printed; the neighbours (18,5; 17,8; 16,3) suggest 17,1 | 17,7 | 1750 |
+
+### V1′
+
+Corrected formula minus tables.
+
+| instant | budget | budget + allowance | difference | with the readings as they stand | outcome |
+|---|---|---|---|---|---|
+| 26 January 1789 | 0″.292 | 1″.09 | −0″.50 | −2″.40 | **stop and ask** |
+| 3 April 1804 | 0″.308 | 1″.33 | +0″.00 | +0″.72 | pass |
+| 22 June 1822 | 0″.308 | 1″.18 | +0″.02 | +0″.02 | pass |
+| 27 August 1837 | 0″.308 | 1″.32 | −0″.12 | −0″.12 | pass |
+| 20 December 1690 | 0″.324 | 1″.60 | −1″.05 | −1″.05 | pass |
+| 5 November 1750 | 0″.324 | 1″.20 | +0″.65 | +0″.65 | pass |
+| 12 January 1769 | 0″.308 | 1″.17 | −0″.48 | −0″.48 | pass |
+
+**Outcome by the rule of the amendment: stop and ask.** Six instants pass. At 1789 the
+corrected formula passes with Table XII's row 2600 as its printed differences give it and
+fails with the row as it reads, so the rule makes that instant "stop and ask" and no
+consequence row applies until it is ruled. The formula as printed is 1″.6 to 4″.3 from
+the tables at six of the seven instants (−2″.45, +1″.90, +4″.04, +1″.58, −4″.34, +4″.22,
+−0″.25).
+
+Against the budget alone: 1804, 1822 and 1837 are inside it; 1789, 1690, 1750 and 1769
+are over it and inside the budget plus the allowance.
+
+Where what is left sits (centesimal seconds, corrected formula minus tables):
+
+| instant | mean longitude | great inequality | equation of the centre | perturbations | reduction |
+|---|---|---|---|---|---|
+| 1789 | −0.06 | −0.02 | +0.11 | −1.58 | −0.01 |
+| 1804 | +0.00 | +0.06 | −0.03 | +0.01 | −0.03 |
+| 1822 | +0.01 | −0.08 | −0.32 | +0.48 | −0.02 |
+| 1837 | −0.03 | −0.13 | −0.01 | −0.18 | −0.03 |
+| 1690 | −0.06 | −0.07 | +0.09 | −3.17 | −0.03 |
+| 1750 | +0.02 | −0.05 | +0.04 | +1.71 | +0.30 |
+| 1769 | +0.03 | +0.02 | +0.24 | −1.76 | −0.00 |
+
+- The two corrections that V1′ can test hold at all seven fresh instants: the mean
+  longitude agrees within 0.06 centesimal second (the rate of 0″.105 a year, and the
+  rule of the row a century later for the ancient dates), and the equation of the centre
+  within 0.32 (the coefficient 59417″.54, at seven new anomalies).
+- What is left is in the equations of the perturbations, and it is larger at the ancient
+  instants. There the tables' arguments, carried back by Table II, differ from the
+  formula's by more than their rounding in places (argument III by 8 parts of 10,000 at
+  1769, 2 at 1690 and 1750).
+- The +0.30 in the reduction at 1750 is the reading 17,7 of Table XXXII, row 80. With
+  17,1 the 1750 difference is +0″.56.
+
+Not part of the rule: the corrected formula at the instants of V1 gives +0″.05, −0″.06,
+−0″.23, −0″.57, −0″.04, and at 1715 +0″.73 (+0″.84 before the precession was interpolated
+by the tables' rule). **1715 stays unexplained** in cause: V1′ shows the same kind of
+difference at the other three ancient instants (in the perturbations, through the
+arguments), within the budget plus the allowance, but does not say where it comes from.
+
+A ruling is needed on the 1789 instant before any consequence is drawn, and on whether
+the ancient instants are close enough.

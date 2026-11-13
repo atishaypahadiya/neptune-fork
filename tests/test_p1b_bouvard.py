@@ -24,6 +24,7 @@ def read(path: Path) -> list[dict[str, str]]:
         ("bouvard_1821_table_rows", 764),
         ("bouvard_1821_great_inequalities", 24),
         ("adams_memoir_s7_terms", 15),
+        ("bouvard_1821_table_rows_v1p", 609),
     ],
 )
 def test_two_entries_agree_in_every_cell(stem, n):
@@ -44,6 +45,8 @@ def test_reconciled_rows_differ_from_the_reading_only_where_logged():
     assert changed == {
         ("X", "324", "eq"): ("4.29.83,8", "4.28.83,8"),
         ("X", "327", "eq"): ("4.39.52,6", "4.38.52,6"),
+        ("X", "25", "eq"): ("2.35.14,3", "2.33.14,3"),
+        ("XII", "2600", "eq"): ("3.41,6", "3.31,6"),
     }
     assert all(r["note"] for r in rows if r["value_as_printed"] != r["value_used"])
 
@@ -106,3 +109,30 @@ def test_the_difference_is_the_centre_coefficient_and_the_mean_motion():
 
 def test_the_sign_before_group_iii_is_minus():
     assert P.v1()["sign_before_group_iii"]["largest_difference_arcsec_with_plus"] > 80.0
+
+
+def test_corrected_formula_at_the_v1_instants_is_the_post_hoc_removal():
+    r = P.v1p()["not_part_of_the_rule"]
+    got = [r[n]["corrected_minus_tables_arcsec"] for n in (*P.V1_NAMES, "1715")]
+    assert got == pytest.approx([0.05, -0.06, -0.23, -0.57, -0.04, 0.73], abs=0.01)
+
+
+def test_v1_prime_as_reported():
+    r = P.v1p()
+    rows = r["instants"]
+    names = (*P.MODERN_V1P, *P.ANCIENT_V1P)
+    assert [rows[n]["corrected_minus_tables_arcsec"] for n in names] == pytest.approx(
+        [-0.50, 0.00, 0.02, -0.12, -1.05, 0.65, -0.48], abs=0.01
+    )
+    assert [rows[n]["entries"] for n in names] == [18, 19, 19, 19, 20, 20, 19]
+    assert all(
+        abs(rows[n]["corrected_minus_tables_arcsec"]) <= rows[n]["limit_arcsec"] for n in names
+    )
+    # one instant passes only with a reading replaced by what the printed differences give
+    assert rows["1789"]["corrected_minus_tables_as_read_arcsec"] == pytest.approx(-2.40, abs=0.01)
+    assert r["outcomes"] == {n: "stop and ask" if n == "1789" else "pass" for n in names}
+    assert r["consequence"] == "stop and ask"
+    # the mean motion and the equation of the centre agree at every fresh instant
+    for n in names:
+        assert abs(rows[n]["parts_cs"]["mean_longitude"]) < 0.1
+        assert abs(rows[n]["parts_cs"]["equation_of_centre"]) < 0.4

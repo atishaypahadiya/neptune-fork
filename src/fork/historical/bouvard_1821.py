@@ -80,6 +80,16 @@ INSTANTS = (
     Instant("1846", (1846, 10, 5), 1846, None, "Octobre common", "5"),
     Instant("1715", (1715, 3, 4), 1815, "-100", "Mars common", "4"),
 )
+# V1′: the midnights nearest seven of his normal epochs not used to find the corrections
+INSTANTS_V1P = (
+    Instant("1789", (1789, 1, 26), 1789, None, None, "26"),
+    Instant("1804", (1804, 4, 3), 1804, None, "Avril leap", "3"),
+    Instant("1822", (1822, 6, 22), 1822, None, "Juin common", "22"),
+    Instant("1837", (1837, 8, 27), 1837, None, "Août common", "27"),
+    Instant("1690", (1690, 12, 20), 1790, "-100", "Décembre common", "20"),
+    Instant("1750", (1750, 11, 5), 1850, "-100", "Novembre common", "5"),
+    Instant("1769", (1769, 1, 12), 1869, "-100", None, "12"),
+)
 
 
 def centesimal_seconds(s: str) -> float:
@@ -134,11 +144,16 @@ def formula(
     centre_coefficient: float | None = None,
     sign_group_iii: int | None = None,
     great_inequalities: bool = True,
+    mean_slip: float = 0.0,
+    precession: tuple[float, float, float] = (0.0, 0.0, 0.0),
 ) -> dict[str, float]:
     """The printed formula at t. Angles in centesimal seconds unless named ``_grades``.
 
     ``centre_coefficient`` replaces the leading coefficient of the equation of the centre
     (printed 59427″.54); ``sign_group_iii`` the sign before group III (printed on worn type).
+    ``mean_slip`` (centesimal seconds) is taken from the mean longitude that enters the
+    longitude and the anomaly, not from the arguments; ``precession`` is the inequality of the
+    precession added to the longitude, the perihelion and the node.
     """
     c = formula_cells()
     g = great_inequality_cells()
@@ -181,7 +196,8 @@ def formula(
     node = _num(c[22]) + _num(c[23]) * s * t
     # the perihelion of p. ii moves with the equinox (Table I prints the same motion), so the
     # anomaly is the longitude of date less the perihelion
-    anomaly = f2 + prec - peri
+    own = f2 + prec + (precession[0] - mean_slip) * s  # the mean longitude of date
+    anomaly = own - peri - precession[1] * s
     lead = _num(c[28]) if centre_coefficient is None else centre_coefficient
     centre = (lead - _num(c[29]) * t) * _sin(anomaly)
     for k, n in enumerate((30, 32, 34, 36), 2):
@@ -204,12 +220,12 @@ def formula(
         _num(c[n]) * _sin(arg[a] + _num(c[n + 1]))
         for a, n in zip(ARGS[3:], (53, 55, 57, 59, 61, 63, 65, 67), strict=True)
     )
-    in_orbit = (f2 + prec) / s + centre + ii + iii + iv + small
-    reduction = _num(c[69]) * _sin(2 * (in_orbit * s - node))
+    in_orbit = own / s + centre + ii + iii + iv + small
+    reduction = _num(c[69]) * _sin(2 * (in_orbit * s - node - precession[2] * s))
     return {
         "longitude": (in_orbit + reduction) % CIRCLE_CS,
         "in_orbit": in_orbit % CIRCLE_CS,
-        "mean_longitude": ((mu + prec) / s) % CIRCLE_CS,
+        "mean_longitude": ((mu + prec) / s - mean_slip) % CIRCLE_CS,
         "great_inequality": big_a2,
         "anomaly_grades": anomaly % 400.0,
         "centre": centre,
@@ -228,6 +244,36 @@ def _lagrange(xs: list[float], ys: list[float], x: float) -> float:
                 p *= (x - xj) / (xi - xj)
         total += p
     return total
+
+
+CENTRE_FROM_TABLES = 59417.54  # the leading coefficient Table X answers to
+MEAN_SLIP_PER_YEAR = 0.105  # centesimal seconds: Table I against the mean motion of p. ii
+MEAN_SLIP_FROM = 1780.0
+
+
+def precession_inequality(year: float, used: bool = True) -> tuple[float, float, float]:
+    """The inequality of the precession for the longitude, the perihelion and the node
+    (Jupiter's Table III, p. 12), four rows about the date."""
+    d = table_rows(used)
+    rows = [1600, 1700, 1750, 1800] if year < 1700 else [1700, 1750, 1800, 1900]
+    return tuple(
+        _lagrange(rows, [centesimal_seconds(d["P", str(r), col]) for r in rows], year)
+        for col in ("lon", "peri", "node")
+    )
+
+
+def corrected_formula(inst: Instant) -> dict[str, float]:
+    """The formula with the three corrections of the amendment of 13 November 2026 to
+    docs/notes/P1B_bouvard_attribution.md: Table X's leading coefficient, Table I's mean
+    motion (for a date before 1780 the row of Table I is a century later), and the
+    inequality of the precession as the tables apply it."""
+    row_year = inst.year + (100.0 if inst.century is not None else 0.0)
+    return formula(
+        inst.t,
+        centre_coefficient=CENTRE_FROM_TABLES,
+        mean_slip=MEAN_SLIP_PER_YEAR * (row_year - MEAN_SLIP_FROM),
+        precession=precession_inequality(inst.year),
+    )
 
 
 def _centre_row(d: dict, row: int) -> tuple[float, float]:
@@ -272,10 +318,7 @@ def table_longitude(inst: Instant, used: bool = True) -> dict:
     dec = int(y // 10) * 10
     yrs = [dec - 10, dec, dec + 10, dec + 20]
     great = _lagrange(yrs, [centesimal_seconds(d["IX", str(r), "eq"]) for r in yrs], y)
-    pyr = [1700, 1750, 1800, 1900]
-    prec = _lagrange(pyr, [centesimal_seconds(d["P", str(r), "lon"]) for r in pyr], y)
-    prec_peri = _lagrange(pyr, [centesimal_seconds(d["P", str(r), "peri"]) for r in pyr], y)
-    prec_node = _lagrange(pyr, [centesimal_seconds(d["P", str(r), "node"]) for r in pyr], y)
+    prec, prec_peri, prec_node = precession_inequality(y, used)
     corrected = lon + great + prec
     anomaly = ((corrected - peri - prec_peri) % CIRCLE_CS) / 10_000
     k = math.floor(anomaly)

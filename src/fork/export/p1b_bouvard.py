@@ -1,7 +1,8 @@
 """Phase 1b, step 3d: the validation stages of docs/notes/P1B_bouvard_attribution.md.
 
-Only V1 (Bouvard's printed formula against his tables) is implemented: it failed its
-pre-registered threshold, and the plan stops the work there. Nothing here runs a cell.
+V1 (Bouvard's printed formula against his tables) failed its pre-registered threshold. V1′
+(the amendment of 13 November 2026) tests the corrected formula at seven further instants.
+Nothing here runs a cell.
 
     uv run python -m fork.export.p1b_bouvard   # docs/notes/P1B_bouvard_attribution.json
 """
@@ -20,7 +21,7 @@ from fork.historical import bouvard_1821 as B
 ROOT = Path(__file__).resolve().parents[3]
 OUT_JSON = ROOT / "docs" / "notes" / "P1B_bouvard_attribution.json"
 FAIL_ARCSEC = 2.0  # § 5: over this at any instant, the formula is not the tables
-CENTRE_FROM_TABLES = 59417.54  # the leading coefficient that Table X answers to (printed 59427″.54)
+CENTRE_FROM_TABLES = B.CENTRE_FROM_TABLES  # Table X's leading coefficient (printed 59427″.54)
 V1_NAMES = ("1783", "1798", "1813", "1828", "1846")
 RAD_IN_CS = 4_000_000.0 / (2.0 * math.pi)
 
@@ -125,17 +126,88 @@ def v1() -> dict:
     }
 
 
+def v1p_row(inst: B.Instant) -> dict:
+    """One instant of V1′: the corrected formula against the tables, with the readings the
+    printed differences contradict taken both ways."""
+    t = B.table_longitude(inst)
+    as_read = B.table_longitude(inst, used=False)
+    f = B.corrected_formula(inst)
+    diff = _wrap(f["longitude"] - t["longitude"])
+    diff_read = _wrap(f["longitude"] - as_read["longitude"])
+    limit = t["budget_cs"] + t["argument_allowance_cs"]
+    ok, ok_read = abs(diff) <= limit, abs(diff_read) <= limit
+    return {
+        "instant": inst.name,
+        "date_paris_midnight": "{:04d}-{:02d}-{:02d}".format(*inst.date),
+        "t_years_from_1800": inst.t,
+        "anomaly_grades": t["anomaly_grades"],
+        "entries": t["entries"],
+        "budget_arcsec": t["budget_arcsec"],
+        "argument_allowance_arcsec": t["argument_allowance_cs"] * CS,
+        "limit_arcsec": limit * CS,
+        "corrected_minus_tables_arcsec": diff * CS,
+        "corrected_minus_tables_as_read_arcsec": diff_read * CS,
+        "within_budget_alone": abs(diff) <= t["budget_cs"],
+        "outcome": "pass"
+        if ok and ok_read
+        else "fail"
+        if not ok and not ok_read
+        else "stop and ask",
+        "printed_formula_minus_tables_arcsec": _wrap(
+            B.formula(inst.t)["longitude"] - t["longitude"]
+        )
+        * CS,
+        "parts_cs": {
+            "mean_longitude": _wrap(f["mean_longitude"] - t["mean_longitude"]),
+            "great_inequality": f["great_inequality"] - t["great_inequality"],
+            "equation_of_centre": f["centre"] - t["centre"] - t["secular"],
+            "perturbations": f["perturbations"] - t["perturbations"],
+            "reduction": f["reduction"] - t["reduction"],
+        },
+        "argument_formula_minus_table_parts": {
+            a: (f[f"arg_{a}"] - t["args"][a] + B.ARG_PARTS[a] / 2) % B.ARG_PARTS[a]
+            - B.ARG_PARTS[a] / 2
+            for a in B.ARGS
+        },
+    }
+
+
+MODERN_V1P = ("1789", "1804", "1822", "1837")
+ANCIENT_V1P = ("1690", "1750", "1769")
+
+
+def v1p() -> dict:
+    rows = {i.name: v1p_row(i) for i in B.INSTANTS_V1P}
+    outcomes = {n: r["outcome"] for n, r in rows.items()}
+    if any(o == "stop and ask" for o in outcomes.values()):
+        consequence = "stop and ask"
+    elif any(outcomes[n] == "fail" for n in MODERN_V1P):
+        consequence = "route B for all 30 epochs"
+    elif any(outcomes[n] == "fail" for n in ANCIENT_V1P):
+        consequence = "route B for the ancient epochs; the corrected formula for the modern"
+    else:
+        consequence = "the corrected formula is C_Bouvard"
+    return {
+        "instants": rows,
+        "outcomes": outcomes,
+        "consequence": consequence,
+        "not_part_of_the_rule": {i.name: v1p_row(i) for i in B.INSTANTS},
+    }
+
+
 def main() -> None:
     payload = {
         "plan": "docs/notes/P1B_bouvard_attribution.md",
         "V1": v1(),
+        "V1_prime": v1p(),
         "V2": "the five terms of § 7 are transcribed (two entries, 15 cells, no disagreement); "
-        "its checks were not run: the work stopped at V1",
-        "V3": "not run: the work stopped at V1",
+        "its checks are not run: the work stops after V1′ for a report",
+        "V3": "not run",
         "cells": "not run",
     }
     OUT_JSON.write_text(json.dumps(payload, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
     r = payload["V1"]
+    print("V1′:", payload["V1_prime"]["outcomes"], "->", payload["V1_prime"]["consequence"])
     print("V1:", r["outcome"], f"largest {r['largest_difference_arcsec']:.2f} arcsec")
 
 
