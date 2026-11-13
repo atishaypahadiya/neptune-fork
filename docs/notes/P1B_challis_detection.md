@@ -753,3 +753,82 @@ accepted draws. The tornado of § 6.4 used the first 10,000 accepted draws.
 In the post hoc table above, the 39 % of draws in which C1a and C1b are equal are the draws
 where both comparisons cover the planet or neither does (each case's probability is p_follow
 times whether its comparison covers the planet). This replaces the gloss given there.
+
+## Named input N1: search of 12 November 2026
+
+N1 is the Berlin sheet's limits, epoch and faintest plotted magnitude (§ 3). The sheet in
+question is Hora XXII, Argelander's, the one Challis had; Galle's sheet on 23 September was
+Hora XXI, Bremiker's. Sources were fetched on 2026-11-12 and are cached under
+`data/cache/adams_challis/berlin/` (ignored), with hashes in
+`data/historical/adams_challis/MANIFEST.md`.
+
+| what was found | where | class | URL or shelfmark | SHA-256 (first 16) | what it states |
+|---|---|---|---|---|---|
+| The sheet Hora XXII, lower part (declination −8° to −15°, the key, the title), photograph of the Potsdam copy | Krajnović 2021, Fig. 6.10 (preprint) | the primary sheet in reproduction | https://arxiv.org/pdf/2108.06305, p. 28; copy: Library of the Leibniz-Institut für Astrophysik Potsdam | `cd62724e87aa1859` (PDF) | Title: "Theil des Himmels, zwischen XXIIʰ und XXIIIʰ der geraden Aufsteigung, und 15° südlicher bis 15° nördlicher Abweichung, für 1800 … entworfen von Herrn Professor Fr. Argelander in Åbo". Grid lines every 4 minutes, lettered XXII, 4′ … 56′, XXIII, with one more column outside each: the outermost lines are 21h 56m and 23h 04m. Lowest line 15°. Key of magnitudes 1 to 9, the faintest class "9-10". Engraved "K. Kolbe sculps. Berlin" |
+| The Academy's catalogue, Vorbericht p. VI, the rules for the sheets | *Cataloge zu den 24 Stunden der akademischen Sternkarten für 15° südlicher bis 15° nördlicher Abweichung, bearbeitet von verschiedenen Astronomen, herausgegeben von der Königlichen Akademie der Wissenschaften zu Berlin*, Berlin 1859 | primary | Wrocław University digital library, shelfmark K178, https://bibliotekacyfrowa.pl/dlibra/publication/113969 (images: https://glam.uwr.edu.pl/iiif/IAS_K178_58271/manifest, image 12) | `7a2bc356b6e110d2` | Rule 1: "Das Netz besteht aus Quadraten für die Grade der Aufsteigung und Abweichung … es geht von 4 Zeitminuten vor dem Anfange einer Stunde, bis zu 4 Zeitminuten nach dem Ende derselben, und enthält also 510 Quadrate"; the sheets run "von − 15° bis + 15° der Abweichung" |
+| The same, p. VII | as above, image 13 | primary | as above | `d73e6f9c9ddf74e6` | Rule 2: the stars are drawn "für den Anfang des Jahres 1800". Rule 5: the sheet is completed with "alle Sterne … bis zu der aus dem Probeblatte hervorgehenden Grenze", those that "ein Fraunhoferscher Kometensucher von 34 Linien Öffnung und zehnmaliger Vergrößerung unter vortheilhaften Umständen noch sehen kann" |
+| The same, p. IV, Bessel's letter to the Academy | as above, image 10 | primary | as above | `34de3b35c1ae1dcc` | Proposal 1: "Die Karten müssen in Blättern von 17° Breite und 30 Grad Höhe, für die Epoche von 1800, immer von Stunde zu Stunde der Rektascension und auf jeder Seite ein Grad mehr … entworfen" |
+| The catalogue's title page | as above, image 7 | primary | as above | `434352692928ef5c` | The title as given above; "Berlin, gedruckt in der Druckerei der Königlichen Akademie der Wissenschaften, 1859. In Commission in F. Dümmler's Verlags-Buchhandlung". No editor is named on the title page; Jones 2002 says the introduction is signed by Encke and Dove (not read here) |
+| Table of the 24 sheets | Jones 2002, *Highlights of Astronomy* 12, 367–370, DOI 10.1017/S1539299600013770 | secondary | publisher's PDF | `87b3f2c80bd968a6` | Hora XXII: Argelander in Åbo, 1832, 1436 catalogued stars and 65 more observed with a meridian circle. Nothing on limits or epoch |
+| The design in a modern account | Krajnović 2021, pp. 10–11 of the preprint | secondary | as the first row | as the first row | 4-minute overlaps, 510 squares, epoch 1800, citing the 1859 catalogue pp. IV–V; the fallback of § 3 came from here. Fig. 6.10's caption places Neptune "between 21h 56m and 22h" on the sheet in August 1846, which holds for right ascension of date, not for the sheet's own equinox |
+
+Not found or not reached: a scan of the whole sheet (the upper part, +15° to −8°, was not
+seen; the title states the range); the catalogue's section for Hora XXII itself (it is in the
+same Wrocław volume, 598 images, not paged through); Bessel 1826, *Astronomische Nachrichten*
+4, 437 (the archive.org scan found was volume 5). Google Books' search interface refused with
+"quota exceeded" and was left. e-rara, the Staatsbibliothek zu Berlin, the BBAW, Heidelberg,
+Dresden, Munich, Gallica and HathiTrust were not searched once the sheet and the catalogue
+had been read.
+
+**N1 obtained 12 Nov 2026.** The sheet and the Academy's rules agree: Hora XXII runs from
+21h 56m to 23h 04m of right ascension and from −15° to +15° of declination, for the equinox
+of the beginning of 1800; its faintest class of stars in the key is 9-10. These are the
+limits of N1's first fallback, now read from the sheet. The second fallback (the same limits
+applied to right ascension of date) is the frame mismatch that § 3 said it would be if the
+sheets were for 1800.
+
+**C2 under N1 itself**, as § 5 provides, on the same accepted draws (seed (2026, 11, 4, 1),
+100,000 accepted of 1,003,853; `uv run python -m fork.export.p1b_challis_n1 run`, 59 s;
+`docs/notes/P1B_challis_detection_n1.json`; the step 4 JSON is unchanged, SHA-256 recorded in
+the new file):
+
+| case | held, before 23 Sep: mean (5 to 95 %) | § 7 row | by 1 Oct | halved priors | paired against A0 | replay (not read) |
+|---|---|---|---|---|---|---|
+| C2 chart, N1 itself | 0.00 (0.00 to 0.00) | would very probably not have | 1.00 | 0.00, same row | no difference established | 0.34 (0.03 to 0.70) |
+
+Checks: N1's chart test equals the first fallback's on every night; the accepted draws are
+those of step 4 (same acceptance counts; A0 equal draw by draw, largest difference 0); the
+per-draw values equal the first fallback's (largest difference 0). So the number is the first
+fallback's by construction; what changes is its footing. The event-sampling check of the
+closed form was made in step 4 on those values and is not repeated.
+
+**Reading (§ 7), N1 obtained 12 Nov 2026.** C2 under N1: would very probably not have; 0 in
+every draw, no input moves it; no longer conditional on a fallback. The reason is the one
+step 2 found: for the equinox of 1800 the planet was at 21h 55m 43s on 4 August and
+21h 54m 54s on 12 August, west of the sheet's edge at 21h 56m, so a check of those nights'
+stars against Hora XXII could not have met it. (On 29 and 30 July it was still on the sheet,
+at 21h 56m 19s and 21h 56m 13s, within 19 s of the edge; C2 as planned checks the stars of
+the two nights on which the record has the planet, 4 and 12 August.) By the letter of § 7,
+"C2 is read once per version of N1", and the three versions do not fall in one row, so step
+4's combined line "depends on the Berlin sheet's limits" is left as written; the version
+that the sheet supports is the first. The companion page is not changed here.
+
+Not settled by this: the sheet's faintest magnitude in modern terms (the key's last class is
+9-10; Neptune was about 7.8, so the planet's absence from the sheet is not in question), and
+whether the Cambridge copy was the same printing as the Potsdam one.
+
+**N1, the author's verification, 12 Nov 2026.** The author checked Hora XXII against the
+sheet images by eye on 12 November 2026. Read from the sheet:
+
+| item | reading |
+|---|---|
+| title cartouche | "zwischen XXII^h und XXIII^h … 15° südlicher bis 15° nördlicher Abweichung, für 1800" |
+| author and engraver | Argelander (Åbo); engraved by Kalbe, Berlin |
+| plotted field | 21h 56m to 23h 04m: a 4-minute overlap column beyond each hour line |
+| southern edge | −15° |
+| key | down to class 9-10 |
+
+The nominal hour in the title (22h to 23h) is narrower than the plotted field. N1 uses the
+plotted field, 21h 56m to 23h 04m, as above; the C2 figures and the § 7 reading are not
+changed by this. With the nominal hour instead, the planet (21h 55m 43s and 21h 54m 54s for
+1800 on 4 and 12 August) is further outside the sheet, so the reading would be the same.

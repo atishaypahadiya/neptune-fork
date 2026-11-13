@@ -1,0 +1,121 @@
+{
+ "plan": "docs/notes/P1B_challis_detection.md, § 5 C2: 'and under N1 itself if obtained'",
+ "step_4_json_sha256": "eeb8f4e8bfbd7bb52d85d77e2479bf6106a8808cff67b45d6ad193f441e70079",
+ "prerun_sha256": "5d2dfad0842d164712014a526c1ee8b191cd2d59e06d21e963f9d06f89a1aba5",
+ "n1": {
+  "sheet": "Akademische Sternkarten, Hora XXII (Argelander, Åbo; engraved by K. Kolbe)",
+  "ra_limits_h": [
+   21.933333333333334,
+   23.066666666666666
+  ],
+  "ra_limits_text": [
+   "21h 56m",
+   "23h 04m"
+  ],
+  "dec_limits_deg": [
+   -15.0,
+   15.0
+  ],
+  "equinox": 1800,
+  "faintest_class_in_key": "9-10",
+  "read_from": "the photograph of the Potsdam copy in Krajnović 2021, Fig. 6.10 (lower part of the sheet: declination −8° to −15°, the key and the title)",
+  "date_read": "2026-11-12"
+ },
+ "neptune_ra_1800_h": {
+  "1846-07-29": 21.93853039626538,
+  "1846-07-30": 21.936915710585346,
+  "1846-08-04": 21.928655190538624,
+  "1846-08-12": 21.914941174601715,
+  "1846-09-29": 21.837756525483474
+ },
+ "n_accepted": 100000,
+ "seeds": {
+  "draws": [
+   2026,
+   11,
+   4,
+   1
+  ]
+ },
+ "closed_form_only": "the event-sampling check of the closed form was made in step 4 on the first fallback, whose per-draw values these equal",
+ "checks": {
+  "n1_chart_test_equals_first_fallback_on_every_night": true,
+  "acceptance_equals_step_4": true,
+  "max_abs_A0_minus_step_4_A0": 0.0,
+  "max_abs_n1_minus_step_4_first_fallback": 0.0
+ },
+ "case": {
+  "label": "C2 chart, N1 itself (the sheet: limits for the equinox of 1800)",
+  "conditional_on": "N1 as read from the sheet on 12 November 2026 (no fallback)",
+  "held": {
+   "primary": {
+    "mean": 0.0,
+    "q05": 0.0,
+    "q95": 0.0
+   },
+   "by_1_october": {
+    "mean": 1.0,
+    "q05": 1.0,
+    "q95": 1.0
+   },
+   "t2_primary": {
+    "mean": 0.0,
+    "q05": 0.0,
+    "q95": 0.0
+   },
+   "t2_by_1_october": {
+    "mean": 0.0,
+    "q05": 0.0,
+    "q95": 0.0
+   },
+   "paired_minus_A0": {
+    "mean": 0.0,
+    "q05": 0.0,
+    "q95": 0.0
+   }
+  },
+  "replay": {
+   "primary": {
+    "mean": 0.33594461585071944,
+    "q05": 0.029008181781618677,
+    "q95": 0.6954722074875169
+   },
+   "by_1_october": {
+    "mean": 0.7836535259992964,
+    "q05": 0.43363069570277096,
+    "q95": 0.9855699135030213
+   },
+   "t2_primary": {
+    "mean": 0.33594461585071944,
+    "q05": 0.029008181781618677,
+    "q95": 0.6954722074875169
+   },
+   "t2_by_1_october": {
+    "mean": 0.33594461585071944,
+    "q05": 0.029008181781618677,
+    "q95": 0.6954722074875169
+   }
+  },
+  "reading_row": "would very probably not have",
+  "halved_priors": {
+   "primary": {
+    "mean": 0.0,
+    "q05": 0.0,
+    "q95": 0.0
+   },
+   "reading_row": "would very probably not have"
+  },
+  "prior_dependent": false,
+  "paired_reading": "no difference established"
+ },
+ "reading_rows_by_version_of_n1": {
+  "C2_1800": "would very probably not have",
+  "C2_date": "depends on",
+  "C2_N1": "would very probably not have"
+ },
+ "c2_combined_reading_row_in_step_4": "depends on the Berlin sheet's limits",
+ "compute": {
+  "wall_s": 58.84985017776489,
+  "cpu_s": 58.673857
+ }
+}
