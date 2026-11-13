@@ -522,3 +522,17 @@ uv run pytest -q tests/test_mercury_transcription.py                # the two en
 ```
 
 The method and the counts are in `docs/phase2/transcription.md`.
+
+## Step 3e: step 3d's four cells with Bouvard's tables at the 30 epochs (route B)
+
+```sh
+uv run python docs/notes/scripts/bouvard_table_bands.py --check   # row bands from the cached scan (hash checked)
+uv run pytest -q tests/test_p1b_bouvard.py tests/test_p1b_bouvard_tables.py
+uv run python -m fork.export.p1b_bouvard_tables                    # about 3 min on one core
+```
+
+Plan and results: `docs/notes/P1B_bouvard_tables.md`; numbers in
+`docs/notes/P1B_bouvard_tables.json`. The runner refuses to run if any input's SHA-256
+differs from § 1 of the plan. The new rows are in
+`data/historical/adams_challis/bouvard_1821/bouvard_1821_uranus_table_rows_route_b.csv`;
+step 3d's rows file is unchanged.

@@ -270,3 +270,13 @@ local branches):
 | Phase 2 scoping, physics, validation and first data set | merged (16c78d2, 10ca793, 407f4dc); nothing fitted; no plan frozen | a pre-registered plan before any fit of Mercury's observations |
 | The attribution to Bouvard's tables | done and released in v1.3.0 (`docs/notes/P1B_bouvard_attribution.md`) | none |
 | Changelog | the Unreleased section covers `main` since v1.3.0 | date it at the release |
+
+## Step 3e, Bouvard's tables at the 30 epochs, 13 November 2026 (local branch `bouvard-route-b`)
+
+| item | state |
+|---|---|
+| Rows entered twice (1,855 cells) | done; 1 difference, decided on the band |
+| Plan | pushed before any longitude was formed |
+| R1 to R3 and the sensitivities | done; R3 a different reading from step 3d's primary counterpart; step 3d's registered reading not replaced |
+| S-midnight | not run: Table IV rows 9 and 30 not entered |
+| Site and companion page | untouched; any change needs its own review |
