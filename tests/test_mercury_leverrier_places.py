@@ -120,3 +120,24 @@ def test_time_increases_and_daily_steps_are_possible_but_for_the_logged_pair():
 
 MONTHS_IN_ORDER = ("Janv.", "Fév.", "Mars", "Avril", "Mai", "Juin", "Juill.", "Août", "Sept.",
                    "Oct.", "Nov.", "Déc.")  # fmt: skip
+
+
+def test_the_spot_check_by_a_person_matches_the_final_table():
+    """20 cells checked against the page images (docs/review/, 13 November 2026): all match."""
+    import hashlib
+    import json
+
+    path = M.parents[2] / "docs" / "review" / "leverrier_places_spotcheck_human_results.json"
+    sc = json.loads(path.read_text(encoding="utf-8"))
+    table = M / "leverrier_1859_paris_places.csv"
+    assert sc["places_sha256"] == hashlib.sha256(table.read_bytes()).hexdigest()
+    assert sc["reviewer"] == "human" and sc["seed"] == 20261114
+    cells = sc["cells"]
+    assert len(cells) == 20 and all(c["matches"] is True and c["reading"] == "" for c in cells)
+    rows = {(r["page"], r["row"]): r for r in FINAL}
+    keys = [(c["page"], c["row"], c["field"]) for c in cells]
+    assert len(set(keys)) == 20
+    assert all(rows[k[:2]][k[2]] == c["value"] for k, c in zip(keys, cells, strict=True))
+    assert Counter(c["reason"] for c in cells) == {
+        "random": 10, "marked doubtful": 6, "misprint log": 3, "guillemet cell": 1
+    }  # fmt: skip

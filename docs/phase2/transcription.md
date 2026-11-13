@@ -189,3 +189,28 @@ The passage says that the observed times need a correction −kΔt, where Δt is
 the time scale implied by the inequalities of the Moon's mean motion, and that over the
 span of the transits k cannot be separated from the constant c; it gives Δt as closely
 represented by −18s + 60s T². This is what the page says, not a model adopted here.
+
+### Le Verrier's Paris places: the spot check by a person, 13 November 2026
+
+Added below the section above, which stands as written. This supersedes its sentence "A
+person's spot check has not been made; a 20-cell kit is ready".
+
+I checked 20 cells of the table against the page bands
+(`docs/review/leverrier_places_spotcheck_human_results.json`, 13 November 2026 21:24 UTC,
+seed 20261114, against the SHA-256 of `leverrier_1859_paris_places.csv` recorded in it). A
+cell is one field of one row; the table has 7,146. All 20 match; no discrepancy.
+
+| how the cell was chosen | cells | match |
+|---|---|---|
+| in the misprint log (p. 58 row 9; p. 57 rows 15 and 16) | 3 | 3 |
+| marked doubtful by an entry | 6 | 6 |
+| a cell printed as », left empty | 1 | 1 |
+| random | 10 | 10 |
+
+Ten of the cells were chosen because they were the likeliest to be wrong; the other ten were
+drawn at random, so only those ten bear on the error rate of the table as a whole. Zero
+errors among 10 random cells bounds that rate only loosely (below about 26 % at 95 %
+confidence); the agreement of the two entries in all 7,146 cells is the stronger evidence, and
+this check is its independent test. The answers were marked on the kit page and saved as a
+print of it, not through its Export button; the print's cells and values were checked
+against the kit.

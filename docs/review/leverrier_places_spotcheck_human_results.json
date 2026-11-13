@@ -1,0 +1,210 @@
+{
+ "seed": 20261114,
+ "places_sha256": "ea6323c124070d3412de34d74706c261366ac6b06aa7a5893eda1646474600c5",
+ "exported": "2026-11-13T21:24:00Z",
+ "form": "the kit page printed to PDF with the answers marked (SHA-256 25d6d3a28b1b216df3c3e39536f2dc78d04a9ff8fdaec10adb46401a60f0b567; kept private, it carries page images); the answers were read from the marked buttons, and the print's 20 cells and values were checked against the kit",
+ "reviewer": "human",
+ "reviewer_name": "Atishay Pahadiya",
+ "cells": [
+  {
+   "page": "58",
+   "row": "9",
+   "field": "group",
+   "value": "24",
+   "band": "p058_b01.png",
+   "reason": "misprint log",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "page": "57",
+   "row": "15",
+   "field": "lon_d",
+   "value": "163",
+   "band": "p057_b02.png",
+   "reason": "misprint log",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "page": "57",
+   "row": "16",
+   "field": "lon_d",
+   "value": "154",
+   "band": "p057_b02.png",
+   "reason": "misprint log",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "page": "52",
+   "row": "6",
+   "field": "flags",
+   "value": "guillemet:lat",
+   "band": "p052_b01.png",
+   "reason": "guillemet cell",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "page": "51",
+   "row": "10",
+   "field": "group",
+   "value": "4",
+   "band": "p051_b01.png",
+   "reason": "marked doubtful",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "page": "52",
+   "row": "5",
+   "field": "group",
+   "value": "6",
+   "band": "p052_b01.png",
+   "reason": "marked doubtful",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "page": "52",
+   "row": "36",
+   "field": "group",
+   "value": "16",
+   "band": "p052_b04.png",
+   "reason": "marked doubtful",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "page": "53",
+   "row": "16",
+   "field": "group",
+   "value": "26",
+   "band": "p053_b02.png",
+   "reason": "marked doubtful",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "page": "53",
+   "row": "17",
+   "field": "group",
+   "value": "26",
+   "band": "p053_b02.png",
+   "reason": "marked doubtful",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "page": "53",
+   "row": "18",
+   "field": "group",
+   "value": "27",
+   "band": "p053_b02.png",
+   "reason": "marked doubtful",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "page": "52",
+   "row": "16",
+   "field": "time_h",
+   "value": "13",
+   "band": "p052_b02.png",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "page": "58",
+   "row": "30",
+   "field": "lat_sign",
+   "value": "",
+   "band": "p058_b03.png",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "page": "57",
+   "row": "32",
+   "field": "lon_s",
+   "value": "3.2",
+   "band": "p057_b03.png",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "page": "61",
+   "row": "17",
+   "field": "day",
+   "value": "12",
+   "band": "p061_b02.png",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "page": "58",
+   "row": "1",
+   "field": "year",
+   "value": "1836",
+   "band": "p058_b01.png",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "page": "57",
+   "row": "9",
+   "field": "lat_s",
+   "value": "57.3",
+   "band": "p057_b01.png",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "page": "54",
+   "row": "27",
+   "field": "lon_d",
+   "value": "40",
+   "band": "p054_b03.png",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "page": "61",
+   "row": "4",
+   "field": "day",
+   "value": "20",
+   "band": "p061_b01.png",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "page": "51",
+   "row": "14",
+   "field": "group",
+   "value": "5",
+   "band": "p051_b02.png",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  },
+  {
+   "page": "56",
+   "row": "41",
+   "field": "group",
+   "value": "97",
+   "band": "p056_b04.png",
+   "reason": "random",
+   "matches": true,
+   "reading": ""
+  }
+ ]
+}
