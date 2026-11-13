@@ -55,3 +55,9 @@ so that those columns are not on them (`docs/phase2/scripts/mercury_crops.py`).
 | `p452_may.png` | `31892723b15a2c35c1c297fb378cc96b3d7817326ffd1592a1bd6db10a6e5ade` |
 | `p452_nov_1.png` | `99aed7cb43b8566d48d50df2d1d57c5aa7c30adf92a527bc978536eb7af8e32f` |
 | `p452_nov_2.png` | `78a4d58322a1ca1efce5235e9ba61ba2065482be57b78d6bc77429ef2fbe3d33` |
+
+## Spot check (added 13 Nov 2026)
+
+`docs/review/newcomb_spotcheck_human_results.json`: the author's check of 20 cells of
+`newcomb_1882_contacts.csv` against the page images, all matching. Its scope is stated in
+`docs/phase2/transcription.md`.

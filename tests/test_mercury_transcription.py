@@ -73,3 +73,42 @@ def test_logged_misprints_point_at_printed_values():
         row = next(r for r in FINAL if (r["table"], r["row"]) == (m["table"], m["row"]))
         assert row[m["field"]] == m["printed"]
         assert m["action"] == "log_only" and m["corrected"] == ""
+
+
+def test_the_authors_spot_check_covers_the_table_as_committed():
+    import collections
+    import hashlib
+    import json
+
+    import pytest
+
+    sc = json.loads(
+        (M.parents[2] / "docs" / "review" / "newcomb_spotcheck_human_results.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    table = M / "newcomb_1882_contacts.csv"
+    assert sc["contacts_sha256"] == hashlib.sha256(table.read_bytes()).hexdigest()
+    assert sc["reviewer"] == "human" and sc["seed"] == 20261113
+    cells = sc["cells"]
+    assert len(cells) == 20 and all(c["matches"] is True and c["reading"] == "" for c in cells)
+    rows = {(r["table"], r["row"]): r for r in FINAL}
+    keys = [(c["table"], c["row"], c["field"]) for c in cells]
+    assert len(set(keys)) == 20
+    assert all(rows[k[:2]][k[2]] == c["value"] for k, c in zip(keys, cells, strict=True))
+    how = collections.Counter(c["reason"] for c in cells)
+    assert how == {
+        "random": 13,
+        "misprint log": 3,
+        "marked doubtful": 2,
+        "fractional second": 1,
+        "braced second value": 1,
+    }
+    # Every logged misprint and both doubtful glyphs are among the checked cells.
+    logged = {(m["table"], m["row"], m["field"]) for m in read("newcomb_1882_misprints.csv")}
+    doubtful = {("I", "1", "obs_s"), ("IV", "4", "k_sign")}
+    assert logged | doubtful <= set(keys)
+    # 560 cells qualify: ten fields a row, no contact column in tables III and IV, one brace.
+    n = sum(10 - (r["table"] in ("III", "IV")) + bool(r["second_value"]) for r in FINAL)
+    assert n == 560
+    assert 1 - 0.025 ** (1 / 13) == pytest.approx(0.247, abs=0.001)

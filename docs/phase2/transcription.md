@@ -85,3 +85,34 @@ shasum -a 256 data/cache/mercury/astronomicalpap00newcgoog.pdf      # see the MA
 uv run --with pymupdf --with pillow python -I docs/phase2/scripts/mercury_crops.py
 uv run pytest -q tests/test_mercury_transcription.py
 ```
+
+## Spot check by the author, 13 Nov 2026
+
+Added below the note of 12 November, which stands as written. This section supersedes its
+sentence "A person's spot check has not been made".
+
+I checked 20 cells of the table against the page images
+(`docs/review/newcomb_spotcheck_human_results.json`, exported 2026-11-13 06:34 UTC, seed
+20261113, SHA-256 of `newcomb_1882_contacts.csv` `70d4d0d1…`). A cell is one field of one
+row; the table has 560. All 20 match.
+
+| how the cell was chosen | cells | match |
+|---|---|---|
+| marked doubtful by an entry | 2 | 2 |
+| in the misprint log | 3 | 3 |
+| the one braced second value | 1 | 1 |
+| the one fractional second | 1 | 1 |
+| random | 13 | 13 |
+
+**Confirmed.** The two doubtful glyphs are as entered: the seconds of table I row 1 are 1,
+and the sign of table IV row 4 is plus. The three logged inconsistencies are in the print
+as logged: contact III for the first 1782 row, the day 8 for the exterior contact of 1848,
+and its "0k" without a sign. The second time of the 1786 brace is 15h 0m 8s, and the
+seconds of the 1868 contact III are 9.8.
+
+**Scope.** 7 of the 20 cells were chosen, not drawn: they are the cells above. 13 were
+random among the remaining 553. No discrepancy in 13 random cells bounds the cell error
+rate only weakly: the two-sided 95 % upper limit is 1 − 0.025^(1/13) ≈ 25 %. The check is
+therefore not an estimate of the error rate of the table. Its value is that every doubtful
+or irregular reading was confirmed by a person. The images were whole tables cut from the
+same scan, with the transcribed columns only.
