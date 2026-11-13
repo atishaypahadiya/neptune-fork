@@ -242,3 +242,68 @@ def test_the_two_row_apparatus():
     assert abs(B._table_viii(d, (1834, 8, 13)) - (0.60 + 0.03 * 5 / 10)) < 1e-12
     # Table X between two rows at a whole degree is the row itself
     assert abs(B._centre_two_row(d, 84.0) - B._centre_row(d, 84)[0]) < 1e-9
+
+
+def _recorded() -> dict:
+    import json
+
+    return json.loads(T.OUT_JSON.read_text(encoding="utf-8"))
+
+
+def test_r1_as_recorded():
+    """R1 is table lookups: recomputed and set against the recorded run."""
+    got, rec = T.r1(), _recorded()["R1"]
+    for y, row in rec["epochs"].items():
+        assert (
+            abs(
+                got["epochs"][y]["formula_minus_tables_arcsec"] - row["formula_minus_tables_arcsec"]
+            )
+            < 1e-9
+        )
+        assert got["epochs"][y]["outcome"] == row["outcome"]
+    assert len(got["epochs"]) == 29 and "1780" not in got["epochs"]
+    counts = [got["all_29"]["counts"][o] for o in T.OUTCOMES]
+    assert counts == [18, 11, 0, 0]
+    assert [got["fresh_17"]["counts"][o] for o in T.OUTCOMES] == [12, 5, 0, 0]
+    assert [got["near_v1_or_v1p_12"]["counts"][o] for o in T.OUTCOMES] == [6, 6, 0, 0]
+    assert got["all_29"]["largest"]["epoch"] == "1690"
+    assert abs(got["all_29"]["largest"]["arcsec"] + 1.073) < 0.001
+    assert got["fresh_17"]["largest"]["epoch"] == "1819"
+    assert got["all_29"]["outside"] == [] and got["stop_and_ask"] == []
+
+
+def test_gates_and_r2_as_recorded():
+    from fork.export import p1b_bouvard as P
+
+    j = _recorded()
+    assert j["gates_pass"] and len(j["gates"]) == 8
+    assert j["step_3d_columns_reproduced_max_abs_arcsec"] < 1e-9
+    r = j["R2"]["reading"]
+    assert abs(r["R"] - 3.16) < 0.005 and abs(r["Ob"] - 7.99) < 0.005 and abs(r["I"] + 1.04) < 0.005
+    assert abs(r["R"] + r["Ob"] - (r["A"] - r["D"])) < 1e-9
+    assert (r["R_class"], r["Ob_class"]) == ("partial", "carries")
+    assert r["row"] == P.READING_ROWS["partial", "carries"]
+    assert r["chain_row"] == r["row"]
+    assert not r["state"]["depends_on_the_method"] and not r["state"]["interaction_override"]
+
+
+def test_r3_as_recorded():
+    j = _recorded()["R3"]
+    primary, century, own = j.values()
+    assert not primary["same"] and primary["differs_in"][0] == "1: D1(c)'s row"
+    assert primary["formula_state"]["d1c_classes"] == ["does not carry", "carries"]
+    assert not century["same"] and century["differs_in"] == ["1: D1(c)'s row"]
+    assert own["same"]
+    # the rule applied again to the recorded states gives the recorded outcome
+    for v in j.values():
+        assert T.same_reading(v["tables_state"], v["formula_state"])["same"] == v["same"]
+
+
+def test_s_midnight_not_run_for_want_of_rows():
+    import numpy as np
+
+    ep = T.epochs()
+    s = T.s_midnight_status({"years": list(ep), "t": np.array(list(ep.values()))})
+    assert not s["run"]
+    assert sorted(s["missing"]) == ["1764", "1792", "1810", "1819", "1840"]
+    assert s == _recorded()["sensitivities"]["S-midnight"]
