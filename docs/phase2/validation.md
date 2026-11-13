@@ -82,7 +82,7 @@ Sun and eight planets (planetary systems as single bodies at their barycentres, 
 masses) from the JPL Horizons states at 1900 January 1.0 TDB, integrated to 1800 and to
 2000; Mercury's heliocentric ecliptic longitude against Horizons at 3,599 epochs, every
 20.3 days. Order 4, step 1 day. Horizons served its current default planetary ephemeris (the
-version string was not recorded; the work order names DE440/441); the states are cached in `data/cache/phase2/`, and 39 epochs are committed as a
+version string was not recorded; DE440/441 is expected but not confirmed); the states are cached in `data/cache/phase2/`, and 39 epochs are committed as a
 test fixture.
 
 | model | largest longitude difference, 1800–2000 | trend of the perihelion residual |

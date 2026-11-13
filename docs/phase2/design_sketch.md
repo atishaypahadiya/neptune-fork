@@ -359,7 +359,7 @@ as a separate, clearly labelled line.
 | Mercury transits 1891-1973 | perihelion to 0.5 (Morrison and Ward); still one number | to 1973 | moderate if their collection is public |
 | eclipse and transit searches for the matter itself | bounds on a discrete body or on scattered light | 1860-1908 | not orbital; enters as a prior |
 | radar ranging to Mercury, Venus and Mars | the distance scaling; (2 + 2 gamma - beta)/3 to 0.7 per cent in 1972 | from the 1960s | available in ephemeris data sets; outside the historical brief |
-| spacecraft ranging | the periodic 1PN signature; J2 separately (Park et al. 2017) | from 2011 | outside the brief |
+| spacecraft ranging | the periodic 1PN signature; J2 separately (Park et al. 2017) | from 2011 | out of scope |
 
 Within the 19th century the only handle with real leverage is Venus's node, and the historical
 determination of it was wrong in the direction of matter. The data that actually settle the
