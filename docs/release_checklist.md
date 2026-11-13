@@ -207,6 +207,20 @@ in the code record only.
   to that record.
 - [x] Follow-up commit: that DOI in `CITATION.cff`, `README.md` and `site/data/release.json`.
 
+## v1.2.1 (released on the author's word, 2026-11-13 UTC)
+
+A patch. Contents in `CHANGELOG.md`: the chart case corrected, Krajnović's book, the Lille
+link, public names and voice, the manuscript check, Bouvard's tables, the CI checks, the grid.
+
+- [x] Metadata: version 1.2.1 in `pyproject.toml`, `uv.lock` and `CITATION.cff` (its `doi:`
+  removed until Zenodo mints the version DOI); `site/data/release.json`; the companion
+  page's status.
+- [x] Checks: ruff, tests, prerender, number audit on both pages, layout in Chromium and
+  WebKit, citation validation, one link pass.
+- [ ] Tag, GitHub release, Zenodo version DOI, follow-up commit with the DOI.
+- Not in this release: the dataset record is unchanged (its Lille handle is corrected by
+  hand on Zenodo); the v1.2.0 release notes and Zenodo description are corrected in place.
+
 ## v1.3 list (opened 2026-11-12; no release without the explicit word)
 
 - Carried from v1.2: M6d, M6e, the remaining M6c variants, the S1 cell-0 resolution.

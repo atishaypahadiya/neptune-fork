@@ -2,7 +2,7 @@
 
 Versions follow semver. Dates are the release dates; the DOIs are in `CITATION.cff`.
 
-## 1.2.1 (unreleased)
+## 1.2.1 (2026-11-13)
 
 ### Corrected
 
