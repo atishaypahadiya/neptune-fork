@@ -9,7 +9,7 @@ Scoping note, 2026-11-12. Not a pre-registration. All web access on 2026-11-12.
 | SCAN | page images or OCR text of the source were read for the statement made |
 | ABS | the abstract was read (arXiv API, OpenAlex API or Semantic Scholar API) |
 | META | only the bibliographic record was checked (Crossref API or archive.org metadata) |
-| UNVERIFIED | stated from general knowledge; nothing fetched supports it |
+| UNVERIFIED | stated without a source read for this note; nothing retrieved supports it |
 
 A META tag means the citation exists as written. It says nothing about the content. Where a
 content statement sits beside a META tag, the statement is UNVERIFIED unless marked otherwise.

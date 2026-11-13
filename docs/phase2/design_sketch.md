@@ -167,7 +167,7 @@ Wisdom-Holman split does not carry over unchanged. Three routes:
    dV = -3 mu^2/(c^2 r^2) reproduces the perihelion advance 6 pi mu / (c^2 a (1 - e^2)) per orbit
    exactly and shifts the mean motion by a constant that the free semi-major axis absorbs. This
    is the route of Nobili and Roxburgh (1986) and of Saha and Tremaine (1994) (both META; details
-   from memory, UNVERIFIED). It stays symplectic and costs one extra term in `_kick`.
+   not checked against the papers, UNVERIFIED). It stays symplectic and costs one extra term in `_kick`.
 2. *Split with a modified drift.* Saha and Tremaine's full treatment keeps the H_K^2 term as a
    rescaled drift. More faithful, more code, no gain at 19th-century precision.
 3. *Full Einstein-Infeld-Hoffmann forces with an implicit or non-symplectic step.* Needed only
@@ -383,7 +383,7 @@ From `docs/reproduce.md` and `docs/notes/M8.md`:
 A full-likelihood nested run costs about five Phase 1 headline fits. The fast likelihood is
 therefore not an optimisation but a precondition, and its validation is a milestone of its own.
 
-## 7. Open questions for the owner
+## 7. Open questions
 
 1. Is the 1895 digest (section 5.4) in or out? Using it is cheap and it spans four planets, but
    it is not blind and it was looked at for this note.
