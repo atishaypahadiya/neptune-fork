@@ -1,5 +1,7 @@
 # v1.3: draft plans for the carried items
 
+These drafts are carried to the v1.4 list.
+
 **DRAFT — not frozen, not pushed.** Written 2026-11-12 on a local branch. Nothing here is a
 pre-registration until it has been reviewed, moved into the note of its milestone, committed
 and pushed, and no run below may start before that. No data that these runs would produce
