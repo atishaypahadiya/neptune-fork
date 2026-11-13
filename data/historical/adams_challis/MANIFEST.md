@@ -181,3 +181,30 @@ Not done, because no page was seen: rendering the Uranus tables, recording their
 (arguments, epochs, perturbation terms, masses) and estimating the transcription effort for
 Adams's 30 normal-place epochs. Once a PDF is saved by hand, put it under
 `data/cache/adams_challis/bouvard/` and add its SHA-256 here.
+
+## Bouvard's 1821 tables: obtained 12 November 2026 (cached, not committed)
+
+Correction to the search record above: the Gallica ark `bpt6k9668766k` is not this book. It
+is Bouvard's *Observations astronomiques* (1840), as the author found on opening it. The
+row is left as written; the ark is not a copy of the tables.
+
+| file | source | pages | SHA-256 |
+|---|---|---|---|
+| `data/cache/adams_challis/bouvard/bouvard_1821_SfZ4Eiw9yR0C.pdf` | Google Books id `SfZ4Eiw9yR0C`, the Harvard College Library copy (shelfmark Astr 968.21.2, gift of J. G. Cogswell, 1865), digitised 2005; downloaded by hand by the author on 12 November 2026 | 158 leaves, 19,569,546 bytes | `ebd3d9fbe1d44a9cc23eeb23225e15f44b226ca29b20119df0bd0c4ea4f6d1f6` |
+
+Completeness, checked leaf by leaf (leaf = 0-based index in the PDF):
+
+| leaves | content |
+|---|---|
+| 0 to 11 | Google's notices, bookplate, flyleaves, title, imprint, dedication to Laplace |
+| 12 to 39 | Introduction, pp. i to xxviii (28 pages; errata on p. xxviii) |
+| 40 to 61, 64 to 151 | Tables, pp. 1 to 110 (110 pages; p. 82 is blank; half titles on pp. 1, 43, 83) |
+| 62, 63 | not pages of their own: a failed capture of p. 23 (folded, one column) and p. 22 a second time; p. 23 is whole on leaf 64 |
+| 152 to 157 | flyleaves and the library's slip |
+
+XXVIII + 110 pages are present, as the catalogue record states. The Uranus pages are leaves
+24 to 28 (pp. xiii to xvii), 82 (p. 41, its aberration tables, placed among Jupiter's) and
+124 to 151 (pp. 83 to 110). 63 leaves (8 to 39, 62, 63, 82, 124 to 151) are rendered at
+200 dpi under `data/cache/adams_challis/bouvard/pages/`; they follow from the PDF and are
+not hashed one by one. The structure is in `docs/notes/P1B_bouvard_1821.md`. Nothing is
+transcribed.

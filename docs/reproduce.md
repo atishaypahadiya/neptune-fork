@@ -465,3 +465,6 @@ FORK_HORIZONS_CACHE_ONLY=1 uv run python -m fork.export.p1b_challis_n1 run   # d
 
 Reads the step 4 draws in `data/cache/p1b_challis/` and changes none of them. The sources
 of N1 and the search for Bouvard's 1821 tables are in `data/historical/adams_challis/MANIFEST.md`.
+Bouvard's tables were obtained by hand on 12 November 2026 (hash in the same manifest); their
+structure and the cost of a transcription are in `docs/notes/P1B_bouvard_1821.md`. Page images:
+`uv run --with pymupdf python` over the cached PDF at 200 dpi, leaves 8 to 39, 62, 63, 82, 124 to 151.
