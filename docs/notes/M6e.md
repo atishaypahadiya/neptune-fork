@@ -171,3 +171,27 @@ Layout: `src/fork/export/m6e.py`; `tests/test_m6e.py`; `docs/notes/M6e.{json,png
 site is not touched.
 
 ---
+
+## Amendment, 13 November 2026: the body of the frame test
+
+Written and pushed before the run. No posterior or prior draw has been carried to 1795.
+Nothing above is changed.
+
+The frame test of § 2 was first made against JPL's apparent place of Uranus's body centre
+(Horizons 799) and failed: +1″.25 on the sky in right ascension and −0″.45 in declination
+at both instants, against the tolerance of 1″. The cause is the body. The project's cached
+vectors of Uranus are the Uranus system barycenter (Horizons 7), and at these dates
+Horizons puts the two 0″.8 apart (astrometric right ascension 154.229948° for 7 and
+154.229731° for 799 on 8 May, from barycentric vectors; its observer table for 799 agrees
+with its vectors for 799). The first request also took JPL's default precision (0.0001°,
+0″.36).
+
+**The test as it stands:** the chain applied to the cached vector (body 7) against JPL's
+apparent place of the same body, fetched at extra precision; tolerance 1″, unchanged. The
+values of the first request are not kept. A difference of about 0″.5 is expected to remain,
+because Horizons refers apparent places of this date to the IAU 1976/1980 precession and
+nutation and the chain uses IAU 2006/2000A (with IAU 1976/1980 in the chain the first
+comparison's part due to the rotation falls from 0″.50 to 0″.07). The chain is not changed.
+
+The transit test passes: hour angles +0.10 and +0.13 minutes of time, and the instants
+computed from the table equal those of § 2.
