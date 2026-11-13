@@ -53,6 +53,24 @@ function table1(D, note) {
   tf.append(tr);
 }
 
+function table2(D) {
+  const tb = document.querySelector("#table-2 tbody");
+  tb.replaceChildren();
+  for (const r of C.cellRows(D)) {
+    const tr = document.createElement("tr");
+    const name = document.createElement("td");
+    name.textContent = r.name;
+    tr.append(name);
+    for (const v of r.values) {
+      const td = document.createElement("td");
+      td.className = "n";
+      td.textContent = v;
+      tr.append(td);
+    }
+    tb.append(tr);
+  }
+}
+
 function list(sel, items) {
   const ul = document.querySelector(sel);
   ul.replaceChildren();
@@ -93,8 +111,9 @@ async function main() {
   const challis = C.challisText(D);
   setSlots({
     ...C.titleBlock(D), ...C.abstract(D), ...C.sourcesText(D), ...C.adamsText(D), ...challis,
-    ...C.captions(D), ...C.availability(D),
+    ...C.captions(D), ...C.availability(D), ...C.bouvardText(D), ack: D.page.acknowledgements,
   });
+  guard("#table-2", () => table2(D));
   guard("#table-1", () => table1(D, challis.table_note));
   list(".limits", C.limits(D));
   references(D);

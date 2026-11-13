@@ -23,6 +23,14 @@
    ]
   },
   {
+   "id": "bouvard",
+   "parts": [
+    "Bouvard, A. 1821. ",
+    "{Tables astronomiques publiées par le Bureau des longitudes de France, contenant les tables de Jupiter, de Saturne et d'Uranus}",
+    ". Paris: Bachelier et Huzard."
+   ]
+  },
+  {
    "id": "brookes",
    "parts": [
     "Brookes, C. J. 1970. On the prediction of Neptune. ",
@@ -111,6 +119,12 @@
    ]
   },
   {
+   "id": "w16",
+   "parts": [
+    "St John's College, Cambridge, MS W16 (arranged by R. A. Sampson, 1901)."
+   ]
+  },
+  {
    "id": "schonfeld",
    "parts": [
     "Schönfeld, E. 1886. Notiz über eine Beobachtung des Neptun in den Lamont'schen Zonen. ",
@@ -126,8 +140,11 @@
   "P1B_adams_fit.md",
   "P1B_adams_reproduction.md",
   "P1B_adams_noise.md",
-  "P1B_challis_detection.md"
+  "P1B_challis_detection.md",
+  "P1B_bouvard_1821.md",
+  "P1B_bouvard_attribution.md"
  ],
+ "acknowledgements": "I thank Maria Giovanna De Simone, Special Collections, St John's College, Cambridge, for the scans of MS W16.",
  "built_from_sha256": {
   "docs/notes/P1B_adams_fit.json": "33c753937104cfa1ed24bb4a8aacaa3eb3a7ea294bdeb0ecf6998db5f2f540a2",
   "docs/notes/P1B_adams_reproduction.json": "6fd9da25406c2a1038dfa86650c5bf8ad1ee52aaccc39a7955860640b7927be8",
@@ -136,6 +153,8 @@
   "docs/notes/P1B_challis_detection.json": "eeb8f4e8bfbd7bb52d85d77e2479bf6106a8808cff67b45d6ad193f441e70079",
   "docs/notes/P1B_challis_detection_n1.json": "c78605bfedbe942ac4a4949f9512185787bd888118659535bb7e3498daf5cf8d",
   "docs/notes/P1B_challis_prerun.json": "5d2dfad0842d164712014a526c1ee8b191cd2d59e06d21e963f9d06f89a1aba5",
-  "data/historical/adams_challis/prediscovery_recordings.csv": "9fb014c020fc5eeb0dc312866a60a4d748c6f2301cd7b8cd23cb1988c5ee9f47"
+  "data/historical/adams_challis/prediscovery_recordings.csv": "9fb014c020fc5eeb0dc312866a60a4d748c6f2301cd7b8cd23cb1988c5ee9f47",
+  "docs/notes/P1B_bouvard_attribution.json": "3a8f7ea23449375110fe213d590575cfd0d08f196570b86043e2a08f851f51f3",
+  "data/historical/adams_challis/adams_solutions_ms.csv": "d2dd0e07d2b4ad8a9d91c28e07d65d026b6c051f6889123a9a379205eefeadf5"
  }
 }

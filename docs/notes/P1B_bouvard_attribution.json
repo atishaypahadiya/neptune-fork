@@ -2220,6 +2220,170 @@
     }
    }
   },
+  "S8": {
+   "variants": {
+    "a": {
+     "H1": {
+      "d1c": {
+       "B": -3.1696294171355817,
+       "C": -3.8006261744221206,
+       "R": 5.263729741081306,
+       "Ob": 5.894726498367845,
+       "I": -0.4471610940092887,
+       "R_class": "partial",
+       "Ob_class": "partial",
+       "row": "Both, in the shares found."
+      },
+      "chain": {
+       "B": -10.913836548468623,
+       "C": -1.186764913192519,
+       "R": 10.335581010800183,
+       "Ob": 0.6085093755240791,
+       "I": 1.599328942412285,
+       "R_class": "carries",
+       "Ob_class": "does not carry",
+       "row": "The reference carries the shift."
+      },
+      "methods_in_one_row": false,
+      "methods_differ_in_R_deg": 5.071851269718877
+     },
+     "H2": {
+      "d1c": {
+       "B": -1.4181128600411625,
+       "C": -0.7135233259747906,
+       "R": 6.6446415453848715,
+       "Ob": 5.9400520113185,
+       "I": -0.2623927248659186,
+       "R_class": "carries",
+       "Ob_class": "partial",
+       "row": "Mostly the reference, with a share from the observations."
+      },
+      "chain": {
+       "B": -10.326064417174734,
+       "C": 3.722254535107652,
+       "R": 13.310971912769304,
+       "Ob": -0.7373470395130823,
+       "I": 1.4620522402985614,
+       "R_class": "carries",
+       "Ob_class": "does not carry",
+       "row": "The reference carries the shift."
+      },
+      "methods_in_one_row": false,
+      "methods_differ_in_R_deg": 6.6663303673844325
+     }
+    },
+    "b": {
+     "H1": {
+      "d1c": {
+       "B": 1.6354386327171255,
+       "C": -6.563310971273779,
+       "R": 1.4798533177291233,
+       "Ob": 9.678602921720028,
+       "I": -1.468352720509813,
+       "R_class": "does not carry",
+       "Ob_class": "carries",
+       "row": "The observations carry the shift."
+      },
+      "chain": {
+       "B": 2.321726204919969,
+       "C": -7.676064357585119,
+       "R": 0.4731499119095872,
+       "Ob": 10.470940474414675,
+       "I": -1.7738027120857112,
+       "R_class": "does not carry",
+       "Ob_class": "carries",
+       "row": "The observations carry the shift."
+      },
+      "methods_in_one_row": true,
+      "methods_differ_in_R_deg": 1.006703405819536
+     },
+     "H2": {
+      "d1c": {
+       "B": 4.2967672778910355,
+       "C": -4.330140129471374,
+       "R": 1.9788930746704807,
+       "Ob": 10.60580048203289,
+       "I": -1.3115243920837258,
+       "R_class": "does not carry",
+       "Ob_class": "carries",
+       "row": "The observations carry the shift."
+      },
+      "chain": {
+       "B": 5.684917336974081,
+       "C": -5.680015983306362,
+       "R": 0.6043457764878895,
+       "Ob": 11.969279096768332,
+       "I": -1.8423033775688396,
+       "R_class": "does not carry",
+       "Ob_class": "carries",
+       "row": "The observations carry the shift."
+      },
+      "methods_in_one_row": true,
+      "methods_differ_in_R_deg": 1.3745472981825912
+     },
+     "delta_1780_arcsec": 3.402
+    },
+    "c": {
+     "H1": {
+      "d1c": {
+       "B": 0.7313899345611503,
+       "C": -6.072965085080398,
+       "R": 2.1770506099038016,
+       "Ob": 8.98140562954535,
+       "I": -1.261501314528516,
+       "R_class": "does not carry",
+       "Ob_class": "carries",
+       "row": "The observations carry the shift."
+      },
+      "chain": {
+       "B": -0.05594031552885781,
+       "C": -6.228458187358058,
+       "R": 2.3857862572475312,
+       "Ob": 8.558304129076731,
+       "I": -1.3087725369748284,
+       "R_class": "does not carry",
+       "Ob_class": "carries",
+       "row": "The observations carry the shift."
+      },
+      "methods_in_one_row": true,
+      "methods_differ_in_R_deg": 0.20873564734372962
+     },
+     "H2": {
+      "d1c": {
+       "B": 3.186518424708993,
+       "C": -3.713261073512683,
+       "R": 2.8424570292408475,
+       "Ob": 9.742236527462524,
+       "I": -1.06483949347205,
+       "R_class": "does not carry",
+       "Ob_class": "carries",
+       "row": "The observations carry the shift."
+      },
+      "chain": {
+       "B": 2.4746734821127916,
+       "C": -3.839420626450874,
+       "R": 3.129765382346278,
+       "Ob": 9.443859490909944,
+       "I": -1.1574791285659387,
+       "R_class": "partial",
+       "Ob_class": "carries",
+       "row": "Mostly the observations, with a share from the reference."
+      },
+      "methods_in_one_row": false,
+      "methods_differ_in_R_deg": 0.28730835310543057
+     },
+     "delta_1780_arcsec": 2.7972610129331343
+    }
+   },
+   "b_and_c": {
+    "R_min": 0.4731499119095872,
+    "R_max": 3.129765382346278,
+    "Ob_min": 8.558304129076731,
+    "Ob_max": 11.969279096768332,
+    "n_rows": 8
+   },
+   "label": "post hoc: S8 was defined after the cells were seen"
+  },
   "S1": "not run: no primary source for Bouvard's mass of Saturn"
  }
 }

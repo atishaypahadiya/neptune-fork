@@ -537,6 +537,53 @@ def solve_cell(m, hyp: int, col: dict, frame: str, ctx: dict) -> dict:
     }
 
 
+S8_VARIANTS = {
+    "a": None,  # the century branch: the cells as run
+    "b": "S8b the 1780 place on Table I's branch",
+    "c": "S8c the 1780 place: D interpolated from its neighbours",
+}
+
+
+def s8_summary(c: dict) -> dict:
+    """S8 (defined after the cells were seen): the attribution each variant of the 1780
+    place would give, whether the two methods fall in one row of § 6, and the ranges of R
+    and Ob over variants (b) and (c). Arithmetic on the cells and sensitivities only."""
+    out: dict = {"variants": {}}
+    r_all, ob_all = [], []
+    for v, name in S8_VARIANTS.items():
+        entry: dict = {}
+        for hyp in ("H1", "H2"):
+            base = c["cells"][hyp]
+            rows = {}
+            for meth in ("d1c", "chain"):
+                a, d = base["A"][meth]["offset"], base["D"][meth]["offset"]
+                if name is None:
+                    b, cc = base["B"][meth]["offset"], base["C"][meth]["offset"]
+                else:
+                    s = c["sensitivities"][name][hyp][meth]
+                    b, cc = s["B"], s["C"]
+                att = attribute(a, b, cc, d)
+                rows[meth] = {k: att[k] for k in ("B", "C", "R", "Ob", "I", "R_class",
+                                                  "Ob_class", "row")}  # fmt: skip
+                if name is not None:
+                    r_all.append(att["R"])
+                    ob_all.append(att["Ob"])
+            rows["methods_in_one_row"] = rows["d1c"]["row"] == rows["chain"]["row"]
+            rows["methods_differ_in_R_deg"] = abs(rows["d1c"]["R"] - rows["chain"]["R"])
+            entry[hyp] = rows
+        if name is not None:
+            delta = c["sensitivities"][name]["delta_arcsec"]
+            entry["delta_1780_arcsec"] = delta[1780] if 1780 in delta else delta["1780"]
+        out["variants"][v] = entry
+    out["b_and_c"] = {
+        "R_min": min(r_all), "R_max": max(r_all),
+        "Ob_min": min(ob_all), "Ob_max": max(ob_all),
+        "n_rows": len(r_all),
+    }  # fmt: skip
+    out["label"] = "post hoc: S8 was defined after the cells were seen"
+    return out
+
+
 def _d_1780_interpolated(years: list, t: np.ndarray, d0: np.ndarray) -> float:
     """S8 (c): the cubic through D at 1769, 1771, 1783 and 1786, at the 1780 place's epoch."""
     idx = [years.index(y) for y in (1769, 1771, 1783, 1786)]
@@ -711,6 +758,7 @@ def cells(sensitivities: bool = True) -> dict:
             }
         sens[name] = entry
     out["sensitivities"] = sens
+    out["S8"] = s8_summary(out)
     out["S1"] = "not run: no primary source for Bouvard's mass of Saturn"
     return out
 

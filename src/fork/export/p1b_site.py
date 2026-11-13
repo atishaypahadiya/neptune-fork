@@ -23,6 +23,8 @@ HIST = NOTES + "P1B_adams_noise_hist.json"
 DET = NOTES + "P1B_challis_detection.json"
 PRERUN = NOTES + "P1B_challis_prerun.json"
 N1 = NOTES + "P1B_challis_detection_n1.json"  # the chart case under the sheet's own limits
+BOUV = NOTES + "P1B_bouvard_attribution.json"  # step 6: the attribution to Bouvard's tables
+MS = "data/historical/adams_challis/adams_solutions_ms.csv"
 RECORDINGS = "data/historical/adams_challis/prediscovery_recordings.csv"
 SITE_DATA = ROOT / "site" / "data"
 GALLE = "1846-09-23"
@@ -129,7 +131,76 @@ def adams_sources() -> dict:
                 *r, "branches", "fraction_of_exceeding_that_are_branch_changes"]  # fmt: skip
             s[f"{h}_{m}_hist_counts"] = [HIST, "cells", f"{h}/{m}", "counts"]
             s[f"{h}_{m}_hist_n"] = [HIST, "cells", f"{h}/{m}", "n"]
+    s.update(bouvard_sources())
     return s
+
+
+S5 = "S5 Table XII row 2600 as printed"
+S8 = {"b": "S8b the 1780 place on Table I's branch",
+      "c": "S8c the 1780 place: D interpolated from its neighbours"}  # fmt: skip
+PROPAGATION = ("sin M", "cos M", "sin III", "cos III")
+
+
+def bouvard_sources() -> dict:
+    """§ 3.5: the four cells, the attribution, the sensitivities the text cites."""
+    c = [BOUV, "cells"]
+    s: dict = {"noise_theta_sd_on_branch": [NOISE, "results", "H1/a", "d1c_warm", "theta_sd_deg"],
+               "bv_propagation_d_arcsec": [BOUV, "V3", "propagation_check", "d_arcsec"],
+               "bv_remarks": [*c, "reading", "overrides_and_remarks"],
+               "bv_s8_label": [*c, "S8", "label"],
+               "bv_s5_delta_1789": [*c, "sensitivities", S5, "delta_arcsec", "1789"]}  # fmt: skip
+    for h in ("H1", "H2"):
+        for m in ("d1c", "chain"):
+            for cell in "ABCD":
+                s[f"bv_{h}_{cell}_{m}"] = [*c, "cells", h, cell, m, "offset"]
+            for q in ("shift", "R", "Ob", "I", "R_class", "Ob_class", "row"):
+                s[f"bv_{h}_{m}_{q}"] = [*c, "attribution", h, m, q]
+        for v in ("a", "b", "c"):
+            s[f"bv_s8{v}_{h}_one_row"] = [*c, "S8", "variants", v, h, "methods_in_one_row"]
+    for q in ("R_min", "R_max", "Ob_min", "Ob_max", "n_rows"):
+        s[f"bv_s8_bc_{q}"] = [*c, "S8", "b_and_c", q]
+    for q in ("change_B", "change_C"):
+        s[f"bv_s5_{q}"] = [*c, "sensitivities", S5, "H1", "d1c", q]
+        for v, name in S8.items():
+            s[f"bv_s8{v}_{q}"] = [*c, "sensitivities", name, "H1", "d1c", q]
+        for k in PROPAGATION:
+            s[f"bv_prop_{k.replace(' ', '_')}_{q}"] = [
+                *c, "sensitivities", f"propagation d {k}", "H1", "d1c", q]  # fmt: skip
+    for v, name in S8.items():
+        s[f"bv_s8{v}_delta_1780"] = [*c, "sensitivities", name, "delta_arcsec", "1780"]
+    return s
+
+
+def _manuscript() -> dict:
+    """Counts of the manuscript check's table (values only; no image is published)."""
+    with (ROOT / MS).open(encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    kinds = [r["comparison"] for r in rows]
+    return {
+        "source": "St John's College, Cambridge, MS W16 (arranged by R. A. Sampson, 1901)",
+        "n_values_agree": kinds.count("agrees"),
+        "n_values_added": kinds.count("adds"),
+        "n_values_contradict": len(kinds) - kinds.count("agrees") - kinds.count("adds"),
+        "file": MS,
+    }
+
+
+# Bouvard (1821): what the check of the printed formula against the tables found
+# (docs/notes/P1B_bouvard_1821.md and P1B_bouvard_attribution.md).
+BOUVARD = {
+    "centre_printed": {"text": "59427″.54", "citation": "Bouvard 1821, p. xv"},
+    "centre_tables": {"text": "59417″.54", "citation": "Bouvard 1821, Table X, at the "
+                      "anomalies compared (docs/notes/P1B_bouvard_attribution.md, V1)"},
+    "table_lag": {"text": "0″.105", "citation": "Table I against the mean motion of p. ii, "
+                  "centesimal seconds a year from 1780 (the same note, V1)"},
+    "annotation": {"text": "il faut ajouter à la longitude moyenne + 0″,10 t",
+                   "citation": "a handwritten line at the head of Table I in the Harvard "
+                   "copy; its writer and date are not known"},
+    "classes_deg": {"low": 3, "high": 6, "citation": "the pre-registered reading rule, "
+                    "docs/notes/P1B_bouvard_attribution.md § 6"},
+}  # fmt: skip
+ACKNOWLEDGEMENTS = ("I thank Maria Giovanna De Simone, Special Collections, St John's College, "
+                    "Cambridge, for the scans of MS W16.")  # fmt: skip
 
 
 def challis_sources() -> dict:
@@ -235,6 +306,9 @@ REFERENCES = [
      "{Memoirs of the Royal Astronomical Society}", " 16, 427–460."],
     ["airy", "Airy, G. B. 1844. ", "{Account of the Northumberland Equatoreal and Dome}",
      ". Cambridge: University Press."],
+    ["bouvard", "Bouvard, A. 1821. ", "{Tables astronomiques publiées par le Bureau des "
+     "longitudes de France, contenant les tables de Jupiter, de Saturne et d'Uranus}",
+     ". Paris: Bachelier et Huzard."],
     ["brookes", "Brookes, C. J. 1970. On the prediction of Neptune. ", "{Celestial Mechanics}",
      " 3, 67–80."],
     ["challis-mn", "Challis, J. 1846. Account of observations at the Cambridge Observatory for "
@@ -261,6 +335,7 @@ REFERENCES = [
      "for The Astronomical Almanac. ", "{Astronomy and Computing}", " 25, 10–24."],
     ["mauvais", "Mauvais, V. 1847. Sur une observation inédite de la nouvelle planète. ",
      "{Comptes rendus}", " 24, 666–669."],
+    ["w16", "St John's College, Cambridge, MS W16 (arranged by R. A. Sampson, 1901)."],
     ["schonfeld", "Schönfeld, E. 1886. Notiz über eine Beobachtung des Neptun in den "
      "Lamont'schen Zonen. ", "{Astronomische Nachrichten}", " 114, 59–60."],
 ]  # fmt: skip
@@ -272,13 +347,14 @@ def _sha(name: str) -> str:
 
 def build() -> dict[str, dict]:
     a, c = adams_sources(), challis_sources()
-    files = (FIT, REPRO, NOISE, HIST, DET, N1, PRERUN, RECORDINGS)
+    files = (FIT, REPRO, NOISE, HIST, DET, N1, PRERUN, RECORDINGS, BOUV, MS)
     return {
         "p1b_adams.json": {
             "description": "Companion page, § 3: values copied from the committed step 3, 3b "
             "and 3c JSONs; `sources` names the field of each.",
             "sources": a, "values": _collect(a),
-            "constants": {"fit_epoch": fit_epoch()},
+            "constants": {"fit_epoch": fit_epoch(), "bouvard": BOUVARD},
+            "manuscript": _manuscript(),
         },
         "p1b_challis.json": {
             "description": "Companion page, § 4: values copied from the committed step 4 JSONs; "
@@ -298,7 +374,9 @@ def build() -> dict[str, dict]:
             "references": [{"id": r[0], "parts": r[1:]} for r in REFERENCES],
             "notes": ["P1B_sources.md", "P1B_adams_solutions.md", "P1B_challis_sweeps.md",
                       "P1B_adams_fit.md", "P1B_adams_reproduction.md", "P1B_adams_noise.md",
-                      "P1B_challis_detection.md"],
+                      "P1B_challis_detection.md", "P1B_bouvard_1821.md",
+                      "P1B_bouvard_attribution.md"],
+            "acknowledgements": ACKNOWLEDGEMENTS,
             "built_from_sha256": {f: _sha(f) for f in files},
         },
     }  # fmt: skip

@@ -128,7 +128,9 @@ export function abstract(D) {
       `${fmt(drv(cleanMax, "largest clean shortfall"))}° short. The shortfall belongs to the ` +
       `assumed distance; his nearness belongs to his data or their reduction. Whether noise ` +
       `alone could account for it I could not settle: the pre-registered statistic measured ` +
-      `something else, and the post hoc one reads weak.`,
+      `something else, and the post hoc one reads weak. A pre-registered attribution ` +
+      `between his observations and the tables of Bouvard he reduced them against depends ` +
+      `on the method, and I do not make it.`,
     abstract_p3: `Under the reading I report, Challis's actual procedure has probability ` +
       `${p2(W.A0_mean)} of recognising the planet before ${galle(K)}. That is by ` +
       `construction and is not a finding: the realised events are held fixed, so the cases ` +
@@ -150,12 +152,17 @@ export function abstract(D) {
 export function sourcesText(D) {
   const { A } = facts(D);
   const passes = A.transcription_passes.split(", all decided")[0];
+  const MS = D.adams.manuscript, BV = D.adams.constants.bouvard;
   const d = A.fit_data_set;
   return {
-    src_p1: `Everything here rests on print: Adams's memoir, Challis's two accounts of his ` +
-      `search, and Le Verrier's papers of June and August ${D.challis.constants.galle_night.year} ` +
-      `(§ 7). The Cambridge observing books and Airy's papers were not consulted; § 5 says ` +
-      `where that matters.`,
+    src_p1: `Everything here rests on print: Adams's memoir, Challis's ` +
+      `two accounts of his search, Le Verrier's papers of June and August ` +
+      `${D.challis.constants.galle_night.year} and Bouvard's tables (§ 7). There is one exception, a ` +
+      `check of Adams's solutions against his manuscripts: images of sheets of ${MS.source} ` +
+      `confirm ${MS.n_values_agree} values of the solutions as printed and contradict ` +
+      `${MS.n_values_contradict === 0 ? "none" : MS.n_values_contradict}. I use the values ` +
+      `only and reproduce no image. The Cambridge observing books and Airy's papers were not ` +
+      `consulted; § 5 says where that matters.`,
     src_p2: `The memoir's tables were transcribed in ${passes}, each decided on the page ` +
       `image. Challis's search is tabulated night by night from his own text, each row with ` +
       `its page. For the fit of § 3.1 I took, from the observations of the main paper, the ` +
@@ -163,6 +170,14 @@ export function sourcesText(D) {
       `(${d.total[1]} measurements), of which ${d.ancient[0]} are the early chance ` +
       `observations, ${d.greenwich[0]} are from Greenwich and ` +
       `${d.paris_1835_1845[0]} from Paris.`,
+    src_p4: `Bouvard's tables enter in § 3.5, and checking their printed formula against ` +
+      `the tables themselves gave two findings. The leading coefficient of the equation of ` +
+      `the centre is printed ${BV.centre_printed.text} on p. xv, but the tables follow ` +
+      `${BV.centre_tables.text}, which gives the eccentricity of Adams's memoir; that the ` +
+      `page carries a misprint is inferred, not shown. And the mean longitude of Table I ` +
+      `falls behind the mean motion of the introduction by ${BV.table_lag.text} a year ` +
+      `(centesimal) from 1780. A handwritten line in the Harvard copy says the same ` +
+      `(“${BV.annotation.text}”); who wrote it, and when, is not known.`,
     src_p3: `Each step was pre-registered before it ran. The plans, the results and every ` +
       `deviation are in the notes listed in § 6; where a deviation bears on a claim, the ` +
       `sentence that makes the claim says so.`,
@@ -235,9 +250,77 @@ export function adamsText(D) {
       `large as his occurs with probability ${four("post_hoc")}. By the same thresholds ` +
       `that is "${A.H1_post_hoc_verdict}" under both hypotheses: below ${T.suffices}, above ` +
       `${T.systematic}. Neither luck nor a systematic cause is established. The tables of ` +
-      `Bouvard that his reductions rested on are the route to an attribution, and I did ` +
-      `not take it.`,
+      `Bouvard that his reductions rested on are the route to an attribution; § 3.5 takes it.`,
   };
+}
+
+const s2 = (x) => signed(x, 2);
+const row = (t) => t.replace(/\.$/, "");
+
+/** § 3.5: reference against observations (docs/notes/P1B_bouvard_attribution.md). */
+export function bouvardText(D) {
+  const { A } = facts(D), BV = D.adams.constants.bouvard, EP = D.adams.constants.fit_epoch;
+  const big = (...xs) => drv(Math.max(...xs.map(Math.abs)), "largest magnitude");
+  const prop = ["sin_M", "cos_M", "sin_III", "cos_III"]
+    .flatMap((k) => [A[`bv_prop_${k}_change_B`], A[`bv_prop_${k}_change_C`]]);
+  const only = A.bv_s8a_H2_one_row === false && A.bv_s8b_H2_one_row && A.bv_s8c_H2_one_row
+    ? "Under both hypotheses" : "Under Hypothesis I";
+  if (A.bv_s8a_H1_one_row || !A.bv_s8b_H1_one_row || !A.bv_s8c_H1_one_row) {
+    throw new Error("§ 3.5: the S8 sentence no longer matches the data");
+  }
+  return {
+    a35_p1: `Adams's errors of Uranus were taken against Bouvard's tables with five ` +
+      `corrections of his own. To ask whether his nearness comes from that reference or ` +
+      `from the observations, I rebuilt the reference from the tables and solved four ` +
+      `cases: his observations or the noise-free ones, each against Bouvard's reference or ` +
+      `a clean one (Table 2). The plan and its reading rule were fixed before any case was ` +
+      `solved.`,
+    a35_p2: `By his least squares under Hypothesis I, the reference accounts for ` +
+      `${s2(A.bv_H1_d1c_R)}° of the ${s2(A.bv_H1_d1c_shift)}° shift and the observations for ` +
+      `${s2(A.bv_H1_d1c_Ob)}° (interaction ${s2(A.bv_H1_d1c_I)}°), which the rule reads as ` +
+      `"${row(A.bv_H1_d1c_row)}". His own elimination gives ${s2(A.bv_H1_chain_R)}° and ` +
+      `${s2(A.bv_H1_chain_Ob)}°, a different row of the rule: "${row(A.bv_H1_chain_row)}". ` +
+      `For that case the rule's reading is "depends on the method", and I do not attribute ` +
+      `the shift.`,
+    a35_p3: `Post hoc, and defined after the cases were seen: Adams says he interpolated ` +
+      `his place of 1780, and Bouvard's tables give two values for it. With that one place ` +
+      `moved to the other branch of the tables (${s2(A.bv_s8b_delta_1780)}″) or interpolated ` +
+      `from its neighbours (${s2(A.bv_s8c_delta_1780)}″), the observations account for ` +
+      `${signed(A.bv_s8_bc_Ob_min)}° to ${signed(A.bv_s8_bc_Ob_max)}° and the reference for ` +
+      `${signed(A.bv_s8_bc_R_min)}° to ${signed(A.bv_s8_bc_R_max)}°, over both methods and ` +
+      `both hypotheses. ${only}, the case as run is the only one in which the two methods ` +
+      `fall in different rows. The pre-registered reading is unchanged.`,
+    a35_p4: `What follows is an interpretation and not a reading. A change of ` +
+      `${fmt(A.bv_s5_delta_1789, 2)}″ at the place of 1789 moves cases B and C by ` +
+      `${abs(A.bv_s5_change_B)}° and ${abs(A.bv_s5_change_C)}°; the changes at 1780 move ` +
+      `them by up to ${fmt(big(A.bv_s8b_change_B, A.bv_s8c_change_B))}° and ` +
+      `${fmt(big(A.bv_s8b_change_C, A.bv_s8c_change_C))}°. Periodic errors of ` +
+      `${fmt(A.bv_propagation_d_arcsec, 2)}″ spread over all the places move them by at most ` +
+      `${fmt(big(...prop), 2)}°. One unit in a fourth decimal moves his longitude by ` +
+      `${abs(A.H1_dtheta_per_step)}° (§ 3.2), and noise at the level of his residuals ` +
+      `scatters it by ${fmt(A.noise_theta_sd_on_branch, 2)}° (§ 3.4). The classes of the ` +
+      `rule are ${BV.classes_deg.low}° wide. His nearness of about ` +
+      `${fmt(A.bv_H1_d1c_shift, 0)}° lies within the sensitivity of his own problem, and ` +
+      `what carries it may not be identifiable from his data.`,
+    cap_table_2: `Offset from Neptune of each case's solution, in true heliocentric ` +
+      `longitude at ${fmt(EP.julian_year, 3)} (degrees). Cases A and D are those of §§ 3.3 ` +
+      `and 3.4; B and C are new.`,
+  };
+}
+
+const CELLS = {
+  A: "His observations, Bouvard's reference",
+  B: "His observations, clean reference",
+  C: "Noise-free observations, Bouvard's reference",
+  D: "Noise-free observations, clean reference",
+};
+/** Table 2: the four cases by method and hypothesis. */
+export function cellRows(D) {
+  const A = D.adams.values;
+  return Object.entries(CELLS).map(([k, name]) => ({
+    name: `${k}. ${name}`,
+    values: ["H1_", "H2_"].flatMap((h) => ["d1c", "chain"].map((m) => s2(A[`bv_${h}${k}_${m}`]))),
+  }));
 }
 
 export function challisText(D) {
@@ -395,8 +478,11 @@ export function limits(D) {
       "was the same printing is not known.",
     "The noise test of § 3.4 was read post hoc after its pre-registered statistic proved " +
       "unsuitable for an angle; its verdict is weak either way.",
-    "The fit of § 3.1 uses the main paper's data and error model, not Adams's own reductions; " +
-      "Bouvard's tables, on which those rested, were not transcribed.",
+    "The fit of § 3.1 uses the main paper's data and error model, not Adams's own reductions.",
+    "The attribution of § 3.5 rests on the rows of Bouvard's tables that his places touch, " +
+      "entered twice from one scan, and on a formula corrected to agree with them. It did " +
+      "not separate the reference from the observations, and its post hoc variants point " +
+      "the other way from the case as run.",
     "Neptune's magnitude in 1846 is extrapolated from photometry of the twentieth century.",
     "I do not say what Challis ought to have done, and the model is not a probability for " +
       "the British search as a whole: it covers his nights and his instrument only.",

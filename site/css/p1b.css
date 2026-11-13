@@ -16,6 +16,9 @@
 /* Table 1 is wide, as the figures are; the condition drops under the case on phones. */
 .p1b #table-1 td { font-size: clamp(15px, 0.4vw + 12px, 17px); padding-top: 7px; padding-bottom: 7px; }
 .p1b #table-1 td.n { white-space: nowrap; }
+.p1b #table-2 td { font-size: clamp(15px, 0.4vw + 12px, 17px); padding-top: 7px; padding-bottom: 7px; }
+.p1b #table-2 td.n { white-space: nowrap; }
+.p1b #ack h2 { margin-top: 72px; }
 .p1b #table-1 td.cond { font-size: 14px; color: var(--prussian); }
 .p1b #table-1 .cond-under { display: none; }
 .p1b #table-1 tfoot td { font-size: 14px; color: var(--prussian); }
@@ -25,6 +28,12 @@
   .p1b .fig-2 .canvas { height: 560px; }
   .p1b .fig-3 .canvas { height: 300px; }
   .p1b .fig-4 .canvas { height: 700px; }
+  /* Table 2 on phones: the case on its own line, its four offsets under it. */
+  .p1b #table-2 tr { display: grid; grid-template-columns: repeat(4, 1fr); }
+  .p1b #table-2 th:first-child { display: none; }
+  .p1b #table-2 td:first-child { grid-column: 1 / -1; border-bottom: 0; padding-bottom: 0; }
+  .p1b #table-2 th.n, .p1b #table-2 td.n { text-align: left; }
+  .p1b #table-2 th { white-space: normal; }
   .p1b #table-1 .cond { display: none; }
   .p1b #table-1 .cond-under { display: block; font-size: 14px; color: var(--prussian); }
 }
