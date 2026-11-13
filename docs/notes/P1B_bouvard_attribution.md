@@ -706,3 +706,37 @@ anomaly of 26.9, where the four-row interpolation gives it a weight of +0″.72;
 interpolating between rows 26 and 27 alone would not have touched it.
 
 Next, on approval: the cells.
+
+## Amendment, 13 November 2026: the definition of C checked on the page images; S6, S7, S5b
+
+Ruled by the author on 13 November 2026, after the V2 and V3 results above were pushed
+(393dc5f). Written and pushed before any cell is run. No earlier text is changed.
+
+1. **The definition of C, on the page images.** V2 above checked § 2's definition against
+   the pamphlet's text layer; § 5 asks for the page images. Pages 5 and 6 of the pamphlet
+   (§§ 6 to 8) were read as images and agree with the text layer and with § 2 in every
+   point: "the error of the Tables in heliocentric longitude … corresponding to the time
+   of mean opposition in the middle year of the group"; 21 normal errors between 1780
+   and 1840; "the corrections to be applied to Bouvard's Tables" for the equation in
+   Saturn's mean longitude minus twice that of Uranus (Bessel) and the principal
+   equation of Jupiter (its mass); "In the Reduction of the Greenwich Observations, the
+   latter correction was already taken into account"; three terms "depending on the
+   square of the disturbing force" (Hansen, Delaunay), "to be added to the longitude";
+   § 8: "Taking into account the several corrections above-mentioned, the residual
+   differences between the theoretical and observed heliocentric longitudes". The five
+   terms on the image are those transcribed. Nothing in § 2 is corrected.
+2. **Three more named sensitivities, reported and not read.** Each solves cells B and C
+   once more, by both methods, and reports the change of each offset.
+   - **S6:** the mean longitudes in the arguments of § 7 include the great inequalities
+     A, A′, A″ of pp. ii and iii.
+   - **S7:** those mean longitudes are counted from the equinox of date (Bouvard's
+     154″.63 a year added to each) instead of the fixed equinox of 1800.
+   - **S5b:** C_Bouvard at the 1804 normal place as Table X's row 25 as printed
+     (2.35.14,3) gives it under the four-row interpolation, at the anomaly of that
+     epoch. At the V1′ instant of 1804 the difference, formula minus tables, was +0″.72
+     with the row as printed, so the tables' longitude changes by −0″.72. Any other
+     normal place whose anomaly falls on the same four rows is changed likewise and
+     listed.
+3. **The run.** Cells A to D, both methods, both hypotheses, with S2, S3, S5, S5b, S6, S7
+   and the propagation check (d = 1″.05). S1 is not run: no primary source for Bouvard's
+   mass of Saturn has been found. S4 was reported with V1.
