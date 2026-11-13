@@ -1,0 +1,21 @@
+solution_id,image,shelfmark,date_on_sheet,quantity,value_ms,value_committed,committed_source,comparison,note
+S4,16867,E III 14,undated,mean distance,38.4,38.4,adams_solutions.csv (Sampson 166),agrees,"the note of results; 16872 is a printed facsimile of it and reads the same in all seven values"
+S4,16867,E III 14,undated,eccentricity,0.1428,0.1428,adams_solutions.csv,agrees,
+S4,16867,E III 14,undated,longitude of perihelion,320° 30′,320° 30′ (sheet),adams_solutions.csv,agrees,
+S4,16867,E III 14,undated,mean longitude about the end of Sept 1845,321° 40′,321° 40′,adams_solutions.csv,agrees,
+S4,16867,E III 14,undated,geocentric longitude at the same time,"320° 30′ nearly, diminishing about 1′ daily","320° 30′ nearly, diminishing about 1′ daily",adams_solutions.csv,agrees,
+S4,16867,E III 14,undated,"mass, Sun = 1",0.000173,0.000173 (sheet),adams_solutions.csv,agrees,
+S4,16870,E III 6,1845-09-18,theta to be substituted in the equations for m and n,−50° 34′,−50° 34′,adams_solutions_statements.csv S11a (Sampson 166),agrees,"date on the sheet: Septr 18th 1845"
+S4,16870,E III 6,1845-09-18,theta of the first approximation,−51° 10′,,not in the committed tables,adds,"heads the sheet: For a first approximation suppose theta = −51° 10′"
+S4,16870,E III 6,1845-09-18,residual of the equation at theta = −51° 10′,−2.8964,,not in the committed tables,adds,"six terms sum to −2.8964, and +29.5777 − 32.4741 gives the same"
+S6,16868,E VII 15,1846-08-20,"theta given by the equation, very nearly",−42° 51′,−42° 51′,adams_solutions_statements.csv S13 (Sampson 167),agrees,"date on the sheet: August 20th 1846"
+S6,16868,E VII 15,1846-08-20,whole sum at theta = −45°,−28.866,,not in the committed tables,adds,"theta − alpha = −95° 16′, so alpha = 50° 16′ on this sheet"
+S6,16868,E VII 15,1846-08-20,whole sum at theta = −43°,−2.077,,not in the committed tables,adds,"a straight line through the two sums crosses zero at −42° 50′.7"
+S6,16869,F II 6,1846-09-01,additional perturbation of the radius vector 1834,+0.004923,+0·004923 (Hyp II),adams_solutions_statements.csv A16e (Airy No. 20),agrees,"date on the sheet: 1st Septr 1846; a pencil note in another hand reads § 58, hyp II"
+S6,16869,F II 6,1846-09-01,additional perturbation of the radius vector 1840,+0.006962,+0·006962 (Hyp II),adams_solutions_statements.csv A16e,agrees,
+S6,16869,F II 6,1846-09-01,additional perturbation of the radius vector 1846,+0.008250,+0·008250 (Hyp II),adams_solutions_statements.csv A16e,agrees,
+not attributed,16871,not visible,undated,"sum of ten terms, column 1843",−109″.76,,not in the committed tables,adds,"sheet headed Calcn of Errors for 1843 & 1846; which hypothesis it belongs to is not stated on the sheet"
+not attributed,16871,not visible,undated,"sum of ten terms, column 1846",−148″.65,,not in the committed tables,adds,
+not attributed,16871,not visible,undated,"three totals after a second term (first column unlabelled)",−91″.65; −124″.23; −159″.76,,not in the committed tables,adds,"−74.82 − 16.83; −109.76 − 14.47; −148.65 − 11.11"
+not attributed,16871,not visible,undated,correction of heliocentric longitude at 180° 20′.8; 193° 21′.3; 206° 21′.8,−83″.59; −113″.55; −146″.92,,not in the committed tables,adds,"each is the total above times a radius-vector factor (0.91209, 0.91404, 0.91965), to 0″.01"
+context,16873,A VII 3,1846-09-07,"error in heliocentric longitude of Uranus, 1845 (Jan 13, Aug 25, Sep 18, Oct 16, Nov 9, Dec 14)",+7″.79; +8″.90; +8″.85; +9″.32; +7″.68; +9″.55,,not in the committed tables,adds,"a letter from Robert Main, Royal Observatory, Greenwich, to Adams: not a calculation by Adams. Two cells of its table are doubtful (see the reconciliation file)"

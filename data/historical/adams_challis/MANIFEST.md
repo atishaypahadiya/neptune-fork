@@ -181,3 +181,57 @@ Not done, because no page was seen: rendering the Uranus tables, recording their
 (arguments, epochs, perturbation terms, masses) and estimating the transcription effort for
 Adams's 30 normal-place epochs. Once a PDF is saved by hand, put it under
 `data/cache/adams_challis/bouvard/` and add its SHA-256 here.
+
+## St John's College, Cambridge, MS W16 (received 2026-11-12; cached, not committed)
+
+Source: St John's College, Cambridge, MS W16 (Adams's papers on the perturbations of Uranus,
+in the arrangement of Sampson 1901). 28 image files of seven sheets, supplied by the
+College's Special Collections and received on 12 November 2026. Each sheet came in four
+sizes. Under `data/cache/adams_challis/stjohns_W16/` (ignored by git).
+
+**Rights condition.** The images may not be committed, put on the site or published without
+prior notice to St John's College. Any reproduction carries the line "By permission of the
+Master and Fellows of St John's College, Cambridge". Values transcribed from the images may
+appear in the notes and tables.
+
+| file | pixels | what it shows | date on the page | shelfmark stamp | SHA-256 |
+|---|---|---|---|---|---|
+| `16867.jpg` | 2695 × 4373 | the note of results: elements and mass of the supposed planet, signed J. C. Adams (the sheet behind S4) | undated (Sampson and the facsimile date it 18 September 1845) | E III 14 | `3ac508e20af6f0f745c66029ad87ba17011b703c470db1db11eeded1054dd6f6` |
+| `16867_Large (1500 x 1500).jpg` | 924 × 1499 | the supplier's smaller copy of 16867.jpg |  |  | `ebcde29f054a6f55989d3308aace3e3c6b1c15c2bde07bf6769499576e4f2d9f` |
+| `16867_Medium (1000 x 1000).jpg` | 616 × 1000 | the supplier's smaller copy of 16867.jpg |  |  | `b1d3e9574ee7e117497f88889c83a25c33355ee24ec321bd64406d7f33c8b2c6` |
+| `16867_Small (500 x 500).jpg` | 308 × 500 | the supplier's smaller copy of 16867.jpg |  |  | `64c7898ef2a8b6b09ec5486493bfd8a42f43fe39514a205b464cdac44e1efa86` |
+| `16868.jpg` | 5110 × 6636 | calculation for two trial values of θ (−45°, −43°) ending in θ very nearly −42° 51′ | August 20th 1846 | E VII 15 | `7b0e988c0b87ee57c5a85e2db14e64d3ca597c8082e1c165d095214fecdd8f6f` |
+| `16868_Large (1500 x 1500).jpg` | 1155 × 1500 | the supplier's smaller copy of 16868.jpg |  |  | `6194d71a2d32b3b9e3a9f3064b3f7cf8201370f8bbb119b25b6f124a9e3bea4f` |
+| `16868_Medium (1000 x 1000).jpg` | 770 × 1000 | the supplier's smaller copy of 16868.jpg |  |  | `063e7f1d5544f7e653a765972736eb6ad1a3f338ae34ae8749bfa04090b61c0a` |
+| `16868_Small (500 x 500).jpg` | 385 × 500 | the supplier's smaller copy of 16868.jpg |  |  | `76b09804c42c9c626deceefba2356736218aea5406f43d9d3ff0abe69d847373` |
+| `16869.jpg` | 5087 × 6561 | calculation of the additional perturbation of the radius vector for 1834, 1840 and 1846 | 1st Septr 1846 | F II 6 | `b58a61f90e275fadc83af90ca95fbcec59eda598d90d0d1ec5d361a85a24ecc4` |
+| `16869_Large (1500 x 1500).jpg` | 1163 × 1500 | the supplier's smaller copy of 16869.jpg |  |  | `d827c3cba4aab3ba37397054f6529f44cd5c27ef30e31cea18a7c2650ba54524` |
+| `16869_Medium (1000 x 1000).jpg` | 775 × 1000 | the supplier's smaller copy of 16869.jpg |  |  | `ae4716e078b9adb76ce4f1738e460e3952fcdecda1bd1baf72cd780cf032e6a1` |
+| `16869_Small (500 x 500).jpg` | 387 × 499 | the supplier's smaller copy of 16869.jpg |  |  | `8ffec92f3b68c11dfcb30ebe2fa1f6e96e109088fc15c0875e333b328c4f652e` |
+| `16870.jpg` | 4978 × 6456 | first approximation, θ = −51° 10′, ending in θ = −50° 34′ to be substituted | Septr 18th 1845 | E III 6 | `42ba3345cce776feb6a08872f6791b97654b97fa16ca064e3d980df3c2cee786` |
+| `16870_Large (1500 x 1500).jpg` | 1156 × 1499 | the supplier's smaller copy of 16870.jpg |  |  | `614265c3e9b5cab8c790599a2b26a1d23c624181c3d42b435e036155293bd1b9` |
+| `16870_Medium (1000 x 1000).jpg` | 771 × 1000 | the supplier's smaller copy of 16870.jpg |  |  | `74521c8ead975100a820ef134545a91e3f814c8bd29c864bc338d00e56e6f225` |
+| `16870_Small (500 x 500).jpg` | 385 × 499 | the supplier's smaller copy of 16870.jpg |  |  | `88e874eac7a312965f127eca8b601836d0ff12a15a5e7efe47f6e644e97d99f1` |
+| `16871.jpg` | 5141 × 6452 | calculation of errors for 1843 and 1846, with a calculation of the radius vector | undated | not visible on the image | `675a3339ef98e72b3a82c96b8deb5fe6676009dfe34df71f89fb97aceb3bb60c` |
+| `16871_Large (1500 x 1500).jpg` | 1195 × 1500 | the supplier's smaller copy of 16871.jpg |  |  | `9cf688237561f2f7ac768e83ab941efe8530b5b91c65db517e6661cec21e17e0` |
+| `16871_Medium (1000 x 1000).jpg` | 796 × 999 | the supplier's smaller copy of 16871.jpg |  |  | `9c4d0cc82acae54ec64a9bc636353dcaf84c0bc0c5eb26e029b2b14c296a7274` |
+| `16871_Small (500 x 500).jpg` | 398 × 499 | the supplier's smaller copy of 16871.jpg |  |  | `c946a5322bd8afd8cabdc79365a65f38b805bed4f5259b2f8f655201a20c0e13` |
+| `16872.jpg` | 3764 × 2579 | printed facsimile of the memorandum of 3 July 1841 and of the note of results | printed heading: 1841 July 3 and 1845 September 18 | reproduces the stamp E III 14 | `67556f81503a10c218026cfb837ca5db162ceb5c3f8395980f79f35c6dd10317` |
+| `16872_Large (1500 x 1500).jpg` | 1499 × 1027 | the supplier's smaller copy of 16872.jpg |  |  | `0dae1d5b900ba03d9275dd4bc091a70a7da87bc9135a0c165c48f0960c9a43da` |
+| `16872_Medium (1000 x 1000).jpg` | 1000 × 685 | the supplier's smaller copy of 16872.jpg |  |  | `4630b539316e9a093cba61084ff8e19d947dedaf664a68ea9dda533da222da9d` |
+| `16872_Small (500 x 500).jpg` | 499 × 342 | the supplier's smaller copy of 16872.jpg |  |  | `4979e4dee9346ef92b622c66e4b676bde46f378fc546aece91ba15395a1573b8` |
+| `16873.jpg` | 3837 × 5132 | letter from Robert Main, Royal Observatory, Greenwich, to Adams with a table of the errors of Uranus for six dates of 1845 | 1846 Septr 7 | A VII 3 | `93a88ddd0ac355ed2d2a064da5f7e049292fa45b800a5cd1fe0ac498ef1c72e1` |
+| `16873_Large (1500 x 1500).jpg` | 1121 × 1499 | the supplier's smaller copy of 16873.jpg |  |  | `f1ef118e86a3238362d3bf631d4806a8aefdb71ffb542ba0777c9d1cd35e5318` |
+| `16873_Medium (1000 x 1000).jpg` | 747 × 999 | the supplier's smaller copy of 16873.jpg |  |  | `9dabae92033881c0cee66befaab199e4e7dfff21a25cb04c539c0bb79bfe1601` |
+| `16873_Small (500 x 500).jpg` | 373 × 499 | the supplier's smaller copy of 16873.jpg |  |  | `379c7aa6d26c76dfd28c20f4a6f15402cc0d90c7c7918c465be9c44e9bb50dab` |
+
+Transcription (13 November 2026 amendment of `docs/notes/P1B_adams_solutions.md`): two
+entries of 200 cells from 17 bands cut from the full-size images (under
+`data/cache/adams_challis/stjohns_bands/`, not committed).
+
+| file | content | SHA-256 |
+|---|---|---|
+| `adams_solutions_ms.csv` | 20 manuscript values set beside the committed ones | `d2dd0e07d2b4ad8a9d91c28e07d65d026b6c051f6889123a9a379205eefeadf5` |
+| `adams_solutions_ms_reconciliation.csv` | the four differences between the entries and the recut | `dff231d49845255e406ac8d875007f2590b9d213e64020f4c78c7efff0c63bca` |
+| `passes_ms/stjohns_w16_pass1.csv` | first entry | `3de30e11d667b66741477395b6b2e60efe09e88fb485ce6944a4c812abb4c3bd` |
+| `passes_ms/stjohns_w16_pass2.csv` | second entry, from the bands and a list of labels alone | `4f8184c4515d1ec304156e95eeaba52a34fc36c73add2e845fd0a233701381ee` |
