@@ -666,3 +666,23 @@ step, gradient or typeface was added or removed; only where blocks start and end
 - UI-rule audit: no new pattern. No new colour, opacity step, dash, gradient, divider,
   pill, eyebrow or typeface. The two range lines use the two line weights the figures
   already have. The section number and the small-caps "Fig." are the existing conventions.
+
+## Space above headings (2026-11-13)
+
+- A section heading has the same space above it whatever ends above it: 48 px above an
+  h3, and the "§ n" label's 88 px above an h2 (72 px on the companion page; 64 px on
+  phones), after a paragraph, a figure with its caption, a table or a list. The block
+  before a heading gives up its bottom margin, so the space is the heading's alone.
+- **What was wrong:** an h3 that opens a section had no top margin, a rule meant for the
+  headings that follow Plates II and III. § 4.4 opens a section after Fig. 5 and stood
+  directly under its caption. The rule now applies only after a plate. Fig. 10 also kept
+  its bottom margin before § 5 (124 px above the label); it gives it up like every other
+  last block.
+- **The one exception:** after a plate the space is the plate's own 96 px (64 px on
+  phones), which is more than after a paragraph.
+- **Guard:** `tools/check_layout.py`, "space above headings": at every width and in both
+  engines, the gap between a heading and the figure, caption, table or plate that ends
+  above it is at least the gap the same kind of heading has after a paragraph, within
+  2 px. Where a page has no such heading after a paragraph, the reference is the
+  heading's own top margin.
+- UI-rule audit: no new pattern; spacing only.
