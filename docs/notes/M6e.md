@@ -195,3 +195,115 @@ comparison's part due to the rotation falls from 0″.50 to 0″.07). The chain 
 
 The transit test passes: hour angles +0.10 and +0.13 minutes of time, and the instants
 computed from the table equal those of § 2.
+
+## Results, 13 November 2026
+
+Run after the plan (ad5e66d), its amendment (1d4aedf) and the code (6103e36) were pushed.
+`uv run python -m fork.export.m6e run`; numbers in `M6e.json`, figure `M6e.png`.
+
+**In one sentence:** both posteriors predict Lalande's longitude of May 1795 inside their
+68 % regions, to 0.3° of the median, with a region about a hundredth as wide as the
+prior's.
+
+### The tests of § 2
+
+| test | 8 May | 10 May | tolerance | |
+|---|---|---|---|---|
+| instant computed from the table against § 2 | equal | equal | | pass |
+| hour angle at the instant (meridian transit) | +0.10 min | +0.13 min | 1 min | pass |
+| chain on Uranus's vector against JPL, right ascension on the sky | +0″.50 | +0″.50 | 1″ | pass |
+| the same, declination | −0″.15 | −0″.15 | 1″ | pass |
+
+The posteriors loaded are the published ones: the hashes match, and the Galle-night median
+of the 6,000 draws is 325.855° (published 325.815°) for the headline and 325.217°
+(325.166°) for the Student-t fit, within the 0.2° of § 1.
+
+### The reading (§ 3)
+
+Lalande's ecliptic longitude of date: 214.636° on 8 May and 214.585° on 10 May.
+
+| model | night | predicted longitude, median | 68 % | 95 % | level L | class |
+|---|---|---|---|---|---|---|
+| headline (Gaussian) | 8 May | 214.32° | 213.48° to 215.10° | 212.62° to 216.13° | 0.324 | inside 68 % |
+| headline (Gaussian) | 10 May | 214.27° | 213.43° to 215.05° | 212.57° to 216.07° | 0.324 | inside 68 % |
+| Student-t, ν = 4 | 8 May | 214.36° | 213.33° to 215.35° | 212.08° to 216.26° | 0.212 | inside 68 % |
+| Student-t, ν = 4 | 10 May | 214.31° | 213.28° to 215.30° | 212.02° to 216.21° | 0.213 | inside 68 % |
+
+**Reading: inside 68 % for both models on both nights.** No level is near a boundary. The
+two nights agree, as one test seen twice should. By § 3: the posteriors, which never saw
+1795, predict Lalande's longitude as a typical draw; the strength is in the widths below.
+
+### Reported, not read (§ 4)
+
+| | headline, 8 May | headline, 10 May | Student-t, 8 May | Student-t, 10 May |
+|---|---|---|---|---|
+| median minus observed, ecliptic longitude | −0.32° | −0.32° | −0.28° | −0.28° |
+| median minus observed, right ascension | −0.90° | −0.90° | −0.86° | −0.86° |
+| median minus observed, declination | −1.58° | −1.58° | −1.67° | −1.67° |
+| 68 % width, longitude | 1.62° | 1.62° | 2.02° | 2.02° |
+| 95 % width, longitude | 3.51° | 3.50° | 4.18° | 4.18° |
+| 68 % width, right ascension / declination | 2.04° / 2.72° | 2.04° / 2.72° | 2.38° / 3.28° | 2.38° / 3.27° |
+| tangent-plane level | 0.559 | 0.559 | 0.480 | 0.480 |
+| prior predictive: level L | 0.929 | 0.921 | 0.828 | 0.812 |
+| prior predictive: tangent-plane level | 0.954 | 0.951 | 0.882 | 0.868 |
+| prior predictive: 68 % / 95 % width, longitude | 240.9° / 342.5° | 240.0° / 342.5° | 240.1° / 341.1° | 239.5° / 340.8° |
+| ratio of widths, posterior to prior, 68 % / 95 % | 0.0067 / 0.0102 | 0.0068 / 0.0102 | 0.0084 / 0.0123 | 0.0084 / 0.0123 |
+
+- **Width.** The posterior's 68 % region in longitude is 1.6° (headline) and 2.0°
+  (Student-t), under a hundredth of the prior's 240°. An "inside" outcome is therefore
+  not a matter of a wide region.
+- **Declination.** The median is 1.6° south of Lalande's place, and Lalande's
+  declination (−11.34°) is outside the 68 % interval of declination for both models
+  (headline −14.26° to −11.55°; Student-t −14.71° to −11.43°) and inside the 95 %
+  intervals. The right-ascension miss of 0.9° is inside the 68 % interval. The reading
+  of § 3 is on longitude and is not changed by this; the tangent-plane level, which
+  takes both coordinates, is 0.56 and 0.48.
+- **The prior predictive's levels** carry no information: the prior's longitude is uniform
+  on the circle, so a central level depends on where the draws' circular median falls.
+  They are given because § 4 asks for them. No prior or posterior integration failed.
+- **Motion between the nights.** Predicted −181″.5 (68 %: −182″.7 to −180″.4) in right
+  ascension and +64″.4 (+62″.0 to +67″.1) in declination for the headline; the Student-t
+  fit gives −181″.8 and +64″.4. Observed −178″.7 and +60″.3: 2″.8 and 4″.1 from the
+  headline's median, and 1″.7 outside its 68 % interval in each coordinate. The plan
+  takes Lalande's places as good to a few arcseconds, and no observational error is
+  folded in, so this difference is at the scale of the observations.
+- No observational error was folded in; the 68 % width is far above the 2′ at which § 2
+  would have marked the reading as limited by it.
+
+### Post hoc, not in the plan
+
+Two numbers computed after the results were seen, from the same 6,000 draws per model,
+to explain the declination row. They are not in `M6e.json` and are not read.
+
+| | headline | Student-t |
+|---|---|---|
+| Lalande's ecliptic latitude of date | +1.84° | +1.84° |
+| predicted latitude, median | +0.06° | 0.00° |
+| predicted latitude, 68 % | −1.38° to +1.51° | −1.87° to +1.61° |
+| predicted latitude, 95 % | −2.90° to +2.91° | −3.48° to +3.22° |
+| 68 % width of longitude on Galle's night, same draws | 4.28° | 6.34° |
+
+The miss off the longitude is a miss in latitude: the predicted latitude is centred on
+the ecliptic and symmetric, and the planet stood 1.8° north of it, outside the 68 %
+interval and inside the 95 %. The region in longitude at 1795 is narrower than the same
+draws give on Galle's night.
+
+### Deviations of fact
+
+- The frame test's body: see the amendment above.
+- Two corrections to the runner after its commit (6103e36). The first was made before
+  any prediction was computed: the check of the Galle-night median compared an angle
+  unwrapped to −34.1° with 325.8° and stopped the first launch. The second was made after
+  the first complete run: angles are written in 0° to 360°, and one test of the interval
+  function compares on the circle accordingly. The run was repeated with the same seeds;
+  the levels and classes are identical.
+- Cost: 61 CPU-seconds for 24,000 integrations to 1795 and 12,000 to Galle's night, as
+  estimated.
+
+### What this leaves
+
+The limits of § 5 stand. What the run shows: the orbit the fits infer, carried back 51
+years, puts the planet within 0.3° in longitude of the star Lalande recorded, inside the
+68 % region of both error models, with a region a hundredth of the prior's. In latitude
+the fits say little, and the place is in their outer third. Galileo's drawings remain
+for their own pre-registration.

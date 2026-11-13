@@ -69,7 +69,9 @@ def test_level_classes(level, name):
 def test_interval_unwraps_about_the_centre():
     x = (np.linspace(-5.0, 5.0, 1001) + 360.0) % 360.0
     q = m6e.interval(x)
-    assert q["median"] == pytest.approx(0.0, abs=1e-6)
+    assert 0.0 <= q["median"] < 360.0 + 1e-9  # given on the circle, so 0° may read as 360°
+    assert (q["median"] + 180.0) % 360.0 - 180.0 == pytest.approx(0.0, abs=1e-6)
+    assert q["lo68"] < q["median"] < q["hi68"]
     assert q["width68"] == pytest.approx(6.8, abs=0.02)
 
 
@@ -119,3 +121,20 @@ def test_the_run_loads_the_posteriors_of_the_plan():
     for iso in m6e.INSTANTS_TDB.values():
         assert iso.replace("T", " ") in plan
     assert json.loads(m6e.JPL_URANUS.read_text(encoding="utf-8"))["delta_t_s"] == m6e.DELTA_T_S
+
+
+def test_the_recorded_run():
+    r = json.loads(m6e.OUT_JSON.read_text(encoding="utf-8"))
+    assert r["checks"]["pass"] and r["n_draws"] == m6e.N_DRAWS
+    want = {"headline": (0.324, 0.324), "student_t": (0.2117, 0.2127)}
+    for model, levels in want.items():
+        e = r["models"][model]
+        assert e["reading"] == "inside 68 %"
+        assert abs(e["galle_night_median_deg"] - m6e.PUBLISHED_GALLE_MEDIAN_DEG[model]) <= 0.2
+        for date, level in zip(m6e.INSTANTS_TDB, levels, strict=True):
+            p = e["posterior"][date]
+            assert p["central_level_ecl_lon"] == pytest.approx(level, abs=5e-4)
+            assert m6e.level_class(p["central_level_ecl_lon"]) == p["class"]
+            assert abs(p["median_minus_observed_deg"]["ecl_lon"]) < 0.35
+            assert e["width_ratio_posterior_to_prior"][date]["width68"] < 0.01
+        assert e["posterior"]["n_failed"] == 0 and e["prior_predictive"]["n_failed"] == 0

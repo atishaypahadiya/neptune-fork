@@ -251,6 +251,8 @@ def interval(x_deg: np.ndarray, centre_deg: float | None = None) -> dict:
         )
     d = (x - centre_deg + 180.0) % 360.0 - 180.0
     q = np.percentile(d, [2.5, 16.0, 50.0, 84.0, 97.5]) + centre_deg
+    if centre_deg != 0.0:  # an angle on the circle: the median is given in [0°, 360°)
+        q -= 360.0 * math.floor(q[2] / 360.0)
     return {
         "median": float(q[2]),
         "lo68": float(q[1]),
@@ -411,7 +413,7 @@ def run() -> dict:
         _, ctx, *_ = m6c.dataset(variant="headline" if model == "headline" else "s3_t4")
         q = posterior_draws(model, cells)
         galle = np.array([math.degrees(galle_lon_of_date_rad(space.theta(v), ctx, geo)) for v in q])
-        med = interval(galle)["median"]
+        med = interval(galle)["median"] % 360.0
         if abs(med - PUBLISHED_GALLE_MEDIAN_DEG[model]) > TOL_GALLE_MEDIAN_DEG:
             raise SystemExit(f"{model}: Galle-night median {med:.3f} is not the published one")
         post = predictive(space, ctx, q, epochs)
