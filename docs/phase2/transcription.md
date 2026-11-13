@@ -5,11 +5,11 @@ observations to competing models is the Phase 2 experiment and needs a frozen pl
 
 ## Choice of set
 
-`data_inventory.md` (scoping branch) names set D as the cheapest primary set for a first
+`data_inventory.md` names set D as the cheapest primary set for a first
 blind test: the observed columns of Newcomb's comparison table, *Astronomical Papers of the
 American Ephemeris* vol. 1, part VI (1882), pp. 451–452. It is the data behind the 43″, it
 spans 1677 to 1881 in one time scale, already reduced to the Earth's centre, with weights,
-on two pages. Le Verrier's 1859 chapter was not used tonight: its transit timings are spread
+on two pages. Le Verrier's 1859 chapter was not used here: its transit timings are spread
 over 16 pages of narrative and its scan has no text layer to locate them by.
 
 What this set is not: raw. Each time is Newcomb's combination of many observers' timings,
@@ -67,7 +67,7 @@ states.
   21h 34m" is the morning of 7 November, civil.
 - Each time carries a term in k, a correction to the adopted longitude or clock scale that
   Newcomb leaves symbolic (explained on p. 450 according to the data inventory; that
-  page was not read tonight): the printed value is the time
+  page was not read for this note): the printed value is the time
   for k = 0, and the coefficient is common to a transit.
 - Table II row 3 (1786 May 3, contact II) prints two times in a brace, 14h 59m 25s and
   15h 0m 8s. The first is in the time columns, the second in `second_value`.
