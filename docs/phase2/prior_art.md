@@ -1,6 +1,11 @@
 # Phase 2 prior art: Mercury's perihelion, hidden mass versus modified law
 
-Scoping note, 2026-11-12. Not a pre-registration. All web access on 2026-11-12.
+**A scoping survey, not a checked literature review. Statements tagged UNVERIFIED have not been
+checked against the source; do not cite them from here.**
+
+Scoping note, 2026-11-12. Not a pre-registration. All web access on 2026-11-12, except the
+three checks of 13 November 2026 that are dated where they stand (Seeliger 1906, Clemence 1947,
+Roseveare 1982).
 
 ## How each source was checked
 
@@ -138,12 +143,29 @@ section 11 for the limits of that search).
   (UNVERIFIED); Newcomb states that the lunar excess would be about 140 arcsec per century
   (p. 119, SCAN of OCR).
 - Seeliger, "Das Zodiakallicht und die empirischen Glieder in der Bewegung der innern Planeten",
-  Sitzungsberichte der Bayerischen Akademie, 1906 (UNVERIFIED: volume, pages and exact title not
-  confirmed by any index queried). His later paper "Ueber die Anomalien in der Bewegung der innern
+  Sitzungsberichte der mathematisch-physikalischen Klasse der K. B. Akademie der Wissenschaften
+  zu München, Band XXXVI, Jahrgang 1906 (München, 1907), pp. 595-622, session of 1 December
+  1906 (SCAN, 13 Nov 2026: the Academy's own scan, title page and running heads; ADS refused
+  the script, so no bibcode is given). His later paper "Ueber die Anomalien in der Bewegung der innern
   Planeten", Astronomische Nachrichten 201, 273-280 (1915) is META. The reply by Freundlich,
   Astronomische Nachrichten 201, 49-56 (1915) is META (Crossref spells the author "Freudlich").
-  Content, UNVERIFIED: Seeliger fitted two ellipsoidal dust distributions that reproduced
-  Newcomb's discrepancies; Freundlich argued the required mass exceeds what the zodiacal light
+  Content of the 1906 paper (SCAN of the scan's text layer, pp. 604 and 615-622, 13 Nov 2026):
+  - the model is a finite number of homogeneous oblate ellipsoids of revolution centred on the
+    Sun, none cut by a planet's orbit (p. 604). He began with five, of semi-major axes 0.10,
+    0.17, 0.24, 0.60 and 1.20, and kept two, the third and the fifth (p. 615);
+  - he found it necessary to add a secular rotation r of the astronomers' coordinate system
+    against an inertial one, about an axis perpendicular to the ecliptic (pp. 616-617). It is
+    5.8 +/- 1.2 arcsec per century in his closing text (p. 621);
+  - the provisional solution had five unknowns (inclination and node of the inner ellipsoid's
+    equator, two densities, r) from ten equations of condition (p. 617). Newcomb's terms in the
+    eccentricities were left out of the equations (p. 617);
+  - the fit: Mercury's e times the perihelion motion comes out +8.49 against Newcomb's
+    +8.48 +/- 0.43 (table, p. 620); he states that every term is represented within its
+    probable error (p. 621). The total mass is 3.1 x 10^-7 solar masses (p. 620);
+  - his own limit: the terms in the eccentricities "could not be represented in the same
+    measure as the others" (p. 622).
+  The table's other entries were read from an OCR layer with damaged digits and are not quoted.
+  Freundlich's argument, UNVERIFIED: that the required mass exceeds what the zodiacal light
   allows.
 
 **Gap.** Seeliger's model is the historical instance of a flexible hidden-mass model that fits
@@ -171,9 +193,13 @@ they enter as a prior on a discrete body. That is a design choice, not a researc
 
 ## 6. Clemence 1947 and the mid-century position
 
-- Clemence, "The Relativity Effect in Planetary Motions", Reviews of Modern Physics 19, 361-364
-  (META). Content UNVERIFIED (no abstract available): it is the standard reference for the
-  comparison of observed and relativistic perihelion advances of Mercury and the Earth.
+- Clemence, "The Relativity Effect in Planetary Motions", Reviews of Modern Physics 19 (4), 361-364,
+  October 1947 (META: Crossref and OpenAlex agree, 13 Nov 2026). His relativistic value for
+  Mercury is 43.03 arcsec per century, from values of the astronomical unit and the speed of
+  light that Nobili and Will call unconventional (ABS of Nobili and Will 1986, below). The
+  budget he gives, observed advance against the Newtonian sum for Mercury and the Earth, is
+  UNVERIFIED: no index carries an abstract, and the publisher's pages refused the script on
+  13 Nov 2026 (needs a browser: https://doi.org/10.1103/RevModPhys.19.361).
 - Clemence, "The motion of Mercury 1765-1937", Astronomical Journal 50, 126 (1943) (META); the
   full memoir in the Astronomical Papers series was not located (UNVERIFIED).
 - Morrison and Ward, "An Analysis of the Transits of Mercury: 1677-1973", MNRAS 173, 183-206
@@ -184,7 +210,8 @@ they enter as a prior on a discrete body. That is a design choice, not a researc
 - Narlikar and Rana, MNRAS 213, 657-663 (1985) (ABS): a Newtonian N-body integration gives
   about 528.95 arcsec per century.
 - Nobili and Will, "The real value of Mercury's perihelion advance", Nature 320, 39-41 (1986)
-  (META).
+  (ABS, 13 Nov 2026): with current constants the prediction is 42.98 arcsec per century; the
+  43.03 in most citations of the preceding 25 years is Clemence's.
 
 **What would not be novel.** Refitting the transit timings with a modern ephemeris and getting
 about 42 to 43 arcsec per century. Morrison and Ward did it with the full set of timings.
@@ -291,8 +318,10 @@ computed from the single summary number 43 +/- something.
 
 ## 10. Roseveare 1982
 
-Roseveare, "Mercury's Perihelion from Le Verrier to Einstein", Oxford, Clarendon Press, 1982,
-ISBN 0198581742 (META from archive.org; the scan is lending-only and was not read). Reviews:
+Roseveare, N. T., "Mercury's Perihelion, from Le Verrier to Einstein", Oxford: Clarendon Press;
+New York: Oxford University Press, 1982, ISBN 0198581742, LCCN 82176313 (META, 13 Nov 2026: the
+archive.org catalogue record and Open Library agree on publisher, places and year; the scan is
+lending-only and was not read). Reviews:
 Isis 76, 246-247; American Journal of Physics 51, 478-479; Science 219, 1058 (META). Content
 UNVERIFIED: the standard history of every hypothesis in sections 1 to 6, with the numbers.
 
@@ -348,7 +377,7 @@ publishable negative only if it is stated as such from the start.
 | Hall 1894 | doi:10.1086/102055 | META |
 | Seeliger 1915 | doi:10.1002/asna.19152011502 | META |
 | Freundlich 1915 | doi:10.1002/asna.19152010302 | META |
-| Seeliger 1906 | none found | UNVERIFIED |
+| Seeliger 1906 | https://publikationen.badw.de/de/003388884/003388884.pdf (SHA-256 29af7f21…05fe1b, cached outside the repository) | SCAN |
 | Watson 1878 | doi:10.2475/ajs.s3-16.93.230, doi:10.2475/ajs.s3-16.94.310 | META |
 | Swift 1878 | doi:10.1038/018539a0, doi:10.1002/asna.18780931102 | META |
 | Fontenrose 1973 | doi:10.1177/002182867300400301 | META |
@@ -356,10 +385,10 @@ publishable negative only if it is stated as such from the start.
 | Roseveare 1982 | https://archive.org/details/mercurysperiheli0000rose | META |
 | Einstein 1915 | reprint doi:10.1002/3527608958.ch4; original pages not checked | META (reprint) |
 | Clemence 1943 | doi:10.1086/105746 | META |
-| Clemence 1947 | doi:10.1103/RevModPhys.19.361 | META |
+| Clemence 1947 | doi:10.1103/RevModPhys.19.361 | META; content needs a browser |
 | Morrison and Ward 1975 | doi:10.1093/mnras/173.1.183; https://articles.adsabs.harvard.edu/pdf/1975MNRAS.173..183M | ABS, SCAN |
 | Narlikar and Rana 1985 | doi:10.1093/mnras/213.3.657 | ABS |
-| Nobili and Will 1986 | doi:10.1038/320039a0 | META |
+| Nobili and Will 1986 | doi:10.1038/320039a0 | ABS |
 | Dicke and Goldenberg 1967 | doi:10.1103/PhysRevLett.18.313 | ABS |
 | Dicke and Goldenberg 1974 | doi:10.1086/190292 | META |
 | Hill et al. 1974 | doi:10.1103/PhysRevLett.33.1497 | META |

@@ -1,6 +1,6 @@
 name: links
 
-# Link check of the published text: both prerendered pages, the README and the notes.
+# Link check of the published text: both prerendered pages, the README, the notes and docs/phase2.
 # Weekly and on demand, apart from the `test` workflow, so that an outside site's outage
 # never fails the main check. A failure opens (or updates) one issue titled "Broken links"
 # and leaves the run red.
@@ -40,7 +40,7 @@ jobs:
           args: >-
             --config .github/lychee.toml
             --root-dir "${{ github.workspace }}/_site"
-            _site/index.html _site/adams-challis/index.html README.md "docs/notes/*.md"
+            _site/index.html _site/adams-challis/index.html README.md "docs/notes/*.md" "docs/phase2/*.md"
           output: lychee-report.md
           fail: false
       - name: Open or update the issue

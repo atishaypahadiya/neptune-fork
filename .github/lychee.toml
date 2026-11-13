@@ -27,6 +27,9 @@ exclude = [
   # then the publisher answers 403 to scripts (12 Nov 2026). Other DOIs are checked.
   '^https?://doi\.org/10\.1093/',
   '^https?://doi\.org/10\.1051/',
+  # DOIs of the American Physical Society (10.1103): doi.org resolves, then the publisher
+  # answers 403 with a browser check (13 Nov 2026).
+  '^https?://doi\.org/10\.1103/',
   # French defence libraries: connections time out from outside a browser (12 Nov 2026).
   '^https?://bibliotheques-numeriques\.defense\.gouv\.fr/',
 ]

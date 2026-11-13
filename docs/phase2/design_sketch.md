@@ -397,7 +397,7 @@ therefore not an optimisation but a precondition, and its validation is a milest
 
 Neither is a plan. Nothing here has been run, and neither may be run on real data before a
 plan is frozen. Both sources they lean on are already in `prior_art.md` (Newcomb 1895,
-section 3; Seeliger 1906, section 4, whose volume and pages are still unverified).
+section 3; Seeliger 1906, section 4, read from the Academy's scan on 13 Nov 2026).
 
 ### 8.1 The Occam-factor question
 
@@ -406,7 +406,8 @@ stated priors on mass and radius, and report how the Bayes factor depends on the
 volume instead of reporting one number.
 
 - Models: 1PN with its strength fixed (zero parameters); a circular ring (mass, radius);
-  optionally Seeliger's form, two ellipsoids, as the flexible end.
+  optionally Seeliger's form, two ellipsoids and a rotation of the reference system, as the
+  flexible end.
 - What is expected before any run: Mercury's advance fixes one combination of ring mass and
   radius to about 5 % (8.48 ± 0.43 in section 5.2's units). The evidence for the ring then
   falls roughly in proportion to the prior width of that combination; directions the data
