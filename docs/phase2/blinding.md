@@ -119,3 +119,11 @@ formula and no table. It prints no residual. It says in words that the solution 
 time that represents the correction the factor k multiplies, and opens § 7. The correction
 itself is defined before p. 450; that part was not opened. The nine bands cover every line
 of the page.
+
+## The two entries of Le Verrier's Paris places, 13 November 2026
+
+Both entries were made from the 50 bands without the error columns and from the written
+specification. Neither entry reported ink in a removed column. Reconciling, I looked at
+two row bands (p. 57 b02, p. 58 b01) and two bands of p. 450 (b03, b05). No value of either
+error column was seen by any route, and the comparison of the entries used the observed
+columns only.

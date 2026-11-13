@@ -116,3 +116,76 @@ rate only weakly: the two-sided 95 % upper limit is 1 − 0.025^(1/13) ≈ 25 %.
 therefore not an estimate of the error rate of the table. Its value is that every doubtful
 or irregular reading was confirmed by a person. The images were whole tables cut from the
 same scan, with the transcribed columns only.
+
+## Le Verrier's Paris meridian places, 1801 to 1842, and Newcomb's p. 450: transcribed, 13 November 2026
+
+Added below the earlier sections, which stand as written. Nothing is fitted to these data.
+
+### Set C: Annales de l'Observatoire de Paris, tome V (1859), pp. 51 to 61
+
+The second observation-side set of `data_inventory.md` (set C), chosen as the cheapest of
+A, C and E by the inventory's own units. Unlike set D it is close to raw: one row per
+meridian observation at Paris, with Le Verrier's apparent longitude and latitude.
+
+- **Blinding.** The table prints the error of the tables in longitude and in latitude
+  beside each place. Those two columns were removed from every band before either entry
+  began (`blinding.md`, entries of 13 November), and they are not in the repository.
+- **Bands.** 50 bands (`docs/phase2/scripts/mercury_crops_leverrier_places.py`), with the
+  heading strip of each page and rows in printed blocks; neighbouring bands share one row.
+- **Two entries** from the bands and a written column specification only, each without
+  sight of the other, one working forward from p. 51 and one backward from p. 61.
+- **Comparison**, cell by cell: 397 rows × 18 fields = 7,146 cells.
+
+| | |
+|---|---|
+| rows | 397 (240 for 1801 to 1828, 157 for 1836 to 1842), in 195 groups |
+| cells compared | 7,146 |
+| disagreements between the two entries | 0 |
+| rows with a cell marked doubtful by an entry | 26 (12 by the first, 23 by the second); all read alike by both |
+| cells printed as » in place of a value, left empty and flagged | 9 |
+| inconsistencies in the print, logged | 2 |
+
+Both entries share one method of reading and one set of images, so their errors may be
+correlated; agreement is weaker evidence than two unrelated readings would give. Doubtful
+cells are listed in `leverrier_1859_paris_places_reconciliation.csv` with both entries'
+notes. I compared two of the logged rows with the bands myself (p. 57 rows 14 to 16, p. 58
+row 9); they are as entered.
+
+Logged, not corrected (`leverrier_1859_paris_places_misprints.csv`):
+
+- p. 58 row 9 (1837 August 7): group number printed 24, between 123 and 125; 124 appears
+  nowhere.
+- p. 57 rows 15 and 16 (1826 September 22 and 23): longitudes 163° 14′ 55″ and
+  154° 51′ 25″, a step of 8.4° backwards in a day, which Mercury cannot make; the latitudes
+  step by 0.08°. Which degree figure is wrong is not decided.
+
+Checks that pass on the table as printed (`tests/test_mercury_leverrier_places.py`): rows
+per page; years in order, 1801 to 1828 and 1836 to 1842; group numbers from 1 to 195,
+non-decreasing but for the logged row; every blank is a »; time increases from row to row;
+and no other day-to-day step in longitude or latitude larger than Mercury can make.
+
+What a user of the file must know: times are Paris mean time as printed (the heading says
+only "TEMPS moyen"; civil reckoning from midnight is the inventory's reading, not checked
+here); year and month are printed only when they change, and the file gives the carried
+value with `year_printed` and `month_printed`; the » cells are empty, never filled from the
+row above. A person's spot check has not been made; a 20-cell kit is ready.
+
+### Newcomb 1882, p. 450: the factor k
+
+The page before the contact table explains the symbolic term in k that each contact time
+carries. It is running text with one displayed formula, cut into 9 bands
+(`docs/phase2/scripts/mercury_crops_newcomb_p450.py`) and typed twice, line by line, in
+ASCII (`newcomb_1882_p450.txt`; the entries in `passes/`).
+
+- The two entries differ at three points, none a reading of a letter or figure: the dash
+  of the running head (typed `-` and `--`; `-` kept), and two marks of doubt. "motion" in
+  line 11 has a badly printed o; the raised marks after 18 and 60 in the formula are
+  malformed. On the band both are what the text requires, `motion` and `18s`; kept so.
+- Printed as is, noted: line 4 reads "we must not except", where "expect" is meant; one e of
+  "general" in line 23 is inverted.
+- The page was read once at low resolution while the bands were cut (`blinding.md`).
+
+The passage says that the observed times need a correction −kΔt, where Δt is the error of
+the time scale implied by the inequalities of the Moon's mean motion, and that over the
+span of the transits k cannot be separated from the constant c; it gives Δt as closely
+represented by −18s + 60s T². This is what the page says, not a model adopted here.

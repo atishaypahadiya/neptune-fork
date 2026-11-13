@@ -173,3 +173,18 @@ lines, covering every printed line of the page
 | `p450_b06.png` | `b78f909d5b4c5270b88079751d948a10c24872e72c68ae327581964a66e5e80e` |
 | `p450_b07.png` | `33c2a72b3247d70dc4f7e956e50d297603fc6c3773f117b897e3bb00d6ab301c` |
 | `p450_b08.png` | `745b5e111274b5c2b7e78bcb099797639cab5ae9806708ee7dbd19daf30fa664` |
+
+## Files from the two entries, 13 November 2026
+
+| file | SHA-256 |
+|---|---|
+| `leverrier_1859_paris_places.csv` | ea6323c124070d3412de34d74706c261366ac6b06aa7a5893eda1646474600c5 |
+| `leverrier_1859_paris_places_reconciliation.csv` | 8e06331dab52d0acaabe04e8cece289b3ee66120f924bf1fa66b042c011dfb69 |
+| `leverrier_1859_paris_places_misprints.csv` | 93e3ccdc36f050b41bfb0758efe3318c0fbbd5eece00f961689ec4fde6d8fc36 |
+| `passes/leverrier_1859_paris_places_pass1.csv` | 65b6ff772c4619f7af4615611ca30aa507bdcc1e8908199092ed856decafd2f6 |
+| `passes/leverrier_1859_paris_places_pass2.csv` | f319cf7d4ae415884d8bbddb6925896c452bb195e201e18d83c81aed7b08ec7e |
+| `newcomb_1882_p450.txt` | 00a78be788515e665d67891fa387225df047e94d662eafcda860101d1e370edb |
+| `passes/newcomb_1882_p450_pass1.txt` | c107d2479aaad7eae1a738da237f34e1f28d2e886e31f2bfd59d59c993cc4073 |
+| `passes/newcomb_1882_p450_pass2.txt` | fabbe294189e5b0700fbc5f435efb4721b5e09a0f7581f35b29ce246c17525ce |
+
+The method and the counts are in `docs/phase2/transcription.md`, section of 13 November 2026.
