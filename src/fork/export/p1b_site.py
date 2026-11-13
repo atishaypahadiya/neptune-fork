@@ -368,7 +368,7 @@ def build() -> dict[str, dict]:
             "description": "Companion page: where it lives and what it was built from.",
             "path": "adams-challis/",
             "title": "The British search for Neptune: Adams's solutions and Challis's sweeps",
-            "status": "part of release v1.2.1",
+            "status": "part of release v1.3.0",
             "main_title": "Refitting Le Verrier's prediction of Neptune",
             "main_link": "A companion study treats the British search of the same years: ",
             "references": [{"id": r[0], "parts": r[1:]} for r in REFERENCES],

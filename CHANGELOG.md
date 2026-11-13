@@ -4,8 +4,13 @@ Versions follow semver. Dates are the release dates; the DOIs are in `CITATION.c
 
 ## Unreleased
 
-Everything on `main` since 1.2.1. No number already on either page changes; the companion
-page gains § 3.5 and the text listed under Changed.
+Nothing yet.
+
+## 1.3.0 (2026-11-13)
+
+No number already on either page changes; the companion page gains § 3.5 and the text
+listed under Changed. The variants of the headline fit, the Peirce-number analysis and the
+held-out test on Neptune's precoveries are now deferred to v1.4.
 
 ### Security
 

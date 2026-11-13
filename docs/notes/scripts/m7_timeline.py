@@ -224,11 +224,11 @@ def main() -> None:
         },
         "entries": entries,
         # The spec's M6c fits not run in v1.0.0 (docs/release_checklist.md, "Deferred to v1.1",
-        # moved there 2026-11-09), in v1.1.0 or in v1.2.0, which carried them to v1.3. Not pre-registered
+        # moved there 2026-11-09), in v1.1.0, in v1.2.0 or in v1.3.0, which carried them to v1.4. Not pre-registered
         # yet, so they have no timeline entry.
         "deferred": {
-            "source": "docs/release_checklist.md, Deferred to v1.1 (2026-11-09); carried to v1.2 at v1.1.0 and to v1.3 at v1.2.0",
-            "to_version": "1.3",
+            "source": "docs/release_checklist.md, Deferred to v1.1 (2026-11-09); carried to v1.2 at v1.1.0, to v1.3 at v1.2.0 and to v1.4 at v1.3.0",
+            "to_version": "1.4",
             "fitted": "Le Verrier's data choice on the modern reduction track",
             "m6c_fits": [
                 {"key": "bouvard", "name": "Bouvard", "kind": "variant"},

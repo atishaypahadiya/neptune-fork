@@ -68,9 +68,9 @@ In the main study, the stages on synthetic data are complete:
 
 The pre-registered fit to the real data (the headline fit) is done and reported, and so are the
 acceptance tests on the historical data ([report](docs/notes/A6.md)). The Peirce-number analysis
-and the held-out test on Neptune's precoveries are deferred to v1.3. The spec's other variants of
+and the held-out test on Neptune's precoveries are deferred to v1.4. The spec's other variants of
 the headline fit (the `bouvard` and `adams` data
-variants, the 1846 reduction track and the Le Verrier shape model) are deferred to v1.3 too:
+variants, the 1846 reduction track and the Le Verrier shape model) are deferred to v1.4 too:
 they are not yet pre-registered, will be planned and pushed before launch, and the `adams`
 variant opens the Adams–Challis study. The higher-resolution reruns with a faster likelihood did
 not meet the 95 % stability condition, so the 95 % interval stays provisional. The full-likelihood
@@ -206,7 +206,7 @@ The write-up, with each claim's JSON path and deviation, is
 - The reduction check against JPL: comparison against per-group precision not made: no precision figure was fixed before the data were seen. Medians reported. Details in the [acceptance-test report](docs/notes/A6.md).
 - The transcription check: 0 of 28 rows in error; 95 % upper bound on the per-row error rate 10.1 % (exact one-sided Clopper–Pearson, 0 of 28); the remaining 251 rows are unchecked.
 - The observation model does not include diurnal parallax (up to 0.5″ for Uranus over 1781–1845).
-- Only Le Verrier's data choice on the modern reduction track is fitted: the `bouvard` and `adams` variants, the 1846 reduction track and the Le Verrier shape model are deferred to v1.3 (not yet pre-registered; to be planned and pushed before launch; the `adams` variant opens the Adams–Challis study).
+- Only Le Verrier's data choice on the modern reduction track is fitted: the `bouvard` and `adams` variants, the 1846 reduction track and the Le Verrier shape model are deferred to v1.4 (not yet pre-registered; to be planned and pushed before launch; the `adams` variant opens the Adams–Challis study).
 - Error model: the evidence favours Student-t errors (ln B = +13.7); the Gaussian error model
   was fixed by the pre-registration and is kept. Student-t errors move the median 0.37 headline
   half-widths.

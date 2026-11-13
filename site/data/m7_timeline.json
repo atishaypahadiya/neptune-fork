@@ -230,8 +230,8 @@
   }
  ],
  "deferred": {
-  "source": "docs/release_checklist.md, Deferred to v1.1 (2026-11-09); carried to v1.2 at v1.1.0 and to v1.3 at v1.2.0",
-  "to_version": "1.3",
+  "source": "docs/release_checklist.md, Deferred to v1.1 (2026-11-09); carried to v1.2 at v1.1.0, to v1.3 at v1.2.0 and to v1.4 at v1.3.0",
+  "to_version": "1.4",
   "fitted": "Le Verrier's data choice on the modern reduction track",
   "m6c_fits": [
    {
