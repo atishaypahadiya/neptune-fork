@@ -270,3 +270,12 @@ local branches):
 | Phase 2 scoping, physics, validation and first data set | merged (16c78d2, 10ca793, 407f4dc); nothing fitted; no plan frozen | a pre-registered plan before any fit of Mercury's observations |
 | The attribution to Bouvard's tables | done and released in v1.3.0 (`docs/notes/P1B_bouvard_attribution.md`) | none |
 | Changelog | the Unreleased section covers `main` since v1.3.0 | date it at the release |
+
+## Mercury synthetic identifiability study, 13 November 2026 (local branch `phase2-identifiability`)
+
+| item | state |
+|---|---|
+| Plan and one amendment | pushed before any data set was drawn |
+| Code and tests | committed; preparation run |
+| Gates and fits | queued after the v1.4 runs |
+| Fit to Mercury's real observations | none, and none planned here |
