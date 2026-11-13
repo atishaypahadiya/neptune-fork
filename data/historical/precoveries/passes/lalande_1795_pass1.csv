@@ -1,0 +1,10 @@
+witness,item,date,time_h,time_m,time_s,ra_deg,ra_min,ra_sec,dec_sign,dec_deg,dec_min,dec_sec,flag
+cr24_p668,position,1795-05-08,11,10,57,212,59,35.0,-,11,20,39.1,
+cr24_p668,position,1795-05-10,11,2,55,212,56,36.3,-,11,19,38.8,"declination printed 11h for 11 degrees"
+cr24_p668,difference,,,,,,2,58.7,+,,1,0.3,ra_sign=-
+cr24_errata,replaces,line29,11,10,57,,,,,,,,
+cr24_errata,reads,line29,11,5,11,,,,,,,,
+cr24_errata,replaces,line30,11,2,55,,,,,,,,
+cr24_errata,reads,line30,10,57,9,,,,,,,,
+an26,position,1795-05-08,11,5,11,212,59,35.0,-,11,20,39.1,
+an26,position,1795-05-10,10,59,9,212,56,36.3,-,11,19,38.8,

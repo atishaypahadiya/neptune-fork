@@ -1,0 +1,3 @@
+id,date,paris_mean_time,ra_app_deg,ra_app_min,ra_app_sec,dec_app_sign,dec_app_deg,dec_app_min,dec_app_sec,time_basis,source
+L1,1795-05-08,11:05:11,212,59,35.0,-,11,20,39.1,"erratum (Comptes rendus 24, errata after the session of 5 May, scan leaf n877) for the 11h 10m 57s of p. 668; the letter in Astronomische Nachrichten 26, col. 97 agrees","Mauvais 1847, Comptes rendus 24, 668"
+L2,1795-05-10,10:57:09,212,56,36.3,-,11,19,38.8,"erratum (same place) for the 11h 2m 55s of p. 668; Astronomische Nachrichten 26, col. 97 prints 10h 59m 9s (see the misprint log)","Mauvais 1847, Comptes rendus 24, 668"

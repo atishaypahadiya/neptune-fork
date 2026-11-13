@@ -230,3 +230,16 @@ link, public names and voice, the manuscript check, Bouvard's tables, the CI che
 - Carried from v1.2: M6d, M6e, the remaining M6c variants, the S1 cell-0 resolution.
 - A human spot check of the Phase 1b tables (`data/historical/adams_challis/`), then a separate
   dataset record for them.
+
+Status, 2026-11-12 (local branch `overnight/v1.3-prep`, not pushed; nothing launched):
+
+| item | status | next step |
+|---|---|---|
+| M6d | no plan existed; draft in `docs/notes/V13_drafts.md` | settle the open choices, move the plan into `M6.md`, push, then run (about 7 CPU-h) |
+| M6c variants, modern track | no plan existed; draft in the same file | as above (about 55 CPU-h with the full likelihood) |
+| M6c variants, 1846 track | blocked: the 1846 reduction track is not built | decide whether v1.3 includes it |
+| M6e | positions not sourced; draft in the same file | source and transcribe Lalande 1795 and Galileo 1612–13, then the plan |
+| S1 cell 0 | no plan existed; draft in the same file (sub-cell partition) | choose the sub-cells, push, then run |
+| Spot check of the Phase 1b tables | kit ready: 42 rows drawn with seed 20261112 (`docs/review/p1b_spotcheck_rows.csv`), 36 from the nine tables read from printed pages; 0 rows in error among the 36 gives an exact two-sided 95 % upper bound of 9.7 % on the row error rate; results template `docs/review/p1b_spotcheck_results_template.json` | the review itself, by a person; the HTML kit is built outside the repository by `docs/notes/scripts/p1b_spotcheck.py kit` |
+| Dataset record for the Phase 1b tables | not started | after the spot check |
+| Named input N1 of Phase 1b step 4 | obtained on local branch `overnight/berlin-sheet` | review; whether the companion page's C2 line changes is a decision for the next release |

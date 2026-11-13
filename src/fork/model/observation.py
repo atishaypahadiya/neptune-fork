@@ -163,10 +163,17 @@ def read_rows(path: Path | None = None) -> list[dict[str, str]]:
 
 
 def structure_from_rows(
-    rows: list[dict[str, str]], error_model: ErrorModel, geometry: ApparentGeometry | None = None
+    rows: list[dict[str, str]],
+    error_model: ErrorModel,
+    geometry: ApparentGeometry | None = None,
+    allow_empty_groups: bool = False,
 ) -> RaDecObservations:
     """The measurement layout of ``rows`` (epochs, RA/Dec presence, groups) with values left
-    as NaN: what a synthetic data set is built on. Reads no observed value."""
+    as NaN: what a synthetic data set is built on. Reads no observed value.
+
+    ``allow_empty_groups`` (off by default, so every existing caller is unchanged) lets a
+    data choice drop a whole series, e.g. the modern observations alone; a group that is
+    present must still have ``MIN_GROUP`` measurements."""
     jd = np.array([float(r["epoch_tt_jd"]) for r in rows])
     uniq, inverse = np.unique(jd, return_inverse=True)
     ids = {}
@@ -179,10 +186,10 @@ def structure_from_rows(
         raise ValueError("geometry epochs do not match the rows")
     groups = np.array([GROUPS.index(group_of(r)) for r in rows])
     counts = np.bincount(groups, minlength=len(GROUPS))
-    if np.any(counts < MIN_GROUP):
+    small = (counts < MIN_GROUP) & ((counts > 0) | (not allow_empty_groups))
+    if np.any(small):
         raise ValueError(
-            f"groups below {MIN_GROUP}: "
-            f"{[g for g, c in zip(GROUPS, counts, strict=True) if c < MIN_GROUP]}"
+            f"groups below {MIN_GROUP}: {[g for g, s in zip(GROUPS, small, strict=True) if s]}"
         )
     return RaDecObservations(
         geom, np.array([ids[k] for k in range(uniq.size)]), inverse.astype(np.int64),

@@ -1,0 +1,5 @@
+witness,row,field,printed,adopted,action,reason
+"Comptes rendus 24, p. 668",1795-05-10,declination unit,11h,11 degrees,log_only,"the declination of 10 May is printed with an hour mark; the row above and the Astronomische Nachrichten letter give degrees"
+"Comptes rendus 24, p. 668",1795-05-08,time,11h 10m 57s,11h 5m 11s,erratum,"corrected by the volume's own erratum (scan leaf n877, the two lines for page 668)"
+"Comptes rendus 24, p. 668",1795-05-10,time,11h 2m 55s,10h 57m 9s,erratum,"corrected by the volume's own erratum"
+"Astronomische Nachrichten 26, col. 97",1795-05-10,time,10h 59m 9s,10h 57m 9s,log_only,"differs from the erratum by 2 minutes. Arithmetic: two sidereal days shorten the mean time of the same right ascension by 7m 52s, and the object moved 2' 58.7'' = 11.9s west, so 11h 5m 11s gives 10h 57m 7s. The erratum's 57 fits; 59 does not"
