@@ -885,3 +885,27 @@ S1 was not run: no primary source for Bouvard's mass of Saturn. S4 is with V1.
   between 1780 and 1790.
 - Unseparated, as in § 8: the observations' errors, their reductions and the
   construction of the normal places. To this is added the treatment of the 1780 place.
+
+## Amendment, 13 November 2026: the reading stands; S8, the 1780 place
+
+Ruled by the author on 13 November 2026, after the results of the cells above were
+pushed (5fb7ba5). No earlier text is changed.
+
+1. **The pre-registered reading stands:** "depends on the method". The shift is not
+   attributed.
+2. **S8, the 1780 place: a named sensitivity, reported and not read.** It was defined
+   after the cells were seen and cannot change the reading. Three variants of C_Bouvard
+   at the 1780 normal place (epoch 1779.96), every other place as run; cells B and C are
+   solved again by both methods on both hypotheses:
+   - **(a)** Table II's century branch, by the rule of the first amendment. This is the
+     run above.
+   - **(b)** Table I's own branch: +3″.40 at that place. This is the first post hoc
+     check above, now under this name.
+   - **(c)** D at 1780 interpolated from the neighbouring places' D, following the
+     memoir's statement that the error of 1780 was found by interpolation. Fixed here
+     before it is computed: the cubic through D as run at the two places before and the
+     two after (1769, 1771, 1783, 1786), evaluated at the epoch of the 1780 place.
+3. **Deviation of fact.** § 9 expected the whole run to take under a minute. It takes
+   about six minutes on one core (4 cells and the variants, each by both methods on
+   both hypotheses, each least-squares solve from its grid of starts). Nothing in the
+   method follows from this.
