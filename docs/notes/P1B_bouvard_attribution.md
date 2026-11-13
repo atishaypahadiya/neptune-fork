@@ -963,3 +963,11 @@ normal places, one unit in a fourth decimal, and noise at his residuals' level e
 move his solution by 2° to 5°, the same order as the classes into which the shift was
 to be divided. On these numbers his nearness of about 11° lies within the sensitivity
 of his own problem, and what carries it may not be identifiable from his data.
+
+### S8, a sentence added on 13 November 2026 (post hoc)
+
+Post hoc: under variants (b) and (c) the two methods and the two hypotheses agree that
+the observations carry about 9° to 10° of the shift (the eight rows run from +8.6° to
++12.0°) and the reference about 1.5° to 3° (+0.5° to +3.1°); variant (a), the century
+branch, is the only one under which the methods disagree. The pre-registered reading is
+unchanged. The cubic rule for (c) stays as recorded.
