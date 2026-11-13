@@ -41,7 +41,8 @@ OG_SIZE = {"width": 1200, "height": 630}
 # (docs/DESIGN.md, "Companion page"). `structure`: the section numbers the number audit allows.
 PAGES = ("", "adams-challis/")
 STRUCTURE = {
-    "": ["1", "2", "3", "4", "5", "6", "7", "8", "3.1", "3.2", "3.3", "4.1", "4.2", "4.3"],
+    "": ["1", "2", "3", "4", "5", "6", "7", "8", "3.1", "3.2", "3.3", "4.1", "4.2", "4.3",
+         "4.4"],
     "adams-challis/": ["1", "2", "3", "4", "5", "6", "7", "3.1", "3.2", "3.3", "3.4", "3.5",
                        "4.1", "4.2", "4.3"],
 }  # fmt: skip

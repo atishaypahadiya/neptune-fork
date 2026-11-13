@@ -261,7 +261,7 @@ local branches):
 | M6d | no plan existed; draft in `docs/notes/V13_drafts.md` | settle the open choices, move the plan into `M6.md`, push, then run (about 7 CPU-h) |
 | M6c variants, modern track | no plan existed; draft in the same file | as above (about 55 CPU-h with the full likelihood) |
 | M6c variants, 1846 track | blocked: the 1846 reduction track is not built | decide whether v1.4 includes it |
-| M6e | Lalande's two places of 1795 sourced and transcribed (`data/historical/precoveries/`); Galileo's not sourced; draft in the same file | source Galileo 1612–13 or drop it, then the plan |
+| M6e | Lalande's places of 1795: pre-registered, run and merged (`docs/notes/M6e.md`): inside the 68 % region for both error models on both nights; on the main page as § 4.4 and Fig. 10. Galileo's drawings of 1612–13: not sourced | Galileo is a separate pre-registration once Kowal and Drake (1980) is obtained |
 | S1 cell 0 | no plan existed; draft in the same file (sub-cell partition) | choose the sub-cells, push, then run |
 | Spot check of the Phase 1b tables | kit ready: 42 rows drawn with seed 20261112 (`docs/review/p1b_spotcheck_rows.csv`), 36 from the nine tables read from printed pages; 0 rows in error among the 36 gives an exact two-sided 95 % upper bound of 9.7 % on the row error rate; results template `docs/review/p1b_spotcheck_results_template.json` | the review itself, by a person; the HTML kit is built outside the repository by `docs/notes/scripts/p1b_spotcheck.py kit` |
 | Dataset record for the Phase 1b tables | not started | after the spot check |

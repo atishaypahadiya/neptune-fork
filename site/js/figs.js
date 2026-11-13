@@ -449,3 +449,43 @@ export function fig9(fig, D) {
     }).on("pointerleave", leave(tip));
   });
 }
+
+/* ---------------- Fig. 10: the posterior on Lalande's nights ---------------- */
+
+export function fig10(fig, D) {
+  const M = D.m6e, v = M.values, night = M.histogram_night;
+  const edges = v["histogram.edges_deg"], counts = v["histogram.counts"];
+  const bins = counts.map((n, k) => ({ x0: edges[k], x1: edges[k + 1], n }));
+  const q = (model, k) => v[`${model}.${night}.lon.${k}`];
+  const lal = M.nights.map((n) => v[`lalande.${n}.ecl_lon_deg`]);
+  const tip = probe(fig);
+  mount(fig, (svg, w, h) => {
+    const phone = w < 600;
+    const mg = { l: 20, r: 20, t: 40, b: 78 };
+    const x = d3.scaleLinear().domain([bins[0].x0, bins.at(-1).x1]).range([mg.l, w - mg.r]);
+    const y = d3.scaleLinear().domain([0, d3.max(bins, (b) => b.n)]).range([h - mg.b, mg.t + 10]);
+    const y0 = h - mg.b;
+    const g = svg.append("g");
+    g.append("path").attr("class", "ln ctx").attr("d", L([[mg.l, y0], [w - mg.r, y0]]));
+    const [t0, t1] = x.domain();
+    const ticks = d3.range(Math.ceil(t0), Math.floor(t1) + 1).filter((t) => !phone || t % 2 === 0);
+    xAxis(g, x, y0, ticks, (t) => `${t}°`);
+    const step = bins.flatMap((b) => [[x(b.x0), y(b.n)], [x(b.x1), y(b.n)]]);
+    g.append("path").attr("class", "ln model").attr("d", L([[x(bins[0].x0), y(0)], ...step, [x(bins.at(-1).x1), y(0)]]));
+    // The two 68 % ranges, each on its own line under the axis.
+    [["headline", "ln model", 38, "Gaussian"], ["student_t", "ln", 62, "Student-t"]].forEach(([m, cls, dy, name]) => {
+      const a = x(q(m, "lo68")), b = x(q(m, "hi68")), yy = y0 + dy;
+      g.append("path").attr("class", cls).attr("d", L([[a, yy], [b, yy]]));
+      for (const e of [a, b]) g.append("path").attr("class", "ln").attr("d", L([[e, yy - 4], [e, yy + 4]]));
+      g.append("text").attr("class", "lbl").attr("x", b + 10).attr("y", yy).attr("dominant-baseline", "middle").text(name);
+    });
+    for (const l of lal) g.append("path").attr("class", "ln").attr("d", L([[x(l), mg.t - 6], [x(l), y0]]));
+    point(g, { id: "La", x: x(lal[0]), y: mg.t - 6, letter: "La", dx: 0, dy: -14, anchor: "middle", r: 2.6, title: "Lalande's star" });
+    svg.on("pointermove pointerdown", (e) => {
+      const [px] = d3.pointer(e);
+      const b = bins.find((bb) => x(bb.x0) <= px && px < x(bb.x1));
+      if (!b) return tip.hide();
+      tip.show(px, y(b.n), `${fmt(b.x0, 2)}–${fmt(b.x1, 2)}°: ${b.n} of ${v.n_draws} draws`);
+    }).on("pointerleave", leave(tip));
+  });
+}
