@@ -1,0 +1,6 @@
+image,block,label,pass1,pass2,resolved,witness,reason
+16871,column 1846,term 4,-23.77,-23.27,-23.27,16871_mid_left.png,"arithmetic: with -23.27 the ten terms sum to the written total -148.65; with -23.77 they give -149.15"
+16873,table row Jan 13 1845,"error of geocentric longitude, arcsec",+114.88,+114.68,doubtful,16873_table.png,"not resolved: the first decimal is 8, 6 or 0. The row cannot be checked by arithmetic. Not one of Adams's results"
+16873,table row Sep 18 1845,coefficient 4,+2505,+2585,doubtful,16873_zoom_rows123.png,"not resolved: the third digit is 0 or 8 in a hand that writes both with a loop. Neighbouring rows (+6536, -2853) allow either. Not one of Adams's results"
+16873,letter head,place and date written,Royal Observatory Greenwich 1846 Sept 7,"Royal Observatory Greenwich, Sept 7 1846",Royal Observatory Greenwich 1846 Sept 7,16873_letter.png,"same reading; the sheet writes the year before the month"
+16868,theta = -45 sums,right list 3,-2.852,-2.852,-2.852,16868_sum45b.png,"no disagreement after the band was recut: the first band cut this line and eight other cells; the second entry read those nine from recut bands"

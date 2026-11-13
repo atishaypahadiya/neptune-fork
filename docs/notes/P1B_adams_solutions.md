@@ -148,3 +148,70 @@ Adams's memoir uses the same quantity (§ 30: ε = 217° 55′, θ = −51° 30�
   papers (RGO 6/96a) and are not transcribed here; only the 325° column is in print.
 - Neptune's longitude is from the cached Horizons vectors at two bracketing epochs; the interpolation
   error over 8 days is below 1′.
+
+## Amendment: manuscript check, 12 Nov 2026
+
+Added after the step was closed; nothing above is changed, and `adams_solutions.csv` is not
+edited. St John's College supplied images of seven sheets of MS W16 on 12 November 2026
+(`data/historical/adams_challis/MANIFEST.md` lists them with the rights condition; the
+images are not in the repository). The first bullet of "What this step does not settle" is
+now settled for these seven sheets only.
+
+**Method.** Bands were cut from the full-size images. A first entry was made from them. A
+second entry was made from the bands and a list of labels alone, without the first entry,
+the committed tables or Sampson. 200 cells were compared. The first cut of three bands lost
+nine cells at an edge; the second entry read those from recut bands. The label list names
+the two trial values of θ on the 1846 sheet, so those two cells are not independent
+readings.
+
+| | |
+|---|---|
+| cells compared | 200 |
+| differences | 4 |
+| of which the same reading written differently | 1 |
+| settled by the sheet's own arithmetic | 1 (−23.27, not −23.77) |
+| left doubtful | 2, both in the Greenwich letter's table, neither a result of Adams |
+
+**What the manuscripts confirm** (`adams_solutions_ms.csv`, 11 values that agree):
+
+- S4, the note of results (E III 14): mean distance 38.4, eccentricity 0.1428, longitude of
+  perihelion 320° 30′, mean longitude about the end of September 1845 321° 40′, geocentric
+  longitude 320° 30′ nearly and diminishing about 1′ daily, mass 0.000173. Sampson's
+  transcription is exact in all of them. The sheet carries no date; the date is on E III 6.
+- S4's date: E III 6 ends "Septr 18th 1845" with θ = −50° 34′, as Sampson p. 166.
+- S6's first date: E VII 15 ends "August 20th 1846" with θ "very nearly = −42° 51′", as
+  Sampson p. 167.
+- The corrections of the radius vector for 1834, 1840 and 1846 on F II 6 (+0.004923,
+  +0.006962, +0.008250) are the Hypothesis II figures of the letter to Airy of 2 September
+  1846, digit for digit.
+
+**What they contradict.** Nothing in the committed tables.
+
+**What they add** (9 values):
+
+- E III 6: the first approximation was θ = −51° 10′, where the equation left −2.8964.
+- E VII 15: the equation's sum was −28.866 at θ = −45° and −2.077 at −43°. A straight line
+  through the two crosses zero at −42° 50′.7, which is his −42° 51′. On this sheet
+  θ − α = −95° 16′ at θ = −45°, so α = 50° 16′.
+- F II 6 is dated "1st Septr 1846". The radius-vector corrections of Hypothesis II were
+  therefore computed the day before the letter that communicates them.
+- An undated sheet headed "Calcn of Errors for 1843 & 1846": sums −109″.76 and −148″.65,
+  three totals −91″.65, −124″.23 and −159″.76, and corrections of heliocentric longitude
+  −83″.59, −113″.55 and −146″.92. The sheet does not say which hypothesis it belongs to, and
+  its first column has no year. Not attributed here.
+- A VII 3 is a letter, not a calculation: Robert Main at Greenwich to Adams, "1846, Septr 7",
+  forwarding "the Heliocentric Errors of Uranus for the year 1845", six dates, +7″.79 to
+  +9″.55.
+
+**Does 7 September 1846 change S6's dating?** No. The sheet of that date is the Greenwich
+letter above. S6 stays 20 August to 2 September 1846, and F II 6 puts a dated Hypothesis II
+calculation at 1 September inside that range. What the letter does bear on is S7 and the
+memoir. The letter to Airy of 2 September rests its extrapolation on the errors of 1843
+alone; the memoir (§ 53) uses 1843 to 1845. The 1845 errors reached Adams on or after
+7 September, so the memoir's form of that argument was written after the letter of
+2 September. This is an inference from two dates, not a statement on any sheet.
+
+**Not done.** The trial with the 1843 sheet (S1) and S2, S3 and S5 have no manuscript image
+here. The many logarithms on the sheets were not entered, only the results and the lists
+that carry a total. No person has spot-checked the entries. Both entries share one method
+of reading, so their agreement is weaker evidence than two unrelated readers would give.
