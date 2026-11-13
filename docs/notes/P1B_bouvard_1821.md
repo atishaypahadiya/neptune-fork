@@ -46,7 +46,7 @@ the step 3c question (his shift of about 11°) needs before it can be attributed
 | planet | as printed | remark |
 |---|---|---|
 | Jupiter | 1/1070,5 | |
-| Saturn | 1/5512 | misprint candidate: Bouvard's mass of Saturn is usually quoted as 1/3512. Not settled here; a second source is needed before either is used |
+| Saturn | 1/5512 | as printed on p. ii; not compared with any other source here |
 | Uranus | 1/17918 | |
 
 The masses come out of the Jupiter and Saturn solution; the Uranus theory takes those of
@@ -177,3 +177,10 @@ Description only; the numbers and the test are in `docs/notes/P1B_bouvard_attrib
 
 Also seen: three table readings contradicted by the tables' own printed differences
 (Table X rows 324 and 327, Table XIII row 720), recorded in the rows file.
+
+## Correction, 13 November 2026: Saturn's mass
+
+The remark beside Saturn's mass in "Masses adopted" compared the printed 1/5512 with a value
+"usually quoted" as 1/3512, with no source for the quotation. The comparison is removed; the
+row gives the printed value only. Whether 1/5512 is a misprint is not examined here, and the
+work of step 3d used the printed value.

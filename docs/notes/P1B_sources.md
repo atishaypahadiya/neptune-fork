@@ -389,3 +389,10 @@ RGO 6/96a, RGO 36/2/70 and RGO 7/247.
 - The search log is reconstructed in `data/historical/adams_challis/challis_sweeps.csv`; what the
   printed record cannot give (zone boundaries, the dates between 12 August and 28 September) is listed
   in `P1B_challis_sweeps.md`.
+
+## Addendum, 13 November 2026: one citation completed
+
+- Airy's account, as reprinted in *Astronomische Nachrichten*: vol. 25, no. 585 (1847),
+  cols. 131–148.
+- Le Verrier's paper of 1 June 1846: *Comptes rendus* 22, 907–918; the place of the planet is
+  stated on p. 917.
