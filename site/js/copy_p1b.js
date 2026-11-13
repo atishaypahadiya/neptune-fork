@@ -116,7 +116,8 @@ export function abstract(D) {
   const share = drv(Math.round((100 * W.c1a_p_by_0816) / W.C1a_mean), "percent of flags by a date");
   return {
     abstract: `I put two questions to the British search for Neptune of ` +
-      `${A.S4_date.slice(0, 4)} and ${K.galle_night.year}, using the printed record alone. How ` +
+      `${A.S4_date.slice(0, 4)} and ${K.galle_night.year}, using the printed record and, for ` +
+      `one check, Adams's manuscripts at St John's College, Cambridge. How ` +
       `good were Adams's solutions? And could Challis's sweeps at Cambridge have recognised ` +
       `the planet before Galle found it on ${galle(K)} ${K.galle_night.year}?`,
     abstract_p2: `Adams's two final solutions place the planet ${abs(printed("S5"))}° and ` +
