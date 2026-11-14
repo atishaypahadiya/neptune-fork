@@ -190,3 +190,30 @@ before `validate` first ran, so that the gates' outcome can be judged with it in
   for the planet model. With the inclination and the node held, most of the excess goes.
   That is not the method of § 3, and I have not changed § 3. V2 decides on its own 30
   draws per fit as written.
+
+## Results, 14 November 2026: the study stops at V2
+
+Nothing above the line is changed. Command `uv run python -m fork.phase2.identifiability_study
+all --n-workers 12`, run 14:08:02 to 14:10:59 PST (the preparation step was cached from
+13 November). Gate numbers are in `docs/phase2/identifiability_study.json` under `validation`.
+
+| gate | outcome |
+|---|---|
+| V1 rates | passes: the four truths' rates are 42.989″, 42.980″, 42.980″ and 42.980″ a century |
+| V2 linearity | **fails in all 12 fits**. Share of the 30 draws within 0.5 of the linear χ²: J2 0.10 to 0.33, ring 0.10 to 0.40, planet 0.00 to 0.13, against 0.95. Largest differences: J2 13 to 33, ring 23 to 42, planet 388 to 818 |
+| V3 sampler | fails in 3 of 20 fits: planet at the first distance on truth a (nested minus quadrature −0.108), planet at the second distance on truth c (+0.144), ring on truth d (+0.117); nested errors 0.07 to 0.08 |
+| V4 closure | passes: minimum χ² 4 × 10⁻⁴ or below on all four truths |
+| V5 no observed value | passes (a test in the suite) |
+
+**Reading: none.** As § 6 fixes, the study stops at the first failed gate, and the failure is
+the result: on Le Verrier's 58 epochs and the error levels of § 2, the linear marginalisation
+of the six elements fixed in § 3 does not reproduce the full integration at the posterior's
+own draws, for any of the three models with parameters. No data set was fitted and no
+reading of § 7 was made.
+
+*Post hoc, not a reading.* The hand check disclosed above found the excess in the planet
+model only; the gate finds it in all three, smaller for J2 and the ring than for the planet
+by an order of magnitude. The V3 failures are the size the disclosure foresaw from the
+sampler's own error. A rerun would need a different treatment of the elements (for example
+the inclination and node held, or the elements fitted by full integration at each draw);
+that is a new plan, not an amendment of this one.
