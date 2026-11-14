@@ -280,7 +280,7 @@ Added 2026-11-13, prior-work reading notes:
   bears on; none of them was edited) and its list of what still needs a browser or a library.
   The weekly link check covers the new directory (`.github/workflows/links.yml`).
 
-## Step 3e, Bouvard's tables at the 30 epochs, 13 November 2026 (local branch `bouvard-route-b`)
+## Step 3e, Bouvard's tables at the 30 epochs, 13 November 2026 (on main since 14 November 2026)
 
 | item | state |
 |---|---|
