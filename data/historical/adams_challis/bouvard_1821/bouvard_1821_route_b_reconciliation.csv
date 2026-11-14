@@ -1,0 +1,137 @@
+table,row,column,pass1,pass2,resolved,band,reason
+I,1782,lon,"106.81.30,8","106.81.30,8","106.81.30,8",t01_p084_b01.png,no disagreement; note(s) carried into the rows file
+I,1782,node,81.02.04,81.02.04,81.02.04,t01_p084_b01.png,no disagreement; note(s) carried into the rows file
+I,1786,peri,185.89.15,185.89.15,185.89.15,t01_p084_b02.png,no disagreement; note(s) carried into the rows file
+I,1786,III,2361,2361,2361,t01_p084_b02.png,no disagreement; note(s) carried into the rows file
+I,1786,IV,732,732,732,t01_p084_b02.png,no disagreement; note(s) carried into the rows file
+I,1786,VII,867,867,867,t01_p085_b02.png,no disagreement; note(s) carried into the rows file
+I,1792,peri,185.98.88,185.98.88,185.98.88,t01_p084_b03.png,no disagreement; note(s) carried into the rows file
+I,1792,IX,553,553,553,t01_p085_b03.png,no disagreement; note(s) carried into the rows file
+I,1792,X,207,207,207,t01_p085_b03.png,no disagreement; note(s) carried into the rows file
+I,1795,X,233,233,233,t01_p085_b03.png,no disagreement; note(s) carried into the rows file
+I,1801,VIII,150,130,150,t01_p085_b04.png,"the entries read 150 and 130. Enlarged, the middle figure has the straight stem and lower bowl of a 5; the descender of the 7 of 1800 above runs into its top, which is what made it read as a 3. Taken as 5 on the image alone; neighbouring rows not used. Doubtful"
+I,1801,X,283,283,283,t01_p085_b04.png,no disagreement; note(s) carried into the rows file
+I,1807,IV,252,252,252,t01_p084_b05.png,no disagreement; note(s) carried into the rows file
+I,1807,VI,464,464,464,t01_p085_b05.png,no disagreement; note(s) carried into the rows file
+I,1810,lon,"240.54.07,1","240.54.07,1","240.54.07,1",t01_p086_b01.png,no disagreement; note(s) carried into the rows file
+I,1810,peri,186.28.04,186.28.04,186.28.04,t01_p086_b01.png,no disagreement; note(s) carried into the rows file
+I,1810,node,81.14.28,81.14.28,81.14.28,t01_p086_b01.png,no disagreement; note(s) carried into the rows file
+I,1816,peri,186.37.76,186.37.76,186.37.76,t01_p086_b02.png,no disagreement; note(s) carried into the rows file
+I,1816,V,232,232,232,t01_p087_b02.png,no disagreement; note(s) carried into the rows file
+I,1825,lon,"312.19.07,9","312.19.07,9","312.19.07,9",t01_p086_b03.png,no disagreement; note(s) carried into the rows file
+I,1831,VIII,835,835,835,t01_p087_b04.png,no disagreement; note(s) carried into the rows file
+I,1831,X,535,535,535,t01_p087_b04.png,no disagreement; note(s) carried into the rows file
+III,Juillet common,peri,"80,3","80,3","80,3",t03_p091_b01.png,no disagreement; note(s) carried into the rows file
+III,Mai leap,lon,"1.58.23,4","1.58.23,4","1.58.23,4",t03_p091_b02.png,no disagreement; note(s) carried into the rows file
+III,Mai leap,VIII,51,51,51,t03_p091_b02.png,no disagreement; note(s) carried into the rows file
+III,Août leap,VIII,90,90,90,t03_p091_b02.png,no disagreement; note(s) carried into the rows file
+IV,2,lon,"0.01.30,8","0.01.30,8","0.01.30,8",t04_p092_b01.png,no disagreement; note(s) carried into the rows file
+IV,31,peri,"13,0","13,0","13,0",t04_p092_b04.png,no disagreement; note(s) carried into the rows file
+V,1,lon,"13,1","13,1","13,1",t05_p093_b01.png,no disagreement; note(s) carried into the rows file
+VI,1,lon,"0,1","0,1","0,1",t06_p093_b01.png,no disagreement; note(s) carried into the rows file
+VI,24,lon,"3,1","3,1","3,1",t06_p093_b01.png,no disagreement; note(s) carried into the rows file
+VI,76,lon,"9,9","9,9","9,9",t06_p093_b01.png,no disagreement; note(s) carried into the rows file
+VII,1,y1_9,"-0,0","-0,0","-0,0",t07_p093_b01.png,no disagreement; note(s) carried into the rows file
+VII,1,y2_8,"-0,1","-0,1","-0,1",t07_p093_b01.png,no disagreement; note(s) carried into the rows file
+VII,1,y3_7,"-0,1","-0,1","-0,1",t07_p093_b01.png,no disagreement; note(s) carried into the rows file
+VII,1,y4_6,"-0,1","-0,1","-0,1",t07_p093_b01.png,no disagreement; note(s) carried into the rows file
+VII,1,y5_5,"-0,1","-0,1","-0,1",t07_p093_b01.png,no disagreement; note(s) carried into the rows file
+VIII,30 Avril,dec,"0,33","0,33","0,33",t08_p093_b01.png,no disagreement; note(s) carried into the rows file
+VIII,7 Septembre,dec,"0,68","0,68","0,68",t08_p093_b01.png,no disagreement; note(s) carried into the rows file
+VIII,6 Décembre,dec,"0,93","0,93","0,93",t08_p093_b01.png,no disagreement; note(s) carried into the rows file
+VIII,26 Décembre,dec,"0,99","0,99","0,99",t08_p093_b01.png,no disagreement; note(s) carried into the rows file
+X,14,d2,"4,0","4,0","4,0",t10_p095_b02.png,no disagreement; note(s) carried into the rows file
+X,42,eq,"3.74.44,6","3.74.44,6","3.74.44,6",t10_p095_b04.png,no disagreement; note(s) carried into the rows file
+X,43,sv,"21,8","21,8","21,8",t10_p095_b04.png,no disagreement; note(s) carried into the rows file
+X,54,d2,"12,7","12,7","12,7",t10_p095_b05.png,no disagreement; note(s) carried into the rows file
+X,83,eq,"5.74.25,2","5.74.25,2","5.74.25,2",t10_p095_b07.png,no disagreement; note(s) carried into the rows file
+X,100,eq,"5.86.30,5","5.86.30,5","5.86.30,5",t10_p095_b08.png t10_p096_b01.png,no disagreement; note(s) carried into the rows file
+X,100,sv,"-31,9","-31,9","-31,9",t10_p095_b08.png t10_p096_b01.png,no disagreement; note(s) carried into the rows file
+X,100,d1,"-61,5","-61,5","-61,5",t10_p095_b08.png t10_p096_b01.png,no disagreement; note(s) carried into the rows file
+X,100,d2,,,,t10_p095_b08.png t10_p096_b01.png,no disagreement; note(s) carried into the rows file
+X,101,d2,"-14,5","-14,5","-14,5",t10_p096_b01.png,no disagreement; note(s) carried into the rows file
+X,129,d2,"11,7","11,7","11,7",t10_p096_b03.png,no disagreement; note(s) carried into the rows file
+X,156,eq,"3.55.14,5","3.55.14,5","3.55.14,5",t10_p096_b05.png,no disagreement; note(s) carried into the rows file
+X,159,d2,"7,3","7,3","7,3",t10_p096_b05.png,no disagreement; note(s) carried into the rows file
+X,170,eq,"2.49.21,8","2.49.21,8","2.49.21,8",t10_p096_b06.png,no disagreement; note(s) carried into the rows file
+X,189,eq,"0.89.43,8","0.89.43,8","0.89.43,8",t10_p096_b07.png,no disagreement; note(s) carried into the rows file
+X,189,sv,"4,8","4,8","4,8",t10_p096_b07.png,no disagreement; note(s) carried into the rows file
+X,189,d2,"2,1","2,1","2,1",t10_p096_b07.png,no disagreement; note(s) carried into the rows file
+X,200,eq,"399.92.82,5","399.92.82,5","399.92.82,5",t10_p096_b08.png t10_p097_b01.png,no disagreement; note(s) carried into the rows file
+X,200,sv,"-0,0","-0,0","-0,0",t10_p096_b08.png t10_p097_b01.png,no disagreement; note(s) carried into the rows file
+X,200,d1,"-8.81,9","-8.81,9","-8.81,9",t10_p096_b08.png t10_p097_b01.png,no disagreement; note(s) carried into the rows file
+X,200,d2,,,,t10_p096_b08.png t10_p097_b01.png,no disagreement; note(s) carried into the rows file
+X,201,d2,"+0,1","+0,1","+0,1",t10_p097_b01.png,no disagreement; note(s) carried into the rows file
+X,233,d1,"7.80,2","7.80,2","7.80,2",t10_p097_b02.png,no disagreement; note(s) carried into the rows file
+X,234,d2,"6,1","6,1","6,1",t10_p097_b02.png,no disagreement; note(s) carried into the rows file
+X,272,d1,"4.22,9","4.22,9","4.22,9",t10_p097_b04.png,no disagreement; note(s) carried into the rows file
+X,274,d2,"12,1","12,1","12,1",t10_p097_b04.png,no disagreement; note(s) carried into the rows file
+X,339,d1,"5.21,8","5.21,8","5.21,8",t10_p098_b03.png,no disagreement; note(s) carried into the rows file
+X,384,d2,"4,7","4,7","4,7",t10_p098_b06.png,no disagreement; note(s) carried into the rows file
+X,389,d2,"3,2","3,2","3,2",t10_p098_b06.png,no disagreement; note(s) carried into the rows file
+XI,0,diff,"1,6","1,6","1,6",t11_p099_b01.png,no disagreement; note(s) carried into the rows file
+XI,430,eq,"90,7","90,7","90,7",t11_p099_b04.png,no disagreement; note(s) carried into the rows file
+XI,430,diff,"5,3","5,3","5,3",t11_p099_b04.png,no disagreement; note(s) carried into the rows file
+XI,470,diff,"5,4","5,4","5,4",t11_p099_b04.png,no disagreement; note(s) carried into the rows file
+XI,670,diff,"0,2","0,2","0,2",t11_p099_b07.png,no disagreement; note(s) carried into the rows file
+XI,740,eq,"9,2","9,2","9,2",t11_p099_b07.png,no disagreement; note(s) carried into the rows file
+XII,0,eq,"24,6","24,6","24,6",t12_p099_b01.png,no disagreement; note(s) carried into the rows file
+XII,0,diff,"8,4","8,4","8,4",t12_p099_b01.png,no disagreement; note(s) carried into the rows file
+XII,3200,eq,"4.96,1","4.96,1","4.96,1",t12_p099_b02.png,no disagreement; note(s) carried into the rows file
+XII,5500,eq,"8.72,8","8.72,8","8.72,8",t12_p099_b03.png,no disagreement; note(s) carried into the rows file
+XIII,40,diff,"9,8","9,8","9,8",t13_p100_b01.png,no disagreement; note(s) carried into the rows file
+XIII,240,eq,"3.21,5","3.21,5","3.21,5",t13_p100_b02.png,no disagreement; note(s) carried into the rows file
+XIII,800,eq,"8,2","8,2","8,2",t13_p100_b07.png,no disagreement; note(s) carried into the rows file
+XIII,800,diff,"3,5","3,5","3,5",t13_p100_b07.png,no disagreement; note(s) carried into the rows file
+XIV,170,eq,"2,9","2,9","2,9",t14_p100_b01.png,no disagreement; note(s) carried into the rows file
+XIV,360,diff,"0,3","0,3","0,3",t14_p100_b02.png,no disagreement; note(s) carried into the rows file
+XIV,500,diff,"0,6","0,6","0,6",t14_p100_b02.png t14_p100_b03.png,no disagreement; note(s) carried into the rows file
+XIV,780,diff,"0,0","0,0","0,0",t14_p100_b04.png,no disagreement; note(s) carried into the rows file
+XV-XVII,30,VIII,"3,9","3,9","3,9",t15_p101_b01.png,no disagreement; note(s) carried into the rows file
+XVIII-XXI,0,IX,"4,7","4,7","4,7",t18_p102_b01.png,no disagreement; note(s) carried into the rows file
+XVIII-XXI,0,X,"5,5","5,5","5,5",t18_p102_b01.png,no disagreement; note(s) carried into the rows file
+XVIII-XXI,0,XI,"0,1","0,1","0,1",t18_p102_b01.png,no disagreement; note(s) carried into the rows file
+XVIII-XXI,0,XII,"1,9","1,9","1,9",t18_p102_b01.png,no disagreement; note(s) carried into the rows file
+XVIII-XXI,50,X,"5,7","5,7","5,7",t18_p102_b02.png,no disagreement; note(s) carried into the rows file
+XVIII-XXI,60,X,"5,7","5,7","5,7",t18_p102_b02.png,no disagreement; note(s) carried into the rows file
+XXXII,5,red,"4,5","4,5","4,5",t32_p110_b01.png,no disagreement; note(s) carried into the rows file
+XXXII,10,red,"9,0","9,0","9,0",t32_p110_b02.png,no disagreement; note(s) carried into the rows file
+XXXII,35,red,"25,9","25,9","25,9",t32_p110_b04.png,no disagreement; note(s) carried into the rows file
+XXXII,50,red,"29,0","29,0","29,0",t32_p110_b05.png t32_p110_b06.png,no disagreement; note(s) carried into the rows file
+XXXII,95,red,"4,5","4,5","4,5",t32_p110_b11.png,no disagreement; note(s) carried into the rows file
+IX,1680,diff,"+23,6","+23,6","+23,6",t09_p094_b01.png,no disagreement; note(s) carried into the rows file
+IX,1720,diff,"5,8","5,8","5,8",t09_p094_b01.png,no disagreement; note(s) carried into the rows file
+IX,1730,diff,"+1,0","+1,0","+1,0",t09_p094_b01.png,no disagreement; note(s) carried into the rows file
+IX,1740,diff,"-3,6","-3,6","-3,6",t09_p094_b01.png,no disagreement; note(s) carried into the rows file
+IX,1770,diff,"17,4","17,4","17,4",t09_p094_b01.png,no disagreement; note(s) carried into the rows file
+IX,1820,diff,"35,2","35,2","35,2",t09_p094_b01.png,no disagreement; note(s) carried into the rows file
+X,0,d1,"+9.91,2","+9.91,2","+9.91,2",t10_p095_b01.png,no disagreement; note(s) carried into the rows file
+X,1,d2,"-0,3","-0,3","-0,3",t10_p095_b01.png,no disagreement; note(s) carried into the rows file
+X,2,d2,"0,5","0,5","0,5",t10_p095_b01.png,no disagreement; note(s) carried into the rows file
+X,4,d2,"1,2","1,2","1,2",t10_p095_b01.png,no disagreement; note(s) carried into the rows file
+X,114,d2,"13,4","13,4","13,4",t10_p096_b02.png,no disagreement; note(s) carried into the rows file
+X,144,d2,"9,6","9,6","9,6",t10_p096_b04.png,no disagreement; note(s) carried into the rows file
+X,174,d1,"8.22,8","8.22,8","8.22,8",t10_p096_b06.png,no disagreement; note(s) carried into the rows file
+X,186,d1,"8.65,3","8.65,3","8.65,3",t10_p096_b07.png,no disagreement; note(s) carried into the rows file
+X,260,d2,"10,3","10,3","10,3",t10_p097_b03.png,no disagreement; note(s) carried into the rows file
+X,289,d2,"13,7","13,7","13,7",t10_p097_b05.png,no disagreement; note(s) carried into the rows file
+X,324,d2,"14,7","14,7","14,7",t10_p098_b02.png,no disagreement; note(s) carried into the rows file
+XI,440,diff,"5,3","5,3","5,3",t11_p099_b04.png,no disagreement; note(s) carried into the rows file
+XI,450,diff,"5,4","5,4","5,4",t11_p099_b04.png,no disagreement; note(s) carried into the rows file
+XI,460,diff,"5,3","5,3","5,3",t11_p099_b04.png,no disagreement; note(s) carried into the rows file
+XI,480,diff,"5,3","5,3","5,3",t11_p099_b04.png,no disagreement; note(s) carried into the rows file
+XI,490,diff,"5,3","5,3","5,3",t11_p099_b04.png,no disagreement; note(s) carried into the rows file
+XII,500,diff,"0,4","0,4","0,4",t12_p099_b01.png,no disagreement; note(s) carried into the rows file
+XII,600,diff,"2,2","2,2","2,2",t12_p099_b01.png,no disagreement; note(s) carried into the rows file
+XII,5000,diff,"7,5","7,5","7,5",t12_p099_b02.png t12_p099_b03.png,no disagreement; note(s) carried into the rows file
+XII,7400,diff,"25,0","25,0","25,0",t12_p099_b03.png,no disagreement; note(s) carried into the rows file
+XIII,500,diff,"10,2","10,2","10,2",t13_p100_b03.png t13_p100_b04.png,no disagreement; note(s) carried into the rows file
+XIII,710,diff,"2,3","2,3","2,3",t13_p100_b06.png,no disagreement; note(s) carried into the rows file
+XIII,720,diff,"1,4","1,4","1,4",t13_p100_b06.png,no disagreement; note(s) carried into the rows file
+XIV,70,diff,"0,6","0,6","0,6",t14_p100_b01.png,no disagreement; note(s) carried into the rows file
+XIV,80,diff,"0,7","0,7","0,7",t14_p100_b01.png,no disagreement; note(s) carried into the rows file
+I,1780,lon,"97.25.36,3","97.25.36,3","97.25.36,3",t01_p084_b01.png,no disagreement; note(s) carried into the rows file
+I,1780,peri,185.79.43,185.79.43,185.79.43,t01_p084_b01.png,no disagreement; note(s) carried into the rows file
+I,1780,node,81.01.16,81.01.16,81.01.16,t01_p084_b01.png,no disagreement; note(s) carried into the rows file
+I,1780,X,107,107,107,t01_p085_b01.png,no disagreement; note(s) carried into the rows file
+I,1879,lon,"170.11.27,6","170.11.27,6","170.11.27,6",t01_p088_b04.png,no disagreement; note(s) carried into the rows file

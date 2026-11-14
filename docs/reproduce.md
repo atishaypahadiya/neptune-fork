@@ -560,3 +560,19 @@ notes themselves. Records served by an API and live web pages are not fixed file
 hashes may differ on a later day without the content cited having changed. The scans have no
 text layer except Lyttleton's; the notes say which pages were read as OCR text, made with
 tesseract from renders at 200 to 220 dpi.
+
+## Step 3e: step 3d's four cells with Bouvard's tables at the 30 epochs (route B)
+
+```sh
+uv run --with pymupdf --with pillow python -I docs/notes/scripts/bouvard_table_bands.py \
+    --rows data/historical/adams_challis/bouvard_1821/bouvard_1821_uranus_table_rows_route_b.csv \
+    --out data/cache/adams_challis/bouvard/bands_route_b      # the bands, from the cached scan (hash checked)
+uv run pytest -q tests/test_p1b_bouvard.py tests/test_p1b_bouvard_tables.py
+uv run python -m fork.export.p1b_bouvard_tables                    # about 3 min on one core
+```
+
+Plan and results: `docs/notes/P1B_bouvard_tables.md`; numbers in
+`docs/notes/P1B_bouvard_tables.json`. The runner refuses to run if any input's SHA-256
+differs from § 1 of the plan. The new rows are in
+`data/historical/adams_challis/bouvard_1821/bouvard_1821_uranus_table_rows_route_b.csv`;
+step 3d's rows file is unchanged.

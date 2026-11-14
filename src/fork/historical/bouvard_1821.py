@@ -9,6 +9,8 @@ the mean equinox of date with Bouvard's uniform precession of 154″.63 a year:
 - ``table_longitude``: the tables as a computer of the time would use them (pp. xviii–xx),
   from the rows transcribed for the validation of docs/notes/P1B_bouvard_attribution.md. Only
   the instants of that note can be computed this way.
+- ``table_longitude_at``: the same path at any instant whose rows were entered (the 30 normal
+  epochs, docs/notes/P1B_bouvard_tables.md), with Tables V and VI for the time of day.
 
 Time is t in Julian years from the Paris mean midnight that begins 1 January 1800.
 """
@@ -133,6 +135,49 @@ def table_rows(used: bool = True) -> dict[tuple[str, str, str], str]:
     with (BOUVARD / "bouvard_1821_uranus_table_rows.csv").open(encoding="utf-8") as f:
         col = "value_used" if used else "value_as_printed"
         return {(r["table"], r["row"], r["column"]): r[col] for r in csv.DictReader(f)}
+
+
+ROUTE_B_ROWS = BOUVARD / "bouvard_1821_uranus_table_rows_route_b.csv"
+ROUTE_B_MISPRINTS = BOUVARD / "bouvard_1821_misprints_route_b.csv"
+MISPRINT_COLUMNS = (
+    "place", "page", "reads", "evidence", "value_by_the_evidence", "status", "used", "touches",
+)  # fmt: skip
+COLUMN_NAMES = {"eq": "Équation", "diff": "Différences", "d1": "Différences premières",
+                "d2": "Différences secondes"}  # fmt: skip
+REPLACED = "replaced"  # the status of a reading the rule of § 2 replaces
+
+
+def route_b_rulings() -> dict[tuple[str, str, str], str]:
+    """Readings of the route B rows replaced under the rule of § 2 of
+    docs/notes/P1B_bouvard_tables.md, from its misprint log: {(table, row, column): used}."""
+    if not ROUTE_B_MISPRINTS.exists():
+        return {}
+    out = {}
+    with ROUTE_B_MISPRINTS.open(encoding="utf-8") as f:
+        for r in csv.DictReader(f):
+            if not r["status"].startswith(REPLACED):
+                continue
+            table, row, name = (p.strip() for p in r["place"].split(","))
+            col = {v: k for k, v in COLUMN_NAMES.items()}[name]
+            out[table.split()[1], row.split()[1], col] = r["used"]
+    return out
+
+
+@cache
+def route_b_rows(used: bool = True) -> dict[tuple[str, str, str], str]:
+    """The route B rows. ``used``: the file's ``value_used`` with the rulings of the route B
+    misprint log applied (a copy in memory; the file is not changed); otherwise as printed."""
+    with ROUTE_B_ROWS.open(encoding="utf-8") as f:
+        col = "value_used" if used else "value_as_printed"
+        rows = {(r["table"], r["row"], r["column"]): r[col] for r in csv.DictReader(f)}
+    if used:
+        rows.update(route_b_rulings())
+    return rows
+
+
+def all_table_rows(used: bool = True) -> dict[tuple[str, str, str], str]:
+    """Both rows files: step 3d's (with its rulings) and route B's (with its own)."""
+    return {**table_rows(used), **route_b_rows(used)}
 
 
 def _sin(grades: float) -> float:
@@ -284,10 +329,12 @@ def t_of_jd(jd: float) -> float:
     return (jd - JD_1800_PARIS_MIDNIGHT) / 365.25
 
 
-def corrected_formula_at(t: float) -> dict[str, float]:
-    """``corrected_formula`` at any time t (Julian years from 1800)."""
+def corrected_formula_at(t: float, branch: str = "century") -> dict[str, float]:
+    """``corrected_formula`` at any time t (Julian years from 1800). ``branch`` "own" puts
+    a date before 1780 on Table I's own branch (the mean motion's slip counted from 1780
+    without the century), as S8(b) of step 3d did at the 1780 place."""
     year = 1800.0 + t
-    row_year = year + (100.0 if year < MEAN_SLIP_FROM else 0.0)
+    row_year = year + (100.0 if year < MEAN_SLIP_FROM and branch == "century" else 0.0)
     return formula(
         t,
         centre_coefficient=CENTRE_FROM_TABLES,
@@ -406,33 +453,296 @@ def centre_constant() -> float:
     return -_centre_row(table_rows(), 400)[0]
 
 
+class MissingRow(KeyError):
+    """A row the table path needs was not entered: the work stops at that epoch (§ 2 of
+    docs/notes/P1B_bouvard_tables.md); nothing is filled in from the formula."""
+
+
+class _Rows(dict):
+    """The rows, recording every cell read."""
+
+    def __init__(self, d: dict) -> None:
+        super().__init__(d)
+        self.read: set = set()
+
+    def __getitem__(self, key):
+        try:
+            v = super().__getitem__(key)
+        except KeyError:
+            raise MissingRow(key) from None
+        self.read.add(key)
+        return v
+
+
 def table_longitude(inst: Instant, used: bool = True) -> dict:
     """The longitude of Uranus at ``inst`` from the transcribed table rows."""
-    d = table_rows(used)
+    epoch = [("I", str(inst.table_year), 1)] + [
+        (table, row, 1)
+        for table, row in (("II", inst.century), ("III", inst.month), ("IV", inst.day))
+        if row is not None
+    ]
+    return _table_path(_Rows(table_rows(used)), epoch, inst.year, used=used)
+
+
+MONTHS = ("Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août",
+          "Septembre", "Octobre", "Novembre", "Décembre")  # fmt: skip
+TABLE_I_FIRST = 1780  # Table I's first row; earlier dates take the row a century later
+
+
+def _leap(y: int) -> bool:
+    return y % 4 == 0 and (y % 100 != 0 or y % 400 == 0)
+
+
+def paris_date_and_time(t: float, midnight: bool = False) -> dict:
+    """The Paris civil date and the decimal time of day (the day in 10 hours of 100 minutes
+    of 100 seconds, as Tables V and VI divide it) of t, the seconds rounded to a whole one.
+    ``midnight``: the nearest Paris mean midnight instead (S-midnight)."""
+    days = t * 365.25
+    if midnight:
+        days = float(round(days))
+    d0 = math.floor(days)
+    total = round((days - d0) * 100_000)
+    if total == 100_000:
+        d0, total = d0 + 1, 0
+    date = datetime.date(1800, 1, 1) + datetime.timedelta(days=d0)
+    ordinal = date.toordinal() - datetime.date(date.year, 1, 1).toordinal()
+    return {
+        "date": (date.year, date.month, date.day),
+        "h": total // 10_000,
+        "m": (total // 100) % 100,
+        "s": total % 100,
+        "year": date.year + ordinal / (366 if _leap(date.year) else 365),
+        "days_from_1800": d0 + total / 100_000,
+    }
+
+
+def table_longitude_at(
+    t: float,
+    used: bool = True,
+    branch: str = "century",
+    midnight: bool = False,
+    interpolation: str = "four-row",
+) -> dict:
+    """The longitude of Uranus from the tables at t (Julian years from the Paris mean
+    midnight beginning 1 January 1800): the path of ``table_longitude`` (pp. xviii–xx) at the
+    Paris date of t, with Table V (decimal hours) and Table VI (minutes, and seconds as
+    hundredths of its entries) for the time of day, added to the mean longitude only (§ 2 of
+    docs/notes/P1B_bouvard_tables.md). Both rows files are read.
+
+    ``branch`` for a date before 1780: "century" (Table I a century later with Table II, as
+    in V1) or "own" (Table I's first row, 1780, less the motion back to the date: the 1780
+    place on Table I's own branch, S-b). ``midnight``: the nearest Paris midnight, Tables V
+    and VI not used (S-midnight). ``interpolation``: "four-row" (the rule of V1 and V1′) or
+    "two-row" (the book's apparatus, S-two-row). Raises ``MissingRow`` if a row was not
+    entered."""
+    ti = table_instant(t, branch, midnight)
+    h, m, s, sign = ti["h"], ti["m"], ti["s"], ti["sign"]
+    d = _Rows(all_table_rows(used))
+    time_cs, n_time = 0.0, 0
+    if h:
+        time_cs += centesimal_seconds(d["V", str(h), "lon"])
+        n_time += 1
+    if m:
+        time_cs += centesimal_seconds(d["VI", str(m), "lon"])
+        n_time += 1
+    if s:
+        time_cs += centesimal_seconds(d["VI", str(s), "lon"]) / 100.0
+        n_time += 1
+    out = _table_path(
+        d, ti["epoch"], ti["year"], used=used, time_cs=sign * time_cs, n_time=n_time,
+        interpolation=interpolation, date=ti["date"],
+    )  # fmt: skip
+    if out["entries"] != rounding_entries(ti):
+        raise AssertionError("the count of entries differs from § 3's formula")
+    out["time_of_day"] = {"h": h, "m": m, "s": s, "sign": sign}
+    out["date"] = ti["date"]
+    out["year"] = ti["year"]
+    out["epoch_rows"] = ti["epoch"]
+    return out
+
+
+def rounding_entries(ti: dict) -> int:
+    """§ 3 of docs/notes/P1B_bouvard_tables.md: N = 17 + n_II + n_III + n_IV + n_V + n_VI,min
+    + n_VI,sec, each n 1 if that table is opened at the epoch (Table I's own branch opens IV
+    in place of II and III)."""
+    return 17 + (len(ti["epoch"]) - 1) + (ti["h"] > 0) + (ti["m"] > 0) + (ti["s"] > 0)
+
+
+def table_instant(t: float, branch: str = "century", midnight: bool = False) -> dict:
+    """The rows of Tables I to VI that the epoch t opens, before any value is read: the
+    epoch rows (table, row, ±1), and the decimal hour, minute and second (subtracted on
+    Table I's own branch, ``sign`` −1)."""
+    pdt = paris_date_and_time(t, midnight)
+    y, mo, dd = pdt["date"]
+    h, m, s = pdt["h"], pdt["m"], pdt["s"]
+    sign = 1
+    if y >= TABLE_I_FIRST or branch == "century":
+        kind = "common" if not _leap(y) else "leap"
+        epoch = [("I", str(y if y >= TABLE_I_FIRST else y + 100), 1)]
+        if y < TABLE_I_FIRST:
+            epoch.append(("II", "-100", 1))
+        if mo > 1:
+            epoch.append(("III", f"{MONTHS[mo - 1]} {kind}", 1))
+        if dd > 1:
+            epoch.append(("IV", str(dd), 1))
+    elif branch == "own":
+        # back from Table I's first row: whole days by Table IV (row n + 1 is n days), the
+        # rest of a day by Tables V and VI, all subtracted
+        back = round(
+            ((datetime.date(TABLE_I_FIRST, 1, 1) - datetime.date(1800, 1, 1)).days
+             - pdt["days_from_1800"]) * 100_000
+        )  # fmt: skip
+        n_days, rest = divmod(back, 100_000)
+        if n_days + 1 > 31 or y != TABLE_I_FIRST - 1:
+            raise ValueError("Table I's own branch is used only for the 1780 place")
+        epoch = [("I", str(TABLE_I_FIRST), 1)] + ([("IV", str(n_days + 1), -1)] if n_days else [])
+        h, m, s = rest // 10_000, (rest // 100) % 100, rest % 100
+        sign = -1
+    else:
+        raise ValueError(branch)
+    return {
+        "epoch": epoch, "h": h, "m": m, "s": s, "sign": sign,
+        "date": pdt["date"], "year": pdt["year"],
+    }  # fmt: skip
+
+
+def _signed_ix_differences(d: dict) -> dict[int, float]:
+    """Table IX's printed differences with the sign of the run carried down (the table
+    prints a sign on the first line of a run only)."""
+    out, sign = {}, 1.0
+    for yr in sorted(int(r) for (t, r, c) in d.keys() if t == "IX" and c == "diff"):
+        v = d["IX", str(yr), "diff"]
+        if v.startswith(("+", "-")):
+            sign = -1.0 if v.startswith("-") else 1.0
+        out[yr] = sign * centesimal_seconds(v.lstrip("+-"))
+    return out
+
+
+def _table_viii(d: dict, date: tuple[int, int, int]) -> float:
+    """Table VIII: the decimal of the year at a date, between the two rows about it."""
+    doy = datetime.date(1801, date[1], date[2]).timetuple().tm_yday
+    rows = {}
+    for t, r, c in list(d.keys()):
+        if t == "VIII" and c == "dec":
+            day, month = r.split()
+            rows[datetime.date(1801, MONTHS.index(month) + 1, int(day)).timetuple().tm_yday] = r
+    lo = max((k for k in rows if k <= doy), default=None)
+    hi = min((k for k in rows if k >= doy), default=None)
+    if lo is None or hi is None:
+        raise MissingRow(("VIII", "about", f"{date[2]} {MONTHS[date[1] - 1]}"))
+    v_lo = _num(d["VIII", rows[lo], "dec"])
+    if hi == lo:
+        return v_lo
+    return v_lo + (_num(d["VIII", rows[hi], "dec"]) - v_lo) * (doy - lo) / (hi - lo)
+
+
+def _table_vii(d: dict, second_diff: float, years: float) -> float:
+    """Table VII: the correction of a proportional part for a second difference (centesimal
+    seconds) at a whole number of years into the decade, between rows and columns."""
+    cols = {1: "y1_9", 2: "y2_8", 3: "y3_7", 4: "y4_6", 5: "y5_5"}
+    c = min(years, 10.0 - years)
+
+    def entry(row: int, col: int) -> float:
+        if row == 0 or col == 0:
+            return 0.0
+        return centesimal_seconds(d["VII", str(row), cols[col]].lstrip("+-"))
+
+    def at_row(row: int) -> float:
+        c0 = math.floor(c)
+        if c0 >= 5:
+            return entry(row, 5)
+        return entry(row, c0) + (entry(row, c0 + 1) - entry(row, c0)) * (c - c0)
+
+    r0 = math.floor(second_diff)
+    if r0 >= 5:
+        return at_row(5) if second_diff == 5 else at_row(6)  # row 6 was not entered: stops
+    return at_row(r0) + (at_row(r0 + 1) - at_row(r0)) * (second_diff - r0)
+
+
+def _x_label(d: dict, row: int, col: str) -> str:
+    for lab in (row, row % 400, (row % 400) or 400):
+        if d.get(("X", str(lab), col)):
+            return str(lab)
+    raise MissingRow(("X", str(row), col))
+
+
+def _centre_two_row(d: dict, anomaly: float) -> float:
+    """S-two-row: Table X between two rows with its printed first difference, corrected by
+    its printed second differences (the mean of the two on the lines of the interval, or the
+    one printed if the other is not). Signs from the readings, as the table prints a sign on
+    the first line of a run only."""
+    k = math.floor(anomaly)
+    p = anomaly - k
+    e = {r: _centre_row(d, int(_x_label(d, r, "eq")))[0] for r in (k - 1, k, k + 1, k + 2)}
+    d1 = abs(centesimal_seconds(d["X", _x_label(d, k, "d1"), "d1"].lstrip("+-")))
+    d1 *= 1.0 if e[k + 1] >= e[k] else -1.0
+    second = []
+    for r in (k, k + 1):
+        try:
+            v = d["X", _x_label(d, r, "d2"), "d2"]
+        except MissingRow:
+            continue
+        sgn = 1.0 if e[r + 1] - 2 * e[r] + e[r - 1] >= 0 else -1.0
+        second.append(sgn * centesimal_seconds(v.lstrip("+-")))
+    if not second:
+        raise MissingRow(("X", str(k), "d2"))
+    return e[k] + p * d1 - p * (1 - p) / 2 * (sum(second) / len(second))
+
+
+def _table_path(
+    d: _Rows,
+    epoch: list[tuple[str, str, int]],
+    year: float,
+    used: bool = True,
+    time_cs: float = 0.0,
+    n_time: int = 0,
+    interpolation: str = "four-row",
+    date: tuple[int, int, int] | None = None,
+) -> dict:
+    """The path of pp. xviii–xx from the rows ``epoch`` (table, row, ±1) summed into the
+    mean longitude, the perihelion, the node and the arguments, with ``time_cs`` added to
+    the mean longitude, at the date ``year`` (used for Tables IX, X's secular variation and
+    the precession)."""
     out: dict = {"entries": 0}
+    four = interpolation == "four-row"
 
     def summed(col: str, conv) -> float:
-        v = conv(d["I", str(inst.table_year), col])
-        for table, row in (("II", inst.century), ("III", inst.month), ("IV", inst.day)):
-            if row is not None:
-                v += conv(d[table, row, col])
+        v = 0
+        for table, row, sg in epoch:
+            v += sg * conv(d[table, row, col])
         return v
 
     lon = summed("lon", centesimal_seconds)
+    if time_cs:
+        lon += time_cs
     peri = summed("peri", centesimal_seconds)
     node = summed("node", centesimal_seconds)
-    n_epoch = 1 + sum(r is not None for r in (inst.century, inst.month, inst.day))
-    y = inst.year
+    n_epoch = len(epoch)
+    y = year
     dec = int(y // 10) * 10
-    yrs = [dec - 10, dec, dec + 10, dec + 20]
-    great = _lagrange(yrs, [centesimal_seconds(d["IX", str(r), "eq"]) for r in yrs], y)
+    if four:
+        yrs = [dec - 10, dec, dec + 10, dec + 20]
+        great = _lagrange(yrs, [centesimal_seconds(d["IX", str(r), "eq"]) for r in yrs], y)
+    else:  # Table IX between two rows, Table VII for the second difference, VIII for the year
+        yy = date[0] + _table_viii(d, date)
+        dd = int(yy // 10) * 10
+        diffs = _signed_ix_differences(d)
+        p = (yy - dd) / 10.0
+        second = (diffs[dd + 10] - diffs[dd - 10]) / 2.0
+        corr = _table_vii(d, abs(second), yy - dd)
+        great = (
+            centesimal_seconds(d["IX", str(dd), "eq"]) + p * diffs[dd] - math.copysign(corr, second)
+        )
     prec, prec_peri, prec_node = precession_inequality(y, used)
     corrected = lon + great + prec
     anomaly = ((corrected - peri - prec_peri) % CIRCLE_CS) / 10_000
     k = math.floor(anomaly)
     rows = [k - 1, k, k + 1, k + 2]
     vals = [_centre_row(d, r if r > 0 else r + 400) for r in rows]
-    centre = _lagrange(rows, [v[0] for v in vals], anomaly)
+    if four:
+        centre = _lagrange(rows, [v[0] for v in vals], anomaly)
+    else:
+        centre = _centre_two_row(d, anomaly)
     centre_linear = _lagrange(rows[1:3], [v[0] for v in vals[1:3]], anomaly)
     sv = _lagrange(rows[1:3], [v[1] for v in vals[1:3]], anomaly)
     # p. xix: the secular variation is additive after 1800; its printed sign is − in the
@@ -445,10 +755,13 @@ def table_longitude(inst: Instant, used: bool = True) -> dict:
         args[a] = (raw + ARG_CORRECTION_SIGN[a] * (c0 + (c1 - c0) * (y - dec) / 10)) % ARG_PARTS[a]
         table, col, step = EQUATION_TABLE[a]
         lo = math.floor(args[a] / step) * step
-        grid = [lo - step, lo, lo + step, lo + 2 * step] if a == "III" else [lo, lo + step]
+        if a == "III" and four:
+            grid = [lo - step, lo, lo + step, lo + 2 * step]
+        else:
+            grid = [lo, lo + step]
         ys = [centesimal_seconds(d[table, str(int(r)), col]) for r in grid]
         eqs[a] = _lagrange(grid, ys, args[a])
-        pair = ys[1:3] if a == "III" else ys
+        pair = ys[1:3] if len(grid) == 4 else ys
         slope[a] = abs(pair[1] - pair[0]) / step
     in_orbit = corrected + centre + secular + sum(eqs.values())
     u = ((in_orbit - node - prec_node) % CIRCLE_CS) / 10_000
@@ -462,8 +775,8 @@ def table_longitude(inst: Instant, used: bool = True) -> dict:
     )
     # entries summed into the longitude: epoch (with century, month, day), inequality of the
     # precession, great inequality, equation of the centre, its secular variation, eleven
-    # equations, reduction
-    entries = n_epoch + 1 + 1 + 1 + 1 + len(ARGS) + 1
+    # equations, reduction; and the time of day (V; VI for the minutes; VI for the seconds)
+    entries = n_epoch + 1 + 1 + 1 + 1 + len(ARGS) + 1 + n_time
     # the arguments are whole numbers of parts: each entry summed into one can be half a part
     # off, and the equation follows at its local slope
     n_arg = n_epoch + 1
@@ -485,6 +798,7 @@ def table_longitude(inst: Instant, used: bool = True) -> dict:
         budget_cs=entries * HALF_UNIT_CS,
         budget_arcsec=entries * HALF_UNIT_CS * CENTESIMAL_SEC_IN_ARCSEC,
         argument_allowance_cs=allowance,
+        rows_read=sorted(d.read),
     )
     return out
 

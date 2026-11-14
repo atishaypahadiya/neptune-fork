@@ -279,3 +279,13 @@ Added 2026-11-13, prior-work reading notes:
   places in `README.md`, `docs/notes/M6.md` and `docs/notes/P1B_sources.md` that the reading
   bears on; none of them was edited) and its list of what still needs a browser or a library.
   The weekly link check covers the new directory (`.github/workflows/links.yml`).
+
+## Step 3e, Bouvard's tables at the 30 epochs, 13 November 2026 (local branch `bouvard-route-b`)
+
+| item | state |
+|---|---|
+| Rows entered twice (1,855 cells) | done; 1 difference, decided on the band |
+| Plan | pushed before any longitude was formed |
+| R1 to R3 and the sensitivities | done; R3 a different reading from step 3d's primary counterpart; step 3d's registered reading not replaced |
+| S-midnight | not run: Table IV rows 9 and 30 not entered |
+| Site and companion page | untouched; any change needs its own review |
