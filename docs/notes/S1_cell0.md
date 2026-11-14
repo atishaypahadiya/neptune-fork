@@ -203,3 +203,70 @@ No interval of the headline is recomputed. The site is not touched by this plan.
   `data/cache/nested/s1_cell0/`, results `docs/notes/S1_cell0.json`.
 
 ---
+
+## Results, 13 November 2026
+
+Run after the plan above was pushed (0f9bd8a, 07:07 PST); the runner's tests and a smoke run
+on synthetic data came first. `uv run python -m fork.export.s1_cell0 pipeline --n-workers 12`
+ran from 07:23 to 20:17 PST (12 h 54 min wall; about 150 CPU-h counted as slots × wall:
+Stage A 33 CPU-h, reweighting about 8, Stage B 109). Numbers in `S1_cell0.json`. Nothing
+above the line is changed.
+
+**Reading, by § 5: "not resolved, the sub-cells do not make the runs repeatable" (T1 fails).
+The published verdict stands, "not at all", P(a < 25 AU) = 0.001, and the question stays
+unresolved. The 95 % range keeps its "provisional" label for both reasons.**
+
+### Gates
+
+| gate | result |
+|---|---|
+| G1: every run stops on the dlogz criterion | holds (24 + 2 runs) |
+| G2: ESS/N ≥ 0.3 for each of the 30 reweighted posteriors | holds; the smallest is 0.895 |
+| G3: truncation of the marginal over Uranus below 10⁻⁶ in −2 ln L | holds; no draw fails |
+
+### T1, per sub-cell (four seeds, reweighted)
+
+| k | a (AU) | e | share of cell 0's evidence | ln Z, merged | ln Z, largest − smallest (≤ 0.5) | median, largest − smallest (≤ 0.35°) |
+|---|---|---|---|---|---|---|
+| 0 | 20 to 22.5 | 0 to 0.2 | 0.000 | −438.83 | **1.07, fails** | 0.02° (not read) |
+| 1 | 20 to 22.5 | 0.2 to 0.35 | 0.001 | −367.54 | 0.24 | 0.09° (not read) |
+| 2 | 20 to 22.5 | 0.35 to 0.5 | 0.000 | −375.71 | **0.66, fails** | 0.10° (not read) |
+| 3 | 22.5 to 25 | 0 to 0.2 | 0.000 | −421.44 | 0.28 | 0.06° (not read) |
+| 4 | 22.5 to 25 | 0.2 to 0.35 | 0.974 | −360.50 | 0.13 | **0.354°, at the tolerance, fails** |
+| 5 | 22.5 to 25 | 0.35 to 0.5 | 0.025 | −364.15 | **0.84, fails** | 0.04° |
+
+T1 fails three ways on ln Z, one of them in a sub-cell that counts (k = 5, 2.5 % of the
+evidence), and once on the median in k = 4, at the tolerance (0.354° against 0.35°; counted
+as it falls). Without the median the outcome would be the same.
+
+### Reported, not read
+
+- **k\*** = 4 (a 22.5 to 25 AU, e 0.2 to 0.35), 97 % of the evidence of cell 0.
+- **T2** would also fail. The two full-likelihood runs in k* differ by 0.54° in median
+  (314.83° and 315.37°; tolerance 0.35°); ln Z (−360.67, −360.77) and the 68 % width (9.18°,
+  9.75°) agree within tolerance. Their merge against the fast likelihood's: median +0.357°,
+  at the tolerance; ln Z −0.22 and width +1.5 %, within.
+- **ln Z₀** of cell 0 (§ 3) = −362.42 ± 0.09; the published value is −366.84 and the
+  arbiter's of 10 November −361.94.
+- **P(a < 25 AU)** from it: 0.080 against the published other cells and 0.124 against
+  the fast ones, each "moved partly" by S1's rule. Not read, because T1 fails; they sit
+  inside the "0.001 to about 0.2" already stated.
+- The check values were reproduced before anything was read: 0.00104 with the published
+  cells and 0.109 with M8's fast cell 0.
+- In k*, a = 23.94 AU (16 to 84 %: 23.39 to 24.48), e = 0.319 (0.301 to 0.337), Galle-night
+  median 315.08°, 68 % width 9.48°.
+
+### What it means, within § 6
+
+The sub-cells do what they were meant to do for ln Z where the posterior lives (k = 4:
+range 0.13), but not in the sub-cells with almost no evidence, where four seeds scatter by up
+to 1.1 in ln Z; and in k = 4 itself the seeds and the two full runs scatter by a third to a
+half of a degree in median. The low-distance solution sits at a ≈ 24 AU, e ≈ 0.32, near
+315°, with a weight between 0.001 and about 0.2 that these runs do not pin down. No further
+step is pre-registered.
+
+### Deviations and clarifications
+
+- "6,000 draws" (§ 2) is the size of each posterior after reweighting, drawn from the
+  sampler's weighted samples, as in M8's runner; the plan's wording could be read as 6,000
+  per cell of the sampler. Nothing else was run differently from the plan.
