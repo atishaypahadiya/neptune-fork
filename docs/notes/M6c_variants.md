@@ -149,3 +149,37 @@ About 1.5 h on 12 workers. Runs start after the S1 cell 0 runs free the workers.
 - Ledger rows: `v14/<fit>/c<k>/s<s>`, `v14/<fit>/reweight`.
 
 ---
+
+## Results so far, 14 November 2026: the synthetic gate
+
+Nothing above the line is changed. Runner `uv run python -m fork.export.v14_fits all`, started
+13 November 20:17 PST; caches under `data/cache/nested/v14_fits/`.
+
+**bouvard: G0 fails, on G3 alone; no real fit is run.** In all 12 synthetic cell runs (four
+cells, seeds 1 and 2 and their merge) the truncation bound of the Uranus marginal is infinite,
+against the threshold 10⁻⁶. G1 holds; G2 holds (smallest cell ESS/N 0.865); G4 holds (50
+draws, all within tolerance, largest differences 3 × 10⁻⁸ in χ² and 1 × 10⁻⁵ in −2 ln L).
+
+*Diagnosis (post hoc, from three draws of the synthetic posterior).* The bound is infinite
+because the centre of the Gaussian marginal over Uranus's four in-plane elements lies outside
+the Uranus box: in box half-widths from the box's centre, a at −1.68 to −1.73, e cos ϖ at
++1.73 to +1.90, e sin ϖ at +0.12 to +0.23, λ₀ at −0.90 to −0.99 (77 to 83 and 83 to 102 of the
+marginal's own σ beyond the faces in a and e cos ϖ). The union bound is then 1, and the bound
+on the error in −2 ln L is infinite by its definition. This is not a fault in the code. The
+`bouvard` choice keeps the modern rows only (1781 to 1845), and the box rule (M5's: centred on
+the Uranus-only fit, half-widths `n_sigma` × its scaled formal σ) behaves on that row set as
+M10 recorded for its data set B, the same rows: "every B point is again flagged ... 1.6–1.9 box
+half-widths". Without the ancient rows, the Uranus-only fit absorbs part of the perturbation,
+and the solution with a perturber sits outside a box centred on it. G3 caught this as it was
+meant to.
+
+A real fit on these rows needs a different Uranus box (for example a wider `n_sigma`, or one
+centred on the headline's u_ref). That is a change of method, not a fix, and it is not made
+here.
+
+**adams: G0 passes** (14 November 14:02 PST). Its real fit started then and was stopped at
+14:08:02 PST by decision, 20 s after all twelve running jobs had written checkpoints; it
+resumes with the same command. Cell 0 of the gate took 1,039 min per seed, against 18 min for
+bouvard's.
+
+**shape38, shape36:** not started, by decision.
