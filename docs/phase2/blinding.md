@@ -38,3 +38,92 @@ added as a check on the engine's own residuals, labelled as seen on 12 November 
 A source that prints residuals, corrections of elements or a derived excess is listed here,
 with the date, before it is opened for transcription. If one is opened by mistake, as the
 pp. 453–454 table was, the entry says so.
+
+## 13 November 2026: Le Verrier's Paris places of Mercury, and Newcomb's p. 450
+
+Written before either source is opened for transcription, under the rule above.
+
+### Listed before opening
+
+| what | where | prints residuals? | what is about to be opened, and why |
+|---|---|---|---|
+| Le Verrier, meridian places of Mercury observed at Paris, 1801–1842 (set C of `data_inventory.md`) | *Annales de l'Observatoire impérial de Paris*, tome V (1859), chapter XV, about pp. 51–61; scan https://articles.adsabs.harvard.edu/pdf/1859AnPar...5....1L | **Yes.** By `data_inventory.md` each row prints, beside the observed apparent longitude and latitude, the error of the tables in longitude and in latitude (observed minus computed) | The scan, to cut page bands for a double-entry transcription of the observed columns only: date and mean time, apparent longitude, apparent latitude, and whatever identifies the observation. It is the cheapest observation-side set among A, C and E of the inventory |
+| Newcomb 1882, p. 450, the passage that defines the term in k attached to each contact time | the scan in `data/historical/mercury/MANIFEST.md` | Residual-adjacent: it is the page before the comparison table (pp. 451–452), and pp. 453–454 print the residuals seen on 12 November. Whether p. 450 itself prints a residual-type table is not known before opening | The page, to cut bands of the passage on k for an exact transcription of the text. `transcription.md` says of this page that it "was not read" |
+
+### What is already seen of set C
+
+`data_inventory.md` (12 November) records that pp. 49–52 and 61 of the Annales scan were
+read as page images during scoping, and that "the printed table errors scatter by several
+arcseconds (pp. 51, 52, 61)". So the size of the scatter of the table errors on three pages
+has been seen once, in table form, without a fit, a plot or a summary statistic. That cannot
+be undone and is stated here. No value from those columns was written down anywhere in the
+repository.
+
+### How the columns are kept out of sight
+
+1. The page layout is found on renders of about 30–40 dpi, where digits cannot be read:
+   table frames, column rules and row positions only.
+2. The columns are identified from their headings: only the heading strip of a page is
+   rendered at full resolution.
+3. Pixel boundaries are taken from the rules. The two error columns are painted white or
+   cut away, with a margin, before any band of the table body is looked at.
+4. Only finished bands are viewed, a few of them, at reduced size first.
+5. The error columns are never transcribed, and neither entry is given an image that
+   shows them.
+
+If a value of a table error is read by accident, this section will say what, where and how
+many. What was in fact seen, by which route and in what form, is appended below when the
+bands are made.
+
+### After the bands were cut (same day)
+
+Scan of the Annales: `data/cache/mercury/1859AnPar_5_1L.pdf`, hash in
+`data/historical/mercury/MANIFEST.md`. The table is on printed pp. 51–61, 397 rows. Its two
+columns "ERREUR des Tables en long." and "ERREUR des Tables en lat." are the residuals.
+
+What was seen while the bands were prepared, and in what form:
+
+| what | form | residual values read |
+|---|---|---|
+| Pages 47–64, whole, on one sheet | 35 dpi, about 270 px a page. Running heads, column headings and the outline of the table could be made out; the figures of the body could not. The sheet was deleted afterwards | none |
+| Column headings of p. 52 | the heading strip alone, at full resolution, cut above the first row | none (the strip has no row) |
+| The year, month, day, mean-time and longitude columns of p. 51 | left part of the table only, cut to the left of the first error column | none |
+| The error columns themselves | never as an image. Only as counts of ink per pixel column and per pixel row, used to place the cuts. The counts show where the two columns stand, that each row carries a sign glyph and that entries differ in width. They show no digit and no sign | none |
+| One band of a first cut, `p052_b01`, later replaced | reduced to about a third, after the error columns were painted white | none: the two columns are empty on it |
+| Finished bands: `p051_b00`, `p051_b01`, `p052_b03`, `p056_b03`, `p059_b00`, `p061_b02` | reduced to about a quarter size, after the error columns were removed | none: the two columns are empty on each |
+| All 39 finished row bands | checked by ink counts, without viewing: between the longitudes and the latitudes, and between the latitudes and the braces, no column of ink remains | none |
+
+Accidents under the rule: none in which a value was read. One near miss is recorded. The
+first cut put the foot of the p. 51 heading band below the first row of the table, so that
+one row would have stood on it unblanked. The row count (16 on that page against 17 found
+earlier) showed the error before any band of p. 51 had been opened. The band was deleted
+unopened and the script now stops if a heading band would reach the first row.
+
+What each entry will be given: the 50 bands and a written column specification, nothing
+else. On every row band the two error columns are white: the longitude error by a rectangle
+whose edges lie in ink-free runs of pixel columns, the latitude error by removing every
+piece of ink shorter than a brace between the latitudes and the group numbers. The heading
+bands show the headings of all eight columns, the two error headings included, and no row.
+The error columns are outside every band in the sense that no ink of them is on any band.
+
+Limits of that statement. An error glyph that touched a brace in the scan would have stayed
+with the brace; the widest piece left in the brace column is 37 px, the width of a brace
+stroke, so none did by that measure, but the 35 row bands not viewed have not been looked at
+by eye. Either entry that sees ink in an error column is told to stop and report the band.
+
+Newcomb 1882, p. 450 (PDF page 482). Opened at 40 dpi to find the passage, where the text
+turned out to be readable, and then seen in the finished bands at reduced size. So this
+page has now been read, once, as a page image. It is running text with one displayed
+formula and no table. It prints no residual. It says in words that the solution giving
+"the smallest residuals" would be the natural test, gives a formula in the square of the
+time that represents the correction the factor k multiplies, and opens § 7. The correction
+itself is defined before p. 450; that part was not opened. The nine bands cover every line
+of the page.
+
+## The two entries of Le Verrier's Paris places, 13 November 2026
+
+Both entries were made from the 50 bands without the error columns and from the written
+specification. Neither entry reported ink in a removed column. Reconciling, I looked at
+two row bands (p. 57 b02, p. 58 b01) and two bands of p. 450 (b03, b05). No value of either
+error column was seen by any route, and the comparison of the entries used the observed
+columns only.

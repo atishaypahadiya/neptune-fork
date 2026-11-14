@@ -1,0 +1,56 @@
+[b00]
+450 TRANSITS OF MERCURY, 1677--1881.
+[b01]
+    The most natural method of making the required investigation would be to form
+two solutions of the equations of condition afforded by transits of Mercury, one with
+and the other without this hypothetical correction, and to find which solution gives
+the smallest residuals. But, in a case like the present, in which we must not except a
+striking difference in the magnitude of the residuals, the result of the solutions would
+[b02]
+not necessarily be conclusive. What we shall do, therefore, will be to assume that
+the values of Delta_t should all be multiplied by a constant factor k, and to determine from
+the equations of condition that value of k which best satisfies the observations.
+    If the hypothesis of perfect uniformity in the earth's rotation is the true one, the
+value of k should vanish.
+[b03]
+    If the observed inequalities in the moon's mean mo[?]tion arise from the cause sup-
+posed, the value of k should come out nearly equal to unity.
+    If k should come out different from either zero or unity by an amount greater than
+its possible error it would tend to show that both causes might be in operation.
+    Closely associated with the value of k is another constant which it would be de-
+sirable to determine. That a tidal retardation of the earth's rotation must exist can
+[b04]
+scarcely be doubted, although no reliable estimate of its amount has yet been made.
+We must, therefore, suppose that our astronomical measures of time need a correction
+of the form cT^2, in which T is the time reckoned from any standard epoch and c is a
+minute constant. If we seek to determine the possible value of c from transits of
+[b05]
+Mercury we should introduce it into the equations of condition. But it will be noticed
+that during the period within which transits of Mercury have been observed with any
+accuracy the coefficient k will be of the same general kind with c, so that k and c can
+not be separately determined. In fact, we shall find the values of Delta_t to be closely
+represented by the formula
+    - 18s + 60s T^2
+[b06]
+    If, therefore, we should introduce c as an additional unknown quantity it could
+not be determined independently of k, but our equations would give the value only of
+a linear function of c and k. The relation between the two quantities is such that,
+supposing the true value of k to be zero, the existence of a regular tidal retardation
+would be indicated by a small negative value of k.
+[b07]
+Sec. 7.
+Numerical comparison of observed and tabular quantities, with the resulting equations of
+condition.
+[b08]
+    In the first of the following tables is given the comparison of the observed and
+tabular times of contacts, to be subsequently used as a check upon the equations of
+condition. The following columns are the ones which seem to need explanation.
+    The third column gives the Greenwich mean times of geocentric contact derived
+from the observations already given in Part I. Since, however, the time itself, as deter-
+mined from astronomical observations, hypothetically needs a correction - kDelta_t, this
+correction is added symbolically to the observed time to render it strictly compar-
+able with the tabular time.
+NOTES:
+b03, line 11: "mo[?]tion": the second letter is open on the right and looks like c; o or c, read o.
+b01, line 4: "except" as printed (the sense suggests "expect"); possible misprint.
+b05, line 23: "general": the second e of the word is printed turned (upside down); typed as e; possible misprint (turned letter).

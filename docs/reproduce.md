@@ -576,3 +576,16 @@ Plan and results: `docs/notes/P1B_bouvard_tables.md`; numbers in
 differs from § 1 of the plan. The new rows are in
 `data/historical/adams_challis/bouvard_1821/bouvard_1821_uranus_table_rows_route_b.csv`;
 step 3d's rows file is unchanged.
+
+## Phase 2 data: Le Verrier's Paris places of 1801 to 1842 and Newcomb's p. 450 (transcription only)
+
+```sh
+curl -L -o data/cache/mercury/1859AnPar_5_1L.pdf <URL in data/historical/mercury/MANIFEST.md>
+shasum -a 256 data/cache/mercury/1859AnPar_5_1L.pdf                 # against the MANIFEST
+uv run --with pymupdf --with pillow python -I docs/phase2/scripts/mercury_crops_leverrier_places.py
+uv run --with pymupdf --with pillow python -I docs/phase2/scripts/mercury_crops_newcomb_p450.py
+uv run pytest -q tests/test_mercury_leverrier_places.py             # the entries agree; the table's own checks
+```
+
+The bands of the places carry no error column; `docs/phase2/blinding.md` says why. The
+method and the counts are in `docs/phase2/transcription.md`, section of 13 November 2026.

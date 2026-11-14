@@ -289,3 +289,12 @@ Added 2026-11-13, prior-work reading notes:
 | R1 to R3 and the sensitivities | done; R3 a different reading from step 3d's primary counterpart; step 3d's registered reading not replaced |
 | S-midnight | not run: Table IV rows 9 and 30 not entered |
 | Site and companion page | untouched; any change needs its own review |
+
+## Second Mercury data set, 13 November 2026 (local branch `phase2-data-2`)
+
+| item | state |
+|---|---|
+| Le Verrier 1859, Paris places (397 rows) | two entries, 0 disagreements in 7,146 cells; two inconsistencies of print logged, kept as printed; error columns never transcribed |
+| Newcomb 1882, p. 450 | two entries; three points reconciled on the bands |
+| Spot check by a person | kit of 20 cells ready, not made |
+| Fit to these data | none; needs a pre-registered plan |
