@@ -131,7 +131,8 @@ export function abstract(D) {
       `alone could account for it I could not settle: the pre-registered statistic measured ` +
       `something else, and the post hoc one reads weak. A pre-registered attribution ` +
       `between his observations and the tables of Bouvard he reduced them against depends ` +
-      `on the method, and I do not make it.`,
+      `on the method, and I do not make it. A second, with the tables computed at each of ` +
+      `his epochs, shows that the attribution turns on one interpolated place, that of 1780.`,
     abstract_p3: `Under the reading I report, Challis's actual procedure has probability ` +
       `${p2(W.A0_mean)} of recognising the planet before ${galle(K)}. That is by ` +
       `construction and is not a finding: the realised events are held fixed, so the cases ` +
@@ -171,7 +172,8 @@ export function sourcesText(D) {
       `(${d.total[1]} measurements), of which ${d.ancient[0]} are the early chance ` +
       `observations, ${d.greenwich[0]} are from Greenwich and ` +
       `${d.paris_1835_1845[0]} from Paris.`,
-    src_p4: `Bouvard's tables enter in § 3.5, and checking their printed formula against ` +
+    src_p4: `Bouvard's tables enter in § 3.5 (their rows at Adams's epochs are entered twice ` +
+      `for its second analysis), and checking their printed formula against ` +
       `the tables themselves gave two findings. The leading coefficient of the equation of ` +
       `the centre is printed ${BV.centre_printed.text} on p. xv, but the tables follow ` +
       `${BV.centre_tables.text}, which gives the eccentricity of Adams's memoir; that the ` +
@@ -291,6 +293,7 @@ export function bouvardText(D) {
       `${signed(A.bv_s8_bc_R_min)}° to ${signed(A.bv_s8_bc_R_max)}°, over both methods and ` +
       `both hypotheses. ${only}, the case as run is the only one in which the two methods ` +
       `fall in different rows. The pre-registered reading is unchanged.`,
+    ...routeBText(A),
     a35_p4: `What follows is an interpretation and not a reading. A change of ` +
       `${fmt(A.bv_s5_delta_1789, 2)}″ at the place of 1789 moves cases B and C by ` +
       `${abs(A.bv_s5_change_B)}° and ${abs(A.bv_s5_change_C)}°; the changes at 1780 move ` +
@@ -306,6 +309,38 @@ export function bouvardText(D) {
     cap_table_2: `Offset from Neptune of each case's solution, in true heliocentric ` +
       `longitude at ${fmt(EP.julian_year, 3)} (degrees). Cases A and D are those of §§ 3.3 ` +
       `and 3.4; B and C are new.`,
+  };
+}
+
+const KEYS = ["H1_d1c", "H1_chain", "H2_d1c", "H2_chain"];
+const OBS_ROW = "Mostly the observations, with a share from the reference.";
+
+/** § 3.5, step 3e (docs/notes/P1B_bouvard_tables.md): the tables at his 30 epochs. */
+function routeBText(A) {
+  const v = (pre, q) => KEYS.map((k) => A[`${pre}${k}_${q}`]);
+  const lo = (xs, note) => signed(drv(Math.min(...xs), `smallest ${note} over the four cases`));
+  const hi = (xs, note) => signed(drv(Math.max(...xs), `largest ${note} over the four cases`));
+  const rows = v("bvt_", "row"), sa = v("bvt_sa_", "row");
+  if (rows.some((r) => r !== OBS_ROW) || A.bvt_depends_on_the_method) {
+    throw new Error("§ 3.5: the step-3e sentence no longer matches the data");
+  }
+  // "Depends on the method" under each hypothesis: the two methods fall in different rows.
+  if (sa[0] === sa[1] || sa[2] === sa[3]) {
+    throw new Error("§ 3.5: the 1780 sentence no longer matches the data");
+  }
+  const ob = v("bvt_", "Ob"), r = v("bvt_", "R");
+  return {
+    a35_p3b: `A second pre-registered analysis computes Bouvard's tables at each of Adams's ` +
+      `epochs in place of the printed formula used above; its plan was pushed before any longitude was formed. In it the ` +
+      `attribution turns on a single place, that of 1780, which Adams says he interpolated. ` +
+      `Interpolated as he describes, a treatment the plan declares was chosen after the ` +
+      `cases above had been seen, all four cases read "${row(OBS_ROW)}": the observations ` +
+      `account for ${lo(ob, "observations' share")}° to ${hi(ob, "observations' share")}° ` +
+      `and the reference for ${lo(r, "reference's share")}° to ${hi(r, "reference's share")}°, ` +
+      `over both methods and both hypotheses. With the 1780 place as the first analysis ` +
+      `fixed it, the same tables again give "depends on the method" under both hypotheses. ` +
+      `The registered reading above stands. The second analysis sharpens the interpretation ` +
+      `that follows; it does not resolve the attribution.`,
   };
 }
 

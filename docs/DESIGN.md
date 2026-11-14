@@ -696,3 +696,17 @@ found by `PAGE_RANGE` (digits, an en dash, digits, after a comma, "p.", "pp.", "
 audit is not affected. `tools/check_layout.py` fails if a range is not wrapped or spans two
 lines, in both engines and at every width. Year ranges after a comma are caught by the same
 pattern and kept whole too, which does no harm.
+
+## The second Bouvard analysis and the S1 clause (2026-11-14)
+
+- Companion page, § 3.5: one paragraph (`a35_p3b`) between the post hoc S8 paragraph and the
+  interpretation, with step 3e's reading (`docs/notes/P1B_bouvard_tables.md`). Its values are
+  copies in `p1b_adams.json` (`bvt_*`, written by `fork.export.p1b_site`); the ranges over
+  the four cases are derived values. The text refuses to render if any case leaves the row it
+  states, or if the 1780 sensitivity stops depending on the method. The abstract gains one
+  sentence that does not claim an attribution.
+- Main page, abstract: one clause beside the provisional 95 % range, printed only while the
+  rerun of the nearest cell (`docs/notes/S1_cell0.md`) is unresolved. Data:
+  `site/data/s1_cell0.json`, written by `fork.export.s1_site`, each value a copy of a named
+  field of `docs/notes/S1_cell0.json` (`tests/test_s1_site.py`).
+- UI-rule audit: no new pattern; text only.

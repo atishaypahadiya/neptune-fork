@@ -344,6 +344,7 @@ uv run python -m fork.export.m6e fetch    # JPL's apparent place of Uranus at th
 uv run python -m fork.export.m6e checks   # the transit and frame tests
 uv run python -m fork.export.m6e run      # docs/notes/M6e.{json,png}; about 1 CPU-minute
 uv run python -m fork.export.m6e_site     # site/data/m6e.json (§ 4.4 and Fig. 10 of the main page)
+uv run python -m fork.export.s1_site      # site/data/s1_cell0.json (the clause beside the 95 % range)
 ```
 
 ## Toy example (not a result)
