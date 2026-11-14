@@ -290,7 +290,7 @@ Added 2026-11-13, prior-work reading notes:
 | S-midnight | not run: Table IV rows 9 and 30 not entered |
 | Site and companion page | untouched; any change needs its own review |
 
-## Second Mercury data set, 13 November 2026 (local branch `phase2-data-2`)
+## Second Mercury data set, 13 November 2026 (on main since 14 November 2026)
 
 | item | state |
 |---|---|
