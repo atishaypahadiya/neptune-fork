@@ -128,9 +128,10 @@ V3_TOL = 0.05
 V4_TOL = 0.5
 V6_FRAC, V6_DCHI = 0.001, 25.0
 V6_FAR = 200.0  # 50 L² at L = 2 (amendment 1, item 9)
-V6_AMENDED = False  # set by amendment 1 once approved
+V6_AMENDED = True  # amendment 1, item 9
 
-JAC_MODE = os.environ.get("FORK_IDFULL_JAC", "plan")
+# amendment 1, item 8: fresh Jacobians along the singular directions
+JAC_MODE = os.environ.get("FORK_IDFULL_JAC", "whitened")
 N_INT = [0]  # full integrations in this process
 
 

@@ -218,6 +218,7 @@ def _write_points(task, rows):
 
 def test_v6_frozen_and_amended(tmp_path, monkeypatch):
     monkeypatch.setattr(F, "CACHE", tmp_path)
+    monkeypatch.setattr(F, "V6_AMENDED", False)
     j = F.Task(4, 0, 0, "J")
     rows = [(float(i), 1.0 + i, True, False) for i in range(2000)]
     rows += [(-1.0, 500.0, False, False), (-2.0, math.inf, False, True)]
@@ -237,3 +238,9 @@ def test_v6_frozen_and_amended(tmp_path, monkeypatch):
     results[F.Task(2, 0, 0, "NG").id] = {}
     worse = F.v6_check(results)
     assert len(worse["near_best"]) == 1 and worse["pass"] is False
+
+
+def test_amendment_one_is_in_force():
+    assert F.JAC_MODE == "whitened" and F.V6_AMENDED and F.V6_FAR == 200.0
+    below = F.PLAN.read_text()[len(F._plan_frozen_part()) :]
+    assert "## Amendment 1" in below and "Δχ² = 200" in below
