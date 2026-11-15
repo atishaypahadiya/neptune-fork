@@ -30,6 +30,7 @@ from pathlib import Path
 
 import numpy as np
 
+from fork import ledger
 from fork.export.to_json import write_json
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -160,6 +161,7 @@ def _chunk_path(k: int) -> Path:
     return CACHE / "a8a" / f"chunk_{k:03d}.json"
 
 
+@ledger.recorded
 def run_a8a(n_workers: int) -> None:
     from fork import ledger
 
@@ -169,7 +171,7 @@ def run_a8a(n_workers: int) -> None:
     _log(f"a8a: {len(points)} points, {len(chunks)} chunks, {len(todo)} to do, "
          f"{n_workers} workers")  # fmt: skip
     _chunk_path(0).parent.mkdir(parents=True, exist_ok=True)
-    t0, c0 = time.time(), ledger.cpu_now()
+    rec = ledger.start("m8/a8a", "diagnostic", n_workers=n_workers)
     n_int = 0
     with ProcessPoolExecutor(n_workers, initializer=_init_worker) as ex:
         futs = {k: ex.submit(_run_chunk, chunks[k]) for k in todo}
@@ -182,9 +184,9 @@ def run_a8a(n_workers: int) -> None:
             tmp.replace(_chunk_path(k))  # atomic: a resumed run never reads half a chunk
             _log(f"a8a: chunk {k} done ({i + 1}/{len(todo)})")
     if todo:
-        ledger.append("m8/a8a", "diagnostic", n_likelihood_calls=None, n_integrations=n_int,
-                      sim_years=None, wall_s=time.time() - t0, cpu_s=ledger.cpu_now() - c0,
-                      n_workers=n_workers, n_points=len(points))  # fmt: skip
+        rec.done(
+            n_likelihood_calls=None, n_integrations=n_int, sim_years=None, n_points=len(points)
+        )
 
 
 def _run_chunk(chunk: list[dict]) -> list[dict]:

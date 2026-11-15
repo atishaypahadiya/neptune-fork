@@ -11,6 +11,14 @@ Versions follow semver. Dates are the release dates; the DOIs are in `CITATION.c
   row (the synthetic gates of the two data choices, the stopped fit on Adams's rows, the
   Mercury study) are listed with estimates, about 40 CPU-hours, outside the sum
   (`site/data/ledger.json`, `README.md`, `docs/reproduce.md`).
+- Every run now writes a ledger row with its CPU time and its outcome: done, gate passed,
+  gate failed, stopped (SIGTERM or Ctrl-C, with the pool workers' CPU counted), failed (an
+  exception) or unfinished. Synthetic gates, capped runs, the Mercury study and the other
+  command-line runners that wrote no row are included; a resumed run counts only its own
+  segment's calls. Earlier rows are unchanged and count as done. A test fails if a runner
+  writes no row (`fork.ledger`, `tests/test_ledger_outcomes.py`). Two files whose hashes a
+  frozen plan records are left as they are: the Adams-variant fit's runner, which writes its
+  rows on success as before, and a comparison that runs in seconds.
 
 ## 1.4.0 (2026-11-15)
 

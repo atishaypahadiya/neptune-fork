@@ -17,6 +17,8 @@ import time
 
 import numpy as np
 
+from fork import ledger
+
 A1_EPOCH_JD_TDB = 2371628.5  # 1781-03-13.0 TDB, as fork.export.to_json
 GALLE_LON_DEG = 325.873  # comparison target of M6d, as fork.export.m6c.JPL_GALLE_LON_DEG
 PEIRCE_HALF_WIDTH_DEG = 0.87  # Le Verrier's 52′ miss (spec, M6d)
@@ -242,7 +244,8 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("cmd", choices=["smoke"])
     ap.parse_args()
-    smoke()
+    with ledger.run("v13/smoke", "smoke", n_workers=1, capped=True):
+        smoke()
 
 
 if __name__ == "__main__":

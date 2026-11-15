@@ -5,7 +5,10 @@ ledger (`site/data/ledger.json`, built from `data/cache/compute_ledger.jsonl`) w
 recorded one. Rows marked *est.* were backfilled from saved results and logs, not timed live.
 Ledger CPU-hours add up across jobs. Wall times are per job: many jobs ran side by side on one
 14-core Apple Silicon machine, so summed wall time overstates the elapsed time. Jobs the ledger
-does not cover took seconds to a few minutes and are marked "not in ledger".
+does not cover took seconds to a few minutes and are marked "not in ledger". From 2026-11-15
+every run writes a row whatever its outcome (done, gate passed or failed, stopped, failed,
+unfinished), synthetic gates and capped runs included; the rows "none" below are for runs
+before that.
 
 ## Totals
 

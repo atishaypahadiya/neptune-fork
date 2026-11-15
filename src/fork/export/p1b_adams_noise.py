@@ -25,6 +25,7 @@ from pathlib import Path
 
 import numpy as np
 
+from fork import ledger
 from fork.export import p1b_adams as pa
 from fork.export import p1b_adams_repro as R
 from fork.historical import adams_1846 as A
@@ -543,6 +544,7 @@ def assemble(n_draws: int = N_DRAWS) -> list[tuple[int, str]]:
     return written
 
 
+@ledger.recorded
 def run_draws(n_workers: int, multistart_all: bool = False, n_draws: int = N_DRAWS) -> None:
     """Every model × hypothesis: the noise matrix from its seed, both methods on every
     realisation, the multistart on the first N_MULTI (or on all with ``multistart_all``).
@@ -554,7 +556,8 @@ def run_draws(n_workers: int, multistart_all: bool = False, n_draws: int = N_DRA
 
     pre = json.loads(PRERUN_JSON.read_text())
     m = A.load_memoir()
-    t0 = time.time()
+    rec = ledger.start("p1b_adams_noise/draws", "fit", n_workers=n_workers)
+    t0 = rec.t0
     tasks = []
     for model in MODELS:  # (a), (b) for both hypotheses, then (c)
         for hyp in HYPS:
@@ -589,17 +592,10 @@ def run_draws(n_workers: int, multistart_all: bool = False, n_draws: int = N_DRA
             _log(f"chunk {done}/{len(tasks)} h{hyp}/{model}/{i0:05d} {state}, "
                  f"{(time.time() - t0) / 60:.1f} min")  # fmt: skip
     written = assemble(n_draws)
-    ct = os.times()
-    ledger.append(
-        "p1b_adams_noise/draws",
-        "fit",
+    rec.done(
         n_likelihood_calls=None,
         n_integrations=None,
         sim_years=None,
-        wall_s=time.time() - t0,
-        cpu_s=ct.children_user + ct.children_system + ct.user + ct.system,
-        n_workers=n_workers,
-        estimated=False,
         note=f"{n_draws} draws × {len(MODELS)} models × {len(HYPS)} hypotheses × 2 methods"
         f"{' + multistart on all' if multistart_all else f' + multistart on {N_MULTI}'}"
         "; per-chunk files",

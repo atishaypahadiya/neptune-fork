@@ -20,6 +20,7 @@ from pathlib import Path
 
 import numpy as np
 
+from fork import ledger
 from fork.historical import challis_1846 as C
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -519,11 +520,13 @@ def _tornado(acc: list, geo: dict) -> dict:
     return {"n_draws": len(acc), "cases": list(C.CASES), "inputs": res}
 
 
+@ledger.recorded
 def draws(n_accept: int = N_ACCEPT, n_inner: int = N_INNER) -> None:
     """The full draws (resumable per chunk), the prior-width run and the tornado."""
     from fork import ledger
 
     geo = geometry(json.loads(PRERUN_JSON.read_text()))
+    rec = ledger.start("p1b_challis/draws", "monte_carlo", n_workers=1)
     t0, c0 = time.time(), time.process_time()
     acc = _run("main", geo, n_accept, None, n_inner)
     _run("halved", geo, min(N_ACCEPT_HALVED, n_accept), C.halved(C.PRIORS), 0)
@@ -532,9 +535,7 @@ def draws(n_accept: int = N_ACCEPT, n_inner: int = N_INNER) -> None:
         _dump(tf, _tornado(acc[: min(N_TORNADO, n_accept)], geo))
     wall, cpu = time.time() - t0, time.process_time() - c0
     _dump(CACHE / "timing.json", {"wall_s": wall, "cpu_s": cpu, "n_accept": n_accept})
-    ledger.append("p1b_challis/draws", "monte_carlo", n_likelihood_calls=None,
-                  n_integrations=None, sim_years=None, wall_s=wall, cpu_s=cpu, n_workers=1,
-                  n_accepted=n_accept)  # fmt: skip
+    rec.done(n_likelihood_calls=None, n_integrations=None, sim_years=None, n_accepted=n_accept)
     _log(f"draws done: wall {wall:.0f} s, cpu {cpu:.0f} s")
 
 

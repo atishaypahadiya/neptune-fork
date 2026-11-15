@@ -28,6 +28,7 @@ from pathlib import Path
 
 import numpy as np
 
+from fork import ledger
 from fork.export import m6c, m8_runs, v13
 
 ROOT = m6c.ROOT
@@ -227,6 +228,7 @@ def _phi_transform(u: np.ndarray) -> np.ndarray:
     return _S["space"].prior_transform(np.concatenate([np.full(4, 0.5), u]))[4:]
 
 
+@ledger.recorded
 def do_job(
     fit: Fit,
     k: int,
@@ -269,10 +271,17 @@ def do_job(
         checkpoint_every=m8_runs.CHECKPOINT_EVERY_S,
     )
     resumed = ckpt.exists()
-    t0, c0 = time.time(), ledger.cpu_now()
+    t0 = time.time()
+    real = CACHE.resolve() == REAL_CACHE.resolve()
+    rec = ledger.start(f"v14/{fit.name}{'/g0' if synthetic else ''}/c{k}/s{s}", "nested",
+                       n_workers=1, synthetic=synthetic, capped=maxiter is not None,
+                       scratch=not real, n_integrations=0, sim_years=0.0)  # fmt: skip
+    n0 = 0
     if resumed:
         sampler = dynesty.NestedSampler.restore(str(ckpt))
+        n0 = int(sampler.ncall)
         log.line(f"resumed from {ckpt.name} at iteration {sampler.it}")
+        rec.set(n_likelihood_calls=lambda: int(sampler.ncall) - n0)
         sampler.run_nested(resume=True, **run_kw)
     else:
         log.line(
@@ -290,28 +299,23 @@ def do_job(
             slices=SLICES,
             rstate=np.random.default_rng(fit.rng(k, s)),
         )
+        rec.set(n_likelihood_calls=lambda: int(sampler.ncall))
         sampler.run_nested(**run_kw)
     res = NestedResult(cs, sampler.results, nlive, DLOGZ, time.time() - t0)
     res.save(out)
     ckpt.unlink(missing_ok=True)
     log.line(f"done: ln Z {res.logz:.3f} ± {res.logzerr:.3f}, {res.niter} it, {res.ncall} calls")
-    if not synthetic and maxiter is None and CACHE.resolve() == REAL_CACHE.resolve():
-        ledger.append(
-            f"v14/{fit.name}/c{k}/s{s}",
-            "nested",
-            n_likelihood_calls=res.ncall,
-            n_integrations=0,
-            sim_years=0.0,
-            wall_s=time.time() - t0,
-            cpu_s=ledger.cpu_now() - c0,
-            n_workers=1,
-            estimated=resumed,
-            resumed=resumed,
-            nlive=nlive,
-            niter=res.niter,
-            slices=SLICES,
-            likelihood="perturbative, second order off",
-        )
+    # this segment's calls: a resumed run's earlier segments wrote their own rows
+    rec.done(
+        n_likelihood_calls=res.ncall - n0,
+        ncall_total=res.ncall,
+        estimated=False,
+        resumed=resumed,
+        nlive=nlive,
+        niter=res.niter,
+        slices=SLICES,
+        likelihood="perturbative, second order off",
+    )
 
 
 def run_jobs(fit: Fit, n_slots: int, synthetic: bool = False) -> bool:
@@ -467,6 +471,7 @@ def _pool(fit: Fit, synthetic: bool, n_workers: int):
     return ProcessPoolExecutor(n_workers, initializer=_init_worker, initargs=(fit.name, synthetic))
 
 
+@ledger.recorded
 def reweight(fit: Fit, n_workers: int, synthetic: bool = False) -> None:
     from concurrent.futures import as_completed
 
@@ -474,7 +479,9 @@ def reweight(fit: Fit, n_workers: int, synthetic: bool = False) -> None:
 
     cache = fit_cache(fit, synthetic)
     seeds = G0["seeds"] if synthetic else SEEDS
-    t0, c0 = time.time(), ledger.cpu_now()
+    rec = ledger.start(f"v14/{fit.name}{'/g0' if synthetic else ''}/reweight", "reweight",
+                       n_workers=n_workers, synthetic=synthetic,
+                       scratch=CACHE.resolve() != REAL_CACHE.resolve())  # fmt: skip
     tasks = []
     for k in range(fit.n_cells):
         for s in (*seeds, MERGED):
@@ -489,18 +496,15 @@ def reweight(fit: Fit, n_workers: int, synthetic: bool = False) -> None:
             f.result()
             if (i + 1) % 48 == 0 or i + 1 == len(futs):
                 _log(f"{fit.name}: reweight {i + 1}/{len(futs)} chunks", cache)
-    if not synthetic and tasks and CACHE.resolve() == REAL_CACHE.resolve():
-        ledger.append(
-            f"v14/{fit.name}/reweight",
-            "reweight",
-            n_likelihood_calls=sum(t[4] - t[3] for t in tasks),
-            n_integrations=None,
-            sim_years=None,
-            wall_s=time.time() - t0,
-            cpu_s=ledger.cpu_now() - c0,
-            n_workers=n_workers,
-            note="mode (b) + fast + Galle longitude per draw",
-        )
+    if not tasks:
+        rec.discard()
+        return
+    rec.done(
+        n_likelihood_calls=sum(t[4] - t[3] for t in tasks),
+        n_integrations=None,
+        sim_years=None,
+        note="mode (b) + fast + Galle longitude per draw",
+    )
 
 
 def load_reweighted(fit: Fit, k: int, s: int, cache: Path, seeds=SEEDS) -> dict:
@@ -830,8 +834,13 @@ def _public(a: dict) -> dict:
     return {k: v for k, v in a.items() if not k.startswith("_")}
 
 
+@ledger.recorded
 def summarize(fit: Fit, n_workers: int, synthetic: bool = False) -> dict:
     cache = fit_cache(fit, synthetic)
+    rec = ledger.start(f"v14/{fit.name}{'/g0' if synthetic else ''}/summarize", "summarize",
+                       n_workers=n_workers, synthetic=synthetic,
+                       scratch=CACHE.resolve() != REAL_CACHE.resolve(),
+                       note="assembly and G4 (mode (b) against the full likelihood)")  # fmt: skip
     a = assemble(fit, synthetic)
     n4 = G0["g4_draws"] if synthetic else G4_DRAWS
     a["gates"]["G4"] = g4(fit, g4_draws(a, fit, n4), n_workers, synthetic)
@@ -846,6 +855,7 @@ def summarize(fit: Fit, n_workers: int, synthetic: bool = False) -> dict:
         }
         (cache / "g0.json").write_text(json.dumps(out, indent=1, default=float) + "\n")
         _log(f"{fit.name}: G0 {'passes' if out['g0']['pass'] else 'FAILS'}", cache)
+        rec.done("gate passed" if out["g0"]["pass"] else "gate failed")
         return out
     out = _public(a)
     out["read"] = bool(gates_ok and a["T1"]["pass"])

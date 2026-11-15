@@ -39,6 +39,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from fork import ledger
 from fork.export import m6c
 from fork.export.to_json import A1_EPOCH_JD_TDB, SITE_DATA, write_json
 
@@ -111,6 +112,7 @@ def cell2_problem():
     return obs, ctx, space
 
 
+@ledger.recorded
 def do_job(job: RepeatJob, n_workers: int, maxiter: int | None = None) -> None:
     from fork import ledger
     from fork.inference.nested import NestedResult, run_nested
@@ -121,7 +123,7 @@ def do_job(job: RepeatJob, n_workers: int, maxiter: int | None = None) -> None:
         return
     obs, ctx, space = cell2_problem()
     resumed = job.path(".ckpt").exists()
-    t0, c0 = time.time(), ledger.cpu_now()
+    rec = ledger.start(f"m6c_repeat/{job.id}", "nested", n_workers=n_workers)
     res = run_nested(obs, ctx, space, np.random.default_rng(job.rng_seed()), nlive=job.nlive,
                      slices=job.slices, n_workers=n_workers, maxiter=maxiter,
                      progress_log=PROGRESS_LOG,
@@ -132,11 +134,15 @@ def do_job(job: RepeatJob, n_workers: int, maxiter: int | None = None) -> None:
         return
     NestedResult(res.space, res.results, res.nlive, res.dlogz, res.wall_s).save(out)
     yrs = ledger.sim_years_per_integration(obs.jd_tdb, A1_EPOCH_JD_TDB)
-    ledger.append(f"m6c_repeat/{job.id}", "nested", n_likelihood_calls=res.ncall,
-                  n_integrations=res.ncall, sim_years=res.ncall * yrs,
-                  wall_s=time.time() - t0, cpu_s=ledger.cpu_now() - c0, n_workers=n_workers,
-                  estimated=resumed, resumed=resumed, nlive=job.nlive,
-                  niter=res.niter)  # fmt: skip
+    rec.done(
+        n_likelihood_calls=res.ncall,
+        n_integrations=res.ncall,
+        sim_years=res.ncall * yrs,
+        estimated=resumed,
+        resumed=resumed,
+        nlive=job.nlive,
+        niter=res.niter,
+    )
     print(f"{job.id}: ln Z {res.logz:.3f} ± {res.logzerr:.3f}, {res.niter} it, "
           f"{res.wall_s / 60:.1f} min")  # fmt: skip
 
@@ -321,6 +327,7 @@ def interval_with_cell2(cell2, ctx, geo) -> dict:
             "galle_lon_ecl_of_date_deg": m6c.lon_summary(galle, targets)}  # fmt: skip
 
 
+@ledger.recorded
 def summarize() -> None:
     from fork import ledger
     from fork.inference.nested import NestedResult
@@ -329,7 +336,7 @@ def summarize() -> None:
     missing = [j.id for j in JOBS if not j.path(".pkl").exists()]
     if missing:
         raise SystemExit(f"not finished: {missing}")
-    t0, c0 = time.time(), ledger.cpu_now()
+    rec = ledger.start("m6c_repeat/summarize", "summarize", n_workers=1)
     _, ctx, _ = cell2_problem()
     geo = GalleGeometry.from_horizons()
     runs = {j.id: NestedResult.load(j.path(".pkl")) for j in JOBS}
@@ -395,10 +402,13 @@ def summarize() -> None:
     n = sum(int(np.sum(np.asarray(r.results["logl"]) > r.max_logl - LOGL_WINDOW))
             for r in [*runs.values(), *earlier.values(), *merged.values()])  # fmt: skip
     n += len(merged) * m6c.DERIVED_MAX_SAMPLES
-    ledger.append("m6c_repeat/summarize", "summarize", n_likelihood_calls=0, n_integrations=n,
-                  sim_years=n * (1846.73 - 1781.2), wall_s=time.time() - t0,
-                  cpu_s=ledger.cpu_now() - c0, n_workers=1, estimated=True,
-                  note="Galle-night longitude per weighted sample")  # fmt: skip
+    rec.done(
+        n_likelihood_calls=0,
+        n_integrations=n,
+        sim_years=n * (1846.73 - 1781.2),
+        estimated=True,
+        note="Galle-night longitude per weighted sample",
+    )
 
 
 DERIVED_OUT_NAME = "m6c_replacement.json"
@@ -415,6 +425,7 @@ def replacement_cells() -> list:
     return res
 
 
+@ledger.recorded
 def derived() -> None:
     """Mass, a, e, i, Peirce probability and the rest of the headline's summary record, from
     the replacement posterior (after the fact: the pre-registration fixed only its Galle-night
@@ -426,7 +437,7 @@ def derived() -> None:
     if rep["decision"]["outcome"] != "replace":
         raise SystemExit(f"outcome is {rep['decision']['outcome']}, not replace")
     m6c.check_frozen("headline")
-    t0, c0 = time.time(), ledger.cpu_now()
+    rec = ledger.start("m6c_repeat/derived", "summarize", n_workers=1)
     out = m6c.summarize_results("headline", replacement_cells(),
                                 np.random.default_rng(list(REPORT_RNG)))  # fmt: skip
     reported = {k: v for k, v in rep["reported"].items() if k != "source"}
@@ -454,10 +465,13 @@ def derived() -> None:
             "mass_earth", "a_au", "e")  # fmt: skip
     print(json.dumps({k: payload[k] for k in keys}, indent=1))
     n = 2 * out["n_derived"]
-    ledger.append("m6c_repeat/derived", "summarize", n_likelihood_calls=1, n_integrations=n,
-                  sim_years=n * (1846.73 - 1781.2), wall_s=time.time() - t0,
-                  cpu_s=ledger.cpu_now() - c0, n_workers=1, estimated=True,
-                  note="replacement posterior: Galle, 1847 longitudes")  # fmt: skip
+    rec.done(
+        n_likelihood_calls=1,
+        n_integrations=n,
+        sim_years=n * (1846.73 - 1781.2),
+        estimated=True,
+        note="replacement posterior: Galle, 1847 longitudes",
+    )
 
 
 def main(argv: list[str] | None = None) -> None:

@@ -20,6 +20,7 @@ from pathlib import Path
 
 import numpy as np
 
+from fork import ledger
 from fork.data.frames import elements_to_state
 from fork.integrators import wh_extra as W
 from fork.integrators._nbody import energy_helio, helio_to_bary
@@ -394,7 +395,8 @@ def main() -> None:
     sub.add_parser("plot")
     a = ap.parse_args()
     if a.cmd == "run":
-        run(a.fresh)
+        with ledger.run("phase2/validation", "diagnostic", n_workers=1, fresh=a.fresh):
+            run(a.fresh)
     else:
         from fork.phase2.validation_plot import plot
 

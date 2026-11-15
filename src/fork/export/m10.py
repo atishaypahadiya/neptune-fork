@@ -48,6 +48,7 @@ from types import SimpleNamespace
 import numpy as np
 from scipy.optimize import least_squares
 
+from fork import ledger
 from fork.export import m6c, m9
 from fork.export.m9 import (
     A_GRID_AU,
@@ -498,6 +499,7 @@ def _run_polish(tasks: list[dict], pool) -> list[dict]:
 # ---------------------------------------------------------------------------- the profile run
 
 
+@ledger.recorded
 def profile(dataset: str, n_workers: int, cache: Path = CACHE, *, smoke: bool = False) -> dict:
     """The whole M10 profile for one data set, resumable per stage as M9's relaunch: the
     independent starts one point at a time, the continuation, the exact polishes with their
@@ -512,7 +514,14 @@ def profile(dataset: str, n_workers: int, cache: Path = CACHE, *, smoke: bool = 
     points = list(range(len(POINTS_AU)))
     if smoke:
         points = [5, 13]
-    t0, c0 = time.time(), ledger.cpu_now()
+    rec = ledger.start(
+        f"m10/profile/{dataset}",
+        "profile",
+        n_workers=n_workers,
+        smoke=smoke,
+        scratch=cache != CACHE,
+    )
+    t0, c0 = rec.t0, rec.c0
     _init_worker(dataset)
     calls = {"pert": 0, "exact": 0}
 
@@ -665,13 +674,10 @@ def profile(dataset: str, n_workers: int, cache: Path = CACHE, *, smoke: bool = 
     wall, cpu = time.time() - t0, ledger.cpu_now() - c0
     summary = {"dataset": dataset, "n_measurements": n_meas, "calls": calls, "wall_s": wall,
                "cpu_s": cpu, "smoke": smoke}  # fmt: skip
-    if not smoke and cache == CACHE:
-        yrs = ledger.sim_years_per_integration(_W["obs"].jd_tdb, A1_EPOCH_JD_TDB)
-        ledger.append(f"m10/profile/{dataset}", "profile",
-                      n_likelihood_calls=calls["pert"] + calls["exact"],
-                      n_integrations=calls["exact"], sim_years=calls["exact"] * yrs,
-                      wall_s=wall, cpu_s=cpu, n_workers=n_workers, n_perturbative=calls["pert"],
-                      n_exact=calls["exact"])  # fmt: skip
+    yrs = ledger.sim_years_per_integration(_W["obs"].jd_tdb, A1_EPOCH_JD_TDB)
+    rec.done(n_likelihood_calls=calls["pert"] + calls["exact"],
+             n_integrations=calls["exact"], sim_years=calls["exact"] * yrs,
+             n_perturbative=calls["pert"], n_exact=calls["exact"])  # fmt: skip
     _log(f"{dataset}: done, {calls['pert']} perturbative and {calls['exact']} exact calls, "
          f"{wall / 60:.1f} min wall, {cpu / 3600:.2f} CPU-h", log_path)  # fmt: skip
     return summary

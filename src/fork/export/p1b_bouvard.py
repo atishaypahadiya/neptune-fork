@@ -15,6 +15,7 @@ from pathlib import Path
 
 import numpy as np
 
+from fork import ledger
 from fork.data.centesimal import CENTESIMAL_SEC_IN_ARCSEC as CS
 from fork.historical import bouvard_1821 as B
 
@@ -788,14 +789,15 @@ def figure(c: dict) -> None:
 
 
 def main() -> None:
-    payload = {
-        "plan": "docs/notes/P1B_bouvard_attribution.md",
-        "V1": v1(),
-        "V1_prime": v1p(),
-        "V2": v2(),
-        "V3": v3(),
-        "cells": cells(),
-    }
+    with ledger.run("p1b_bouvard/stages", "fit", n_workers=1):
+        payload = {
+            "plan": "docs/notes/P1B_bouvard_attribution.md",
+            "V1": v1(),
+            "V1_prime": v1p(),
+            "V2": v2(),
+            "V3": v3(),
+            "cells": cells(),
+        }
     OUT_JSON.write_text(
         json.dumps(payload, default=_plain, indent=1, ensure_ascii=False) + "\n", encoding="utf-8"
     )

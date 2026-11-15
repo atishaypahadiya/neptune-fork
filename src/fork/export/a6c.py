@@ -43,6 +43,7 @@ from pathlib import Path
 
 import numpy as np
 
+from fork import ledger
 from fork.export.to_json import A1_EPOCH_JD_TDB, SITE_DATA, write_json
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -118,6 +119,7 @@ def job_space(job: Job, pq, box):
     return cell_space(space, cells_for(E_MAX)[job.cell])
 
 
+@ledger.recorded
 def do_job(job: Job, n_workers: int, maxiter: int | None = None) -> None:
     from fork import ledger
     from fork.inference.nested import NestedResult, run_nested
@@ -129,7 +131,7 @@ def do_job(job: Job, n_workers: int, maxiter: int | None = None) -> None:
     obs, ctx, _, pq, box, _ = dataset(job.seed)
     space = job_space(job, pq, box)
     resumed = job.path(".ckpt").exists()
-    t0, c0 = time.time(), ledger.cpu_now()
+    rec = ledger.start(f"a6c/{job.id}", "nested", n_workers=n_workers)
     res = run_nested(obs, ctx, space, job.rng(), nlive=job.nlive, n_workers=n_workers,
                      maxiter=maxiter, progress_log=PROGRESS_LOG,
                      checkpoint_file=None if maxiter else job.path(".ckpt"),
@@ -139,11 +141,15 @@ def do_job(job: Job, n_workers: int, maxiter: int | None = None) -> None:
         return
     NestedResult(res.space, res.results, res.nlive, res.dlogz, res.wall_s).save(out)
     yrs = ledger.sim_years_per_integration(obs.jd_tdb, A1_EPOCH_JD_TDB)
-    ledger.append(f"a6c/{job.id}", "nested", n_likelihood_calls=res.ncall,
-                  n_integrations=res.ncall, sim_years=res.ncall * yrs,
-                  wall_s=time.time() - t0, cpu_s=ledger.cpu_now() - c0, n_workers=n_workers,
-                  estimated=resumed, resumed=resumed, nlive=job.nlive,
-                  niter=res.niter)  # fmt: skip
+    rec.done(
+        n_likelihood_calls=res.ncall,
+        n_integrations=res.ncall,
+        sim_years=res.ncall * yrs,
+        estimated=resumed,
+        resumed=resumed,
+        nlive=job.nlive,
+        niter=res.niter,
+    )
     print(f"{job.id}: ln Z {res.logz:.3f} ± {res.logzerr:.3f}, {res.niter} it, "
           f"{res.wall_s / 60:.1f} min")  # fmt: skip
 
@@ -283,12 +289,13 @@ def coverage(seeds: list[dict]) -> dict:
     }
 
 
+@ledger.recorded
 def summarize() -> None:
     from fork import ledger
     from fork.inference.nested import BOUND, DLOGZ, ERR_INFLATION, SAMPLE, cells_for
     from fork.model.observation import GROUPS, ErrorModel
 
-    t0, c0 = time.time(), ledger.cpu_now()
+    rec = ledger.start("a6c/summarize", "summarize", n_workers=1)
     truth = truth_params()
     seeds = [d for d in (summarize_seed(s, truth) for s in SEEDS) if d is not None]
     em = ErrorModel.load()
@@ -318,10 +325,13 @@ def summarize() -> None:
     print(json.dumps(payload["a6c_coverage"], indent=1))
     print(f"wrote {SITE_DATA / OUT_NAME}")
     n = sum(d["n_derived"] for d in seeds)
-    ledger.append("a6c/summarize", "summarize", n_likelihood_calls=0, n_integrations=n,
-                  sim_years=n * (1846.73 - 1781.2), wall_s=time.time() - t0,
-                  cpu_s=ledger.cpu_now() - c0, n_workers=1, estimated=True,
-                  note="derived 1846-longitude integrations (epoch to 1846-09-23)")  # fmt: skip
+    rec.done(
+        n_likelihood_calls=0,
+        n_integrations=n,
+        sim_years=n * (1846.73 - 1781.2),
+        estimated=True,
+        note="derived 1846-longitude integrations (epoch to 1846-09-23)",
+    )
 
 
 def main(argv: list[str] | None = None) -> None:

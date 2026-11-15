@@ -137,12 +137,20 @@ def totals(rows: list[dict]) -> dict:
         return out
 
     kinds = sorted({r["kind"] for r in rows})
+    outcomes = [o for o in ledger.OUTCOMES if any(outcome(r) == o for r in rows)]
     return {
         "all": block(rows),
         "measured": block([r for r in rows if not r.get("estimated")]),
         "estimated": block([r for r in rows if r.get("estimated")]),
         "by_kind": {k: block([r for r in rows if r["kind"] == k]) for k in kinds},
+        "by_outcome": {o: block([r for r in rows if outcome(r) == o]) for o in outcomes},
     }
+
+
+def outcome(row: dict) -> str:
+    """A row's outcome; rows written before outcomes were recorded were written only when the
+    job finished, so they count as ``done``."""
+    return row.get("outcome", "done")
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -156,9 +164,11 @@ def main(argv: list[str] | None = None) -> None:
         "description": "Compute ledger totals (data/cache/compute_ledger.jsonl). One likelihood "
         "call = one forward N-body integration over the observation span. Sums skip missing "
         "values; n_rows_missing counts them. 'estimated' rows were backfilled from saved "
-        "results and logs.",
+        "results and logs. Since 2026-11-15 every run writes a row whatever its outcome (done, "
+        "gate passed, gate failed, stopped, failed, unfinished), synthetic gates and capped "
+        "runs included; earlier rows have no outcome and were written only on success.",
         "fields": ["job", "kind", "n_likelihood_calls", "n_integrations", "sim_years", "wall_s",
-                   "cpu_s", "n_workers", "estimated"],
+                   "cpu_s", "n_workers", "estimated", "outcome"],
         "totals": totals(rows),
         "rows": rows,
     }  # fmt: skip

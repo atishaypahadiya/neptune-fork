@@ -93,6 +93,14 @@ def _live_horizons_for_network_and_slow(request):
     mp.undo()
 
 
+@pytest.fixture(autouse=True)
+def _scratch_compute_ledger(tmp_path, monkeypatch):
+    """Rows written by code under test go to a scratch ledger, never data/cache's."""
+    from fork import ledger
+
+    monkeypatch.setattr(ledger, "LEDGER", tmp_path / "compute_ledger.jsonl")
+
+
 @pytest.fixture(scope="module")
 def offline_horizons(tmp_path_factory):
     """Horizons cache populated from tests/data/horizons_m4.json; any network fetch fails.
