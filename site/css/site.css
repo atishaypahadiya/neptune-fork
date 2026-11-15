@@ -245,7 +245,7 @@ tfoot tr + tr td { border-top: 0; font-size: 0.875rem; line-height: 1.3125rem; c
 input[type="range"] { flex: 1; min-width: 0; margin: 0; accent-color: var(--prussian); min-height: 44px; }
 
 /* ---------- limitations, availability, references ---------- */
-.limits { margin-top: 0; padding-left: 24px; }
+.limits { margin-top: 0; padding-left: 18px; }
 .limits li { margin-bottom: 12px; }
 .limits li:last-child, .refs li:last-child { margin-bottom: 0; }
 .cite { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 18px; margin: 24px 0; }

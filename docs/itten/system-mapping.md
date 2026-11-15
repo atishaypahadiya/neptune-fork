@@ -29,7 +29,7 @@ Scale: **6, 12, 18, 24, 36, 48, 72, 96** (6 × 1, 2, 3, 4, 6, 8, 12, 16).
 | 15 (`1em` at 15 px) | 18 | +3 | Below the Plate III note |
 | 16 | 18 | +2 | Plate III controls gap; citation column gap; Fig. 3 below |
 | `1em` (16.5 to 18) | 18 | 0 from 762 px; +1.5 at 390 | Between paragraphs |
-| `1.1em` (18.15 to 19.8) | 24 | +4.2 to +5.9 | Limitations list indent (now the references' indent) |
+| `1.1em` (18.15 to 19.8) | 18 | −0.15 to −1.8 | Limitations list indent (bullets) |
 | 21 (`1.4em` at 15 px) | 24 | +3 | Companion "A companion study to" line below |
 | 22 | 24 | +2 | h2 below |
 | 24 | 24 | 0 | Figs. 8 and 9 stacked gap; citation block; Fig. 3 above; references indent |
@@ -82,8 +82,8 @@ scale; it is logged, not changed.
 
 ## Would a reader notice
 
-The largest changes are 8 px on gaps of 64 and 88 px (9 to 13 %), the list and quote indents
-moving by about 5 px to share one 24 px indent, quotes set at the body size instead of 1 px
+The largest changes are 8 px on gaps of 64 and 88 px (9 to 13 %), the quote indent moving by
+about 5 px, quotes set at the body size instead of 1 px
 larger, and the phone body going from 16.5 to 17 px. None changes a colour, a typeface, a
 width, the order of anything, or a gap by more than 8 px, and no text size moves by more than
 1.1 px at the default text size. My judgement is that a reader would not notice any of them,
