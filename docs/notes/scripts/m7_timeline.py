@@ -224,11 +224,12 @@ def main() -> None:
         },
         "entries": entries,
         # The spec's M6c fits not run in v1.0.0 (docs/release_checklist.md, "Deferred to v1.1",
-        # moved there 2026-11-09), in v1.1.0, in v1.2.0 or in v1.3.0, which carried them to v1.4. Not pre-registered
-        # yet, so they have no timeline entry.
+        # moved there 2026-11-09), in v1.1.0, in v1.2.0, in v1.3.0 or in v1.4.0, which carried them
+        # to v1.5. The variants and the shape model are pre-registered (docs/notes/M6c_variants.md,
+        # docs/notes/M6d.md) and not fitted to the real data; the 1846 track is not built.
         "deferred": {
-            "source": "docs/release_checklist.md, Deferred to v1.1 (2026-11-09); carried to v1.2 at v1.1.0, to v1.3 at v1.2.0 and to v1.4 at v1.3.0",
-            "to_version": "1.4",
+            "source": "docs/release_checklist.md, Deferred to v1.1 (2026-11-09); carried to v1.2 at v1.1.0, to v1.3 at v1.2.0, to v1.4 at v1.3.0 and to v1.5 at v1.4.0",
+            "to_version": "1.5",
             "fitted": "Le Verrier's data choice on the modern reduction track",
             "m6c_fits": [
                 {"key": "bouvard", "name": "Bouvard", "kind": "variant"},
@@ -236,8 +237,9 @@ def main() -> None:
                 {"key": "track_1846", "name": "1846 reduction track", "kind": "track"},
                 {"key": "lv_shape", "name": "Le Verrier shape model", "kind": "model"},
             ],
-            "status": "not yet pre-registered; to be planned and pushed before launch",
-            "opens": {"adams": "the Adams–Challis study"},
+            "status": "the variants and the shape model are pre-registered and not yet fitted to "
+            "the real data; the 1846 reduction track is not built",
+            "opens": {},
         },
         # The pre-registered reading rules of the M6c sensitivity runs, as written in
         # docs/notes/M6.md before any of their sampling (commit 2981aa1). The site applies them

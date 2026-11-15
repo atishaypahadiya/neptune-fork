@@ -230,8 +230,8 @@
   }
  ],
  "deferred": {
-  "source": "docs/release_checklist.md, Deferred to v1.1 (2026-11-09); carried to v1.2 at v1.1.0, to v1.3 at v1.2.0 and to v1.4 at v1.3.0",
-  "to_version": "1.4",
+  "source": "docs/release_checklist.md, Deferred to v1.1 (2026-11-09); carried to v1.2 at v1.1.0, to v1.3 at v1.2.0, to v1.4 at v1.3.0 and to v1.5 at v1.4.0",
+  "to_version": "1.5",
   "fitted": "Le Verrier's data choice on the modern reduction track",
   "m6c_fits": [
    {
@@ -255,10 +255,8 @@
     "kind": "model"
    }
   ],
-  "status": "not yet pre-registered; to be planned and pushed before launch",
-  "opens": {
-   "adams": "the Adams–Challis study"
-  }
+  "status": "the variants and the shape model are pre-registered and not yet fitted to the real data; the 1846 reduction track is not built",
+  "opens": {}
  },
  "sensitivity_reading_rules": {
   "source": "docs/notes/M6.md, pre-registration of the sensitivity runs (M6c, commit 2981aa1)",

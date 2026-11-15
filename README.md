@@ -67,15 +67,20 @@ In the main study, the stages on synthetic data are complete:
 - partitioned nested sampling with its calibration tests.
 
 The pre-registered fit to the real data (the headline fit) is done and reported, and so are the
-acceptance tests on the historical data ([report](docs/notes/A6.md)). The Peirce-number analysis
-and the held-out test on Neptune's precoveries are deferred to v1.4. The spec's other variants of
-the headline fit (the `bouvard` and `adams` data
-variants, the 1846 reduction track and the Le Verrier shape model) are deferred to v1.4 too:
-they are not yet pre-registered, will be planned and pushed before launch, and the `adams`
-variant opens the Adams–Challis study. The higher-resolution reruns with a faster likelihood did
+acceptance tests on the historical data ([report](docs/notes/A6.md)). The held-out check against
+Lalande's places of Neptune of 1795 is done: the fits never saw them, and they fall inside the
+68 % region, a check within the span of the data (§ 4.4 of the page; [notes](docs/notes/M6e.md)).
+Galileo's places are not sourced. The Peirce-number analysis and the spec's other variants of
+the headline fit are deferred to v1.5. The `adams` data variant and the Le Verrier shape model
+are pre-registered ([variants](docs/notes/M6c_variants.md), [shape model](docs/notes/M6d.md))
+and not yet fitted to the real data. The `bouvard` variant stopped at its synthetic gate, as its
+plan requires: without the pre-1781 observations the Uranus prior box sits off-centre
+([results](docs/notes/M6c_variants.md#results-so-far-14-november-2026-the-synthetic-gate)). The
+1846 reduction track is not built. The higher-resolution reruns with a faster likelihood did
 not meet the 95 % stability condition, so the 95 % interval stays provisional. The full-likelihood
 check of the eccentricity test has reported: by its pre-registered rule the published verdict
-stands and the question is unresolved (Robustness, below). Two pre-registered profile likelihoods
+stands and the question is unresolved (Robustness, below); a pre-registered rerun of that cell in
+six smaller cells did not resolve it either ([notes](docs/notes/S1_cell0.md)). Two pre-registered profile likelihoods
 in the semi-major axis are done, on Gaussian errors ([notes](docs/notes/M9.md)) and on Student-t
 errors ([notes](docs/notes/M10.md)): the near side of the distance comes from the pre-1781
 observations under both; the far side depends on the error model (Robustness).
@@ -182,6 +187,22 @@ two questions of the printed record.
   what a change would have added); the comparison he broke off, carried through,
   0.71 (0.50 to 0.97); zones laid from Adams's first place or from Le Verrier's June place 0.41 and 0.41 (both prior-dependent), or 0.79 and 0.85 with prompt comparison. Each depends on an input the record
   does not fix, three readings are prior-dependent, and none reaches "very probably".
+- *Reference or observations?* A pre-registered attribution of his nearness to his
+  observations or to Bouvard's tables, against which he reduced them, depends on the method of
+  solution, and is not made ([notes](docs/notes/P1B_bouvard_attribution.md)). A second, with the
+  tables computed at his own epochs, shows that it turns on one interpolated place, that of
+  1780: interpolated as he describes, all four cases read "mostly the observations"; with 1780
+  as the first analysis fixed it, again "depends on the method"
+  ([notes](docs/notes/P1B_bouvard_tables.md)).
+
+**Toward Mercury (nothing fitted to observations).** For a later study of Mercury's perihelion,
+two data sets are transcribed in two entries each, with spot checks by a person: Newcomb's
+observed times of contact for the transits of 1677 to 1881, and Le Verrier's meridian places
+observed at Paris from 1801 to 1842 ([transcription](docs/phase2/transcription.md),
+[blinding record](docs/phase2/blinding.md)). A pre-registered synthetic identifiability study
+stopped at its linearity gate, as its plan requires: the linear treatment of Mercury's elements
+does not reproduce the full integration ([plan and results](docs/phase2/identifiability_study.md)).
+A redesign is deferred to v1.5.
 
 The write-up, with each claim's JSON path and deviation, is
 [docs/notes/P1B_writeup.md](docs/notes/P1B_writeup.md).
@@ -207,13 +228,14 @@ The write-up, with each claim's JSON path and deviation, is
 - The reduction check against JPL: comparison against per-group precision not made: no precision figure was fixed before the data were seen. Medians reported. Details in the [acceptance-test report](docs/notes/A6.md).
 - The transcription check: 0 of 28 rows in error; 95 % upper bound on the per-row error rate 10.1 % (exact one-sided Clopper–Pearson, 0 of 28); the remaining 251 rows are unchecked.
 - The observation model does not include diurnal parallax (up to 0.5″ for Uranus over 1781–1845).
-- Only Le Verrier's data choice on the modern reduction track is fitted: the `bouvard` and `adams` variants, the 1846 reduction track and the Le Verrier shape model are deferred to v1.4 (not yet pre-registered; to be planned and pushed before launch; the `adams` variant opens the Adams–Challis study).
+- Only Le Verrier's data choice on the modern reduction track is fitted. The `bouvard` variant stopped at its synthetic gate; the `adams` variant and the Le Verrier shape model are pre-registered and not yet fitted; the 1846 reduction track is not built. All are deferred to v1.5.
 - Error model: the evidence favours Student-t errors (ln B = +13.7); the Gaussian error model
   was fixed by the pre-registration and is kept. Student-t errors move the median 0.37 headline
   half-widths.
 - With eccentricity allowed to 0.5, a low-distance solution (a < 25 AU) pointing near 314° on
   Galle's night carries a posterior weight that the current runs do not determine (0.001 to
-  about 0.2).
+  about 0.2); a pre-registered rerun of that region in smaller cells did not make the runs
+  repeatable ([notes](docs/notes/S1_cell0.md)).
 - The near side of the distance rests on the 37 measurements by four observers before 1781
   (Flamsteed, Le Monnier, Bradley and Mayer), and chiefly on Flamsteed's 10: without them the
   Student-t profile reads as flat, while without Bradley's, Mayer's or Le Monnier's it is almost
@@ -224,7 +246,7 @@ The write-up, with each claim's JSON path and deviation, is
   under the first and 0.76 under the second.
 
 - The companion study reads the printed record only: the Cambridge observing books and Airy's
-  papers were not consulted, and Bouvard's tables are not used in any result.
+  papers were not consulted.
 - The companion study's probabilities for Challis's search are conditional on declared priors where the
   record is silent; under the reading reported, his actual procedure is 0 by construction: the
   realised events are held fixed, so the cases measure what a change would have added.
@@ -285,6 +307,8 @@ site/           static site (GitHub Pages) and its data
     [the reproduction](docs/notes/P1B_adams_reproduction.md),
     [noise against a systematic cause](docs/notes/P1B_adams_noise.md)
   - [Challis's search as a detection model](docs/notes/P1B_challis_detection.md)
+  - [the attribution to Bouvard's tables](docs/notes/P1B_bouvard_attribution.md),
+    [the tables at his own epochs](docs/notes/P1B_bouvard_tables.md)
 
 ## Compute
 

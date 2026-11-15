@@ -6,6 +6,77 @@ Versions follow semver. Dates are the release dates; the DOIs are in `CITATION.c
 
 Nothing yet.
 
+## 1.4.0 (2026-11-15)
+
+The headline longitude, mass and semi-major axis are unchanged, and no number already on
+either page changes. The main page gains § 4.4 and Fig. 10; the companion page gains a
+paragraph in § 3.5 and a sentence in its abstract.
+
+### Added
+
+- The check against Lalande's places of Neptune of 8 and 10 May 1795, pre-registered: the
+  fits never saw them, and Lalande's longitude falls inside the posterior's 68 % region for
+  both error models on both nights. 1795 is within the span of the Uranus observations, so
+  it is an out-of-sample check within the data span, not an extrapolation, and it does not
+  independently confirm the place on Galle's night. In declination the fits say little. On
+  the main page as § 4.4 and Fig. 10 (`docs/notes/M6e.md`).
+- The companion study's second attribution analysis, pre-registered: Bouvard's tables of
+  1821 computed at each of Adams's 30 epochs in place of their printed formula. The
+  attribution turns on one interpolated place, that of 1780. Interpolated as Adams
+  describes, a treatment chosen after the first analysis was seen and declared so, all four
+  cases read "mostly the observations, with a share from the reference" (observations +6.6°
+  to +8.5°, reference +3.2° to +5.7°); with 1780 as the first analysis fixed it, again
+  "depends on the method". The first analysis's registered reading stands and the
+  attribution is not made (`docs/notes/P1B_bouvard_tables.md`). The 1,855 table cells it
+  needs are in two entries with a misprint log (`data/historical/adams_challis/bouvard_1821/`).
+  The author's spot check of 20 cells, 15 chosen and 5 random, found no discrepancy; the
+  random part bounds the error rate only weakly (below 45 %).
+- A rerun of the eccentricity test's nearest cell (a < 25 AU) in six sub-cells with four
+  seeds each, pre-registered: the sub-cells do not make the runs repeatable, so the reading is
+  "not resolved". The published verdict stands, the question stays unresolved, and the 95 %
+  range stays provisional; the main page says so beside the range (`docs/notes/S1_cell0.md`).
+- Two pre-registered studies stopped at their validation gates, as their plans require: the
+  fit on Bouvard's rows, the modern observations only (without the pre-1781 observations the
+  Uranus prior box sits off-centre; `docs/notes/M6c_variants.md`), and the synthetic
+  identifiability study for Mercury (the linear treatment of the elements fails its
+  linearity gate; `docs/phase2/identifiability_study.md`). Both move to v1.5.
+- Pre-registered plans for the fit on Adams's rows and for Le Verrier's shape model against
+  free distance (`docs/notes/M6c_variants.md`, `docs/notes/M6d.md`), with their runner. The
+  fit on Adams's rows passed its synthetic gate; neither is fitted to the real data here.
+- The second data set for the study of Mercury: Le Verrier's meridian places of Mercury
+  observed at Paris, 1801 to 1842 (*Annales de l'Observatoire impérial de Paris*, tome V,
+  1859, pp. 51–61), 397 rows in two entries that agree in all 7,146 cells, with a log of two
+  inconsistencies of print kept as printed. The columns of the tables' errors were never
+  transcribed; a blinding record written before opening says what had been seen. Also
+  Newcomb (1882), p. 450, in two entries. The author's spot check of 20 cells, 10 chosen and
+  10 random, found no discrepancy (`data/historical/mercury/`, `docs/phase2/`). Nothing is
+  fitted to these data.
+- Reading notes on nine earlier treatments of the problem and its history, and a note on
+  what this project adds (`docs/notes/prior_work/`).
+- The two spot-check records (`docs/review/`), each tested against its table.
+
+### Corrected
+
+- README: the differences from prior work are cut to those the reading notes support; the
+  discoverneptune benchmark is 2.52″ RMS fitted to JPL-derived annual longitudes, not to
+  historical observations, so it is not directly comparable (the earlier "about 2.5″ to
+  2.9″" is superseded, also in `docs/notes/M6.md`); a limitation no longer says that
+  Bouvard's tables are not used in any result.
+- References: Le Verrier, *Comptes rendus* 22, 907–918 (quoted at p. 917); Airy,
+  *Astronomische Nachrichten* 25 (no. 585), cols. 131–148.
+- The companion write-up gives the corrected reading for the chart case; v1.2.0 printed a
+  withdrawn figure (0.92) there in error. The detection note carries a dated correction.
+- An unsourced comparison of Saturn's mass is removed.
+- The site: the same space above every section heading; page ranges never break at the
+  dash, with a layout check.
+
+### Changed
+
+- The work deferred to v1.4 and not done here moves to v1.5: the fits of the two remaining
+  data choices and of Le Verrier's shape model, a different method for the low-distance
+  region, and a redesign of the Mercury identifiability study. The main page and the README
+  say so.
+
 ## 1.3.0 (2026-11-13)
 
 No number already on either page changes; the companion page gains § 3.5 and the text

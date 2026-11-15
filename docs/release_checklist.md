@@ -246,7 +246,42 @@ not done in v1.3.0 and are carried to v1.4.
   link, the release page itself; it passes on rerun.
 - [x] Follow-up commit: that DOI in `CITATION.cff`, `README.md` and `site/data/release.json`.
 
-## v1.4 list (opened 2026-11-12 as the v1.3 list; no release without the explicit word)
+## v1.4.0 (released on the author's word, 2026-11-15 UTC)
+
+A minor release. Contents in `CHANGELOG.md`: the check against Lalande's places of 1795,
+the second Bouvard analysis (the attribution turns on the 1780 place; not made), the S1
+cell-0 rerun (not resolved), the two studies stopped at their gates, the second Mercury data
+set, the prior-work notes, the corrections to public claims and references, the two spot
+checks, the heading spacing and the page-range guard.
+
+- [x] Before the metadata: v14-runs-b and phase2-identifiability merged (083fb68, 9a764fe),
+  notes, code and tests only, so that both gate failures are on `main`.
+- [x] Metadata: version 1.4.0 in `pyproject.toml`, `uv.lock` and `CITATION.cff` (its `doi:`
+  removed until Zenodo mints the version DOI); two sentences added to the abstract in
+  `CITATION.cff` and `.zenodo.json`; `site/data/release.json`; the companion page's status;
+  the deferred fits' target version (1.5) and status in `site/data/m7_timeline.json` (edited
+  to match `docs/notes/scripts/m7_timeline.py`, which needs the run logs to rerun) and the
+  README; the README's Lalande, attribution and Mercury passages and one stale limitation.
+- [ ] Checks: ruff, tests, prerender, number audit on both pages, layout in Chromium and
+  WebKit, citation validation, one link pass.
+- [ ] Tag `v1.4.0`, GitHub release, Zenodo version DOI.
+- [ ] Follow-up commit: that DOI in `CITATION.cff`, `README.md` and `site/data/release.json`.
+
+## v1.5 list (opened 2026-11-15; no release without the explicit word)
+
+| item | state | next step |
+|---|---|---|
+| Le Verrier's shape model against free distance (the Peirce-number analysis) | pre-registered (`docs/notes/M6d.md`), not run | run (about 7 CPU-h) |
+| The data choice with Adams's rows | pre-registered (`docs/notes/M6c_variants.md`); synthetic gate passed; real fit started and stopped by decision, checkpoints kept locally | resume, about three days on 12 workers |
+| The data choice with Bouvard's rows (modern observations only) | stopped at its synthetic gate: the Uranus prior box sits off-centre without the pre-1781 rows | a new plan with a different box rule |
+| A different method for the low-distance cell | S1 cell 0 by sub-cells did not resolve it (`docs/notes/S1_cell0.md`) | a new plan |
+| The Mercury identifiability study | stopped at its linearity gate (`docs/phase2/identifiability_study.md`) | a new plan treating the elements by full integration |
+| The 1846 reduction track | not built; no specification | decide whether to build it |
+| Galileo's drawings of 1612–13 | not sourced | a separate pre-registration once Kowal and Drake (1980) is obtained |
+| Spot check of the Phase 1b tables (42-row kit), then their dataset record | kit ready, not done | the review, by a person |
+| Step 3e, nearest-midnight sensitivity | not run: Table IV rows 9 and 30 not entered | enter them twice under a dated amendment |
+
+## v1.4 list (opened 2026-11-12 as the v1.3 list; closed at v1.4.0, kept as history)
 
 - Carried from v1.3: M6d, M6e, the remaining M6c variants, the S1 cell-0 resolution.
 - A human spot check of the Phase 1b tables (`data/historical/adams_challis/`), then a separate
@@ -273,8 +308,10 @@ local branches):
 
 Added 2026-11-13, prior-work reading notes:
 
-- [ ] `docs/notes/prior_work/` holds nine reading notes and `novelty.md`, on the branch
-  `prior-work` only: not merged, not on the site, not in any release. Before a release that
+- [x] Merged into `main` with the corrections to public claims (f7f18a0, 13 Nov) and in
+  v1.4.0. As first written: `docs/notes/prior_work/` holds nine reading notes and
+  `novelty.md`, on the branch `prior-work` only: not merged, not on the site, not in any
+  release. Before a release that
   cites them, read `novelty.md`'s section "What follows for the wording elsewhere" (three
   places in `README.md`, `docs/notes/M6.md` and `docs/notes/P1B_sources.md` that the reading
   bears on; none of them was edited) and its list of what still needs a browser or a library.
@@ -296,10 +333,10 @@ Added 2026-11-13, prior-work reading notes:
 |---|---|
 | Le Verrier 1859, Paris places (397 rows) | two entries, 0 disagreements in 7,146 cells; two inconsistencies of print logged, kept as printed; error columns never transcribed |
 | Newcomb 1882, p. 450 | two entries; three points reconciled on the bands |
-| Spot check by a person | kit of 20 cells ready, not made |
+| Spot check by a person | done 14 Nov: 20 of 20 match (`docs/review/leverrier_places_spotcheck_human_results.json`) |
 | Fit to these data | none; needs a pre-registered plan |
 
-## v1.4 runs, 13 November 2026 (local branch `v14-runs`, not on the site)
+## v1.4 runs, 13 November 2026 (on main since 14 and 15 November 2026; results in the notes)
 
 | item | plan pushed | state on this branch |
 |---|---|---|
@@ -311,7 +348,7 @@ Added 2026-11-13, prior-work reading notes:
 Nothing here changes the site or `release/`. Each result needs its own review before it
 enters the page.
 
-## Mercury synthetic identifiability study, 13 November 2026 (local branch `phase2-identifiability`)
+## Mercury synthetic identifiability study, 13 November 2026 (on main since 15 November 2026; stopped at V2)
 
 | item | state |
 |---|---|
