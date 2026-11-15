@@ -115,17 +115,17 @@ export function orbit(g, pts, { cls = "ln orbit", closed = false } = {}) {
 /**
  * Fill an element from a template. `{X@fig}` becomes the point letter X, linked to point X of
  * figure `fig` (a focusable element; hover or focus highlights the point). `{i:word}` is an
- * italic variable. Everything else is text. No HTML from data is parsed.
+ * italic variable. Everything else is text (appendText). No HTML from data is parsed.
  */
 export function fill(el, template) {
   el.replaceChildren();
   const re = /\{([A-Za-z]{1,2})@([a-z0-9-]+)\}|\{i:([^}]+)\}/g;
   let at = 0, m;
   while ((m = re.exec(template))) {
-    if (m.index > at) el.append(template.slice(at, m.index));
+    if (m.index > at) appendText(el, template.slice(at, m.index));
     if (m[3]) {
       const i = document.createElement("i");
-      i.textContent = m[3];
+      appendText(i, m[3]);
       el.append(i);
     } else {
       const [, letter, fig] = m;
@@ -140,7 +140,7 @@ export function fill(el, template) {
     }
     at = re.lastIndex;
   }
-  if (at < template.length) el.append(template.slice(at));
+  if (at < template.length) appendText(el, template.slice(at));
 }
 
 /**
@@ -170,6 +170,45 @@ export function keepRanges(root) {
     frag.append(n.data.slice(at));
     n.replaceWith(frag);
   }
+}
+
+/**
+ * Words that hyphenation must not break, marked as the text is written, so the prerendered page
+ * and the page JS redraws have the same spans and nothing is wrapped after load: addresses (URLs,
+ * DOIs, arXiv ids, paths and file names, dotted field names) and every capitalised word, so that
+ * names stay whole in WebKit, which hyphenates them (Chromium does not). Each goes in a span.whole
+ * (site.css: hyphens: manual) with the punctuation on either side of it: WebKit does not kern
+ * across a span's edge, and pairs such as "J." and "U," kern by up to 0.08 em, so an edge between
+ * a letter and its punctuation would move line breaks. Page ranges (PAGE_RANGE) get their
+ * span.range here too, since a name span can take the comma keepRanges looks behind for.
+ */
+// Edges fall where nothing kerns: an elided prefix (l'Académie) and a trailing space ("T " kerns)
+// go inside, and hyphenated initials (S.-F.) are one word.
+const OPEN = String.raw`[(\[“‘"]*(?:\p{L}['’])?`, CLOSE = String.raw`[.,;:)\]”’"]*[ \u00a0]?`;
+export const WHOLE = new RegExp(OPEN + "(?:" +
+  String.raw`(?:https?:\/\/|doi:|arXiv:)\S*?(?=[.,;:)\]]*(?:\s|$))` + // URL, DOI, arXiv id
+  String.raw`|[^\s(]*[/_]\S*?(?=[.,;:)\]]*(?:\s|$))` + // path or file name
+  String.raw`|\b[A-Za-z]\w*(?:\.\w+){2,}` + // dotted field name
+  String.raw`|\p{Lu}[\p{L}\p{M}'’]*(?:\.?[-–]\p{L}[\p{L}\p{M}'’]*)*` + // capitalised word, with its compounds
+  ")" + CLOSE, "gu");
+
+/** Append text to an element: names and addresses in span.whole, page ranges in span.range. */
+export function appendText(el, text) {
+  const marks = [
+    ...[...text.matchAll(WHOLE)].map((m) => ({ at: m.index, s: m[0], cls: "whole" })),
+    ...[...text.matchAll(PAGE_RANGE)].map((m) => ({ at: m.index, s: m[0], cls: "range" })),
+  ].sort((a, b) => a.at - b.at);
+  let at = 0;
+  for (const k of marks) {
+    if (k.at < at) continue; // overlaps the one before (a range never touches a name)
+    if (k.at > at) el.append(text.slice(at, k.at));
+    const s = document.createElement("span");
+    s.className = k.cls;
+    s.textContent = k.s;
+    el.append(s);
+    at = k.at + k.s.length;
+  }
+  if (at < text.length) el.append(text.slice(at));
 }
 
 const figName = (fig) => fig.replace("plate-", "Plate ").replace("fig-", "Fig. ")

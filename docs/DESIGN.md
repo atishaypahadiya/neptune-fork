@@ -710,3 +710,9 @@ pattern and kept whole too, which does no harm.
   `site/data/s1_cell0.json`, written by `fork.export.s1_site`, each value a copy of a named
   field of `docs/notes/S1_cell0.json` (`tests/test_s1_site.py`).
 - UI-rule audit: no new pattern; text only.
+- 15 November, the low-distance plan's results (`docs/notes/S1_mode.md`): the 95 % range on the
+  main page (abstract, § 4.1, Fig. 4's dashed lines, Fig. 6's reported row, Limitations) is the
+  eight-seed interval when that plan's rule B holds, with its status from the plan's § 6; the
+  abstract's clause gives the one remaining reason. Data: `site/data/s1_mode.json`, written by
+  `fork.export.s1_site`, each value a copy of a named field of `docs/notes/S1_mode.json`; it
+  never carries P(a < 25 AU). UI-rule audit: no new pattern; text and data only.

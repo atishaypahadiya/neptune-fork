@@ -279,6 +279,7 @@ checks, the heading spacing and the page-range guard.
 | The data choice with Adams's rows | pre-registered (`docs/notes/M6c_variants.md`); synthetic gate passed; real fit started and stopped by decision, checkpoints kept locally | resume, about three days on 12 workers |
 | The data choice with Bouvard's rows (modern observations only) | stopped at its synthetic gate: the Uranus prior box sits off-centre without the pre-1781 rows | a new plan with a different box rule |
 | A different method for the low-distance cell | S1 cell 0 by sub-cells did not resolve it (`docs/notes/S1_cell0.md`) | a new plan |
+| Cell 1's repeatability in the low-distance run | R1 failed in cell 1 (ln Z range 1.73 against 0.5); post hoc, it traces to a mode at the cell's a ≈ 25 AU edge, the boundary with M (`docs/notes/S1_mode.md`, post hoc section) | a future registered rerun places the cell boundaries so that none splits a mode |
 | The Mercury identifiability study | stopped at its linearity gate (`docs/phase2/identifiability_study.md`) | a new plan treating the elements by full integration |
 | The 1846 reduction track | not built; no specification | decide whether to build it |
 | Galileo's drawings of 1612–13 | not sourced | a separate pre-registration once Kowal and Drake (1980) is obtained |

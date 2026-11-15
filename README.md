@@ -21,7 +21,9 @@ plan committed before the run. The model is a Wisdom–Holman integrator written
 observation model, and a perturbed orbit that is never given Neptune; Neptune (JPL) was at
 325.87°. The 68 % range is 323.6°–327.8° under the pre-registered Gaussian errors and
 321.0°–327.3° under Student-t errors, which the evidence favours (ln B = +13.7); Neptune is
-inside both. The 95 % range, 320.2°–330.4°, is provisional.
+inside both. The 95 % range, 319.6°–330.1°, is provisional, for one reason: with the
+eccentricity allowed to 0.5, a low-distance solution carries a weight that the runs do not
+determine.
 
 The headline fit gives a mass of 17.3 M⊕ (68 %: 16.3–18.4; Neptune 17.15), a semi-major axis
 of 30.2 AU (29.6–30.9), osculating in 1781, and an eccentricity below 0.028 (68 %, one-sided).
@@ -76,11 +78,16 @@ are pre-registered ([variants](docs/notes/M6c_variants.md), [shape model](docs/n
 and not yet fitted to the real data. The `bouvard` variant stopped at its synthetic gate, as its
 plan requires: without the pre-1781 observations the Uranus prior box sits off-centre
 ([results](docs/notes/M6c_variants.md#results-so-far-14-november-2026-the-synthetic-gate)). The
-1846 reduction track is not built. The higher-resolution reruns with a faster likelihood did
-not meet the 95 % stability condition, so the 95 % interval stays provisional. The full-likelihood
-check of the eccentricity test has reported: by its pre-registered rule the published verdict
-stands and the question is unresolved (Robustness, below); a pre-registered rerun of that cell in
-six smaller cells did not resolve it either ([notes](docs/notes/S1_cell0.md)). Two pre-registered profile likelihoods
+1846 reduction track is not built. The higher-resolution reruns with a faster likelihood met
+the 95 % stability condition with eight seeds in place of four (a rule revised after the
+four-seed condition failed, and labelled so), and their interval replaced the earlier one; it
+stays provisional for the low-distance solution alone ([notes](docs/notes/S1_mode.md)). The
+full-likelihood check of the eccentricity test has reported: by its pre-registered rule the
+published verdict stands and the question is unresolved (Robustness, below); a pre-registered
+rerun of that cell in six smaller cells did not resolve it either ([notes](docs/notes/S1_cell0.md)),
+nor did a rerun of the low-distance solution in its own region with a different sampler and
+eight seeds, because the seeds of one neighbouring cell did not agree
+([notes](docs/notes/S1_mode.md)). Two pre-registered profile likelihoods
 in the semi-major axis are done, on Gaussian errors ([notes](docs/notes/M9.md)) and on Student-t
 errors ([notes](docs/notes/M10.md)): the near side of the distance comes from the pre-1781
 observations under both; the far side depends on the error model (Robustness).
@@ -164,11 +171,13 @@ than the sampler's own error estimate. Under a pre-registered repeatability stud
 4× the live points agreed on the width, and their merge replaced that cell. This widened the
 first published interval (323.9°–327.4°) by about 20 %, to the one above
 ([repeatability notes](docs/notes/M6.md#m6c-cell-2-repeatability-results-2026-11-08)). The 68 % interval
-is the headline. The 95 % interval (320.2°–330.4°) is provisional: it widened from 6.6° to 10.2°
-because it depends on the small weights of three cells that are still single runs. A faster
-likelihood ([its spec](docs/PHASE1_SPEC.md#m8-fast-linearized-likelihood)) made repeated
-runs of every cell affordable; its higher-resolution reruns did not meet the 95 % stability
-condition, so the 95 % interval stays provisional.
+is the headline. The 95 % interval widened from 6.6° to 10.2° with that merge, because it
+depends on the small weights of three cells that were then single runs. A faster likelihood
+([its spec](docs/PHASE1_SPEC.md#m8-fast-linearized-likelihood)) made repeated runs of every
+cell affordable. Eight single-seed reruns of all four cells at higher resolution put the
+sampler error of each 95 % bound at 0.10° and 0.15°, and their interval, 319.6°–330.1°,
+replaced the earlier one ([notes](docs/notes/S1_mode.md)). It is provisional for one reason:
+the low-distance solution of the eccentricity test, whose weight the runs do not determine.
 
 **The British search for Neptune (release v1.2.0).** A companion
 study, [on its own page](https://atishaypahadiya.github.io/neptune-fork/adams-challis/), asks
@@ -189,10 +198,11 @@ two questions of the printed record.
   does not fix, three readings are prior-dependent, and none reaches "very probably".
 - *Reference or observations?* A pre-registered attribution of his nearness to his
   observations or to Bouvard's tables, against which he reduced them, depends on the method of
-  solution, and is not made ([notes](docs/notes/P1B_bouvard_attribution.md)). A second, with the
-  tables computed at his own epochs, shows that it turns on one interpolated place, that of
-  1780: interpolated as he describes, all four cases read "mostly the observations"; with 1780
-  as the first analysis fixed it, again "depends on the method"
+  solution, and is not made ([notes](docs/notes/P1B_bouvard_attribution.md)). A second, registered
+  before it was run, computes the tables at his own epochs. In it the attribution turns on how
+  one place, that of 1780, is treated, and that treatment was chosen after the first
+  analysis's results had been seen: interpolated as he describes, all four cases read "mostly
+  the observations"; with 1780 as the first analysis fixed it, again "depends on the method"
   ([notes](docs/notes/P1B_bouvard_tables.md)).
 
 **Toward Mercury (nothing fitted to observations).** For a later study of Mercury's perihelion,

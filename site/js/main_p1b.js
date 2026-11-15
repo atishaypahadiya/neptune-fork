@@ -5,7 +5,7 @@
 
 import { loadJSON } from "./data.js";
 import * as C from "./copy_p1b.js";
-import { fill, fail, keepRanges } from "./plate.js";
+import { fill, fail, keepRanges, appendText } from "./plate.js";
 import { fig1, fig2, fig3, fig4 } from "./figs_p1b.js";
 
 async function load() {
@@ -88,8 +88,8 @@ function references(D) {
     const li = document.createElement("li");
     li.id = `ref-${r.id}`;
     for (const p of r.parts) {
-      if (typeof p === "string") li.append(p);
-      else { const i = document.createElement("i"); i.textContent = p.i; li.append(i); }
+      if (typeof p === "string") appendText(li, p);
+      else { const i = document.createElement("i"); appendText(i, p.i); li.append(i); }
     }
     ol.append(li);
   }

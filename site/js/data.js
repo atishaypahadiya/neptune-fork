@@ -73,14 +73,22 @@ const CONDITION_NAMES = {
 
 /**
  * Status of the 95 % interval. M6c's is provisional (`provisional` lists its bounds); M8 tried to
- * replace it and its rule did not hold (`m8_runs.json` rule_95.replace); M8b decides next
- * (`m8b.json`, absent until it reports).
+ * replace it and its rule did not hold (`m8_runs.json` rule_95.replace); M8b's four-seed rule did
+ * not hold either (`m8b.json`). The low-distance plan's rule B (`s1_mode.json`, docs/notes/S1_mode.md)
+ * replaces it with the eight-seed interval, final or still provisional as that plan's § 6 says.
  */
-export function interval95(rep, m8, m8b) {
+export function interval95(rep, m8, m8b, s1m) {
   const g = rep.galle_lon_ecl_of_date_deg;
   const provisional = (rep.provisional ?? []).some((k) => k.endsWith("95"));
   const base = { lo: g.lo95, hi: g.hi95, source: "M6c" };
   if (!provisional) return { ...base, state: "final", note: "" };
+  const sm = s1m?.values;
+  if (sm?.rule_b_holds) {
+    return { lo: sm.lo95, hi: sm.hi95, source: "the eight-seed reruns", err: [sm.err_lo95, sm.err_hi95],
+             s1mode: true, state: sm.final ? "final" : "provisional",
+             note: sm.final ? "" : "provisional for one reason: with the eccentricity allowed to 0.5, " +
+               "a low-distance solution carries a weight that the runs do not determine" };
+  }
   // Reader-facing names; the run IDs (M8b, M8) are mapped in docs/reproduce.md.
   for (const [name, run, key] of [["the higher-resolution reruns", m8b, "m8b_95"],
                                   ["the fast-likelihood validation", m8, "m8_95"]]) {
@@ -102,13 +110,14 @@ export function interval95(rep, m8, m8b) {
 
 /** Everything panel 1 (the headline) shows. */
 export async function loadHeadline() {
-  const [rep, conj, m5a, m6, m8, m8b] = await Promise.all([
+  const [rep, conj, m5a, m6, m8, m8b, s1m] = await Promise.all([
     loadJSON("m6c_replacement.json"),
     loadJSON("m6c_conjunction.json"),
     loadJSON("m5a_fits.json"),
     loadJSON("m6_fits.json"),
     loadJSON("m8_runs.json"),
     loadJSON("m8b.json", { optional: true }),
+    loadJSON("s1_mode.json", { optional: true }),
   ]);
   const g = rep.galle_lon_ecl_of_date_deg;
   const h = conj.histograms.galle_night_geo;
@@ -138,7 +147,7 @@ export async function loadHeadline() {
     galle: jdToDate(conj.galle_night_jd_tdb),
     galleJd: conj.galle_night_jd_tdb,
     hist: { centre: h.centre_deg, edges: h.edges_rel_deg, counts },
-    i95: interval95(rep, m8, m8b),
+    i95: interval95(rep, m8, m8b, s1m),
   };
 }
 
@@ -253,7 +262,7 @@ export async function loadTimeline() {
 
 /** Panel 4b: the repeatability correction and the sensitivity runs, with their reading rules. */
 export async function loadChecks() {
-  const [fits, rep, repeat, timeline, m8, m8b, arbiter] = await Promise.all([
+  const [fits, rep, repeat, timeline, m8, m8b, arbiter, s1m] = await Promise.all([
     loadJSON("m6_fits.json"),
     loadJSON("m6c_replacement.json"),
     loadJSON("m6c_repeat.json"),
@@ -261,12 +270,13 @@ export async function loadChecks() {
     loadJSON("m8_runs.json"),
     loadJSON("m8b.json", { optional: true }),
     loadJSON("m8_arbiter.json", { optional: true }),
+    loadJSON("s1_mode.json", { optional: true }),
   ]);
   const rules = timeline.sensitivity_reading_rules;
   const g = (f) => f.galle_lon_ecl_of_date_deg;
   const first = g(fits.fits.headline);
   // The reported interval's 95 % bounds and status follow panel 1 (pending / provisional / final).
-  const i95 = interval95(rep, m8, m8b);
+  const i95 = interval95(rep, m8, m8b, s1m);
   const reported = { ...g(rep), lo95: i95.lo, hi95: i95.hi, i95 };
   const shift = (k) => fits.fits[k].vs_headline.galle_median_shift_headline_half_widths;
   const jplIn = (f) => g(f).vs.jpl.in_68;
