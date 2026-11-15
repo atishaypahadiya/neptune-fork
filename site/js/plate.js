@@ -203,7 +203,8 @@ export function keepWhole(root) {
 }
 function wrapWhole(root) {
   const walk = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
-    acceptNode: (n) => (n.parentElement.closest("svg, script, style, a, h1, h2, h3, .whole")
+    // Plate III's year and quote change as the plate plays; site.css keeps the quote whole.
+    acceptNode: (n) => (n.parentElement.closest('svg, script, style, a, h1, h2, h3, .whole, .year, [data-v="pull_text"]')
       ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT),
   });
   const nodes = [];
