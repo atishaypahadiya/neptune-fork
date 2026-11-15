@@ -19,6 +19,7 @@ from pathlib import Path
 
 import numpy as np
 
+from fork import ledger
 from fork.historical import bouvard_1821 as B
 
 CS = B.CENTESIMAL_SEC_IN_ARCSEC  # centesimal seconds to arcseconds
@@ -900,7 +901,8 @@ def main() -> None:
         except OSError:
             pass
 
-    out = run(log)
+    with ledger.run("p1b_bouvard_tables/run", "fit", n_workers=1):
+        out = run(log)
     OUT_JSON.write_text(
         json.dumps(out, default=P._plain, indent=1, ensure_ascii=False) + "\n", encoding="utf-8"
     )

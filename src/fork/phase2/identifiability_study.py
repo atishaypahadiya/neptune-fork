@@ -25,6 +25,7 @@ import numpy as np
 from scipy.interpolate import CubicSpline
 from scipy.special import logsumexp
 
+from fork import ledger
 from fork.phase2 import identifiability as ID
 from fork.phase2 import secular as S
 
@@ -643,24 +644,28 @@ def summarize() -> dict:
     return out
 
 
+JOB = "phase2/identifiability_study"  # ledger rows (CLI steps; workers write none)
+
+
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("cmd", choices=("prepare", "run", "validate", "summarize", "all"))
     ap.add_argument("--n-workers", type=int, default=12)
     a = ap.parse_args(argv)
-    if a.cmd == "prepare":
-        prepare()
-    elif a.cmd == "run":
-        run(a.n_workers)
-    elif a.cmd == "validate":
-        validate(a.n_workers)
-    elif a.cmd == "summarize":
-        summarize()
-    else:
-        prepare()
-        if validate(a.n_workers)["pass"]:
-            run(a.n_workers)
-        summarize()
+    n = a.n_workers
+    if a.cmd in ("prepare", "all"):
+        with ledger.run(f"{JOB}/prepare", "prepare", n_workers=1):
+            prepare()
+    if a.cmd in ("validate", "all"):
+        with ledger.run(f"{JOB}/validate", "gate", n_workers=n) as rec:
+            ok = validate(n)["pass"]
+            rec.done("gate passed" if ok else "gate failed")
+    if a.cmd == "run" or (a.cmd == "all" and ok):
+        with ledger.run(f"{JOB}/run", "nested", n_workers=n):
+            run(n)
+    if a.cmd in ("summarize", "all"):
+        with ledger.run(f"{JOB}/summarize", "summarize", n_workers=1):
+            summarize()
 
 
 if __name__ == "__main__":

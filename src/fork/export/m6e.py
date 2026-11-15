@@ -21,6 +21,8 @@ from pathlib import Path
 
 import numpy as np
 
+from fork import ledger
+
 ROOT = Path(__file__).resolve().parents[3]
 LALANDE = ROOT / "data" / "historical" / "precoveries" / "lalande_1795.csv"
 LALANDE_SHA256 = "22484a07c4e8ee568ca3b84d4f35b16a9006aeb16d935a65f5ce0b095885849a"
@@ -413,12 +415,15 @@ def check_hashes() -> None:
             raise RuntimeError(f"{rel} is not the file of the pre-registration")
 
 
+@ledger.recorded
 def run() -> dict:
     from fork import ledger
     from fork.export import m6c
     from fork.inference.profile import GalleGeometry, galle_lon_of_date_rad
 
-    t0, c0 = time.time(), ledger.cpu_now()
+    c0 = ledger.cpu_now()
+    t0 = time.time()
+    rec = ledger.start("m6e/predictive", "summarize", n_workers=1)
     check_hashes()
     pre = checks()
     if not pre["pass"]:
@@ -479,15 +484,10 @@ def run() -> dict:
         )
     n = 4 * N_DRAWS
     out["cost"] = {"wall_s": time.time() - t0, "cpu_s": ledger.cpu_now() - c0, "n_integrations": n}
-    ledger.append(
-        "m6e/predictive",
-        "summarize",
+    rec.done(
         n_likelihood_calls=0,
         n_integrations=n + 2 * N_DRAWS,
         sim_years=n * (1846.7 - 1795.35),
-        wall_s=out["cost"]["wall_s"],
-        cpu_s=out["cost"]["cpu_s"],
-        n_workers=1,
         estimated=True,
         note="posterior and prior draws carried to 8 and 10 May 1795",
     )

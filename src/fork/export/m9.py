@@ -44,6 +44,7 @@ from types import SimpleNamespace
 import numpy as np
 from scipy.optimize import least_squares
 
+from fork import ledger
 from fork.export import m6c
 from fork.export.to_json import A1_EPOCH_JD_TDB
 
@@ -465,6 +466,7 @@ def _read(path: Path) -> dict | None:
     return json.loads(path.read_text()) if path.exists() else None
 
 
+@ledger.recorded
 def profile(dataset: str, n_workers: int, cache: Path = CACHE, *, smoke: bool = False) -> dict:
     """The whole M9 profile for one data set, resumable: the independent starts per point, the
     continuation, the exact polishes and the rerun are each cached as they finish."""
@@ -478,7 +480,10 @@ def profile(dataset: str, n_workers: int, cache: Path = CACHE, *, smoke: bool = 
     points = list(range(len(POINTS_AU)))
     if smoke:
         points = [5, 13]
-    t0, c0 = time.time(), ledger.cpu_now()
+    rec = ledger.start(
+        f"m9/profile/{dataset}", "profile", n_workers=n_workers, smoke=smoke, scratch=cache != CACHE
+    )
+    t0, c0 = rec.t0, rec.c0
     _init_worker(dataset)
     calls = {"pert": 0, "exact": 0}
 
@@ -617,13 +622,10 @@ def profile(dataset: str, n_workers: int, cache: Path = CACHE, *, smoke: bool = 
     wall, cpu = time.time() - t0, ledger.cpu_now() - c0
     summary = {"dataset": dataset, "n_measurements": n_meas, "calls": calls, "wall_s": wall,
                "cpu_s": cpu, "smoke": smoke}  # fmt: skip
-    if not smoke and cache == CACHE:
-        yrs = ledger.sim_years_per_integration(_W["obs"].jd_tdb, A1_EPOCH_JD_TDB)
-        ledger.append(f"m9/profile/{dataset}", "profile",
-                      n_likelihood_calls=calls["pert"] + calls["exact"],
-                      n_integrations=calls["exact"], sim_years=calls["exact"] * yrs,
-                      wall_s=wall, cpu_s=cpu, n_workers=n_workers, n_perturbative=calls["pert"],
-                      n_exact=calls["exact"])  # fmt: skip
+    yrs = ledger.sim_years_per_integration(_W["obs"].jd_tdb, A1_EPOCH_JD_TDB)
+    rec.done(n_likelihood_calls=calls["pert"] + calls["exact"],
+             n_integrations=calls["exact"], sim_years=calls["exact"] * yrs,
+             n_perturbative=calls["pert"], n_exact=calls["exact"])  # fmt: skip
     _log(f"{dataset}: done, {calls['pert']} perturbative and {calls['exact']} exact calls, "
          f"{wall / 60:.1f} min wall, {cpu / 3600:.2f} CPU-h", log_path)  # fmt: skip
     return summary

@@ -25,6 +25,7 @@ from pathlib import Path
 
 import numpy as np
 
+from fork import ledger
 from fork.export import m6c
 from fork.export import p1b_adams as pa
 from fork.export.to_json import A1_EPOCH_JD_TDB
@@ -673,6 +674,7 @@ def d3iii_jobs() -> list[D3Job]:
     return [D3Job(k) for k in range(len(pa.E_CELLS_HELD))]
 
 
+@ledger.recorded
 def do_d3iii_job(job: D3Job, n_workers: int, maxiter: int | None = None) -> None:
     from fork import ledger
     from fork.inference.nested import NestedResult, run_nested
@@ -685,7 +687,7 @@ def do_d3iii_job(job: D3Job, n_workers: int, maxiter: int | None = None) -> None
     obs, ctx, _inc, pq, box, _th = d3iii_dataset()
     space = d3iii_space(job.cell, pq, box)
     resumed = job.path(".ckpt").exists()
-    t0, c0 = time.time(), ledger.cpu_now()
+    rec = ledger.start(f"p1b_adams_repro/{job.id}", "nested", n_workers=n_workers)
     res = run_nested(
         obs,
         ctx,
@@ -706,15 +708,10 @@ def do_d3iii_job(job: D3Job, n_workers: int, maxiter: int | None = None) -> None
         return
     NestedResult(res.space, res.results, res.nlive, res.dlogz, res.wall_s).save(out)
     yrs = ledger.sim_years_per_integration(obs.jd_tdb, A1_EPOCH_JD_TDB)
-    ledger.append(
-        f"p1b_adams_repro/{job.id}",
-        "nested",
+    rec.done(
         n_likelihood_calls=res.ncall,
         n_integrations=res.ncall,
         sim_years=res.ncall * yrs,
-        wall_s=time.time() - t0,
-        cpu_s=ledger.cpu_now() - c0,
-        n_workers=n_workers,
         estimated=resumed,
         resumed=resumed,
         nlive=NLIVE,
@@ -1336,11 +1333,12 @@ def draw(payload: dict, path: Path) -> None:
 # ------------------------------------------------------------------ orchestration
 
 
+@ledger.recorded
 def run_cheap() -> dict:
     """B, C, the location, D1, D2, D3 (i) and (ii): minutes; cached as JSON."""
     from fork import ledger
 
-    t0, c0 = time.time(), ledger.cpu_now()
+    rec = ledger.start("p1b_adams_repro/cheap", "fit", n_workers=1)
     m = A.load_memoir()
     out = {
         "memoir_sha256": memoir_hashes(),
@@ -1355,15 +1353,10 @@ def run_cheap() -> dict:
     _log("D2 done")
     out["d3"] = d3_cheap(m)
     _log("D3 (i), (ii) done")
-    ledger.append(
-        "p1b_adams_repro/cheap",
-        "fit",
+    rec.done(
         n_likelihood_calls=None,
         n_integrations=None,
         sim_years=None,
-        wall_s=time.time() - t0,
-        cpu_s=ledger.cpu_now() - c0,
-        n_workers=1,
         estimated=True,
         note="B, C, D1, D2 (2 × 21 + 4 least-squares profiles), D3 (i), (ii)",
     )

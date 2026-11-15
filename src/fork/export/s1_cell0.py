@@ -33,6 +33,7 @@ from pathlib import Path
 
 import numpy as np
 
+from fork import ledger
 from fork.export import m6c, m8_runs, v13
 
 VARIANT = "s1_e05"
@@ -146,6 +147,7 @@ def _guard(cache: Path, maxiter: int | None, synthetic: int | None) -> None:
 # ---------------------------------------------------------------------------- stage A
 
 
+@ledger.recorded
 def do_job_a(
     k: int, s: int, cache: Path = CACHE, maxiter: int | None = None, synthetic: int | None = None
 ) -> None:
@@ -177,7 +179,8 @@ def do_job_a(
         checkpoint_every=m8_runs.CHECKPOINT_EVERY_S,
     )
     resumed = ckpt.exists()
-    t0, c0 = time.time(), ledger.cpu_now()
+    t0 = time.time()
+    rec = ledger.start(f"s1_cell0/a/k{k}/s{s}", "nested", n_workers=1)
     if resumed:
         sampler = dynesty.NestedSampler.restore(str(ckpt))
         log.line(f"resumed from {ckpt.name} at iteration {sampler.it}")
@@ -204,15 +207,10 @@ def do_job_a(
     ckpt.unlink(missing_ok=True)
     log.line(f"done: ln Z {res.logz:.3f} ± {res.logzerr:.3f}, {res.niter} it, {res.ncall} calls")
     if _real(cache):
-        ledger.append(
-            f"s1_cell0/a/k{k}/s{s}",
-            "nested",
+        rec.done(
             n_likelihood_calls=res.ncall,
             n_integrations=0,
             sim_years=0.0,
-            wall_s=time.time() - t0,
-            cpu_s=ledger.cpu_now() - c0,
-            n_workers=1,
             estimated=resumed,
             resumed=resumed,
             nlive=NLIVE,
@@ -369,6 +367,7 @@ def _reweight_chunk(task: tuple) -> tuple[str, int]:
     return pid(k, s), c
 
 
+@ledger.recorded
 def reweight(
     n_workers: int,
     cache: Path = CACHE,
@@ -380,7 +379,7 @@ def reweight(
 
     from fork import ledger
 
-    t0, c0 = time.time(), ledger.cpu_now()
+    rec = ledger.start("s1_cell0/reweight", "reweight", n_workers=n_workers)
     ks = range(len(SUBCELLS)) if cells is None else cells
     tasks = []
     for k in ks:
@@ -397,15 +396,10 @@ def reweight(
             if (i + 1) % 48 == 0 or i + 1 == len(futs):
                 _log(f"reweight: {i + 1}/{len(futs)} chunks (last {p} #{c})", cache)
     if _real(cache) and tasks:
-        ledger.append(
-            "s1_cell0/reweight",
-            "reweight",
+        rec.done(
             n_likelihood_calls=sum(t[4] - t[3] for t in tasks),
             n_integrations=None,
             sim_years=None,
-            wall_s=time.time() - t0,
-            cpu_s=ledger.cpu_now() - c0,
-            n_workers=n_workers,
             note="mode (b) + fast + Galle longitude per draw",
         )
 
@@ -551,6 +545,7 @@ def space_b(k: int, synthetic: int | None = None):
     return subcell(problem(synthetic)[2], k)
 
 
+@ledger.recorded
 def do_job_b(
     k: int,
     r: int,
@@ -572,7 +567,7 @@ def do_job_b(
     ckpt = path_b(k, r, ".ckpt", cache)
     ckpt.parent.mkdir(parents=True, exist_ok=True)
     resumed = ckpt.exists()
-    t0, c0 = time.time(), ledger.cpu_now()
+    rec = ledger.start(f"s1_cell0/b/k{k}/r{r}", "nested", n_workers=n_workers)
     res = run_nested(
         obs,
         ctx,
@@ -590,15 +585,10 @@ def do_job_b(
     ckpt.unlink(missing_ok=True)
     if _real(cache):
         yrs = ledger.sim_years_per_integration(obs.jd_tdb, A1_EPOCH_JD_TDB)
-        ledger.append(
-            f"s1_cell0/b/k{k}/r{r}",
-            "nested",
+        rec.done(
             n_likelihood_calls=res.ncall,
             n_integrations=res.ncall,
             sim_years=res.ncall * yrs,
-            wall_s=time.time() - t0,
-            cpu_s=ledger.cpu_now() - c0,
-            n_workers=n_workers,
             estimated=resumed,
             resumed=resumed,
             nlive=NLIVE,

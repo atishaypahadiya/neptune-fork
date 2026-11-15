@@ -36,6 +36,7 @@ from pathlib import Path
 
 import numpy as np
 
+from fork import ledger
 from fork.export import m6c
 from fork.export.to_json import A1_EPOCH_JD_TDB, write_json
 
@@ -76,6 +77,7 @@ def _log(msg: str, cache: Path = CACHE) -> None:
     print(line, flush=True)
 
 
+@ledger.recorded
 def do_job(r: int, n_workers: int, maxiter: int | None = None, cache: Path = CACHE) -> None:
     from fork import ledger
     from fork.inference.nested import NestedResult, run_nested
@@ -89,7 +91,8 @@ def do_job(r: int, n_workers: int, maxiter: int | None = None, cache: Path = CAC
     obs, ctx, space = problem()
     ckpt = path(r, ".ckpt", cache)
     resumed = ckpt.exists()
-    t0, c0 = time.time(), ledger.cpu_now()
+    t0 = time.time()
+    rec = ledger.start(f"m8_arbiter/run{r}", "nested", n_workers=n_workers)
     res = run_nested(obs, ctx, space, np.random.default_rng(rng_seed(r)), nlive=NLIVE,
                      slices=SLICES, n_workers=n_workers, maxiter=maxiter,
                      progress_log=cache / "progress.log", checkpoint_file=ckpt,
@@ -98,11 +101,16 @@ def do_job(r: int, n_workers: int, maxiter: int | None = None, cache: Path = CAC
     ckpt.unlink(missing_ok=True)
     if cache == CACHE:
         yrs = ledger.sim_years_per_integration(obs.jd_tdb, A1_EPOCH_JD_TDB)
-        ledger.append(f"m8_arbiter/run{r}", "nested", n_likelihood_calls=res.ncall,
-                      n_integrations=res.ncall, sim_years=res.ncall * yrs,
-                      wall_s=time.time() - t0, cpu_s=ledger.cpu_now() - c0,
-                      n_workers=n_workers, estimated=resumed, resumed=resumed, nlive=NLIVE,
-                      niter=res.niter, slices=SLICES)  # fmt: skip
+        rec.done(
+            n_likelihood_calls=res.ncall,
+            n_integrations=res.ncall,
+            sim_years=res.ncall * yrs,
+            estimated=resumed,
+            resumed=resumed,
+            nlive=NLIVE,
+            niter=res.niter,
+            slices=SLICES,
+        )
     print(f"run{r}: ln Z {res.logz:.3f} ± {res.logzerr:.3f}, {res.niter} it, {res.ncall} calls, "
           f"{(time.time() - t0) / 60:.1f} min")  # fmt: skip
 
@@ -159,6 +167,7 @@ def implied_p_below_25(ln_z0: float, other_ln_z: list[float]) -> float:
     return float(math.exp(lc[0] + lz[0] - logsumexp(lc + lz)))
 
 
+@ledger.recorded
 def summarize(cache: Path = CACHE) -> dict:
     from fork import ledger
     from fork.export import m6c_repeat
@@ -166,7 +175,7 @@ def summarize(cache: Path = CACHE) -> dict:
     from fork.inference.profile import GalleGeometry
 
     m6c.check_frozen(VARIANT)
-    t0, c0 = time.time(), ledger.cpu_now()
+    rec = ledger.start("m8_arbiter/summarize", "summarize", n_workers=1)
     runs = [NestedResult.load(path(r, ".pkl", cache)) for r in SEEDS]
     _, ctx, _ = problem()
     geo = GalleGeometry.from_horizons()
@@ -209,9 +218,7 @@ def summarize(cache: Path = CACHE) -> dict:
                "test": test, "reading_rule": reading}  # fmt: skip
     if cache == CACHE:
         write_json(OUT_NAME, payload)
-        ledger.append("m8_arbiter/summarize", "summarize", n_likelihood_calls=0,
-                      n_integrations=0, sim_years=None, wall_s=time.time() - t0,
-                      cpu_s=ledger.cpu_now() - c0, n_workers=1)  # fmt: skip
+        rec.done(n_likelihood_calls=0, n_integrations=0, sim_years=None)
     else:
         (cache / OUT_NAME).write_text(json.dumps(payload, indent=1, default=float))
     _log(f"summarize: test pass {test['pass']}", cache)

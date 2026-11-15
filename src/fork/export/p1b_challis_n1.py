@@ -19,6 +19,7 @@ import time
 
 import numpy as np
 
+from fork import ledger
 from fork.export import p1b_challis as S
 from fork.historical import challis_1846 as C
 
@@ -162,7 +163,8 @@ def main(argv: list[str] | None = None) -> None:
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("run")
     ap.parse_args(argv)
-    r = run()
+    with ledger.run("p1b_challis_n1/run", "monte_carlo", n_workers=1):
+        r = run()
     print(
         json.dumps(
             {

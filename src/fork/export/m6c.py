@@ -37,6 +37,7 @@ from pathlib import Path
 
 import numpy as np
 
+from fork import ledger
 from fork.export.to_json import A1_EPOCH_JD_TDB, SITE_DATA, write_json
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -205,6 +206,7 @@ def job_space(job: Job, pq, box):
     return cell_space(space, variant_cells(job.variant)[job.cell])
 
 
+@ledger.recorded
 def do_job(job: Job, n_workers: int, maxiter: int | None = None) -> None:
     from fork import ledger
     from fork.inference.nested import NestedResult, run_nested
@@ -217,7 +219,7 @@ def do_job(job: Job, n_workers: int, maxiter: int | None = None) -> None:
     obs, ctx, _, pq, box = dataset(variant=job.variant)
     space = job_space(job, pq, box)
     resumed = job.path(".ckpt").exists()
-    t0, c0 = time.time(), ledger.cpu_now()
+    rec = ledger.start(f"m6c/{job.id}", "nested", n_workers=n_workers)
     res = run_nested(obs, ctx, space, job.rng(), nlive=job.nlive, n_workers=n_workers,
                      maxiter=maxiter, progress_log=PROGRESS_LOG,
                      checkpoint_file=None if maxiter else job.path(".ckpt"),
@@ -227,11 +229,15 @@ def do_job(job: Job, n_workers: int, maxiter: int | None = None) -> None:
         return
     NestedResult(res.space, res.results, res.nlive, res.dlogz, res.wall_s).save(out)
     yrs = ledger.sim_years_per_integration(obs.jd_tdb, A1_EPOCH_JD_TDB)
-    ledger.append(f"m6c/{job.id}", "nested", n_likelihood_calls=res.ncall,
-                  n_integrations=res.ncall, sim_years=res.ncall * yrs,
-                  wall_s=time.time() - t0, cpu_s=ledger.cpu_now() - c0, n_workers=n_workers,
-                  estimated=resumed, resumed=resumed, nlive=job.nlive,
-                  niter=res.niter)  # fmt: skip
+    rec.done(
+        n_likelihood_calls=res.ncall,
+        n_integrations=res.ncall,
+        sim_years=res.ncall * yrs,
+        estimated=resumed,
+        resumed=resumed,
+        nlive=job.nlive,
+        niter=res.niter,
+    )
     print(f"{job.id}: ln Z {res.logz:.3f} ± {res.logzerr:.3f}, {res.niter} it, "
           f"{res.wall_s / 60:.1f} min")  # fmt: skip
 
@@ -509,13 +515,14 @@ def vs_headline(variant: str, fit: dict, head: dict) -> dict:
             "ln_b": round(zv - zh, 3), "ln_b_err": round(err, 3), "note": note}  # fmt: skip
 
 
+@ledger.recorded
 def summarize() -> None:
     from fork import ledger
     from fork.inference.nested import BOUND, DLOGZ, ERR_INFLATION, SAMPLE, cells_for
     from fork.model.observation import GROUPS, ErrorModel
 
     check_frozen()
-    t0, c0 = time.time(), ledger.cpu_now()
+    rec = ledger.start("m6c/summarize", "summarize", n_workers=1)
     fits = {}
     for v in VARIANTS:
         if all(j.path(".pkl").exists() for j in all_jobs((v,))):
@@ -553,10 +560,13 @@ def summarize() -> None:
     print(json.dumps({v: d["galle_lon_ecl_of_date_deg"] for v, d in fits.items()}, indent=1))
     print(f"wrote {SITE_DATA / OUT_NAME}")
     n = 2 * sum(d["n_derived"] for d in fits.values())
-    ledger.append("m6c/summarize", "summarize", n_likelihood_calls=0, n_integrations=n,
-                  sim_years=n * (1847.0 - 1781.2), wall_s=time.time() - t0,
-                  cpu_s=ledger.cpu_now() - c0, n_workers=1, estimated=True,
-                  note="derived longitudes: Galle's night and 1847.0, per sample")  # fmt: skip
+    rec.done(
+        n_likelihood_calls=0,
+        n_integrations=n,
+        sim_years=n * (1847.0 - 1781.2),
+        estimated=True,
+        note="derived longitudes: Galle's night and 1847.0, per sample",
+    )
 
 
 def make_s2_error_model() -> None:

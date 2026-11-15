@@ -49,6 +49,7 @@ from pathlib import Path
 
 import numpy as np
 
+from fork import ledger
 from fork.export.to_json import A1_EPOCH_JD_TDB, SITE_DATA, write_json
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -206,6 +207,7 @@ def job_space(job: Job, pq, box):
     return space if job.cell is None else cell_space(space, cells_for(E_MAX[job.run])[job.cell])
 
 
+@ledger.recorded
 def do_job(job: Job, n_workers: int) -> None:
     from fork.inference.nested import NestedResult, run_nested
 
@@ -224,7 +226,7 @@ def do_job(job: Job, n_workers: int) -> None:
     obs, ctx, _, pq, box = dataset(job.seed)
     space = job_space(job, pq, box)
     resumed = job.path(".ckpt").exists()
-    t0, c0 = time.time(), ledger.cpu_now()
+    rec = ledger.start(f"m5b/{job.id}", "nested", n_workers=n_workers)
     res = run_nested(obs, ctx, space, job.rng(), nlive=job.nlive, n_workers=n_workers,
                      progress_log=PROGRESS_LOG, checkpoint_file=job.path(".ckpt"),
                      label=job.id)  # fmt: skip
@@ -232,11 +234,15 @@ def do_job(job: Job, n_workers: int) -> None:
     # one likelihood call = one forward integration; a resumed job's calls include the work
     # before its checkpoint while wall/cpu cover this call only, so that row is estimated
     yrs = ledger.sim_years_per_integration(obs.jd_tdb, A1_EPOCH_JD_TDB)
-    ledger.append(f"m5b/{job.id}", "nested", n_likelihood_calls=res.ncall,
-                  n_integrations=res.ncall, sim_years=res.ncall * yrs,
-                  wall_s=time.time() - t0, cpu_s=ledger.cpu_now() - c0, n_workers=n_workers,
-                  estimated=resumed, resumed=resumed, nlive=job.nlive,
-                  niter=res.niter)  # fmt: skip
+    rec.done(
+        n_likelihood_calls=res.ncall,
+        n_integrations=res.ncall,
+        sim_years=res.ncall * yrs,
+        estimated=resumed,
+        resumed=resumed,
+        nlive=job.nlive,
+        niter=res.niter,
+    )
     print(f"{job.id}: ln Z {res.logz:.3f} ± {res.logzerr:.3f}, {res.niter} it, "
           f"{res.wall_s / 60:.1f} min")  # fmt: skip
 
@@ -814,13 +820,14 @@ def noise_free_check(nf: dict) -> dict:
     return out
 
 
+@ledger.recorded
 def summarize(n_workers: int) -> None:
     """A3b first (noise seeds; the JSON is written once they are summarized), then the
     noise-free posterior check is appended and the JSON rewritten."""
     from fork import ledger
     from fork.inference.nested import BOUND, DLOGZ, ERR_INFLATION, SAMPLE, cells_for
 
-    t0, c0 = time.time(), ledger.cpu_now()
+    rec = ledger.start("m5b/summarize", "summarize", n_workers=n_workers)
     truth_p = truth_params()
     lv = lv_check_state()
     datasets = {dataset_key(s): summarize_dataset(s, truth_p, n_workers) for s in NOISE_SEEDS}
@@ -865,12 +872,16 @@ def summarize(n_workers: int) -> None:
     print(f"wrote {SITE_DATA / OUT_NAME}")
     n_fit, n_der = _SUMMARY_COUNT["point_fit_nfev"], _SUMMARY_COUNT["derived_integrations"]
     yrs = ledger.sim_years_per_integration(dataset(0)[0].jd_tdb, A1_EPOCH_JD_TDB)
-    ledger.append("m5b/summarize", "summarize", n_likelihood_calls=n_fit,
-                  n_integrations=n_fit + n_der, sim_years=(n_fit + n_der) * yrs,
-                  wall_s=time.time() - t0, cpu_s=ledger.cpu_now() - c0, n_workers=n_workers,
-                  estimated=True, derived_integrations=n_der, point_fit_nfev=n_fit,
-                  note="point-fit nfev excludes finite-difference Jacobian calls (lower "
-                  "bound); cached point fits count 0")  # fmt: skip
+    rec.done(
+        n_likelihood_calls=n_fit,
+        n_integrations=n_fit + n_der,
+        sim_years=(n_fit + n_der) * yrs,
+        estimated=True,
+        derived_integrations=n_der,
+        point_fit_nfev=n_fit,
+        note="point-fit nfev excludes finite-difference Jacobian calls (lower "
+        "bound); cached point fits count 0",
+    )
 
 
 def main(argv: list[str] | None = None) -> None:

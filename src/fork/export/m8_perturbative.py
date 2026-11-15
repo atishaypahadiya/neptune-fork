@@ -49,6 +49,7 @@ from pathlib import Path
 
 import numpy as np
 
+from fork import ledger
 from fork.export import m8
 from fork.export.to_json import write_json
 
@@ -211,6 +212,7 @@ def _run_chunk(chunk: list[dict]) -> list[dict]:
     return [_evaluate(p) for p in chunk]
 
 
+@ledger.recorded
 def _run_points(points: list[dict], sub: str, n_workers: int) -> None:
     """Evaluate ``points`` in resumable chunks under CACHE/``sub``."""
     from fork import ledger
@@ -221,7 +223,7 @@ def _run_points(points: list[dict], sub: str, n_workers: int) -> None:
     _log(f"{sub}: {len(points)} points, {len(chunks)} chunks, {len(todo)} to do, "
          f"{n_workers} workers")  # fmt: skip
     _chunk_path(0, sub).parent.mkdir(parents=True, exist_ok=True)
-    t0, c0 = time.time(), ledger.cpu_now()
+    rec = ledger.start(f"m8/perturbative_{sub}", "diagnostic", n_workers=n_workers)
     with ProcessPoolExecutor(n_workers, initializer=_init_worker, initargs=(refs,)) as ex:
         futs = {k: ex.submit(_run_chunk, chunks[k]) for k in todo}
         for i, (k, f) in enumerate(futs.items()):
@@ -231,10 +233,7 @@ def _run_points(points: list[dict], sub: str, n_workers: int) -> None:
             tmp.replace(_chunk_path(k, sub))  # atomic: a resumed run never reads half a chunk
             _log(f"{sub}: chunk {k} done ({i + 1}/{len(todo)})")
     if todo:
-        ledger.append(f"m8/perturbative_{sub}", "diagnostic", n_likelihood_calls=None,
-                      n_integrations=None, sim_years=None, wall_s=time.time() - t0,
-                      cpu_s=ledger.cpu_now() - c0, n_workers=n_workers,
-                      n_points=len(points))  # fmt: skip
+        rec.done(n_likelihood_calls=None, n_integrations=None, sim_years=None, n_points=len(points))
 
 
 def _load_points(n_points: int, sub: str) -> list[dict]:

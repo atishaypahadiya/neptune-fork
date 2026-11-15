@@ -44,6 +44,7 @@ from pathlib import Path
 import numpy as np
 from scipy.special import logsumexp
 
+from fork import ledger
 from fork.export import m8
 from fork.export.to_json import write_json
 
@@ -199,6 +200,7 @@ def s1_cell0_points() -> list[dict]:
             for j, i in enumerate(idx)]  # fmt: skip
 
 
+@ledger.recorded
 def laplace_check(n_workers: int, which: str = "pre_launch") -> dict:
     """The Laplace importance-sampling check: ``pre_launch`` (12 points) or ``s1_cell0``."""
     from concurrent.futures import ProcessPoolExecutor
@@ -212,7 +214,7 @@ def laplace_check(n_workers: int, which: str = "pre_launch") -> dict:
     _log(f"{out_name}: {len(pts)} points, proposal N(u*, {PROPOSAL_SCALE}² Σ_b), "
          f"≥{LAPLACE_MIN_DRAWS} draws until MC err < {LAPLACE_TARGET_ERR}, "
          f"{n_workers} workers")  # fmt: skip
-    t0, c0 = time.time(), ledger.cpu_now()
+    rec = ledger.start(f"m8/{out_name}", "diagnostic", n_workers=n_workers)
     out = []
     with ProcessPoolExecutor(min(n_workers, len(pts))) as ex:
         for r in ex.map(_laplace_one, [(k0 + i, p, subdir) for i, p in enumerate(pts)]):
@@ -228,9 +230,7 @@ def laplace_check(n_workers: int, which: str = "pre_launch") -> dict:
                         "target_err": LAPLACE_TARGET_ERR}}  # fmt: skip
     (CACHE / f"{out_name}.json").write_text(json.dumps(res, indent=1))
     n = sum(r["n_draws"] for r in out)
-    ledger.append(f"m8/{out_name}", "diagnostic", n_likelihood_calls=n, n_integrations=n,
-                  sim_years=None, wall_s=time.time() - t0, cpu_s=ledger.cpu_now() - c0,
-                  n_workers=n_workers, n_points=len(out))  # fmt: skip
+    rec.done(n_likelihood_calls=n, n_integrations=n, sim_years=None, n_points=len(out))
     _log(f"laplace-check: max |IS − b| = {worst:.4f}, gate {LAPLACE_GATE}: "
          f"{'PASS' if res['passed'] else 'FAIL'}")  # fmt: skip
     return res
@@ -356,6 +356,7 @@ def _phi_transform(u: np.ndarray) -> np.ndarray:
     return _S["space"].prior_transform(np.concatenate([_U_HALF, u]))[4:]
 
 
+@ledger.recorded
 def do_job(job: RunJob, maxiter: int | None = None, cache: Path | None = None) -> None:
     import dynesty
 
@@ -385,7 +386,8 @@ def do_job(job: RunJob, maxiter: int | None = None, cache: Path | None = None) -
     run_kw = dict(dlogz=DLOGZ, maxiter=maxiter, print_progress=True, print_func=log,
                   checkpoint_file=str(ckpt), checkpoint_every=CHECKPOINT_EVERY_S)  # fmt: skip
     resumed = ckpt.exists()
-    t0, c0 = time.time(), ledger.cpu_now()
+    t0 = time.time()
+    rec = ledger.start(f"{job.campaign.ledger_prefix}/{job.id}", "nested", n_workers=1)
     if resumed:
         sampler = dynesty.NestedSampler.restore(str(ckpt))
         log.line(f"resumed from {ckpt.name} at iteration {sampler.it}")
@@ -404,12 +406,17 @@ def do_job(job: RunJob, maxiter: int | None = None, cache: Path | None = None) -
     ckpt.unlink(missing_ok=True)
     log.line(f"done: ln Z {res.logz:.3f} ± {res.logzerr:.3f}, {res.niter} it, {res.ncall} calls")
     if cache == job.campaign.cache:
-        ledger.append(f"{job.campaign.ledger_prefix}/{job.id}", "nested",
-                      n_likelihood_calls=res.ncall, n_integrations=0,
-                      sim_years=0.0, wall_s=time.time() - t0, cpu_s=ledger.cpu_now() - c0,
-                      n_workers=1, estimated=resumed, resumed=resumed, nlive=job.nlive,
-                      niter=res.niter, slices=job.slices,
-                      likelihood="perturbative, second order off")  # fmt: skip
+        rec.done(
+            n_likelihood_calls=res.ncall,
+            n_integrations=0,
+            sim_years=0.0,
+            estimated=resumed,
+            resumed=resumed,
+            nlive=job.nlive,
+            niter=res.niter,
+            slices=job.slices,
+            likelihood="perturbative, second order off",
+        )
     print(f"{job.id}: ln Z {res.logz:.3f} ± {res.logzerr:.3f}, {res.niter} it, "
           f"{res.ncall} calls, {(time.time() - t0) / 60:.1f} min")  # fmt: skip
 
@@ -606,6 +613,7 @@ def _reweight_chunk(task: tuple) -> tuple[str, int, float]:
     return pid(v, k, s), c, float(a["cpu_s"])
 
 
+@ledger.recorded
 def reweight(n_workers: int, cache: Path | None = None, max_draws: int | None = None,
              campaign: str = "main") -> None:  # fmt: skip
     from concurrent.futures import ProcessPoolExecutor, as_completed
@@ -618,7 +626,9 @@ def reweight(n_workers: int, cache: Path | None = None, max_draws: int | None = 
     missing = [j.id for j in all_jobs(campaign) if not j.path(".pkl", cache).exists()]
     if missing:
         raise SystemExit(f"runs missing: {missing}")
-    t0, c0 = time.time(), ledger.cpu_now()
+    rec = ledger.start(
+        f"{CAMPAIGNS[campaign].ledger_prefix}/reweight", "reweight", n_workers=n_workers
+    )
     tasks = []
     for v, k, s in posteriors(campaign):
         n = len(draws(v, k, s, cache, max_draws, campaign)["phi"])
@@ -637,11 +647,13 @@ def reweight(n_workers: int, cache: Path | None = None, max_draws: int | None = 
                 _log(f"reweight: {i + 1}/{len(futs)} chunks (last {p} #{c})", cache)
     if cache == CAMPAIGNS[campaign].cache and tasks:
         n_draws = sum(t[5] - t[4] for t in tasks)
-        ledger.append(f"{CAMPAIGNS[campaign].ledger_prefix}/reweight", "reweight",
-                      n_likelihood_calls=n_draws, n_integrations=None,
-                      sim_years=None, wall_s=time.time() - t0, cpu_s=ledger.cpu_now() - c0,
-                      n_workers=n_workers, cpu_chunks_s=round(cpu_chunks, 1),
-                      note="mode (b) + fast + derived longitudes per draw")  # fmt: skip
+        rec.done(
+            n_likelihood_calls=n_draws,
+            n_integrations=None,
+            sim_years=None,
+            cpu_chunks_s=round(cpu_chunks, 1),
+            note="mode (b) + fast + derived longitudes per draw",
+        )
 
 
 def load_reweighted(v: str, k: int, s: int, cache: Path = CACHE) -> dict:
@@ -728,6 +740,7 @@ def _wq(x, w, q):
     return [float(x[o][min(np.searchsorted(c, p), len(x) - 1)]) for p in q]
 
 
+@ledger.recorded
 def summarize(cache: Path = CACHE) -> dict:
     from fork import ledger
     from fork.export import m6c, m6c_repeat
@@ -738,7 +751,7 @@ def summarize(cache: Path = CACHE) -> dict:
 
     for v in VARIANTS:
         check_frozen(v)
-    t0, c0 = time.time(), ledger.cpu_now()
+    rec = ledger.start("m8/summarize", "summarize", n_workers=1)
     tg = m6c.comparison_targets()
     targets = {"jpl": tg["jpl"]["galle_lon_ecl_of_date_deg"],
                "le_verrier_derived":
@@ -964,9 +977,7 @@ def summarize(cache: Path = CACHE) -> dict:
     }  # fmt: skip
     if cache == CACHE:
         write_json(OUT_NAME, payload)
-        ledger.append("m8/summarize", "summarize", n_likelihood_calls=0,
-                      n_integrations=len(q2), sim_years=None, wall_s=time.time() - t0,
-                      cpu_s=ledger.cpu_now() - c0, n_workers=1)  # fmt: skip
+        rec.done(n_likelihood_calls=0, n_integrations=len(q2), sim_years=None)
     else:
         (cache / OUT_NAME).write_text(json.dumps(payload, indent=1, default=float))
     _log("summarize: gates " + json.dumps(payload["gates"]["all_pass"]), cache)
@@ -979,6 +990,7 @@ CONV_TOL = {"median": 0.35, "width_rel": 0.10}  # M8b settings-convergence test 
 FOLLOWUP_OUT = {"a8f": "m8_a8f_rerun.json", "m8b": "m8b.json"}
 
 
+@ledger.recorded
 def summarize_followup(campaign: str, cache: Path | None = None) -> dict:
     """The A8f rerun (``a8f``) or M8b (``m8b``), as pre-registered in docs/notes/M8.md
     ("Follow-up pre-registration"). Gates first; per-cell records as in ``summarize``; for
@@ -996,7 +1008,7 @@ def summarize_followup(campaign: str, cache: Path | None = None) -> dict:
     real = cache == camp.cache
     for v in VARIANTS:
         check_frozen(v)
-    t0, c0 = time.time(), ledger.cpu_now()
+    rec = ledger.start(f"{camp.ledger_prefix}/summarize", "summarize", n_workers=1)
     tg = m6c.comparison_targets()
     targets = {"jpl": tg["jpl"]["galle_lon_ecl_of_date_deg"],
                "le_verrier_derived":
@@ -1181,9 +1193,7 @@ def summarize_followup(campaign: str, cache: Path | None = None) -> dict:
         payload["tolerances"] = {**TOL, "convergence": CONV_TOL}
     if real:
         write_json(FOLLOWUP_OUT[campaign], payload)
-        ledger.append(f"{camp.ledger_prefix}/summarize", "summarize", n_likelihood_calls=0,
-                      n_integrations=0, sim_years=None, wall_s=time.time() - t0,
-                      cpu_s=ledger.cpu_now() - c0, n_workers=1)  # fmt: skip
+        rec.done(n_likelihood_calls=0, n_integrations=0, sim_years=None)
     else:
         (cache / FOLLOWUP_OUT[campaign]).write_text(json.dumps(payload, indent=1, default=float))
     _log(f"summarize {campaign}: gates {json.dumps(payload['gates']['all_pass'])}", cache)
