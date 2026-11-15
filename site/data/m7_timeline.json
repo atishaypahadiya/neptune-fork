@@ -1,6 +1,6 @@
 {
  "description": "Pre-registration timeline: when each pre-registration was committed and first pushed (public), and when its runs launched, finished and were first summarized. Times are PST (UTC-8). Built by docs/notes/scripts/m7_timeline.py from git, GitHub's repository activity API and the run logs.",
- "generated": "2026-11-15T14:30:31-08:00",
+ "generated": "2026-11-15T14:47:40-08:00",
  "sources": {
   "committed": "git committer date",
   "pushed": "GitHub repository activity API: first push whose head is the commit or a descendant",
@@ -175,7 +175,7 @@
   },
   {
    "id": "m8b",
-   "title": "Higher-resolution reruns (four seeds; the 95 % range set later with eight)",
+   "title": "Higher-resolution reruns (four seeds)",
    "notes": "docs/notes/M8.md, Follow-up pre-registration",
    "preregistration": [
     {
@@ -224,9 +224,15 @@
     "time": "2026-11-09T16:27:37-08:00",
     "source": "data/cache/nested/m8_arbiter/progress.log"
    },
-   "finished": null,
-   "first_summary": null,
-   "status": "running"
+   "finished": {
+    "time": "2026-11-10T02:40:42-08:00",
+    "source": "data/cache/nested/m8_arbiter/driver.log"
+   },
+   "first_summary": {
+    "time": "2026-11-10T03:10:32-08:00",
+    "source": "data/cache/nested/m8_arbiter/driver.log"
+   },
+   "status": "done"
   }
  ],
  "deferred": {

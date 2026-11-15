@@ -4,7 +4,7 @@
 import * as d3 from "d3";
 import { mount, point, probe, stipple } from "./plate.js";
 import { fmt, drv, clock, dayMonth, duration, profileSegments } from "./data.js";
-import { timelineFacts, SENS } from "./copy.js";
+import { timelineFacts, unfinished, SENS } from "./copy.js";
 
 const L = d3.line();
 const minus = (t) => `${t < 0 ? "−" : ""}${Math.abs(t)}`;
@@ -107,7 +107,7 @@ export function fig2(fig, D) {
   mount(fig, (svg, w, h) => {
     const phone = w < 600;
     const mg = { l: phone ? 14 : 300, r: 20, t: phone ? 34 : 20, b: 36 };
-    const vals = F.flatMap((f) => [...f.pre.flatMap((p) => [p.dCommit, p.dPush]), f.dFinish, f.dNow])
+    const vals = F.flatMap((f) => [...f.pre.flatMap((p) => [p.dCommit, p.dPush]), f.dFinish, f.dEnd])
       .filter((v) => v !== null && v !== undefined).map(SX);
     const x = d3.scaleLinear().domain([Math.min(...vals, SX(-36000)), Math.max(...vals, SX(36000))])
       .nice().range([mg.l, w - mg.r]);
@@ -137,7 +137,7 @@ export function fig2(fig, D) {
         : lane.append("text").attr("class", "lbl row").attr("x", mg.l - 12).attr("y", yy + 4 - 6.5 * (lines.length - 1)).attr("text-anchor", "end");
       lines.forEach((s, i) => t.append("tspan").attr("x", t.attr("x")).attr("dy", i ? 13 : 0).text(s));
       if (!f.L) continue;
-      const end = f.dFinish ?? f.dNow;
+      const end = f.dEnd;
       lane.append("path").attr("class", `ln model${f.dFinish === null ? " dash" : ""}`)
         .attr("d", L([[x(0), yy], [x(SX(end)), yy]]));
       for (const p of f.pre) {
@@ -155,7 +155,7 @@ export function fig2(fig, D) {
           tip.show(px, yy, `${f.e.title}: plan committed ${dayMonth(p.committed)} ${clock(p.committed)}, ` +
             `pushed ${clock(p.pushed.time)} (${duration(drv(Math.round(Math.abs(p.dPush)), "s, push vs launch"))} ` +
             `${p.dPush < 0 ? "before" : "after"} launch); launched ${clock(f.e.launched.time)}` +
-            `${f.e.finished ? `; finished ${clock(f.e.finished.time)}` : "; still running"}.`);
+            `${f.e.finished ? `; finished ${clock(f.e.finished.time)}` : `; ${unfinished(f.e)}`}.`);
         })
         .on("pointerleave", leave(tip));
     }
