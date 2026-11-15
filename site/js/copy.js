@@ -151,6 +151,14 @@ export function dataText(D) {
 
 /* ---------- § 3.1 Pre-registration (Fig. 2) ---------- */
 
+/** How a run with no finish line is described: the generator's status, with its last log entry. */
+export function unfinished(e) {
+  const last = e.last_log_entry ? `last log entry ${dayMonth(e.last_log_entry.time)} ${clock(e.last_log_entry.time)}` : "";
+  if (e.status === "running") return "still running";
+  if (e.status === "stopped") return `stopped${last ? `, ${last}` : ""}`;
+  return `no finish line${last ? ` — ${last}` : ""}`;
+}
+
 export function timelineFacts(t) {
   return t.entries.map((e) => {
     const L = e.launched?.time ?? null;
@@ -160,6 +168,10 @@ export function timelineFacts(t) {
       pre: e.pre.map((p) => ({ ...p, dCommit: rel(p.committed), dPush: rel(p.pushed.time) })),
       dFinish: rel(e.finished?.time), dSummary: rel(e.first_summary?.time),
       dSmoke: rel(e.smoke?.time), dNow: rel(t.generated),
+      // A run with no finish line ends at "now" only while a process of it is seen running;
+      // otherwise at its last log entry (m7_timeline.py: running / stopped / no finish line).
+      dEnd: rel(e.finished?.time) ??
+        (e.status === "running" ? rel(t.generated) : rel(e.last_log_entry?.time) ?? rel(t.generated)),
     };
   });
 }
@@ -184,7 +196,9 @@ export function prereg(D) {
     p2 += ` Every later plan was pushed before its runs launched, by ` +
       `${dur(lead, "s, shortest push lead")} to ${dur(most, "s, longest push lead")}.`;
   }
-  const running = F.filter((f) => f.L && f.dFinish === null).map((f) => f.e.title);
+  const running = F.filter((f) => f.L && f.e.status === "running").map((f) => f.e.title);
+  const unended = F.filter((f) => f.L && f.dFinish === null && f.e.status !== "running")
+    .map((f) => `${lc(f.e.title)} (${unfinished(f.e)})`);
   const waiting = F.filter((f) => !f.L).map((f) => f.e.title);
   return {
     prereg_p1: `Every threshold, reading rule and run setting below was committed to the ` +
@@ -195,7 +209,8 @@ export function prereg(D) {
     cap_fig_2: `When each plan went public. One row per pre-registered run set, each aligned on ` +
       `its own launch (the vertical line); time on a signed logarithmic scale. Open square: plan ` +
       `committed; filled square: first pushed; bar: the run, launch to finish` +
-      `${running.length ? ` (dashed while running: the ${running.map(lc).join(", the ")})` : ""}; diamond: first ` +
+      `${running.length ? ` (dashed while running: the ${running.map(lc).join(", the ")})` : ""}` +
+      `${unended.length ? ` (dashed to the last log entry: the ${unended.join(", the ")})` : ""}; diamond: first ` +
       `summary of the result.${waiting.length ? ` Not yet launched: ${waiting.join(", ")}.` : ""} ` +
       `From the repository's timeline file, generated ${dayMonth(D.timeline.generated)} ` +
       `${clock(D.timeline.generated)}.`,
@@ -425,10 +440,16 @@ function lalDeclination(M) {
 }
 
 /** The abstract's sentence: only what the reading supports. */
-/** Beside the provisional 95 % range: the rerun of the nearest cell in sub-cells
+/** Beside the provisional 95 % range: its one remaining reason once the eight-seed reruns set it
+ * (docs/notes/S1_mode.md); before that, the rerun of the nearest cell in sub-cells
  * (docs/notes/S1_cell0.md), while it is unresolved. */
 function s1Clause(S, i95) {
-  if (i95.state === "final" || S.values.resolved) return "";
+  if (i95.state === "final") return "";
+  if (i95.s1mode) {
+    return `, for one reason: with the eccentricity allowed to 0.5, a low-distance solution ` +
+      `carries a weight that the runs do not determine`;
+  }
+  if (S.values.resolved) return "";
   return `; a rerun of the solutions nearer than ${S.values.a_max_au} AU, cut into smaller ` +
     `cells, did not make the runs repeatable`;
 }

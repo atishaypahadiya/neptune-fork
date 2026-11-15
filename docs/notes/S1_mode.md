@@ -274,3 +274,70 @@ commits 05a2dd3 and 6f7f3d4 on branch s1-mode; its docstring states them):
 whole pipeline in a scratch cache (66 runs at 150 iterations, 12 draws each) went through the
 reweighting and the summary; the check values of `implied_p_below_25` were reproduced (0.00104
 and 0.10902). Nothing of the smoke run is read.
+
+## Results, 15 November 2026
+
+The pipeline ran at commit 6f7f3d4 from 14 November 19:18 to 15 November 05:44 PST on 12
+workers: Part A's 50 runs and Part B's 16, then the reweighting and the summary, 108.4 CPU-h in
+all (ledger), with no failed or resumed run. Results: `docs/notes/S1_mode.json`. The text above
+the line, amendment 1 included, is unchanged.
+
+### Part A: not resolved
+
+R1 fails in cell 1; every other gate and test holds.
+
+| test | value | tolerance | |
+|---|---|---|---|
+| G0 | largest deviation 0.120, range 0.196 | 0.3, 0.5 | holds |
+| G1 | no run stopped on a cap (0 of 50) | | holds |
+| G2 | smallest ESS/N 0.911 (cell 1, seed 3) | 0.3 | holds |
+| G3 | largest truncation 2.7 × 10⁻¹¹³ | 10⁻⁶ | holds |
+| G4 | smallest ESS/N in M 0.912 (seed 3); M's merge 0.915; X's merge 0.918 | 0.5 | holds |
+| R1, M | ln Z range 0.450 | 0.5 | holds |
+| R1, L's two boxes | 0.583 and 0.305 (L's share of cell 0 is 0.0008, so 1.0 applies) | 1.0 | holds |
+| **R1, cell 1** | **ln Z range 1.732** (seed 3 −363.130, seed 7 −364.862) | 0.5 | **fails** |
+| R1, cells 2 and 3 | 0.359 and 0.140 | 0.5 | holds |
+| R2 | sampler error of the median 0.053°; widths within 5.3 % of their mean | 0.2°, 10 % | holds |
+| X | ln Z −0.030, median −0.051°, 68 % width +3.9 % | 0.5, 0.35°, 10 % | holds |
+
+By § 6, a failed R makes Part A **not resolved**: the published verdict stands and the weight of
+the low-distance solution stays "0.001 to about 0.2". As § 6 says, P(a < 25 AU) from this plan
+is not stated. The check values of `implied_p_below_25` were reproduced (0.00104, 0.10902).
+
+### Part B: rule B holds
+
+1. **M8b's gates, for seeds 5 to 8 and the eight-seed merge.** Gate 1 (as amended in `M8.md`,
+   the reweighting share ≥ 0.5): 0.9965 to 0.9967 on all nine fits (ESS/N as written 0.270 to
+   0.276, reported beside, as in M8b). Gate 2: smallest ESS/N 0.935 over 36 cell posteriors.
+   Gate 3: smallest 0.995 over 18 branch posteriors. Gate 4: largest truncation 1.2 × 10⁻¹¹⁰.
+   This condition was assessed on gates 1 to 4, because M8's gate 5 (the blind-spot checks)
+   was registered as a set of reports without a pass condition. Holds.
+2. **A8b and A8c,** not rerun: they passed for M8b. Holds.
+3. **A8f, all four cells over the eight seeds:** largest relative deviation of a seed's 68 %
+   width 0.020, 0.045, 0.050 and 0.039 in cells 0 to 3, against 0.1. Holds.
+4′. **Sampler error of each 95 % bound:** standard deviation over the eight single-seed fits
+   0.293° (lower) and 0.417° (upper), divided by √8: 0.104° and 0.147°, against 0.2°. Holds.
+
+### The 95 % range
+
+§ 6, third row (rule B holds, Part A not resolved): the eight-seed merged interval,
+**319.61° to 330.15°** (sampler errors 0.10° and 0.15°), replaces M6c's 320.18° to 330.40°.
+It stays **provisional**, for one reason: the low-distance solution, weight 0.001 to about 0.2.
+The headline's median and 68 % interval are unchanged (325.82°, 323.57° to 327.79°).
+
+### Post hoc: cell 1, seed 7 against the other seven seeds
+
+*Post hoc, not part of this plan; it changes no reading above.* From the stored reweighted
+draws of cell 1, with no new sampling, every seed has two modes, not only seed 7: one against
+the cell's lower edge (a = 25.07 to 25.64 AU, 16 to 84 % over all seeds; longitude near 306°)
+and one against its upper edge (a = 27.62 to 27.96 AU; near 334°). The share of draws at or
+beyond 333.9° is 15.8 % in seed 7 and 3.5 % to 10.2 % in the other seeds (the whole upper mode,
+beyond 320°: 22.6 %, and 5.1 % to 14.5 %), so seed 7 differs in degree, not in kind. Split
+between the two modes, the seeds' ln Z agree on the upper mode (range 0.29) and not on the lower
+one (range 1.94). Broadly, the seeds that give the lower mode less weight have the lower
+ln Z, seed 7 most of all. The spread of 1.73 is 13 to 23 times each seed's own sampler error (0.07 to 0.13).
+R1's failure in cell 1 therefore comes from the mode at the cell's lower edge, a = 25 AU, the
+boundary with M. Figure: `S1_mode_cell1.png`, made by `scripts/s1_mode_cell1.py`, with its
+numbers in `S1_mode_cell1.json`.
+
+![Cell 1: the eight seeds' Galle-night longitude and distance, and their ln Z](S1_mode_cell1.png)

@@ -7,6 +7,11 @@ Every time comes from a primary source, never from the notes:
 - launch, finish and first-summary times: the run drivers' logs under data/cache/ (gitignored,
   so this script runs on the machine that ran the jobs).
 
+A run with a launch line and no finish line is "running" only if a process of it is found, and
+"stopped" if none is; both carry the time of the run's last log entry. Processes can be looked
+for only where this script runs on the machine that ran the jobs (`pgrep`, outside CI). Anywhere
+else such a run is "no finish line", with the same last-entry time, never "running" or "stopped".
+
 Run from the repo root: `uv run python docs/notes/scripts/m7_timeline.py` (needs `gh`, network).
 """
 
@@ -14,7 +19,9 @@ from __future__ import annotations
 
 import datetime as dt
 import json
+import os
 import re
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -93,6 +100,38 @@ def log_time(
     return {"time": iso(t), "source": str(path.relative_to(ROOT))}
 
 
+def last_entry(source: dict | None) -> dict | None:
+    """The last time-stamped line of the log a launch time was read from."""
+    if source is None:
+        return None
+    return log_time(ROOT / source["source"].split(" (")[0], r".", last=True)
+
+
+def can_see_processes() -> bool:
+    """Whether the jobs' processes can be looked for: on the machine that ran them, not in CI
+    or a site build."""
+    ci = os.environ.get("CI") or os.environ.get("GITHUB_ACTIONS")
+    return not ci and shutil.which("pgrep") is not None
+
+
+def process_alive(pattern: str) -> bool:
+    return subprocess.run(["pgrep", "-f", pattern], capture_output=True).returncode == 0
+
+
+def run_status(
+    launched: dict | None, finished: dict | None, pattern: str, *, local: bool, alive=process_alive
+) -> str:
+    """not launched / done, else (no finish line): running or stopped when processes can be
+    seen, and "no finish line" when they cannot."""
+    if launched is None:
+        return "not launched"
+    if finished is not None:
+        return "done"
+    if not local:
+        return "no finish line"
+    return "running" if alive(pattern) else "stopped"
+
+
 def mtime(path: Path) -> dict:
     t = dt.datetime.fromtimestamp(path.stat().st_mtime, tz=PST).replace(microsecond=0)
     return {"time": iso(t), "source": f"{path.relative_to(ROOT)} (file time)"}
@@ -121,6 +160,7 @@ def main() -> None:
     entries = [
         {
             "id": "m6c_headline",
+            "process": "fork.export.m6c run",
             "title": "Headline fit",
             "notes": "docs/notes/M6.md, M6c pre-registration",
             "preregistration": [prereg("2c9ebb3", "pre-registration")],
@@ -133,6 +173,7 @@ def main() -> None:
         },
         {
             "id": "m6c_sensitivity",
+            "process": "fork.export.m6c run",
             "title": "Sensitivity runs",
             "notes": "docs/notes/M6.md, M6c sensitivity runs S1–S3: pre-registration",
             "preregistration": [prereg("2981aa1", "pre-registration")],
@@ -142,6 +183,7 @@ def main() -> None:
         },
         {
             "id": "m6c_repeat",
+            "process": "fork.export.m6c_repeat run",
             "title": "Repeatability runs",
             "notes": "docs/notes/M6.md, M6c cell-2 repeatability: pre-registration",
             "preregistration": [prereg("328350a", "pre-registration")],
@@ -156,6 +198,7 @@ def main() -> None:
         },
         {
             "id": "m8_a8",
+            "process": "fork.export.m8_runs pipeline --n-workers",
             "title": "Fast-likelihood validation",
             "notes": "docs/notes/M8.md, Pre-registration: A8b–A8f; Before launch",
             "preregistration": [
@@ -169,6 +212,7 @@ def main() -> None:
         },
         {
             "id": "m8_a8f_rerun",
+            "process": "fork.export.m8_runs pipeline --campaign a8f",
             "title": "Fast-likelihood rerun",
             "notes": "docs/notes/M8.md, Follow-up pre-registration",
             "preregistration": [prereg("049e88f", "pre-registration")],
@@ -179,7 +223,8 @@ def main() -> None:
         },
         {
             "id": "m8b",
-            "title": "Higher-resolution reruns (decide the 95 % range)",
+            "process": "fork.export.m8_runs pipeline --campaign m8b",
+            "title": "Higher-resolution reruns (four seeds)",
             "notes": "docs/notes/M8.md, Follow-up pre-registration",
             "preregistration": [prereg("049e88f", "pre-registration")],
             "launched": log_time(m8 / "runs_m8b" / "progress.log", r"^run: "),
@@ -193,18 +238,21 @@ def main() -> None:
             "notes": "docs/notes/M8.md, Follow-up pre-registration",
             "preregistration": [prereg("049e88f", "pre-registration")],
             "launched": log_time(CACHE / "nested" / "m8_arbiter" / "progress.log", r"start"),
-            "finished": log_time(CACHE / "nested" / "m8_arbiter" / "progress.log", r"run finished"),
-            "first_summary": None,
+            # The arbiter's driver writes "run finished" and "summarize" to driver.log; its
+            # progress.log holds only the sampler's lines.
+            "finished": log_time(CACHE / "nested" / "m8_arbiter" / "driver.log", r"^run finished"),
+            "first_summary": log_time(
+                CACHE / "nested" / "m8_arbiter" / "driver.log", r"^summarize"
+            ),
+            "process": "fork.export.m8_arbiter pipeline",
         },
     ]
+    local = can_see_processes()
     for e in entries:
-        e["status"] = (
-            "not launched"
-            if e["launched"] is None
-            else "running"
-            if e["finished"] is None
-            else "done"
-        )
+        pattern = e.pop("process")
+        e["status"] = run_status(e["launched"], e["finished"], pattern, local=local)
+        if e["status"] in ("running", "stopped", "no finish line"):
+            e["last_log_entry"] = last_entry(e["launched"])
 
     out = {
         "description": "Pre-registration timeline: when each pre-registration was committed and "

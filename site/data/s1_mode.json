@@ -1,0 +1,74 @@
+{
+ "description": "The low-distance plan's 95 % range and its status (main page, the 95 % range): copies of fields of docs/notes/S1_mode.json.",
+ "plan": "docs/notes/S1_mode.md",
+ "sources": {
+  "lo95": [
+   "docs/notes/S1_mode.json",
+   "range_95",
+   "range",
+   0
+  ],
+  "hi95": [
+   "docs/notes/S1_mode.json",
+   "range_95",
+   "range",
+   1
+  ],
+  "err_lo95": [
+   "docs/notes/S1_mode.json",
+   "range_95",
+   "sampler_errors",
+   0
+  ],
+  "err_hi95": [
+   "docs/notes/S1_mode.json",
+   "range_95",
+   "sampler_errors",
+   1
+  ],
+  "final": [
+   "docs/notes/S1_mode.json",
+   "range_95",
+   "final"
+  ],
+  "label": [
+   "docs/notes/S1_mode.json",
+   "range_95",
+   "label"
+  ],
+  "why": [
+   "docs/notes/S1_mode.json",
+   "range_95",
+   "why"
+  ],
+  "rule_b_holds": [
+   "docs/notes/S1_mode.json",
+   "part_b",
+   "holds"
+  ],
+  "part_a_resolved": [
+   "docs/notes/S1_mode.json",
+   "part_a",
+   "reading",
+   "resolved"
+  ],
+  "part_a_status": [
+   "docs/notes/S1_mode.json",
+   "part_a",
+   "reading",
+   "status"
+  ]
+ },
+ "values": {
+  "lo95": 319.609,
+  "hi95": 330.146,
+  "err_lo95": 0.10372835402420735,
+  "err_hi95": 0.14737542408759632,
+  "final": false,
+  "label": "provisional",
+  "why": "the low-distance solution, weight 0.001 to about 0.2",
+  "rule_b_holds": true,
+  "part_a_resolved": false,
+  "part_a_status": "not resolved"
+ }
+}

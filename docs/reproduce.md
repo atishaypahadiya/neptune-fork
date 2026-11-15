@@ -76,6 +76,7 @@ the commands below use these identifiers.
 | the fast-likelihood validation | M8, A8b–A8f (48 runs) | `docs/notes/M8.md` |
 | the fast-likelihood rerun | M8 A8f rerun | `docs/notes/M8.md` |
 | the higher-resolution reruns | M8b | `docs/notes/M8.md` |
+| the eight-seed reruns (the 95 % range) and the low-distance solution in its own region | S1_mode, Parts B and A (`fork.export.s1_mode`) | `docs/notes/S1_mode.md` |
 | the full-likelihood check of the eccentricity test | A8d(S1) arbiter (`m8_arbiter`) | `docs/notes/M8.md` |
 | the profile likelihood in the semi-major axis under Gaussian errors (Fig. 7 left, Fig. 8) | M9 (`fork.export.m9`) | `docs/notes/M9.md` |
 | the profile likelihood under Student-t errors, six data sets (Fig. 7 right, Fig. 9) | M10 (`fork.export.m10`) | `docs/notes/M10.md` |
@@ -366,7 +367,8 @@ uv run python -m fork.export.m6e fetch    # JPL's apparent place of Uranus at th
 uv run python -m fork.export.m6e checks   # the transit and frame tests
 uv run python -m fork.export.m6e run      # docs/notes/M6e.{json,png}; about 1 CPU-minute
 uv run python -m fork.export.m6e_site     # site/data/m6e.json (§ 4.4 and Fig. 10 of the main page)
-uv run python -m fork.export.s1_site      # site/data/s1_cell0.json (the clause beside the 95 % range)
+uv run python -m fork.export.s1_site      # site/data/s1_cell0.json and s1_mode.json (the 95 % range and its status)
+uv run python docs/notes/scripts/s1_mode_cell1.py   # post hoc: docs/notes/S1_mode_cell1.{json,png}, from stored draws
 ```
 
 ## Toy example (not a result)
