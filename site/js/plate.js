@@ -173,12 +173,15 @@ export function keepRanges(root) {
 }
 
 /**
- * Words that hyphenation must not break (site.css sets hyphens: manual on span.whole, which
- * matters on phones, where text is hyphenated): addresses (URLs, DOIs, arXiv ids, paths and file
- * names, dotted field names), and every capitalised word, so that names stay whole in WebKit, which
- * hyphenates them (Chromium does not). Each is wrapped in a span.whole; the text is unchanged.
- * Called once, after the page is filled, like keepRanges; links, headings and figures are left alone.
+ * Words that hyphenation must not break (site.css sets hyphens: manual on span.whole): addresses
+ * (URLs, DOIs, arXiv ids, paths and file names, dotted field names), and every capitalised word,
+ * so that names stay whole in WebKit, which hyphenates them (Chromium does not). Each is wrapped
+ * in a span.whole; the text is unchanged. Only while the phone query matches, where text is
+ * hyphenated: WebKit does not kern across a span's edge, so the spans would move line breaks at
+ * wider widths. Called once, after the page is filled, like keepRanges; links, headings and
+ * figures are left alone.
  */
+export const HYPHENATED = "screen and (max-width: 720px)"; // site.css, hyphenation
 const END = String.raw`(?=[.,;:)\]]*(?:\s|$))`;
 export const WHOLE = new RegExp(
   String.raw`(?:https?:\/\/|doi:|arXiv:)\S*?${END}` + // URL, DOI, arXiv id
@@ -187,6 +190,18 @@ export const WHOLE = new RegExp(
   String.raw`|\p{Lu}[\p{L}\p{M}'’]*(?:[-–]\p{L}[\p{L}\p{M}'’]*)*`, // capitalised word, with its compounds
   "gu");
 export function keepWhole(root) {
+  const mq = matchMedia(HYPHENATED);
+  const set = () => {
+    if (mq.matches) wrapWhole(root);
+    else if (root.querySelector(".whole")) {
+      for (const s of root.querySelectorAll(".whole")) s.replaceWith(s.textContent);
+      root.normalize();
+    }
+  };
+  set();
+  mq.addEventListener("change", set);
+}
+function wrapWhole(root) {
   const walk = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
     acceptNode: (n) => (n.parentElement.closest("svg, script, style, a, h1, h2, h3, .whole")
       ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT),
