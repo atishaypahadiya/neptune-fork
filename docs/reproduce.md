@@ -614,3 +614,17 @@ uv run python -m fork.export.v14_fits plan
   median or ln Z does not reproduce.
 - Smoke runs need a scratch cache: `--cache DIR --synthetic SEED --maxiter N` for
   `s1_cell0`; `FORK_V14_CACHE=DIR FORK_V14_MAXITER=N` for `v14_fits`.
+
+## Phase 2: synthetic identifiability study for Mercury (13 November 2026)
+
+Plan: `docs/phase2/identifiability_study.md`, pushed before any data set was drawn. It
+uses Newcomb's contact epochs and weights only; no observed value enters.
+
+```sh
+uv run pytest -q tests/test_phase2_identifiability_study.py
+nohup caffeinate -is uv run python -m fork.phase2.identifiability_study all --n-workers 12 > idstudy.out 2>&1 &
+```
+
+`all` prepares the shapes (cached), runs the gates V1 to V4, and fits the 108 data sets only
+if every gate passes; a rerun resumes. Cache `data/cache/phase2/identifiability_study/`;
+`FORK_IDSTUDY_CACHE=DIR` for a scratch run.

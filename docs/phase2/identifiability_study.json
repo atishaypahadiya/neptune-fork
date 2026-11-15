@@ -1,0 +1,367 @@
+{
+ "plan": "docs/phase2/identifiability_study.md",
+ "sigma1_s": 13.357097839734493,
+ "levels": [
+  1.0,
+  0.5,
+  2.0
+ ],
+ "n_epochs": 58,
+ "truths": {
+  "a": {
+   "model": "gr",
+   "extra": [
+    1.0
+   ],
+   "rate": 42.98867324495177
+  },
+  "b": {
+   "model": "ring",
+   "extra": [
+    1.9811152404862693e-07,
+    0.2
+   ],
+   "rate": 42.98005958469717
+  },
+  "c": {
+   "model": "planet",
+   "extra": [
+    1.980728405006917e-07,
+    0.2,
+    0.0
+   ],
+   "rate": 42.97966362338657
+  },
+  "d": {
+   "model": "j2",
+   "extra": [
+    0.0003399891252673649
+   ],
+   "rate": 42.98000003666748
+  }
+ },
+ "validation": {
+  "V1": {
+   "truths": {
+    "a": {
+     "rate": 42.98867324495177,
+     "pass": true
+    },
+    "b": {
+     "rate": 42.98005958469717,
+     "pass": true
+    },
+    "c": {
+     "rate": 42.97966362338657,
+     "pass": true
+    },
+    "d": {
+     "rate": 42.98000003666748,
+     "pass": true
+    }
+   },
+   "pass": true
+  },
+  "V2": {
+   "fits": [
+    {
+     "truth": "a",
+     "model": "J",
+     "n": 30,
+     "fraction_within": 0.3,
+     "max_abs_diff": 21.025445321703756,
+     "pass": false
+    },
+    {
+     "truth": "a",
+     "model": "R",
+     "n": 30,
+     "fraction_within": 0.2,
+     "max_abs_diff": 42.46054447403749,
+     "pass": false
+    },
+    {
+     "truth": "a",
+     "model": "P",
+     "n": 30,
+     "fraction_within": 0.13333333333333333,
+     "max_abs_diff": 817.7260435442454,
+     "pass": false
+    },
+    {
+     "truth": "b",
+     "model": "J",
+     "n": 30,
+     "fraction_within": 0.1,
+     "max_abs_diff": 33.06085571673708,
+     "pass": false
+    },
+    {
+     "truth": "b",
+     "model": "R",
+     "n": 30,
+     "fraction_within": 0.4,
+     "max_abs_diff": 33.81356797977648,
+     "pass": false
+    },
+    {
+     "truth": "b",
+     "model": "P",
+     "n": 30,
+     "fraction_within": 0.06666666666666667,
+     "max_abs_diff": 388.20820275854663,
+     "pass": false
+    },
+    {
+     "truth": "c",
+     "model": "J",
+     "n": 30,
+     "fraction_within": 0.23333333333333334,
+     "max_abs_diff": 16.38182074856122,
+     "pass": false
+    },
+    {
+     "truth": "c",
+     "model": "R",
+     "n": 30,
+     "fraction_within": 0.1,
+     "max_abs_diff": 31.665080986855955,
+     "pass": false
+    },
+    {
+     "truth": "c",
+     "model": "P",
+     "n": 30,
+     "fraction_within": 0.06666666666666667,
+     "max_abs_diff": 768.317399506719,
+     "pass": false
+    },
+    {
+     "truth": "d",
+     "model": "J",
+     "n": 30,
+     "fraction_within": 0.3333333333333333,
+     "max_abs_diff": 12.96064346348197,
+     "pass": false
+    },
+    {
+     "truth": "d",
+     "model": "R",
+     "n": 30,
+     "fraction_within": 0.16666666666666666,
+     "max_abs_diff": 23.322378743959547,
+     "pass": false
+    },
+    {
+     "truth": "d",
+     "model": "P",
+     "n": 30,
+     "fraction_within": 0.0,
+     "max_abs_diff": 431.0478429820495,
+     "pass": false
+    }
+   ],
+   "pass": false
+  },
+  "V3": {
+   "fits": [
+    {
+     "truth": "a",
+     "model": "J",
+     "distance": null,
+     "nested": -5.06225587483181,
+     "nested_err": 0.06962857245042609,
+     "quadrature": -5.030367745316876,
+     "pass": true
+    },
+    {
+     "truth": "a",
+     "model": "R",
+     "distance": null,
+     "nested": -4.775632024105495,
+     "nested_err": 0.06739876121587055,
+     "quadrature": -4.8338472307045635,
+     "pass": true
+    },
+    {
+     "truth": "a",
+     "model": "P",
+     "distance": 0,
+     "nested": -5.262538577659203,
+     "nested_err": 0.06948579605691177,
+     "quadrature": -5.155312771667868,
+     "pass": false
+    },
+    {
+     "truth": "a",
+     "model": "P",
+     "distance": 1,
+     "nested": -9.279481515994796,
+     "nested_err": 0.07122887861607119,
+     "quadrature": -9.351546386424015,
+     "pass": true
+    },
+    {
+     "truth": "a",
+     "model": "P",
+     "distance": 2,
+     "nested": -8.967487973787149,
+     "nested_err": 0.07798249403874125,
+     "quadrature": -8.924234175314378,
+     "pass": true
+    },
+    {
+     "truth": "b",
+     "model": "J",
+     "distance": null,
+     "nested": -4.942045064946848,
+     "nested_err": 0.06868243405556376,
+     "quadrature": -5.0314121821972,
+     "pass": true
+    },
+    {
+     "truth": "b",
+     "model": "R",
+     "distance": null,
+     "nested": -4.836128424858118,
+     "nested_err": 0.06767183446542874,
+     "quadrature": -4.830124034119586,
+     "pass": true
+    },
+    {
+     "truth": "b",
+     "model": "P",
+     "distance": 0,
+     "nested": -5.148693151437199,
+     "nested_err": 0.06845593936290546,
+     "quadrature": -5.145337407833303,
+     "pass": true
+    },
+    {
+     "truth": "b",
+     "model": "P",
+     "distance": 1,
+     "nested": -9.421176625715447,
+     "nested_err": 0.07215330594171364,
+     "quadrature": -9.349590934273152,
+     "pass": true
+    },
+    {
+     "truth": "b",
+     "model": "P",
+     "distance": 2,
+     "nested": -8.877219119748677,
+     "nested_err": 0.07727779913896356,
+     "quadrature": -8.913965729894915,
+     "pass": true
+    },
+    {
+     "truth": "c",
+     "model": "J",
+     "distance": null,
+     "nested": -9.81099366283474,
+     "nested_err": 0.06977522501237511,
+     "quadrature": -9.775438607603062,
+     "pass": true
+    },
+    {
+     "truth": "c",
+     "model": "R",
+     "distance": null,
+     "nested": -9.637764801697548,
+     "nested_err": 0.068365102731258,
+     "quadrature": -9.547945705932003,
+     "pass": true
+    },
+    {
+     "truth": "c",
+     "model": "P",
+     "distance": 0,
+     "nested": -9.586254172141249,
+     "nested_err": 0.068122637163597,
+     "quadrature": -9.587868291166709,
+     "pass": true
+    },
+    {
+     "truth": "c",
+     "model": "P",
+     "distance": 1,
+     "nested": -7.264706427055789,
+     "nested_err": 0.0801945618794101,
+     "quadrature": -7.408711575628531,
+     "pass": false
+    },
+    {
+     "truth": "c",
+     "model": "P",
+     "distance": 2,
+     "nested": -11.490627183439294,
+     "nested_err": 0.08283628118018259,
+     "quadrature": -11.548559021143635,
+     "pass": true
+    },
+    {
+     "truth": "d",
+     "model": "J",
+     "distance": null,
+     "nested": -4.9382174869334445,
+     "nested_err": 0.06872133024918421,
+     "quadrature": -5.028817444152547,
+     "pass": true
+    },
+    {
+     "truth": "d",
+     "model": "R",
+     "distance": null,
+     "nested": -4.71452768561014,
+     "nested_err": 0.06703029449263305,
+     "quadrature": -4.831687143565228,
+     "pass": false
+    },
+    {
+     "truth": "d",
+     "model": "P",
+     "distance": 0,
+     "nested": -5.145110241204885,
+     "nested_err": 0.06859314809016309,
+     "quadrature": -5.151961918776289,
+     "pass": true
+    },
+    {
+     "truth": "d",
+     "model": "P",
+     "distance": 1,
+     "nested": -9.37421749910601,
+     "nested_err": 0.07174415909589066,
+     "quadrature": -9.342504763596846,
+     "pass": true
+    },
+    {
+     "truth": "d",
+     "model": "P",
+     "distance": 2,
+     "nested": -8.960074941897512,
+     "nested_err": 0.07772248443660253,
+     "quadrature": -8.915966068747228,
+     "pass": true
+    }
+   ],
+   "pass": false
+  },
+  "V4": {
+   "chi2_min": {
+    "a": 4.547473508864641e-12,
+    "b": 2.6809473183675436e-06,
+    "c": 0.00038579377405767445,
+    "d": 6.71207089908421e-10
+   },
+   "pass": true
+  },
+  "pass": false
+ },
+ "sigma_arcsec": {
+  "november_median": 2.8538441568237625,
+  "may_median": 0.8693866217451447
+ },
+ "readings": "not made: a validation gate failed"
+}

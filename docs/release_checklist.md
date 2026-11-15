@@ -310,3 +310,12 @@ Added 2026-11-13, prior-work reading notes:
 
 Nothing here changes the site or `release/`. Each result needs its own review before it
 enters the page.
+
+## Mercury synthetic identifiability study, 13 November 2026 (local branch `phase2-identifiability`)
+
+| item | state |
+|---|---|
+| Plan and one amendment | pushed before any data set was drawn |
+| Code and tests | committed; preparation run |
+| Gates and fits | queued after the v1.4 runs |
+| Fit to Mercury's real observations | none, and none planned here |
