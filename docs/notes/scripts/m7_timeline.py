@@ -179,7 +179,7 @@ def main() -> None:
         },
         {
             "id": "m8b",
-            "title": "Higher-resolution reruns (decide the 95 % range)",
+            "title": "Higher-resolution reruns (four seeds; the 95 % range set later with eight)",
             "notes": "docs/notes/M8.md, Follow-up pre-registration",
             "preregistration": [prereg("049e88f", "pre-registration")],
             "launched": log_time(m8 / "runs_m8b" / "progress.log", r"^run: "),
