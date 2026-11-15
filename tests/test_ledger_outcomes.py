@@ -304,6 +304,45 @@ def test_every_runner_records_and_only_the_ledger_appends():
     assert all((SRC / rel).exists() for rel in (*NOT_RUNNERS, *FROZEN_CODE))
 
 
+def _rebinds(f: ast.FunctionDef, names: set[str], opens: list) -> list[int]:
+    """Lines in ``f`` that bind one of ``names`` again (assignment, loop or with target)."""
+    out = []
+    for n in ast.walk(f):
+        if isinstance(n, (ast.Assign, ast.AnnAssign, ast.AugAssign)):
+            targets = n.targets if isinstance(n, ast.Assign) else [n.target]
+        elif isinstance(n, (ast.For, ast.comprehension)):
+            targets = [n.target]
+        elif isinstance(n, ast.With):
+            targets = [i.optional_vars for i in n.items if i.optional_vars is not None]
+        else:
+            continue
+        if n in opens:
+            continue
+        for t in targets:
+            if any(isinstance(x, ast.Name) and x.id in names for x in ast.walk(t)):
+                out.append(n.lineno)
+    return out
+
+
+def test_a_record_is_not_overwritten_before_it_is_closed():
+    """A name that holds a ledger record is bound once in its function: a later
+    ``rec = {...}`` would make the closing ``rec.done(...)`` fail."""
+    bad = []
+    for p in _modules():
+        rel = p.relative_to(SRC).as_posix()
+        if rel in FROZEN_CODE:
+            continue
+        for f in ast.walk(ast.parse(p.read_text())):
+            if not isinstance(f, ast.FunctionDef):
+                continue
+            opens = [n for n in ast.walk(f) if isinstance(n, ast.Assign)
+                     and isinstance(n.value, ast.Call)
+                     and ast.unparse(n.value.func) == "ledger.start"]  # fmt: skip
+            names = {ast.unparse(t) for n in opens for t in n.targets}
+            bad += [f"{rel}:{ln} {f.name}" for ln in _rebinds(f, names, opens)]
+    assert not bad, f"ledger record overwritten: {bad}"
+
+
 @pytest.mark.parametrize(("rel", "plan", "digest"), [
     ("export/p1b_adams.py", "docs/notes/P1B_adams_fit.md", "c9c4d494ac441a4d"),
     ("phase2/identifiability.py", "docs/phase2/identifiability_study.md", "14676bb8d02a945d"),
