@@ -425,10 +425,16 @@ function lalDeclination(M) {
 }
 
 /** The abstract's sentence: only what the reading supports. */
-/** Beside the provisional 95 % range: the rerun of the nearest cell in sub-cells
+/** Beside the provisional 95 % range: its one remaining reason once the eight-seed reruns set it
+ * (docs/notes/S1_mode.md); before that, the rerun of the nearest cell in sub-cells
  * (docs/notes/S1_cell0.md), while it is unresolved. */
 function s1Clause(S, i95) {
-  if (i95.state === "final" || S.values.resolved) return "";
+  if (i95.state === "final") return "";
+  if (i95.s1mode) {
+    return `, for one reason: with the eccentricity allowed to 0.5, a low-distance solution ` +
+      `carries a weight that the runs do not determine`;
+  }
+  if (S.values.resolved) return "";
   return `; a rerun of the solutions nearer than ${S.values.a_max_au} AU, cut into smaller ` +
     `cells, did not make the runs repeatable`;
 }
