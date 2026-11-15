@@ -30,6 +30,8 @@ body {
   font-optical-sizing: auto;
   font-variant-numeric: lining-nums;
 }
+/* Controls take the page's font, not the browser's control font (Arial in Chromium; CRF-13). */
+button, input, select, textarea { font: inherit; }
 a { color: var(--prussian); text-underline-offset: 0.15em; text-decoration-thickness: 1px; }
 a:focus-visible, button:focus-visible, input:focus-visible, .pt:focus-visible {
   outline: 2px solid var(--prussian); outline-offset: 2px;
