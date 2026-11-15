@@ -1,0 +1,171 @@
+{
+ "description": "Post hoc diagnostic of docs/notes/S1_mode.md: cell 1, seed 7 against the other seven seeds, from the stored reweighted draws (no new sampling). Quantiles are 16, 50, 84 %. ln_z_err combines UltraNest's error and the reweighting's. The far mode is the draws beyond gap_deg; ln_z_far and ln_z_rest split each seed's ln Z between the modes.",
+ "post_hoc": true,
+ "region": "c1",
+ "odd_seed": 7,
+ "l1_place_deg": 333.9,
+ "gap_deg": 320.0,
+ "seeds": {
+  "s1": {
+   "lon_deg": [
+    304.593,
+    306.533,
+    308.719
+   ],
+   "a_au": [
+    25.081,
+    25.331,
+    26.056
+   ],
+   "frac_at_or_beyond_l1_place": 0.1017,
+   "frac_far_mode": 0.1395,
+   "ln_z": -364.217,
+   "ln_z_err": 0.114,
+   "ln_z_far": -366.186,
+   "ln_z_rest": -364.367
+  },
+  "s2": {
+   "lon_deg": [
+    304.433,
+    306.496,
+    308.583
+   ],
+   "a_au": [
+    25.083,
+    25.322,
+    26.062
+   ],
+   "frac_at_or_beyond_l1_place": 0.0915,
+   "frac_far_mode": 0.1322,
+   "ln_z": -364.129,
+   "ln_z_err": 0.13,
+   "ln_z_far": -366.152,
+   "ln_z_rest": -364.271
+  },
+  "s3": {
+   "lon_deg": [
+    304.187,
+    306.263,
+    307.84
+   ],
+   "a_au": [
+    25.076,
+    25.293,
+    25.733
+   ],
+   "frac_at_or_beyond_l1_place": 0.0345,
+   "frac_far_mode": 0.0507,
+   "ln_z": -363.13,
+   "ln_z_err": 0.074,
+   "ln_z_far": -366.112,
+   "ln_z_rest": -363.182
+  },
+  "s4": {
+   "lon_deg": [
+    304.27,
+    306.297,
+    307.962
+   ],
+   "a_au": [
+    25.079,
+    25.296,
+    25.789
+   ],
+   "frac_at_or_beyond_l1_place": 0.0428,
+   "frac_far_mode": 0.0673,
+   "ln_z": -363.556,
+   "ln_z_err": 0.13,
+   "ln_z_far": -366.254,
+   "ln_z_rest": -363.626
+  },
+  "s5": {
+   "lon_deg": [
+    304.139,
+    306.261,
+    307.854
+   ],
+   "a_au": [
+    25.079,
+    25.298,
+    25.809
+   ],
+   "frac_at_or_beyond_l1_place": 0.0395,
+   "frac_far_mode": 0.0603,
+   "ln_z": -363.597,
+   "ln_z_err": 0.118,
+   "ln_z_far": -366.405,
+   "ln_z_rest": -363.659
+  },
+  "s6": {
+   "lon_deg": [
+    304.31,
+    306.425,
+    308.821
+   ],
+   "a_au": [
+    25.09,
+    25.344,
+    26.316
+   ],
+   "frac_at_or_beyond_l1_place": 0.1013,
+   "frac_far_mode": 0.1447,
+   "ln_z": -364.279,
+   "ln_z_err": 0.108,
+   "ln_z_far": -366.212,
+   "ln_z_rest": -364.435
+  },
+  "s7": {
+   "lon_deg": [
+    304.675,
+    306.76,
+    333.874
+   ],
+   "a_au": [
+    25.098,
+    25.4,
+    27.732
+   ],
+   "frac_at_or_beyond_l1_place": 0.1578,
+   "frac_far_mode": 0.2255,
+   "ln_z": -364.862,
+   "ln_z_err": 0.083,
+   "ln_z_far": -366.351,
+   "ln_z_rest": -365.117
+  },
+  "s8": {
+   "lon_deg": [
+    304.602,
+    306.517,
+    308.529
+   ],
+   "a_au": [
+    25.082,
+    25.316,
+    25.974
+   ],
+   "frac_at_or_beyond_l1_place": 0.0913,
+   "frac_far_mode": 0.1262,
+   "ln_z": -364.286,
+   "ln_z_err": 0.084,
+   "ln_z_far": -366.356,
+   "ln_z_rest": -364.421
+  }
+ },
+ "far_mode_a_au": [
+  27.615,
+  27.847,
+  27.962
+ ],
+ "rest_a_au": [
+  25.072,
+  25.272,
+  25.643
+ ],
+ "range_ln_z": 1.732,
+ "range_ln_z_far": 0.293,
+ "range_ln_z_rest": 1.935,
+ "others_frac_at_or_beyond_l1_place": [
+  0.0345,
+  0.1017
+ ]
+}
