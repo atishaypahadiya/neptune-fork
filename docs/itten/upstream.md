@@ -1,8 +1,8 @@
 # Issues for ITTEN
 
-ITTEN version: v0.1.0 (c1962e2). Found while running ITTEN's loop on this site
-(`docs/itten/baseline.md`, `docs/itten/after.md`). Written to be filed upstream; nothing in
-`itten/` was changed.
+ITTEN version: v0.1.0 (c1962e2) for issues 1 to 3, v0.2.0 (d998de0) for issue 4. Found while
+running ITTEN's loop on this site (`docs/itten/baseline.md`, `docs/itten/after.md`,
+`docs/itten/after-0.2.md`). Written to be filed upstream; nothing in `itten/` was changed.
 
 Each reproduction is a single page and, where needed, a system file. Serve the folder with
 any static server that handles parallel requests, then run the command shown. The outputs
@@ -183,3 +183,47 @@ although at any one width there are 6 and 5. We report per-width counts for that
   value each in the sweep totals.
 - Optionally accept `--fluid-ok` or a minimal system file that declares only fluid ranges,
   for teardowns of references that have no system yet.
+
+---
+
+## 4. Text edges measured from a block's own text nodes only
+
+Found with ITTEN v0.2.0 (d998de0).
+
+**What happens.** `near-miss-edge` takes a text block's left and right edges from the client
+rects of the block's own text nodes (`e.textNodes` in `inspector/collect.js`: direct children of
+type text). Text inside inline children (`span`, `i`, `a`) is left out. When every line of a block
+begins with an inline child, the measured edge falls somewhere inside the first line, and two
+such blocks whose text starts on the same x can read as 0.5 to 3 px apart.
+
+**Reproduction.** `4/index.html`:
+
+```html
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<style>
+  body { margin: 0; padding: 24px; font: 400 1rem/1.5rem Georgia, serif; }
+  ol { margin: 0; padding-left: 24px; }
+  li { margin: 0 0 12px; }
+</style>
+<ol>
+  <li><span>Brookes</span>, C. J. 1970.</li>
+  <li><span>Bouvard</span>, A. 1821.</li>
+</ol>
+```
+
+```sh
+node itten/inspector/inspect.js http://127.0.0.1:8796/4/ --widths 400 --no-engines --out out/4
+```
+
+**Observed.** `near-miss-edge`, warning: *Left edges 2.56 px apart: li ", C. J. 1970." at
+105.48, li ", A. 1821." at 108.05.* Both items' text starts at 48 px.
+
+**As met on this site.** To keep WebKit from hyphenating names on phones, `keepWhole()` wraps
+capitalised words in a span. Three pairs of references and quote sources then read as 1.4 to
+2.6 px apart, in Chromium and WebKit, at widths where nothing moved (measured with all inline
+content: 45 and 45 px, 88 and 88 px). Logged in `docs/itten-overrides.md` with
+`data-itten-ignore="near-miss-edge"`.
+
+**Suggestion.** Measure a text block's line boxes over all its text, inline descendants
+included (a range over the block's contents, as `lines()` does per node), and keep the
+own-text-node rule only for deciding which blocks are text.
