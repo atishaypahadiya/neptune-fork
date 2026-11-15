@@ -191,8 +191,8 @@ changed.
   second is a defect (CRF-13).
 - The fluid gutter as a spacing step: it is the page's side padding and the outer grid track
   (`docs/DESIGN.md`, "Widths"), it reaches the window's edges at every width by construction,
-  and stepping it would move the text edges at every width from 400 to 1400 px. It stays fluid
-  and is logged in `docs/itten-overrides.md`.
+  and stepping it would move the text edges at every width from 400 to 1400 px. It stays fluid,
+  declared as the `spacing.fluid` range "gutter" (ITTEN 0.2); before 0.2 it was an override.
 - Figure heights (230 to 700 px) and SVG lettering inside figures (12.5, 13, 14, 19 px): drawing
   geometry, held to `tools/check_layout.py`'s text-over-marks check, not to the text scale.
 - Print styles (pt): a separate medium, not inspected, unchanged.

@@ -54,11 +54,15 @@ Positions on plates, held to the same scale:
 | 6 × 9 | 6 × 12 | +3 wide | Tooltip padding (hover state) |
 | 18, 24 | 18, 24 | 0 | Plate label from the bottom and right; plate error inset |
 
-Not mapped (logged in `docs/itten-overrides.md`):
+Declared as a fluid range:
 
 - **The gutter**, `clamp(16px, 4vw, 56px)`: the page's side padding and outer grid track,
   fluid by design (`docs/DESIGN.md`, "Widths"). It becomes `round(…, 1px)`, so it is whole
-  pixels at every width (a change of at most 0.5 px); the range stays.
+  pixels at every width (a change of at most 0.5 px); the range stays, declared since ITTEN 0.2
+  as `spacing.fluid` "gutter" (16 to 56 px, 400 to 1400 px wide).
+
+Not mapped (logged in `docs/itten-overrides.md`):
+
 - **Plate I's title block placement**, `clamp(28px, 6vh, 64px)` from the bottom (40 to 80 px
   from 900 px): it is placed by the window height so the title sits on the plate's lower edge.
 

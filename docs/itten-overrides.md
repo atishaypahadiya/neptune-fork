@@ -1,13 +1,12 @@
 # ITTEN overrides
 
-ITTEN version: v0.1.0 (c1962e2). System: `itten.system.json` version 1.
+ITTEN version: v0.2.0 (d998de0). System: `itten.system.json` version 1.
 
 Every departure from the system or from a protocol rule, with its reason. An element marked
 `data-itten-ignore` has a row here.
 
 | Date | Where | Rule or check | System value | Used instead | Reason | Floors still met |
 |---|---|---|---|---|---|---|
-| 2026-11-15 | Page side padding `--gutter`: the outer grid tracks, Plates II and III text columns' side padding (`.split > .side`), Plate I title block's sides | `spacing-scale` (CRF-01), fluid spacing | a step of 6, 12, 18, 24, 36, 48, 72, 96 | `round(clamp(16px, 4vw, 56px), 1px)`: whole px from 16 to 56 | The side padding is fluid by design (`docs/DESIGN.md`, "Widths"): full-width plates reach the window's edges at every width while text keeps the padding, and where wide becomes body follows from it with no media query. Stepping it would move the text's edges at every width from 400 to 1400 px. `round()` keeps every edge on a whole pixel. The two `.side` elements are not marked `data-itten-ignore`, because the attribute would also hide their contents from the spacing check; the inspector's one warning about them is this row. | Yes |
 | 2026-11-15 | Companion title (`.p1b .paper-title h1`, `data-itten-ignore="type-scale"`) | `type-scale` line height | the `title-companion` step, 1.08 × size | the same, 1.08 × size | Not a departure: at about 833 and 1000 px wide this title and h2 are the same size (32 and 36 px), and the inspector judges a size against the first step that produces it, so it holds the title to h2's 1.05 leading. Reordering the steps moves the clash onto the eight h2s. Worth proposing to ITTEN: match fluid steps by element as well as size. | Yes |
 | 2026-11-15 | Figure lettering inside SVG (`.fig .lbl` 13 px, `.lbl.row` 14 px, `.tick` 12.5 px, `.letter` 19 px; sizes set in `site/js/plates.js`) | CRF-06, CRF-07 (type only from the scale, no fractions), TYP-03 | caption 14 / note 15 / body steps, in rem | px sizes in the drawing's coordinates | Lettering is part of the drawing, placed against marks and held to `tools/check_layout.py`'s text-over-marks and label-length checks; it scales with the plate, not with the text setting, as in an engraved plate. The inspector does not judge inside graphics. | Yes (`--line` on `--prussian` 8.9 : 1) |
 | 2026-11-15 | Plate I title block placement (`.titleblock` bottom) | CRF-01 (lengths from the system) | a spacing step | `clamp(28px, 6vh, 64px)`; from 900 px `clamp(40px, 8vh, 80px)` | It is a position on the plate, not a gap between blocks: the title sits on the plate's lower edge in proportion to the plate's height, which follows the window height. | Yes |
