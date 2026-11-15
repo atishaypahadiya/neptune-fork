@@ -543,44 +543,47 @@ def reweight(n_workers: int, cache: Path = CACHE, synthetic: int | None = None,
         raise SystemExit(f"runs missing: {missing}")
     rec = ledger.start("s1_mode/reweight", "reweight", n_workers=n_workers,
                        scratch=not _real(cache), synthetic=synthetic is not None)  # fmt: skip
-    ta, tb = [], []
+    ta = []
     for n, s in runs():
         nd = len(draws_a(n, s, cache)["phi"])
         nd = nd if max_draws is None else min(nd, max_draws)
         for c, lo in enumerate(range(0, nd, CHUNK)):
             if not (cache / "reweight" / pid(n, s) / f"chunk_{c:03d}.npz").exists():
                 ta.append((n, s, c, lo, min(lo + CHUNK, nd), str(cache)))
-    for k in B_CELLS:
-        for s in B_NEW:
-            nd = len(m8_runs.draws("headline", k, s, bsrc, max_draws, "m8b")["phi"])
+    _log(f"reweight A: {len(ta)} chunks, {n_workers} workers", cache)
+    if ta:
+        with ProcessPoolExecutor(n_workers, initializer=_init_reweight,
+                                 initargs=(synthetic,)) as ex:  # fmt: skip
+            futs = [ex.submit(_reweight_chunk_a, t) for t in ta]
+            for i, f in enumerate(as_completed(futs)):
+                f.result()
+                if (i + 1) % 48 == 0 or i + 1 == len(futs):
+                    _log(f"reweight A: {i + 1}/{len(futs)} chunks", cache)
+    tb = []
+    if synthetic is None:
+        todo = [k for k in B_CELLS if not (cache / "b8" / "reweight" / m8_runs.pid(
+            "headline", k, m8_runs.MERGED) / "draws.npz").exists()]  # fmt: skip
+        _log(f"reweight B: merging seeds 1 to 8 in cells {todo}", cache)
+        t0 = time.time()
+        with ProcessPoolExecutor(max(1, min(len(todo), n_workers))) as ex:
+            list(ex.map(b_merge_draws, todo, [cache] * len(todo), [max_draws] * len(todo)))
+        _log(f"reweight B: merges done ({(time.time() - t0) / 60:.1f} min)", cache)
+        for k in B_CELLS:
+            for s in B_NEW:
+                nd = len(m8_runs.draws("headline", k, s, bsrc, max_draws, "m8b")["phi"])
+                for c, lo in enumerate(range(0, nd, m8_runs.REWEIGHT_CHUNK)):
+                    p = bsrc / "reweight" / m8_runs.pid("headline", k, s) / f"chunk_{c:03d}.npz"
+                    if not p.exists():
+                        tb.append(("headline", k, s, c, lo,
+                                   min(lo + m8_runs.REWEIGHT_CHUNK, nd), str(bsrc)))  # fmt: skip
+            bdir = cache / "b8"
+            mp = m8_runs.pid("headline", k, m8_runs.MERGED)
+            nd = len(np.load(bdir / "reweight" / mp / "draws.npz")["phi"])
             for c, lo in enumerate(range(0, nd, m8_runs.REWEIGHT_CHUNK)):
-                p = bsrc / "reweight" / m8_runs.pid("headline", k, s) / f"chunk_{c:03d}.npz"
-                if not p.exists():
-                    tb.append(("headline", k, s, c, lo, min(lo + m8_runs.REWEIGHT_CHUNK, nd),
-                               str(bsrc)))  # fmt: skip
-        bdir = b_merge_draws(k, cache, max_draws)
-        mp = m8_runs.pid("headline", k, m8_runs.MERGED)
-        nd = len(np.load(bdir / "reweight" / mp / "draws.npz")["phi"])
-        for c, lo in enumerate(range(0, nd, m8_runs.REWEIGHT_CHUNK)):
-            if not (bdir / "reweight" / mp / f"chunk_{c:03d}.npz").exists():
-                tb.append(("headline", k, m8_runs.MERGED, c, lo,
-                           min(lo + m8_runs.REWEIGHT_CHUNK, nd), str(bdir)))  # fmt: skip
-    if not ta and not tb:
-        rec.discard()
-        return
-    _log(f"reweight: {len(ta)} chunks of Part A, {len(tb)} of Part B, {n_workers} workers",
-         cache)  # fmt: skip
-    if synthetic is not None and tb:
-        raise SystemExit("Part B has no synthetic data set; smoke runs reweight Part A only")
-    done = 0
-    with ProcessPoolExecutor(n_workers, initializer=_init_reweight,
-                             initargs=(synthetic,)) as ex:  # fmt: skip
-        futs = [ex.submit(_reweight_chunk_a, t) for t in ta]
-        for f in as_completed(futs):
-            f.result()
-            done += 1
-            if done % 48 == 0 or done == len(futs):
-                _log(f"reweight A: {done}/{len(futs)} chunks", cache)
+                if not (bdir / "reweight" / mp / f"chunk_{c:03d}.npz").exists():
+                    tb.append(("headline", k, m8_runs.MERGED, c, lo,
+                               min(lo + m8_runs.REWEIGHT_CHUNK, nd), str(bdir)))  # fmt: skip
+        _log(f"reweight B: {len(tb)} chunks, {n_workers} workers", cache)
     if tb:
         with ProcessPoolExecutor(n_workers, initializer=m8_runs._init_reweight) as ex:
             futs = [ex.submit(m8_runs._reweight_chunk, t) for t in tb]
@@ -588,22 +591,30 @@ def reweight(n_workers: int, cache: Path = CACHE, synthetic: int | None = None,
                 f.result()
                 if (i + 1) % 48 == 0 or i + 1 == len(futs):
                     _log(f"reweight B: {i + 1}/{len(futs)} chunks", cache)
+    if not ta and not tb:
+        rec.discard()
+        return
     rec.done(n_likelihood_calls=sum(t[4] - t[3] for t in ta) + sum(t[5] - t[4] for t in tb),
              n_integrations=None, sim_years=None,
              note="mode (b) + fast + Galle longitude per draw")  # fmt: skip
 
 
 def load_a(name: str, s: int, cache: Path) -> dict:
+    """One run's draws with their reweighting. A smoke run (``--max-draws``) reweights only the
+    first chunks; in the real cache every draw must be reweighted."""
     d = draws_a(name, s, cache)
-    n = len(d["phi"])
-    parts = [np.load(cache / "reweight" / pid(name, s) / f"chunk_{c:03d}.npz")
-             for c in range(math.ceil(n / CHUNK))]  # fmt: skip
-    if sum(len(p["lnl_fast"]) for p in parts) < n:  # a smoke run reweights fewer draws
-        n = sum(len(p["lnl_fast"]) for p in parts)
+    folder = cache / "reweight" / pid(name, s)
+    parts, c = [], 0
+    while (folder / f"chunk_{c:03d}.npz").exists():
+        parts.append(np.load(folder / f"chunk_{c:03d}.npz"))
+        c += 1
+    n = sum(len(p["lnl_fast"]) for p in parts)
+    if n == 0 or (_real(cache) and n != len(d["phi"])):
+        raise FileNotFoundError(f"{pid(name, s)}: {n} of {len(d['phi'])} draws reweighted")
     out = {k: d[k] for k in d}
     out["phi"] = d["phi"][:n]
     for key in parts[0].files:
-        out[key] = np.concatenate([p[key] for p in parts])[:n]
+        out[key] = np.concatenate([p[key] for p in parts])
     return out
 
 
@@ -699,6 +710,11 @@ def p_below_25(lnz: dict[str, float], err: dict[str, float], w: dict[str, float]
             "l_share_of_cell0": float(l_share)}  # fmt: skip
 
 
+def rel(x: float, ref: float) -> float:
+    """x / ref − 1; NaN (which fails every test) when ref is not positive."""
+    return float(x / ref - 1.0) if ref > 0 else math.nan
+
+
 def at_tol(value: float, tol: float, band: float) -> bool:
     return abs(abs(value) - tol) <= band
 
@@ -729,7 +745,7 @@ def part_a(cache: Path, synthetic: int | None = None) -> dict:
                   "seeds": st, "merged": merged, "ln_z_range": spread(z),
                   "median_error": seed_error(meds, circular=True),
                   "median_range": spread(meds, circular=True),
-                  "width_rel_dev": (wds / wds.mean() - 1.0).tolist(),
+                  "width_rel_dev": [rel(x, wds.mean()) for x in wds],
                   "capped": [bool(seeds[s]["capped"]) for s in SEEDS],
                   "ncall": [int(seeds[s]["ncall"]) for s in SEEDS]}  # fmt: skip
     xs = {s: load_a("M", s, cache) for s in X_SEEDS}
@@ -782,7 +798,7 @@ def part_a(cache: Path, synthetic: int | None = None) -> dict:
     mm = m["merged"]
     x = {"d_ln_z": xm["ln_z"] - mm["ln_z"],
          "d_median": float(circ_dev([mm["galle_median"], xm["galle_median"]])[1]),
-         "width_rel": xm["galle_width68"] / mm["galle_width68"] - 1.0}  # fmt: skip
+         "width_rel": rel(xm["galle_width68"], mm["galle_width68"])}  # fmt: skip
     x["pass"] = bool(abs(x["d_ln_z"]) <= X_TOL["ln_z"] and abs(x["d_median"]) <= X_TOL["median"]
                      and abs(x["width_rel"]) <= X_TOL["width_rel"])  # fmt: skip
     x["at_tolerance"] = {k: at_tol(x[f"d_{k}" if k != "width_rel" else k], X_TOL[k], AT_TOL[k])
