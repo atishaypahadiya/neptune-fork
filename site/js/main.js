@@ -7,7 +7,7 @@ import {
   loadJSON, loadHeadline, loadConjunction, loadWindow, loadTimeline, loadChecks, fmt, drv,
 } from "./data.js";
 import * as C from "./copy.js";
-import { fill, fail, keepRanges, keepWhole } from "./plate.js";
+import { fill, fail, keepRanges, appendText } from "./plate.js";
 import { plateI, plateII, plateIII } from "./plates.js";
 import { fig1, fig2, fig4, fig5, fig6, fig7, fig8, fig9, fig10 } from "./figs.js";
 
@@ -89,14 +89,14 @@ function quotes(D) {
       const e = document.createElement(tag);
       if (cls) e.className = cls;
       if (lang) e.lang = lang;
-      e.textContent = text;
+      appendText(e, text);
       el.append(e);
     };
     add("p", "q-text", `“${q.text}”`, q.translation ? "fr" : "en");
     // The translator's name and year stay on one line (no-break space): no "(2016))" alone.
     if (q.translation) add("p", "q-trans", `“${q.translation}” (translation: ${q.translation_by.replace(/ \(/g, "\u00a0(")})`);
     add("footer", "q-src", `${q.who}, ${q.original}; quoted in ${q.quoted_in}.`);
-    // ITTEN measures a text edge from its own text nodes only; keepWhole's name spans move that
+    // ITTEN measures a text edge from its own text nodes only; the name spans move that
     // edge off the real one (docs/itten-overrides.md).
     el.lastChild.dataset.ittenIgnore = "near-miss-edge";
   }
@@ -109,8 +109,8 @@ function references(D) {
     const li = document.createElement("li");
     li.id = `ref-${r.id}`;
     for (const p of r.parts) {
-      if (typeof p === "string") li.append(p);
-      else if (p.i) { const i = document.createElement("i"); i.textContent = p.i; li.append(i); }
+      if (typeof p === "string") appendText(li, p);
+      else if (p.i) { const i = document.createElement("i"); appendText(i, p.i); li.append(i); }
       else { const a = document.createElement("a"); a.href = p.href; a.textContent = p.text; li.append(a); }
     }
     ol.append(li);
@@ -193,7 +193,6 @@ async function main() {
   // Controls that only work with JS (Plate III's play and scrub, Copy) are hidden in the HTML.
   for (const el of document.querySelectorAll("[data-js]")) el.hidden = false;
   keepRanges(document.querySelector("main"));
-  keepWhole(document.querySelector("main"));
   document.documentElement.dataset.ready = "1";
 }
 
