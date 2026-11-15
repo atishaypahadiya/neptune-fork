@@ -142,7 +142,8 @@
   "P1B_adams_noise.md",
   "P1B_challis_detection.md",
   "P1B_bouvard_1821.md",
-  "P1B_bouvard_attribution.md"
+  "P1B_bouvard_attribution.md",
+  "P1B_bouvard_tables.md"
  ],
  "acknowledgements": "I thank Maria Giovanna De Simone, Special Collections, St John's College, Cambridge, for the scans of MS W16.",
  "built_from_sha256": {
@@ -155,6 +156,7 @@
   "docs/notes/P1B_challis_prerun.json": "5d2dfad0842d164712014a526c1ee8b191cd2d59e06d21e963f9d06f89a1aba5",
   "data/historical/adams_challis/prediscovery_recordings.csv": "9fb014c020fc5eeb0dc312866a60a4d748c6f2301cd7b8cd23cb1988c5ee9f47",
   "docs/notes/P1B_bouvard_attribution.json": "3a8f7ea23449375110fe213d590575cfd0d08f196570b86043e2a08f851f51f3",
+  "docs/notes/P1B_bouvard_tables.json": "5601eb652f9d54a8049194a334a21bbd192b5f3390cae235b88823b5eec0a3c3",
   "data/historical/adams_challis/adams_solutions_ms.csv": "d2dd0e07d2b4ad8a9d91c28e07d65d026b6c051f6889123a9a379205eefeadf5"
  }
 }

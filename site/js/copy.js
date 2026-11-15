@@ -70,7 +70,8 @@ export function abstract(D) {
       `under the pre-registered Gaussian errors and ${rng(g.lo68, g.hi68)} under Student-t ` +
       `errors, which the evidence favours (ln {i:B} = ${signed(t.vs_headline.ln_b, 1)}); ` +
       `Neptune is ${inside}. The 95 % range, ${rng(i95.lo, i95.hi)}, is ` +
-      `${i95.state === "final" ? "final" : "provisional"}.${lalandeClause(D.m6e)}`,
+      `${i95.state === "final" ? "final" : "provisional"}${s1Clause(D.s1, i95)}.` +
+      `${lalandeClause(D.m6e)}`,
     abstract_p3: `The headline fit gives a mass of ${fmt(h.mass.median)} Earth masses ` +
       `(68 %: ${range(h.mass.lo68, h.mass.hi68)}; Neptune ${fmt(h.neptune.mass, 2)}) and a ` +
       `semi-major axis of ${fmt(h.a.median)} AU (${range(h.a.lo68, h.a.hi68)}). Le Verrier's ` +
@@ -424,6 +425,14 @@ function lalDeclination(M) {
 }
 
 /** The abstract's sentence: only what the reading supports. */
+/** Beside the provisional 95 % range: the rerun of the nearest cell in sub-cells
+ * (docs/notes/S1_cell0.md), while it is unresolved. */
+function s1Clause(S, i95) {
+  if (i95.state === "final" || S.values.resolved) return "";
+  return `; a rerun of the solutions nearer than ${S.values.a_max_au} AU, cut into smaller ` +
+    `cells, did not make the runs repeatable`;
+}
+
 function lalandeClause(M) {
   const cls = new Set(lalValues(M, "class"));
   if (cls.size === 1 && cls.has("inside 68 %")) {

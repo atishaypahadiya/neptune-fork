@@ -1241,6 +1241,285 @@
    "S8c the 1780 place: D interpolated from its neighbours",
    "delta_arcsec",
    "1780"
+  ],
+  "bvt_depends_on_the_method": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "R2",
+   "reading",
+   "state",
+   "depends_on_the_method"
+  ],
+  "bvt_H1_d1c_R": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "R2",
+   "attribution",
+   "H1",
+   "d1c",
+   "R"
+  ],
+  "bvt_sa_H1_d1c_R": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "sensitivities",
+   "S-a",
+   "attribution",
+   "H1",
+   "d1c",
+   "R"
+  ],
+  "bvt_H1_d1c_Ob": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "R2",
+   "attribution",
+   "H1",
+   "d1c",
+   "Ob"
+  ],
+  "bvt_sa_H1_d1c_Ob": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "sensitivities",
+   "S-a",
+   "attribution",
+   "H1",
+   "d1c",
+   "Ob"
+  ],
+  "bvt_H1_d1c_I": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "R2",
+   "attribution",
+   "H1",
+   "d1c",
+   "I"
+  ],
+  "bvt_sa_H1_d1c_I": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "sensitivities",
+   "S-a",
+   "attribution",
+   "H1",
+   "d1c",
+   "I"
+  ],
+  "bvt_H1_d1c_row": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "R2",
+   "attribution",
+   "H1",
+   "d1c",
+   "row"
+  ],
+  "bvt_sa_H1_d1c_row": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "sensitivities",
+   "S-a",
+   "attribution",
+   "H1",
+   "d1c",
+   "row"
+  ],
+  "bvt_H1_chain_R": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "R2",
+   "attribution",
+   "H1",
+   "chain",
+   "R"
+  ],
+  "bvt_sa_H1_chain_R": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "sensitivities",
+   "S-a",
+   "attribution",
+   "H1",
+   "chain",
+   "R"
+  ],
+  "bvt_H1_chain_Ob": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "R2",
+   "attribution",
+   "H1",
+   "chain",
+   "Ob"
+  ],
+  "bvt_sa_H1_chain_Ob": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "sensitivities",
+   "S-a",
+   "attribution",
+   "H1",
+   "chain",
+   "Ob"
+  ],
+  "bvt_H1_chain_I": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "R2",
+   "attribution",
+   "H1",
+   "chain",
+   "I"
+  ],
+  "bvt_sa_H1_chain_I": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "sensitivities",
+   "S-a",
+   "attribution",
+   "H1",
+   "chain",
+   "I"
+  ],
+  "bvt_H1_chain_row": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "R2",
+   "attribution",
+   "H1",
+   "chain",
+   "row"
+  ],
+  "bvt_sa_H1_chain_row": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "sensitivities",
+   "S-a",
+   "attribution",
+   "H1",
+   "chain",
+   "row"
+  ],
+  "bvt_H2_d1c_R": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "R2",
+   "attribution",
+   "H2",
+   "d1c",
+   "R"
+  ],
+  "bvt_sa_H2_d1c_R": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "sensitivities",
+   "S-a",
+   "attribution",
+   "H2",
+   "d1c",
+   "R"
+  ],
+  "bvt_H2_d1c_Ob": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "R2",
+   "attribution",
+   "H2",
+   "d1c",
+   "Ob"
+  ],
+  "bvt_sa_H2_d1c_Ob": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "sensitivities",
+   "S-a",
+   "attribution",
+   "H2",
+   "d1c",
+   "Ob"
+  ],
+  "bvt_H2_d1c_I": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "R2",
+   "attribution",
+   "H2",
+   "d1c",
+   "I"
+  ],
+  "bvt_sa_H2_d1c_I": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "sensitivities",
+   "S-a",
+   "attribution",
+   "H2",
+   "d1c",
+   "I"
+  ],
+  "bvt_H2_d1c_row": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "R2",
+   "attribution",
+   "H2",
+   "d1c",
+   "row"
+  ],
+  "bvt_sa_H2_d1c_row": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "sensitivities",
+   "S-a",
+   "attribution",
+   "H2",
+   "d1c",
+   "row"
+  ],
+  "bvt_H2_chain_R": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "R2",
+   "attribution",
+   "H2",
+   "chain",
+   "R"
+  ],
+  "bvt_sa_H2_chain_R": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "sensitivities",
+   "S-a",
+   "attribution",
+   "H2",
+   "chain",
+   "R"
+  ],
+  "bvt_H2_chain_Ob": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "R2",
+   "attribution",
+   "H2",
+   "chain",
+   "Ob"
+  ],
+  "bvt_sa_H2_chain_Ob": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "sensitivities",
+   "S-a",
+   "attribution",
+   "H2",
+   "chain",
+   "Ob"
+  ],
+  "bvt_H2_chain_I": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "R2",
+   "attribution",
+   "H2",
+   "chain",
+   "I"
+  ],
+  "bvt_sa_H2_chain_I": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "sensitivities",
+   "S-a",
+   "attribution",
+   "H2",
+   "chain",
+   "I"
+  ],
+  "bvt_H2_chain_row": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "R2",
+   "attribution",
+   "H2",
+   "chain",
+   "row"
+  ],
+  "bvt_sa_H2_chain_row": [
+   "docs/notes/P1B_bouvard_tables.json",
+   "sensitivities",
+   "S-a",
+   "attribution",
+   "H2",
+   "chain",
+   "row"
   ]
  },
  "values": {
@@ -1800,7 +2079,40 @@
   "bv_prop_sin_III_change_C": 0.07813497233280486,
   "bv_prop_cos_III_change_C": 0.1190137648316636,
   "bv_s8b_delta_1780": 3.402,
-  "bv_s8c_delta_1780": 2.7972610129331343
+  "bv_s8c_delta_1780": 2.7972610129331343,
+  "bvt_depends_on_the_method": false,
+  "bvt_H1_d1c_R": 3.164519782876795,
+  "bvt_sa_H1_d1c_R": 6.044696978369075,
+  "bvt_H1_d1c_Ob": 7.9939364565723565,
+  "bvt_sa_H1_d1c_Ob": 5.113759261080077,
+  "bvt_H1_d1c_I": -1.0378175643429302,
+  "bvt_sa_H1_d1c_I": -0.22810868729033018,
+  "bvt_H1_d1c_row": "Mostly the observations, with a share from the reference.",
+  "bvt_sa_H1_d1c_row": "Mostly the reference, with a share from the observations.",
+  "bvt_H1_chain_R": 4.367643091068828,
+  "bvt_sa_H1_chain_R": 11.410900095158013,
+  "bvt_H1_chain_Ob": 6.576447295255434,
+  "bvt_sa_H1_chain_Ob": -0.4668097088337504,
+  "bvt_H1_chain_I": -0.7625566693052974,
+  "bvt_sa_H1_chain_I": 2.343409374762018,
+  "bvt_H1_chain_row": "Mostly the observations, with a share from the reference.",
+  "bvt_sa_H1_chain_row": "The reference carries the shift.",
+  "bvt_H2_d1c_R": 4.118242994228268,
+  "bvt_sa_H2_d1c_R": 7.648411280321568,
+  "bvt_H2_d1c_Ob": 8.466450562475103,
+  "bvt_sa_H2_d1c_Ob": 4.936282276381803,
+  "bvt_H2_d1c_I": -0.759957016296454,
+  "bvt_sa_H2_d1c_I": -0.05646414806182065,
+  "bvt_H2_d1c_row": "Mostly the observations, with a share from the reference.",
+  "bvt_sa_H2_d1c_row": "Mostly the reference, with a share from the observations.",
+  "bvt_H2_chain_R": 5.694054413010605,
+  "bvt_sa_H2_chain_R": 14.681151863537082,
+  "bvt_H2_chain_Ob": 6.879570460245617,
+  "bvt_sa_H2_chain_Ob": -2.10752699028086,
+  "bvt_H2_chain_I": -0.4789888075580109,
+  "bvt_sa_H2_chain_I": 2.081260379683954,
+  "bvt_H2_chain_row": "Mostly the observations, with a share from the reference.",
+  "bvt_sa_H2_chain_row": "The reference carries the shift."
  },
  "constants": {
   "fit_epoch": {

@@ -24,6 +24,7 @@ DET = NOTES + "P1B_challis_detection.json"
 PRERUN = NOTES + "P1B_challis_prerun.json"
 N1 = NOTES + "P1B_challis_detection_n1.json"  # the chart case under the sheet's own limits
 BOUV = NOTES + "P1B_bouvard_attribution.json"  # step 6: the attribution to Bouvard's tables
+TABLES = NOTES + "P1B_bouvard_tables.json"  # step 3e: the same cells with the tables themselves
 MS = "data/historical/adams_challis/adams_solutions_ms.csv"
 RECORDINGS = "data/historical/adams_challis/prediscovery_recordings.csv"
 SITE_DATA = ROOT / "site" / "data"
@@ -168,6 +169,14 @@ def bouvard_sources() -> dict:
                 *c, "sensitivities", f"propagation d {k}", "H1", "d1c", q]  # fmt: skip
     for v, name in S8.items():
         s[f"bv_s8{v}_delta_1780"] = [*c, "sensitivities", name, "delta_arcsec", "1780"]
+    # Step 3e (route B): R2 with the 1780 place interpolated, and S-a, the 1780 place as step
+    # 3d fixed it (the century branch), both by method and hypothesis.
+    s["bvt_depends_on_the_method"] = [TABLES, "R2", "reading", "state", "depends_on_the_method"]
+    for h in ("H1", "H2"):
+        for m in ("d1c", "chain"):
+            for q in ("R", "Ob", "I", "row"):
+                s[f"bvt_{h}_{m}_{q}"] = [TABLES, "R2", "attribution", h, m, q]
+                s[f"bvt_sa_{h}_{m}_{q}"] = [TABLES, "sensitivities", "S-a", "attribution", h, m, q]
     return s
 
 
@@ -347,7 +356,7 @@ def _sha(name: str) -> str:
 
 def build() -> dict[str, dict]:
     a, c = adams_sources(), challis_sources()
-    files = (FIT, REPRO, NOISE, HIST, DET, N1, PRERUN, RECORDINGS, BOUV, MS)
+    files = (FIT, REPRO, NOISE, HIST, DET, N1, PRERUN, RECORDINGS, BOUV, TABLES, MS)
     return {
         "p1b_adams.json": {
             "description": "Companion page, § 3: values copied from the committed step 3, 3b "
@@ -375,7 +384,7 @@ def build() -> dict[str, dict]:
             "notes": ["P1B_sources.md", "P1B_adams_solutions.md", "P1B_challis_sweeps.md",
                       "P1B_adams_fit.md", "P1B_adams_reproduction.md", "P1B_adams_noise.md",
                       "P1B_challis_detection.md", "P1B_bouvard_1821.md",
-                      "P1B_bouvard_attribution.md"],
+                      "P1B_bouvard_attribution.md", "P1B_bouvard_tables.md"],
             "acknowledgements": ACKNOWLEDGEMENTS,
             "built_from_sha256": {f: _sha(f) for f in files},
         },

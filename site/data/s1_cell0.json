@@ -1,0 +1,41 @@
+{
+ "description": "The rerun of the eccentricity test's nearest cell in six sub-cells (main page, beside the 95 % range): copies of fields of docs/notes/S1_cell0.json.",
+ "plan": "docs/notes/S1_cell0.md",
+ "sources": {
+  "resolved": [
+   "docs/notes/S1_cell0.json",
+   "reading",
+   "resolved"
+  ],
+  "outcome": [
+   "docs/notes/S1_cell0.json",
+   "reading",
+   "outcome"
+  ],
+  "verdict": [
+   "docs/notes/S1_cell0.json",
+   "reading",
+   "verdict"
+  ],
+  "label_95": [
+   "docs/notes/S1_cell0.json",
+   "reading",
+   "label_95"
+  ],
+  "a_max_au": [
+   "docs/notes/S1_cell0.json",
+   "stage_a",
+   "subcells",
+   -1,
+   "a_au",
+   1
+  ]
+ },
+ "values": {
+  "resolved": false,
+  "outcome": "not resolved, the sub-cells do not make the runs repeatable (T1)",
+  "verdict": "the published verdict stands; unresolved",
+  "label_95": "provisional: for both reasons (the fourth condition of the higher-resolution reruns' rule, and the low-distance solution under e ≤ 0.5)",
+  "a_max_au": 25.0
+ }
+}
