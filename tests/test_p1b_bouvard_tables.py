@@ -307,3 +307,36 @@ def test_s_midnight_not_run_for_want_of_rows():
     assert not s["run"]
     assert sorted(s["missing"]) == ["1764", "1792", "1810", "1819", "1840"]
     assert s == _recorded()["sensitivities"]["S-midnight"]
+
+
+def test_the_spot_check_by_a_person_matches_the_rows():
+    """20 route-B cells checked against the page bands (docs/review/, 14 November 2026): all
+    match. 15 chosen by a fixed rule, 5 at random, seed [20261114, 1821]."""
+    import hashlib
+    import json
+    from collections import Counter
+
+    root = Path(__file__).resolve().parents[1]
+    sc = json.loads(
+        (root / "docs/review/bouvard_route_b_spotcheck_human_results.json").read_text("utf-8")
+    )
+    path = D / "bouvard_1821" / "bouvard_1821_uranus_table_rows_route_b.csv"
+    assert sc["rows_sha256"] == hashlib.sha256(path.read_bytes()).hexdigest()
+    assert sc["reviewer"] == "human" and sc["seed"] == [20261114, 1821]
+    cells = sc["cells"]
+    assert len(cells) == 20 and all(c["matches"] == "yes" and c["reading"] == "" for c in cells)
+    rows = {(r["table"], r["row"], r["column"]): r for r in read(path)}
+    keys = [(c["table"], c["row"], c["column"]) for c in cells]
+    assert len(set(keys)) == 20
+    assert all(
+        rows[k]["value_as_printed"] == c["entered"] for k, c in zip(keys, cells, strict=True)
+    )
+    reasons = Counter(
+        "1780 neighbour" if c["reason"].startswith("read at") else c["reason"] for c in cells
+    )
+    assert reasons == {
+        "misprint log (read by a computed path)": 4, "misprint log": 1,
+        "the two entries disagreed": 1, "marked doubtful": 4, "1780 neighbour": 5, "random": 5,
+    }  # fmt: skip
+    # The one cell on which the two entries disagreed is among them, as resolved.
+    assert ("I", "1801", "VIII") in keys and rows["I", "1801", "VIII"]["value_used"] == "150"

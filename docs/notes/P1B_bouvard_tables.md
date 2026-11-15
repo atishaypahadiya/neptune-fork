@@ -637,3 +637,32 @@ Each was made before the number it touches was seen, except where marked.
   unchanged.
 - S-midnight needs Table IV's rows 9 and 30 entered twice, under a dated amendment, if it
   is to be run.
+
+## Spot check by a person, 14 November 2026
+
+Nothing above is changed. Twenty of the 1,855 cells were checked by a person against the
+page bands, in a kit drawn before any answer was given (seed [20261114, 1821]; the kit
+carries page images and stays private). The answers are the kit's own export
+(15 November 00:40 UTC), saved as
+`docs/review/bouvard_route_b_spotcheck_human_results.json`. The reviewer field was left
+empty by the export and was filled when the record was saved. The selection rule is in that
+file.
+
+| group | cells | matches |
+|---|---|---|
+| misprint log: every logged cell a computed path reads (all four are read by S-two-row), and one more drawn | 5 | 5 |
+| the one cell on which the two entries disagreed (Table I, 1801, column VIII: 150) | 1 | 1 |
+| marked doubtful (an alternative reading or a damaged figure in the entry note), drawn | 4 | 4 |
+| read at the places from which the 1780 place is interpolated: one at each of 1769, 1771, 1783 and 1786, and one more | 5 | 5 |
+| random, from the remaining cells | 5 | 5 |
+
+**0 discrepancies in 20.** What this supports, and what it does not:
+
+- The 15 chosen cells are where an error was likeliest or would have mattered most: every
+  logged misprint that a computed path reads, the one disagreement and four doubtful
+  readings all hold as entered.
+- For the 1780 place, on which the reading turns, the check is a sample: 5 of the 124
+  route-B cells the four neighbour places read. It is not a check of all of them.
+- The 5 random cells bound the error rate of the whole transcription only weakly: with 0
+  errors in 5, the one-sided 95 % upper bound is 45 %. The case for the rows rests mainly
+  on the double entry and its reconciliation, as before.
