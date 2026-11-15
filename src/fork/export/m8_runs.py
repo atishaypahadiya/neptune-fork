@@ -751,7 +751,7 @@ def summarize(cache: Path = CACHE) -> dict:
 
     for v in VARIANTS:
         check_frozen(v)
-    rec = ledger.start("m8/summarize", "summarize", n_workers=1)
+    led = ledger.start("m8/summarize", "summarize", n_workers=1)
     tg = m6c.comparison_targets()
     targets = {"jpl": tg["jpl"]["galle_lon_ecl_of_date_deg"],
                "le_verrier_derived":
@@ -977,7 +977,7 @@ def summarize(cache: Path = CACHE) -> dict:
     }  # fmt: skip
     if cache == CACHE:
         write_json(OUT_NAME, payload)
-        rec.done(n_likelihood_calls=0, n_integrations=len(q2), sim_years=None)
+        led.done(n_likelihood_calls=0, n_integrations=len(q2), sim_years=None)
     else:
         (cache / OUT_NAME).write_text(json.dumps(payload, indent=1, default=float))
     _log("summarize: gates " + json.dumps(payload["gates"]["all_pass"]), cache)
@@ -1008,7 +1008,7 @@ def summarize_followup(campaign: str, cache: Path | None = None) -> dict:
     real = cache == camp.cache
     for v in VARIANTS:
         check_frozen(v)
-    rec = ledger.start(f"{camp.ledger_prefix}/summarize", "summarize", n_workers=1)
+    led = ledger.start(f"{camp.ledger_prefix}/summarize", "summarize", n_workers=1)
     tg = m6c.comparison_targets()
     targets = {"jpl": tg["jpl"]["galle_lon_ecl_of_date_deg"],
                "le_verrier_derived":
@@ -1193,7 +1193,7 @@ def summarize_followup(campaign: str, cache: Path | None = None) -> dict:
         payload["tolerances"] = {**TOL, "convergence": CONV_TOL}
     if real:
         write_json(FOLLOWUP_OUT[campaign], payload)
-        rec.done(n_likelihood_calls=0, n_integrations=0, sim_years=None)
+        led.done(n_likelihood_calls=0, n_integrations=0, sim_years=None)
     else:
         (cache / FOLLOWUP_OUT[campaign]).write_text(json.dumps(payload, indent=1, default=float))
     _log(f"summarize {campaign}: gates {json.dumps(payload['gates']['all_pass'])}", cache)
