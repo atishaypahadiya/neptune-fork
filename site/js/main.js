@@ -96,9 +96,6 @@ function quotes(D) {
     // The translator's name and year stay on one line (no-break space): no "(2016))" alone.
     if (q.translation) add("p", "q-trans", `“${q.translation}” (translation: ${q.translation_by.replace(/ \(/g, "\u00a0(")})`);
     add("footer", "q-src", `${q.who}, ${q.original}; quoted in ${q.quoted_in}.`);
-    // ITTEN measures a text edge from its own text nodes only; the name spans move that
-    // edge off the real one (docs/itten-overrides.md).
-    el.lastChild.dataset.ittenIgnore = "near-miss-edge";
   }
 }
 

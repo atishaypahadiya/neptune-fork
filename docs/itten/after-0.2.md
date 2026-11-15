@@ -92,3 +92,90 @@ else changes: no colour, size, spacing or position, and the same blocks in the s
 Crops: `itten-output/compare-0.2/` (ignored), 229 pairs, before left and after right, every
 changed block at 320 and 720 px in both engines and the widow at 920, 1160 and 1440 px;
 `linediff.json` there has the lines of each block before and after.
+
+## Second pass: spans with the text, hyphenation by column
+
+Same ITTEN, engines and sweep. Before is `f2766e9` (the first pass); after is `dfb690b` plus the
+override markers committed with this section.
+
+1. `4ed9b53`: `keepWhole()` is gone. `appendText()` (`site/js/plate.js`) puts names and
+   addresses in `span.whole` as `fill()`, the reference lists and the quotes write their text,
+   so the prerender serializes them: 784 spans on the main page and 543 on the companion, the
+   same with JavaScript on and off, and nothing is wrapped after load. WebKit does not kern
+   across a span's edge, so each span takes what kerns with its neighbours: the punctuation
+   around it, a trailing space, an elided prefix (l'Académie) and hyphenated initials (S.-F.).
+   A canvas check in WebKit over the whole text finds 0 of 2452 span edges where the pair
+   would kern. Line breaks above 720 px are unchanged in both engines; at 720 px and below
+   0 to 4 blocks per width move by a word.
+2. `dfb690b`: Plates II and III's text columns are inline-size containers and hyphenate under
+   26em of their own width, 900 to about 1110 px. The main column has no box of its own (it is
+   a grid track), and an inline-size container on `main`, `html` or a section changed WebKit's
+   automatic column widths in the companion's Tables 1 and 2 at every width, so it keeps a
+   media query, now on its measure: under 34em of the phone body, a window of 39.25rem
+   (628 px). Both engines switch at the same widths (628 on, 632 off; 1110 on, 1120 off).
+
+### Counts
+
+| Check | Main first pass | Main now | Companion first pass | Companion now |
+|---|---|---|---|---|
+| Errors | 0 | 0 | 0 | 0 |
+| Warnings | 0 | 0 | 0 | 0 |
+| `rag` logged | 1 | 0 | 0 | 0 |
+| `near-miss-edge` logged | 2 | 2 | 1 | 2 |
+| `widow` logged | 0 | 0 | 0 | 2 |
+| Info | 58 | 62 | 48 | 49 |
+
+Info: `text-wrap-pretty` 49 → 53 and 38 → 39 (short last lines at 640 to 720 px, where text is
+no longer hyphenated); the rest unchanged. No finding differs between Chromium and WebKit.
+
+Without the markers (`itten-output/v03-noignore-*`) the runs give exactly the logged six:
+
+- The rag at 920 px in Plate II is gone, and its marker and overrides row with it.
+- `near-miss-edge`, all the inspector artefact of `upstream.md` issue 4, now that spans are in
+  the text at every width: main, the citations at 400 px and the references at 520 px;
+  companion, the references at 480 to 520 px. Measured over all inline content the edges are
+  identical (16 and 16, 45 and 45, 43, 43 and 43 px). The quote-source pairs of the first pass
+  no longer appear, so their marker in `main.js` went; the citation blocks gained one.
+- `widow` on the companion: "arXiv:2108.06305." (360 px) and the path
+  "docs/notes/P1B_challis_detection.json." (360 to 640 px). Both lines are as they were in
+  the first pass, and both warnings were in the run before it. The first pass hid them by
+  accident: ITTEN splits words at element edges, and its spans ended before the full stop, so
+  the last line read as two words. Logged, with `upstream.md` issue 5 (an identifier as a
+  widow).
+
+### Hyphenation, checked word by word
+
+The same script, both pages and engines, at 320, 360, 600, 628, 632, 720, 900, 920, 1000, 1080
+and 1110 px. No name, DOI, URL, arXiv id or path is hyphenated; the long DOIs, the repository
+URL and the longest path still break without a hyphen at 320 to 360 px (`overflow-wrap`), as
+before. Nothing is hyphenated at 632 or 720 px. In Plates II and III, 900 to 1110 px, only
+common words break (pos-terior, helio-centric, con-junction), at most two lines in a row. The
+prerendered page now carries the spans, so WebKit keeps names whole without JavaScript too.
+
+Not changed, seen in passing: in WebKit, Table 2 on the companion breaks words without a
+hyphen in its narrow columns from 900 to 1110 px ("Bouvard|'s", "referenc|e"). It does the same
+at `f2766e9`; the tables are kept out of hyphenation and their lines did not move.
+
+### Visible changes
+
+Text blocks whose line breaks differ from the first pass (Chromium / WebKit):
+
+| Width | Main | Companion |
+|---|---|---|
+| 320 to 600 | 0 to 1 / 0 to 4 | 0 to 1 / 0 to 2 |
+| 640 | 25 / 27 | 19 / 19 |
+| 680 | 26 / 28 | 17 / 17 |
+| 720 | 24 / 25 | 16 / 18 |
+| 760 to 880 | 0 / 0 | 0 / 0 |
+| 920 to 1080 | 3 to 4 / 3 to 4 | 0 / 0 |
+| 1120 to 1920 | 0 / 0 | 0 / 0 |
+
+At 640 to 720 px the text is back to its lines before ITTEN 0.2 (unhyphenated). From 920 to
+1080 px the changes are Plate II's paragraphs, Fig. 3's caption and the captions of Plates II
+and III, all in the side column. Nothing else changes: no colour, size, spacing or position.
+`tools/check_prerender.py` and `tools/check_layout.py` (Chromium and WebKit) pass.
+
+Crops: `itten-output/compare-0.2-r2/pairs/` (ignored), 198 pairs, before left and after right,
+every changed block at 320, 640, 720, 920, 1000 and 1080 px in both engines;
+`linediff-sweep.json` there has the lines of every changed block, 320 to 1920 px.
+

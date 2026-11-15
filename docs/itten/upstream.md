@@ -1,6 +1,6 @@
 # Issues for ITTEN
 
-ITTEN version: v0.1.0 (c1962e2) for issues 1 to 3, v0.2.0 (d998de0) for issue 4. Found while
+ITTEN version: v0.1.0 (c1962e2) for issues 1 to 3, v0.2.0 (d998de0) for issues 4 and 5. Found while
 running ITTEN's loop on this site (`docs/itten/baseline.md`, `docs/itten/after.md`,
 `docs/itten/after-0.2.md`). Written to be filed upstream; nothing in `itten/` was changed.
 
@@ -218,12 +218,56 @@ node itten/inspector/inspect.js http://127.0.0.1:8796/4/ --widths 400 --no-engin
 **Observed.** `near-miss-edge`, warning: *Left edges 2.56 px apart: li ", C. J. 1970." at
 105.48, li ", A. 1821." at 108.05.* Both items' text starts at 48 px.
 
-**As met on this site.** To keep WebKit from hyphenating names on phones, `keepWhole()` wraps
-capitalised words in a span. Three pairs of references and quote sources then read as 1.4 to
-2.6 px apart, in Chromium and WebKit, at widths where nothing moved (measured with all inline
-content: 45 and 45 px, 88 and 88 px). Logged in `docs/itten-overrides.md` with
-`data-itten-ignore="near-miss-edge"`.
+**As met on this site.** To keep WebKit from hyphenating names, `appendText()`
+(`site/js/plate.js`) writes capitalised words in a span. Pairs of references and quote sources
+then read as 1.4 to 2.6 px apart, in Chromium and WebKit, at widths where nothing moved
+(measured with all inline content: 45 and 45 px, 88 and 88 px). Logged in
+`docs/itten-overrides.md` with `data-itten-ignore="near-miss-edge"`.
 
 **Suggestion.** Measure a text block's line boxes over all its text, inline descendants
 included (a range over the block's contents, as `lines()` does per node), and keep the
 own-text-node rule only for deciding which blocks are text.
+
+---
+
+## 5. An arXiv id or a path as a widow
+
+Found with ITTEN v0.2.0 (d998de0).
+
+**What happens.** `widow` does not count a last line that is a URL or a DOI
+(`inspector/typography.js`: `^(https?://|www\.|doi:)` or a host followed by a path). Other
+identifiers of the same kind, an arXiv id (`arXiv:2108.06305`) or a repository path
+(`docs/notes/P1B_challis_detection.json`), are reported. None of them can be reworded or
+hyphenated, and joining one to the word before it with a no-break space makes a longer
+unbreakable run, which is worse at a narrow measure.
+
+**Reproduction.** `5/index.html`:
+
+```html
+<!doctype html><html lang="en"><meta charset="utf-8"><link rel="icon" href="data:,"><meta name="viewport" content="width=device-width">
+<style>
+  body { margin: 0; padding: 1.5rem; overflow-wrap: break-word; font: 400 1rem/1.5rem Georgia, serif; }
+  p { margin: 0 0 1.5rem; max-width: 20rem; text-wrap: pretty; }
+</style>
+<p>A chapter in an edited book on the discovery of the planet, with both of its identifiers listed at the end of the line: arXiv:2108.06305.</p>
+<p>The figures are built from notes kept in the repository, each named for its step: docs/notes/P1B_adams_fit.md, docs/notes/P1B_challis_detection.json.</p>
+<p>The same paragraph ending on an address the inspector already exempts from widows: https://doi.org/10.1007/978-3-030-54218-4_6.</p>
+```
+
+```sh
+node itten/inspector/inspect.js http://127.0.0.1:8796/5/ --widths 400 --no-engines --out out/5
+```
+
+**Observed.** Two `widow` warnings: *The last line holds one word, "arXiv:2108.06305.", under 3
+full lines, with text-wrap: pretty set.* and the same for *"docs/notes/P1B_challis_…"*. The
+third paragraph, ending on a DOI URL, is not reported. (One `rag` warning on the same page is
+not part of this issue.)
+
+**As met on this site.** The companion's reference to Krajnović (2021) ends on its arXiv id,
+alone on the last line at 360 px, and its first data-availability paragraph ends on the path
+of a note, alone on the last line from 360 to 640 px. Logged in `docs/itten-overrides.md`
+with `data-itten-ignore="widow"`.
+
+**Suggestion.** Treat a last line that is one identifier as not a widow: besides URLs and
+DOIs, a `scheme:` prefix with no spaces (`arXiv:`, `urn:`, `isbn:`) and a token holding a `/`
+or `_` with no spaces.
