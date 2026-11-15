@@ -13,7 +13,8 @@ does not cover took seconds to a few minutes and are marked "not in ledger".
 |---|---|---|
 | Phase 1 (M1–M10) | 1090 (1007 timed live, 83 estimated) | the tracked site ledger `site/data/ledger.json`, 271 rows |
 | Phase 1b (steps 3, 3b, 3c, 4) | 103 in the ledger, plus at most 25 for a stopped run that left no row | the same ledger, rows `p1b_*` (28 rows), added at the site step (2026-11-12) |
-| all | 1193 (1109 timed live, 83 estimated) | `site/data/ledger.json`, 299 rows |
+| v1.4 runs | 126.1 in the ledger, plus about 40 for runs that wrote no row | the same ledger, rows `s1_cell0/*` and `m6e/*` (30 rows), added 2026-11-15 |
+| all | 1319 (1235 timed live, 83 estimated) | `site/data/ledger.json`, 329 rows |
 
 **Phase 1:** 1153 million likelihood calls, 624 million of them N-body integrations over
 1690–1846 (the rest are the fast linearized likelihood of M8), or 96 billion simulated
@@ -30,6 +31,24 @@ planet-years.
 | step 3c, two smoke runs | 0.2 | 2.5 min | `p1b_adams_noise/draws` (2) |
 | step 4, the draws | 0.3 | 20 min on one core | `p1b_challis/draws` |
 | step 3c, the first full run, stopped | at most 25 (2 h 06 min × 12 workers; estimated) | 2 h 06 min | none: it saved nothing and wrote no row |
+
+**v1.4 runs by step:**
+
+| step | CPU-hours | wall | ledger rows |
+|---|---|---|---|
+| the eccentricity test's nearest cell in six sub-cells, stage A | 32.0 | 24 single-worker runs, 404 million fast-likelihood calls | `s1_cell0/a/*` (24) |
+| the same, reweighting | 2.3 | 12 workers | `s1_cell0/reweight` |
+| the same, stage B (two full-likelihood runs) | 91.7 | 9 h 05 min each on 6 workers, 55 million N-body integrations | `s1_cell0/b/*` (2) |
+| the check against Lalande's places | 0.05 | under a minute, three times | `m6e/predictive` (3) |
+| synthetic gate of the fit on Bouvard's rows | about 1.8 (1.3 sampling, 0.4 reweighting at wall × 12 workers; estimated) | 21 min | none: synthetic gates write no row |
+| synthetic gate of the fit on Adams's rows | about 36.7 (35.9 sampling, 0.8 reweighting; estimated) | 17 h 24 min | none: synthetic gates write no row |
+| the fit on Adams's rows, stopped by decision | about 1.1 (5.5 min × 12 workers; estimated) | 5.5 min | none: the runs did not finish; their checkpoints keep the work |
+| the Mercury identifiability study | at most 0.7 (estimated) | about 5 min preparation, 3 min fits and gates | none: the study has no ledger code |
+| Bouvard's tables at Adams's epochs | 0.05 | 167 s on one core | none |
+
+Sampling times of the gate runs are the measured wall times of single-worker runs, from their
+saved results; the rest are wall × workers from the driver logs, upper bounds. They are not in
+the ledger sum.
 
 Step 3b stage A (transcription) used no compute. The stopped run of step 3c is counted here
 and not in the ledger sum; its stall has no established cause (`docs/notes/P1B_adams_noise.md`,

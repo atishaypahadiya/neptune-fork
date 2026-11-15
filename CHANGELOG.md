@@ -4,7 +4,13 @@ Versions follow semver. Dates are the release dates; the DOIs are in `CITATION.c
 
 ## Unreleased
 
-Nothing yet.
+### Changed
+
+- The compute ledger includes the runs of v1.4: 1,319 CPU-hours in 329 rows (was 1,193 in
+  299), with the rerun of the eccentricity test's nearest cell at 126.0. The runs that wrote no
+  row (the synthetic gates of the two data choices, the stopped fit on Adams's rows, the
+  Mercury study) are listed with estimates, about 40 CPU-hours, outside the sum
+  (`site/data/ledger.json`, `README.md`, `docs/reproduce.md`).
 
 ## 1.4.0 (2026-11-15)
 
