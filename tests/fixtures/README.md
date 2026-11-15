@@ -26,3 +26,16 @@ path names this folder.
 
 `tests/data/horizons_m4.json` is the older, smaller fixture used by the `offline_horizons`
 modules; it is unchanged.
+
+`phase2/contact_real_horizons.npz`: JPL Horizons states at the published geocentric contacts
+of the 2016 and 2019 transits of Mercury, for `tests/test_contact_real.py`.
+
+- **Contacts:** F. Espenak, "2016 Transit of Mercury" and "2019 Transit of Mercury"
+  (eclipsewise.com/oh/tm2016.html, tm2019.html), Table 1: geocentric phases in UT1, from JPL
+  DE406. Converted to TDB with the IERS UT1 − UTC values bundled with astropy (no download).
+- **Query:** for each contact, Sun-centred geometric states of Mercury (199) and the Earth's
+  centre (399) as `fork.data.horizons.fetch_from_horizons` makes them, and Mercury's
+  astrometric position from the Earth's centre (`CENTER='500@399'`, `VEC_CORR='LT'`, ecliptic
+  and mean equinox of J2000) with its one-way light time. Fetched 2026-11-15.
+- **Regenerate:** `uv run python tests/fixtures/build_contact_fixture.py` (network).
+- No observation of any transit is in it: the contacts are published predictions.
