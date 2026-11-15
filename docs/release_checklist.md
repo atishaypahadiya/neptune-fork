@@ -298,3 +298,15 @@ Added 2026-11-13, prior-work reading notes:
 | Newcomb 1882, p. 450 | two entries; three points reconciled on the bands |
 | Spot check by a person | kit of 20 cells ready, not made |
 | Fit to these data | none; needs a pre-registered plan |
+
+## v1.4 runs, 13 November 2026 (local branch `v14-runs`, not on the site)
+
+| item | plan pushed | state on this branch |
+|---|---|---|
+| S1 cell 0 by sub-cells | `docs/notes/S1_cell0.md` | runner and tests; results appended below the plan's line when the runs end |
+| M6c variants, modern track (`bouvard`, `adams`) | `docs/notes/M6c_variants.md` | runner and tests; runs after S1 |
+| M6c variants, 1846 track | none | blocked: the 1846 reduction track has no specification |
+| M6d shape model against free distance | `docs/notes/M6d.md` | same runner; runs after the variants |
+
+Nothing here changes the site or `release/`. Each result needs its own review before it
+enters the page.
