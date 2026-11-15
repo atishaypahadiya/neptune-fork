@@ -1,0 +1,81 @@
+{
+  "$schema": "itten/schema/system.schema.json",
+  "name": "neptune-fork site",
+  "version": "1",
+  "source": {
+    "teardown": "docs/teardown.md",
+    "brief": "docs/DESIGN.md",
+    "overrides": "docs/itten-overrides.md"
+  },
+  "spacing": {
+    "scale": [6, 12, 18, 24, 36, 48, 72, 96],
+    "groupRatioMin": 2,
+    "note": "Base unit 6 px, a third of the 18 px body; steps 6 x 1, 2, 3, 4, 6, 8, 12, 16 (docs/teardown.md, Spacing). 18 is the paragraph gap and R1's text-column gap; 36 the space around a figure; 48 above an h3; 72 above a section on the companion and on phones; 96 above a section on the main page and around a plate. The page's side padding (--gutter) is fluid and logged in docs/itten-overrides.md."
+  },
+  "type": {
+    "families": [
+      { "name": "Source Serif 4", "role": "text", "fallback": ["Source Serif Pro", "Georgia", "serif"], "source": "Google Fonts, SIL OFL 1.1" },
+      { "name": "GFS Didot", "role": "display", "fallback": ["Didot", "Bodoni 72", "Georgia", "serif"], "source": "Google Fonts, SIL OFL 1.1" }
+    ],
+    "scale": [
+      { "name": "caption", "size": 14, "lineHeight": 21, "weight": 400, "family": "Source Serif 4" },
+      { "name": "note", "size": 15, "lineHeight": 23, "weight": 400, "family": "Source Serif 4" },
+      { "name": "body-phone", "size": 17, "lineHeight": 26, "weight": 400, "family": "Source Serif 4" },
+      { "name": "body", "size": 18, "lineHeight": 28, "weight": 400, "family": "Source Serif 4" },
+      { "name": "byline", "fluid": { "min": 14, "max": 17, "minWidth": 1166.67, "maxWidth": 1416.67 }, "leading": 1.5, "weight": 400, "family": "Source Serif 4" },
+      { "name": "subtitle", "fluid": { "min": 15, "max": 19, "minWidth": 1200, "maxWidth": 1520 }, "leading": 1.45, "weight": 400, "family": "Source Serif 4" },
+      { "name": "table-companion", "fluid": { "min": 15, "max": 17, "minWidth": 750, "maxWidth": 1250 }, "leading": 1.56, "weight": 400, "family": "Source Serif 4" },
+      { "name": "table", "fluid": { "min": 16, "max": 20, "minWidth": 666.67, "maxWidth": 1333.33 }, "leading": 1.56, "weight": 400, "family": "Source Serif 4" },
+      { "name": "h2", "fluid": { "min": 30, "max": 42, "minWidth": 750, "maxWidth": 1250 }, "leading": 1.05, "weight": 400, "family": "GFS Didot" },
+      { "name": "title-companion", "fluid": { "min": 32, "max": 50, "minWidth": 888.89, "maxWidth": 1388.89 }, "leading": 1.08, "weight": 400, "family": "GFS Didot" },
+      { "name": "title", "fluid": { "min": 40, "max": 100, "minWidth": 625, "maxWidth": 1562.5 }, "leading": 1.02, "weight": 400, "family": "GFS Didot" },
+      { "name": "title-wide", "fluid": { "min": 44, "max": 92, "minWidth": 785.71, "maxWidth": 1642.86 }, "leading": 1.02, "weight": 400, "family": "GFS Didot" },
+      { "name": "year", "fluid": { "min": 64, "max": 104, "minWidth": 1066.67, "maxWidth": 1733.33 }, "leading": 1, "weight": 400, "family": "GFS Didot" }
+    ],
+    "measure": { "min": 45, "max": 90 }
+  },
+  "grid": {
+    "breakpoints": [
+      { "minWidth": 0, "columns": 1, "gutter": 0, "margin": 16 },
+      { "minWidth": 900, "columns": 2, "gutter": 0, "margin": 36, "maxWidth": 640 },
+      { "minWidth": 1400, "columns": 2, "gutter": 0, "margin": 56, "maxWidth": 640 }
+    ],
+    "note": "docs/DESIGN.md, 'Widths': one grid of named lines (full, wide, body). Body is min(40rem, 100% - 2 x gutter); wide adds up to 12.5rem each side. The side margin (--gutter) is clamp(16px, 4vw, 56px), rounded to whole px: the margins above are its value at each breakpoint. Two columns from 900 px are Plates II and III, plate and text side by side, with no gutter between them."
+  },
+  "radius": {
+    "scale": [0],
+    "capsule": true,
+    "nesting": "concentric"
+  },
+  "colour": {
+    "roles": {
+      "ground": { "light": "#EEF1F3", "source": "R1 Plate II text column, Table 1 (--paper)" },
+      "text": { "light": "#0F2A6B", "source": "docs/DESIGN.md palette (--deep); R1 body is #13235A" },
+      "text-secondary": { "light": "#1C3F94", "source": "docs/DESIGN.md palette (--prussian): captions, section marks, notes, Table 1 values" },
+      "link": { "light": "#1C3F94", "source": "--prussian" },
+      "focus": { "light": "#1C3F94", "source": "--prussian, 2 px outline" },
+      "edge": { "light": "#1C3F94", "source": "--prussian: control borders, the one rule above Table 1's totals" },
+      "plate": { "light": "#1C3F94", "source": "R1 Plates I and II ground (--prussian)" },
+      "plate-deep": { "light": "#0F2A6B", "source": "R1 Plate III ground (--deep)" },
+      "plate-cloud": { "light": "#2F62B8", "source": "--mid, ground cloud layer only" },
+      "plate-wash": { "light": "#9DB8DC", "source": "--wash, vignette only; no text over it" },
+      "line": { "light": "#F4F7FB", "source": "R1 every line, point and label on plates (--line)" }
+    },
+    "pairs": [
+      { "fg": "text", "bg": "ground", "min": 4.5, "use": "body" },
+      { "fg": "text-secondary", "bg": "ground", "min": 4.5, "use": "text" },
+      { "fg": "link", "bg": "ground", "min": 4.5, "use": "text" },
+      { "fg": "line", "bg": "plate", "min": 4.5, "use": "text" },
+      { "fg": "line", "bg": "plate-deep", "min": 4.5, "use": "text" },
+      { "fg": "focus", "bg": "ground", "min": 3, "use": "non-text" },
+      { "fg": "edge", "bg": "ground", "min": 3, "use": "non-text" }
+    ]
+  },
+  "motion": {
+    "durations": { "glow": 160 },
+    "easings": { "glow": "ease" },
+    "reducedMotion": "instant"
+  },
+  "targets": { "minimum": 24, "comfortable": 44 },
+  "hairline": { "width": 1, "dpr": [1, 2] }
+}
