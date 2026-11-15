@@ -116,7 +116,7 @@ FINE_N, FINE_HALF = 15, 6.0  # points, widths
 SUB = 20
 TAIL_DECADES = (1.0, 2.0, 4.0)
 TAIL_LN = 25.0
-P_BLOCK = 12  # longitudes per planet scan
+HALF_BLOCKS = 4  # V3′'s halved planet grid (96 longitudes) runs as 4 processes of 24
 MAX_WIDEN = 1500
 
 # § 5: gates
@@ -127,6 +127,8 @@ V2_DCHI = (1.0, 4.0, 9.0, 25.0)
 V3_TOL = 0.05
 V4_TOL = 0.5
 V6_FRAC, V6_DCHI = 0.001, 25.0
+V6_FAR = 200.0  # 50 L² at L = 2 (amendment 1, item 9)
+V6_AMENDED = False  # set by amendment 1 once approved
 
 JAC_MODE = os.environ.get("FORK_IDFULL_JAC", "plan")
 N_INT = [0]  # full integrations in this process
@@ -553,7 +555,7 @@ class Task:
             return np.linspace(RING_GRID[0], RING_GRID[-1], 21 if self.half else 11)
         if self.model == "P":
             n = 2 * N_PHASE if self.half else N_PHASE
-            per = 2 * P_BLOCK if self.half else P_BLOCK
+            per = n // HALF_BLOCKS if self.half else n
             lam = 2.0 * math.pi * np.arange(n) / n
             return lam[self.block * per : (self.block + 1) * per]
         return np.array([0.0])
@@ -569,22 +571,20 @@ class Task:
 
 def stage1_tasks() -> list[Task]:
     out = []
-    nb = N_PHASE // P_BLOCK
     for t in range(1, 5):
         out += [Task(t, 0, 0, "NG"), Task(t, 0, 0, "J"), Task(t, 0, 0, "R")]
-        out += [Task(t, 0, 0, "P", d, b) for d in range(3) for b in range(nb)]
+        out += [Task(t, 0, 0, "P", d, 0) for d in range(3)]
     out += [Task(2, 0, 0, "R", half=True), Task(4, 0, 0, "J", half=True)]
-    out += [Task(3, 0, 0, "P", 1, b, half=True) for b in range(nb)]
+    out += [Task(3, 0, 0, "P", 1, b, half=True) for b in range(HALF_BLOCKS)]
     return out
 
 
 def stage2_tasks() -> list[Task]:
-    nb = N_PHASE // P_BLOCK
     out = []
     for s in SEEDS:
         for t in range(1, 5):
             out += [Task(t, s, 0, "NG"), Task(t, s, 0, "J"), Task(t, s, 0, "R")]
-            out += [Task(t, s, 0, "P", d, b) for d in range(3) for b in range(nb)]
+            out += [Task(t, s, 0, "P", d, 0) for d in range(3)]
     return out
 
 
@@ -710,14 +710,15 @@ class Scanner:
         return out
 
     @staticmethod
-    def _best(pts: list[dict]) -> tuple[float, float]:
+    def _best(pts: list[dict], with_min: bool = False):
         ok = sorted((p for p in pts if math.isfinite(p["chi2"])), key=lambda p: p["x"])
         x = np.array([p["x"] for p in ok])
         cs = CubicSpline(x, [p["chi2"] for p in ok])
         sub = np.linspace(x[0], x[-1], (len(x) - 1) * SUB + 1)
         xb = float(sub[int(np.argmin(cs(sub)))])
         curv = float(cs(xb, 2))
-        return xb, (math.sqrt(2.0 / curv) if curv > 0 else float(x[-1] - x[0]) / 12.0)
+        wb = math.sqrt(2.0 / curv) if curv > 0 else float(x[-1] - x[0]) / 12.0
+        return (xb, wb, float(cs(xb))) if with_min else (xb, wb)
 
     def tails(self, p2: float, xb: float, best: dict) -> list[dict]:
         out = []
@@ -767,9 +768,10 @@ class Scanner:
                 for p in self.points.calls.values()
                 if p["kind"] == "fine" and Points.key(p["p2"], 0)[0] == Points.key(p2, 0)[0]
             ]
-            xb, wb = self._best(fine)
             best = min(fine, key=lambda p: p["chi2"])
+        xb, wb, spline_min = self._best(fine, with_min=True)
         return {"p2": p2, "x_best": xb, "width": wb, "h": h, "chi2_min": best["chi2"],
+                "chi2_spline_min": spline_min,
                 "best_point": best, "widened_to_tails": widened}  # fmt: skip
 
     def run(self) -> list[dict]:
@@ -933,7 +935,7 @@ def ln_z_model(results: dict[str, dict], truth: int, seed: int, level_idx: int, 
         x = np.array([s["p2"] for s in r["scans"]])
         return float(logsumexp(z, b=IDS._trap(x)) - math.log(x[-1] - x[0]))
     per = []
-    nb = N_PHASE // P_BLOCK
+    nb = HALF_BLOCKS if half else 1
     for d in range(3) if distances is None else distances:
         zs = np.concatenate([ln_z_task_second(results[Task(truth, seed, level_idx, "P", d, b,
                                                            half).id], level, key)
@@ -958,9 +960,8 @@ def v2_points(results) -> list[dict]:
     for t in range(1, 5):
         for model in ("J", "R", "P"):
             if model == "P":
-                cands = [(Task(t, 0, 0, "P", d, b), s) for d in range(3)
-                         for b in range(N_PHASE // P_BLOCK)
-                         for s in results[Task(t, 0, 0, "P", d, b).id]["scans"]]  # fmt: skip
+                cands = [(Task(t, 0, 0, "P", d, 0), s) for d in range(3)
+                         for s in results[Task(t, 0, 0, "P", d, 0).id]["scans"]]  # fmt: skip
             else:
                 tk = Task(t, 0, 0, model)
                 cands = [(tk, s) for s in results[tk.id]["scans"]]
@@ -1114,7 +1115,8 @@ def gates_stage1(prep: dict, results: dict, n_workers: int) -> dict:
             v4[TRUTHS[t - 1]] = results[Task(t, 0, 0, "NG").id]["calls"]["G"]["chi2"]
         else:
             ids = [k for k in results if k.startswith(f"t{t}_s0_l0_{own}") and "half" not in k]
-            v4[TRUTHS[t - 1]] = min(s["chi2_min"] for k in ids for s in results[k]["scans"])
+            v4[TRUTHS[t - 1]] = min(min(s["chi2_spline_min"], s["chi2_min"])
+                                    for k in ids for s in results[k]["scans"])  # fmt: skip
     v6 = v6_check(results)
     tails = [(k, s["p2"]) for k, r in results.items() for s in r.get("scans", [])
              if not s["tails_ok"]]  # fmt: skip
@@ -1128,25 +1130,37 @@ def gates_stage1(prep: dict, results: dict, n_workers: int) -> dict:
 
 
 def v6_check(results: dict) -> dict:
-    n, bad, near, nocontact = 0, 0, [], 0
+    """V6 on every call (as frozen) and on the calls within Δχ² = V6_FAR of their scan's best
+    point (amendment 1, item 9); ``V6_AMENDED`` says which decides the gate. A call with no
+    contact is not a failure to converge (item 3); N and G are each their own best point."""
+    n = n_in = bad = bad_in = nocontact = 0
+    near, far = [], []
     for k in results:
         tk = Task.from_id(k)
         calls = list(Points(tk.dir / "points.jsonl").calls.values())
-        n += len(calls)
-        nocontact += sum(c["no_contact"] for c in calls)
-        best = {}
-        for s in results[k].get("scans", []):
-            best[round(s["p2"], 10)] = s["chi2_min"]
+        best = {round(s["p2"], 10): s["chi2_min"] for s in results[k].get("scans", [])}
         for c in calls:
-            if c["converged"] or c["no_contact"]:
+            if c["no_contact"]:
+                nocontact += 1
+                continue
+            b = c["chi2"] if tk.model == "NG" else best.get(round(c["p2"], 10), math.inf)
+            inside = c["chi2"] - b <= V6_FAR
+            n += 1
+            n_in += inside
+            if c["converged"]:
                 continue
             bad += 1
-            b = best.get(round(c["p2"], 10))
-            if b is not None and c["chi2"] - b <= V6_DCHI:
-                near.append({"task": k, "p2": c["p2"], "x": c["x"], "chi2": c["chi2"]})
-    frac = bad / n if n else 0.0
-    return {"calls": n, "not_converged": bad, "fraction": frac, "no_contact_calls": nocontact,
-            "near_best": near, "pass": frac <= V6_FRAC and not near}  # fmt: skip
+            bad_in += inside
+            row = {"task": k, "p2": c["p2"], "x": c["x"], "chi2": c["chi2"], "dchi2": c["chi2"] - b}
+            (near if c["chi2"] - b <= V6_DCHI else far if not inside else []).append(row)
+    frac_all = bad / n if n else 0.0
+    frac_in = bad_in / n_in if n_in else 0.0
+    frac = frac_in if V6_AMENDED else frac_all
+    return {"calls": n, "not_converged": bad, "fraction_all": frac_all,
+            "calls_within_far": n_in, "not_converged_within_far": bad_in,
+            "fraction_within_far": frac_in, "rule": "amended" if V6_AMENDED else "frozen",
+            "no_contact_calls": nocontact, "near_best": near, "far_not_converged": len(far),
+            "pass": frac <= V6_FRAC and not near}  # fmt: skip
 
 
 def _noise_free_r1(f: dict, truth: str) -> dict:

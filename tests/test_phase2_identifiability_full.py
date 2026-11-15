@@ -55,14 +55,14 @@ def test_settings_are_the_plans():
 
 def test_tasks():
     s1, s2 = F.stage1_tasks(), F.stage2_tasks()
-    assert len(s1) == 4 * (3 + 3 * 4) + 1 + 1 + 4 and len({t.id for t in s1}) == len(s1)
-    assert len(s2) == 8 * 4 * 15 and all(t.seed > 0 and t.level == 0 for t in s2)
+    assert len(s1) == 4 * (3 + 3) + 1 + 1 + 4 and len({t.id for t in s1}) == len(s1)
+    assert len(s2) == 8 * 4 * 6 and all(t.seed > 0 and t.level == 0 for t in s2)
     for t in s1 + s2:
         assert F.Task.from_id(t.id) == t
     half = [t for t in s1 if t.half]
     assert {(t.truth, t.model) for t in half} == {(2, "R"), (3, "P"), (4, "J")}
     assert all(t.distance == 1 for t in half if t.model == "P")  # the planet's true distance
-    lam = np.concatenate([F.Task(1, 0, 0, "P", 0, b).second_grid() for b in range(4)])
+    lam = F.Task(1, 0, 0, "P", 0, 0).second_grid()
     assert np.allclose(lam, 2 * math.pi * np.arange(48) / 48)
     lam2 = np.concatenate([F.Task(3, 0, 0, "P", 1, b, True).second_grid() for b in range(4)])
     assert np.allclose(lam2, 2 * math.pi * np.arange(96) / 96)
@@ -163,9 +163,8 @@ def test_combining_radii_and_longitudes():
     z = np.exp(-10.0 + 5 * radii)
     assert got == pytest.approx(math.log(np.trapezoid(z, radii) / 0.2), rel=1e-12)
     for d in range(3):
-        for b in range(4):
-            lam = F.Task(2, 0, 0, "P", d, b).second_grid()
-            res[F.Task(2, 0, 0, "P", d, b).id] = _fake([(x, float(d) + 0.0 * x) for x in lam])
+        lam = F.Task(2, 0, 0, "P", d, 0).second_grid()
+        res[F.Task(2, 0, 0, "P", d, 0).id] = _fake([(x, float(d) + 0.0 * x) for x in lam])
     got = F.ln_z_model(res, 2, 0, 0, "P", 1.0)
     assert got == pytest.approx(math.log(np.mean(np.exp([0.0, 1.0, 2.0]))), rel=1e-12)
 
@@ -204,3 +203,37 @@ def test_stage2_refuses_without_stage1(tmp_path, monkeypatch):
     (tmp_path / "stage1.json").write_text(json.dumps({"gates": {"pass": False}}))
     with pytest.raises(SystemExit, match="Stage 1"):
         F.stage2(1)
+
+
+def _write_points(task, rows):
+    task.dir.mkdir(parents=True)
+    pts = F.Points(task.dir / "points.jsonl")
+    for x, chi2, conv, nc in rows:
+        pts.calls[pts.key(0.0, x)] = {"p2": 0.0, "x": x, "kind": "fine", "chi2": chi2,
+                                      "converged": conv, "no_contact": nc}  # fmt: skip
+    (task.dir / "points.jsonl").write_text(
+        "\n".join(json.dumps(v) for v in pts.calls.values()) + "\n"
+    )
+
+
+def test_v6_frozen_and_amended(tmp_path, monkeypatch):
+    monkeypatch.setattr(F, "CACHE", tmp_path)
+    j = F.Task(4, 0, 0, "J")
+    rows = [(float(i), 1.0 + i, True, False) for i in range(2000)]
+    rows += [(-1.0, 500.0, False, False), (-2.0, math.inf, False, True)]
+    _write_points(j, rows)
+    ng = F.Task(1, 0, 0, "NG")
+    _write_points(ng, [(0.0, 1107.5, True, False), (1.0, 0.0, True, False)])
+    results = {j.id: {"scans": [{"p2": 0.0, "chi2_min": 1.0}]}, ng.id: {}}
+    frozen = F.v6_check(results)
+    assert frozen["no_contact_calls"] == 1 and frozen["calls"] == 2003
+    assert frozen["not_converged"] == 1 and frozen["far_not_converged"] == 1
+    assert frozen["fraction_all"] == pytest.approx(1 / 2003) and not frozen["near_best"]
+    assert frozen["pass"] is True  # 1/2003 < 0.1 %
+    monkeypatch.setattr(F, "V6_AMENDED", True)
+    amended = F.v6_check(results)
+    assert amended["not_converged_within_far"] == 0 and amended["pass"] is True
+    _write_points(F.Task(2, 0, 0, "NG"), [(0.0, 900.0, False, False)])  # N fails at its own best
+    results[F.Task(2, 0, 0, "NG").id] = {}
+    worse = F.v6_check(results)
+    assert len(worse["near_best"]) == 1 and worse["pass"] is False
