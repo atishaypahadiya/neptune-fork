@@ -73,7 +73,7 @@ the sizes below are what renders.
 | 15 px / 23.4 | note 15/23 | line height −0.4 | Section marks, notes, translation, controls label, citation, references, companion "back" line, error |
 | body `clamp(16.5px, 1.05vw + 10px, 18px)` / 1.56 | body-phone 17/26 to 720 px; body 18/28 from 721 px | +0.5 at 390 (16.5 → 17); −0.56 at 720 (17.56 → 17); +0.23 at 740 (17.77 → 18); line height 25.74 → 26, 28.08 → 28 | All prose |
 | quote `1.06em` (17.49 to 19.08) | body | −0.5 at 390; −1.08 at 1440 | Archival quotes (3) |
-| h3 `1em` / 1.4 | body size, line height 24 (17 px) and 25 (18 px) | line height +0.9, −0.2 | h3 |
+| h3 `1em` / 1.4 | body (17/26, 18/28), weight 600 | line height +2.9 at 17 px, +2.8 at 18 px | h3 |
 | Plate label 18 / 28.08 | body 18/28 | line height −0.08 | "Plate I." etc. |
 | h2, Plate III year, Plate I title (both ramps), companion title, subtitle, byline, Table 1 cells (both pages) | fluid steps, the same ramps | 0 at the default text size | — |
 

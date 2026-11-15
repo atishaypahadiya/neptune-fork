@@ -17,6 +17,12 @@
   --fig-space: 36px; /* above and below a wide block */
   color-scheme: light;
 }
+/* The side padding is fluid by design (docs/itten-overrides.md); whole pixels where round() is known. */
+@supports (width: round(1.5px, 1px)) {
+  :root { --gutter: round(clamp(16px, 4vw, 56px), 1px); }
+}
+/* Spacing scale (itten.system.json): 6, 12, 18, 24, 36, 48, 72, 96 px. Type steps: caption 14/21,
+   note 15/23, body 17/26 to 720 px and 18/28 from 721 px, and the fluid display steps below. */
 
 * { box-sizing: border-box; }
 /* `hidden` wins over display rules: controls that need JS are hidden in the prerendered page. */
@@ -26,9 +32,12 @@ body {
   margin: 0;
   background: var(--paper);
   color: var(--deep);
-  font: 400 clamp(16.5px, 1.05vw + 10px, 18px) / 1.56 var(--serif);
+  font: 400 17px / 26px var(--serif);
   font-optical-sizing: auto;
   font-variant-numeric: lining-nums;
+}
+@media (min-width: 721px) {
+  body { font-size: 18px; line-height: 28px; }
 }
 /* Controls take the page's font, not the browser's control font (Arial in Chromium; CRF-13). */
 button, input, select, textarea { font: inherit; }
@@ -94,15 +103,15 @@ body > header > *, main > section > * { grid-column: body; } /* prose is body wi
 .fig [data-pt].on .glow, .fig [data-pt]:hover .glow { opacity: 0.6; }
 .fig [data-pt].on .letter { font-weight: 600; }
 .plate-label {
-  position: absolute; right: 24px; bottom: 18px; color: var(--line); font-size: 18px;
+  position: absolute; right: 24px; bottom: 18px; color: var(--line); font-size: 18px; line-height: 28px;
   letter-spacing: 2px; pointer-events: none;
 }
 .plate .error {
-  position: absolute; inset: auto 24px 24px; margin: 0; color: var(--line); font-size: 15px;
+  position: absolute; inset: auto 24px 24px; margin: 0; color: var(--line); font-size: 15px; line-height: 23px;
 }
 .plate .tip {
-  position: absolute; z-index: 2; margin: 0; max-width: 260px; padding: 6px 9px;
-  background: var(--paper); color: var(--deep); font-size: 14px; line-height: 1.4;
+  position: absolute; z-index: 2; margin: 0; max-width: 260px; padding: 6px 12px;
+  background: var(--paper); color: var(--deep); font-size: 14px; line-height: 21px;
   pointer-events: none;
 }
 
@@ -113,28 +122,28 @@ body > header > *, main > section > * { grid-column: body; } /* prose is body wi
   color: var(--line); text-align: center; pointer-events: none;
 }
 .titleblock a { pointer-events: auto; color: var(--line); }
-h1 { margin: 0 auto 0.22em; font: 400 clamp(40px, 6.4vw, 100px) / 1.02 var(--didot); }
-.subtitle { margin: 0 auto 0.5em; max-width: 46em; font-size: clamp(15px, 1.25vw, 19px); line-height: 1.45; }
+h1 { margin: 0 auto 12px; font: 400 clamp(40px, 6.4vw, 100px) / 1.02 var(--didot); }
+.subtitle { margin: 0 auto 6px; max-width: 46em; font-size: clamp(15px, 1.25vw, 19px); line-height: 1.45; }
 .byline { margin: 0; font-size: clamp(14px, 1.2vw, 17px); line-height: 1.5; }
-.plate-i .plate-label { top: 22px; bottom: auto; }
+.plate-i .plate-label { top: 24px; bottom: auto; }
 @media (min-width: 900px) {
   .titleblock { right: auto; max-width: 44%; text-align: left; bottom: clamp(40px, 8vh, 80px); }
-  h1 { font-size: clamp(44px, 5.6vw, 92px); }
+  h1 { margin-bottom: 18px; font-size: clamp(44px, 5.6vw, 92px); }
   .subtitle { margin-left: 0; }
 }
-.plate-i > .caption { margin: 14px 0 0; }
+.plate-i > .caption { margin: 12px 0 0; }
 
 /* ---------- the journal layer ---------- */
 main { padding: 0 0 96px; }
-.sec { margin: 88px 0 6px; font-size: 15px; color: var(--prussian); letter-spacing: 0.08em; }
-h2 { margin: 0 0 22px; font: 400 clamp(30px, 2.4vw + 12px, 42px) / 1.05 var(--didot); }
-h3 { margin: 48px 0 12px; font: 600 1em / 1.4 var(--serif); }
-h3 .sc { font-weight: 400; color: var(--prussian); margin-right: 0.4em; }
-p { margin: 0 0 1em; }
+.sec { margin: 96px 0 6px; font-size: 15px; line-height: 23px; color: var(--prussian); letter-spacing: 0.08em; }
+h2 { margin: 0 0 24px; font: 400 clamp(30px, 2.4vw + 12px, 42px) / 1.05 var(--didot); }
+h3 { margin: 48px 0 12px; font-size: 1em; font-weight: 600; } /* the body step, bold */
+h3 .sc { font-weight: 400; color: var(--prussian); margin-right: 6px; }
+p { margin: 0 0 18px; }
 .caption, figcaption, caption {
-  font-size: 14px; line-height: 1.5; color: var(--prussian); text-align: left;
+  font-size: 14px; line-height: 21px; color: var(--prussian); text-align: left;
 }
-.note { font-size: 15px; color: var(--prussian); }
+.note { font-size: 15px; line-height: 23px; color: var(--prussian); }
 .pt {
   font-style: italic; color: inherit; text-decoration: underline dotted var(--prussian);
   text-underline-offset: 0.2em; cursor: pointer;
@@ -148,12 +157,12 @@ main > section > .fig-10 { margin: var(--fig-space) 0; }
 .canvas > svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .canvas > svg.ground { pointer-events: none; }
 .canvas .tip {
-  position: absolute; z-index: 2; margin: 0; max-width: 280px; padding: 6px 9px;
-  background: var(--paper); color: var(--deep); font-size: 14px; line-height: 1.4;
+  position: absolute; z-index: 2; margin: 0; max-width: 280px; padding: 6px 12px;
+  background: var(--paper); color: var(--deep); font-size: 14px; line-height: 21px;
   pointer-events: none;
 }
-.canvas .error { position: absolute; inset: auto 20px 20px; margin: 0; color: var(--line); font-size: 15px; }
-figure[data-fig] > figcaption { margin-top: 10px; }
+.canvas .error { position: absolute; inset: auto 24px 24px; margin: 0; color: var(--line); font-size: 15px; line-height: 23px; }
+figure[data-fig] > figcaption { margin-top: 12px; }
 .table > figcaption { margin-top: 12px; }
 .fig-1 .canvas { height: 380px; }
 .fig-2 .canvas { height: 420px; }
@@ -167,7 +176,7 @@ figure[data-fig] > figcaption { margin-top: 10px; }
 .pair { display: grid; grid-template-columns: subgrid; row-gap: 24px; }
 .pair > figure[data-fig] { margin: 0; min-width: 0; }
 @media screen and (min-width: 900px) {
-  .pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 32px; }
+  .pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 36px; }
   .pair > figure.wide[data-fig] { grid-column: auto; display: block; }
 }
 .fig-8 .canvas, .fig-9 .canvas { height: 400px; }
@@ -181,25 +190,25 @@ main > section > :is(:has(+ :is(h3, figure, .pair, .cite)), :last-child) { margi
 main > .split + section > h3:first-child { margin-top: 0; }
 
 /* ---------- archival quotes (journal layer) ---------- */
-.quote { margin: 0 0 28px; padding-left: 1.6em; }
-.quote .q-text { margin: 0 0 6px; font-size: 1.06em; line-height: 1.5; }
-.quote .q-trans { margin: 0 0 6px; font-size: 15px; color: var(--prussian); }
-.quote .q-src { font-size: 14px; color: var(--prussian); }
+.quote { margin: 0 0 24px; padding-left: 24px; }
+.quote .q-text { margin: 0 0 6px; }
+.quote .q-trans { margin: 0 0 6px; font-size: 15px; line-height: 23px; color: var(--prussian); }
+.quote .q-src { font-size: 14px; line-height: 21px; color: var(--prussian); }
 
 /* ---------- Table 1 ---------- */
-.table { margin: 32px 0; overflow-x: auto; }
+.table { margin: var(--fig-space) 0; overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums lining-nums; }
 caption { caption-side: bottom; padding-top: 12px; }
-th, td { padding: 5px 10px 5px 0; text-align: left; vertical-align: baseline; }
-th { font-weight: 400; font-size: 14px; color: var(--prussian); }
-td { font-size: clamp(16px, 0.6vw + 12px, 20px); }
+th, td { padding: 6px 12px 6px 0; text-align: left; vertical-align: baseline; }
+th { font-weight: 400; font-size: 14px; line-height: 21px; color: var(--prussian); }
+td { font-size: clamp(16px, 0.6vw + 12px, 20px); line-height: 1.56; }
 td.n, th.n { text-align: right; }
 /* Headers and year ranges stay on one line; on phones the observatory goes under the source. */
 th, td.yrs { white-space: nowrap; }
 .obs-under { display: none; }
 td.v { color: var(--prussian); }
-tfoot td { border-top: 1px solid var(--deep); padding-top: 8px; }
-tfoot tr + tr td { border-top: 0; font-size: 14px; color: var(--prussian); padding-top: 2px; }
+tfoot td { border-top: 1px solid var(--deep); padding-top: 6px; }
+tfoot tr + tr td { border-top: 0; font-size: 14px; line-height: 21px; color: var(--prussian); padding-top: 0; }
 
 /* ---------- half-bleed plates with a text column (Plates II and III) ----------
    The section is full; inside it is a set piece with columns of its own, not the three widths.
@@ -211,17 +220,17 @@ tfoot tr + tr td { border-top: 0; font-size: 14px; color: var(--prussian); paddi
 }
 .split > * { grid-column: auto; }
 .split > .plate { position: sticky; top: 0; height: min(100svh, 900px); align-self: start; }
-.split > .side { min-width: 0; padding: 64px var(--gutter); max-width: calc(34rem + 2 * var(--gutter)); }
+.split > .side { min-width: 0; padding: 72px var(--gutter); max-width: calc(34rem + 2 * var(--gutter)); }
 .split .side h3 { margin-top: 0; }
 .split.reverse > .side { justify-self: end; width: 100%; }
 .year { margin: 0 0 12px; font: 400 clamp(64px, 6vw, 104px) / 1 var(--didot); font-variant-numeric: lining-nums; }
 .side .sec { margin-top: 0; }
-.fig-3 { margin: 24px 0 16px; }
+.fig-3 { margin: 24px 0 18px; }
 .fig-3 .canvas { height: 230px; }
 /* Plate III's controls: a row of their own between Fig. 3 and the caption, in the flow at
    every width (nothing sticky below 900 px). */
-.controls { display: flex; align-items: center; gap: 16px; margin: 8px 0 28px; }
-.controls label { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; font-size: 15px; color: var(--prussian); }
+.controls { display: flex; align-items: center; gap: 18px; margin: 6px 0 24px; }
+.controls label { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; font-size: 15px; line-height: 23px; color: var(--prussian); }
 .play {
   flex: none; display: grid; place-items: center; width: 44px; height: 44px; padding: 0;
   border-radius: 50%; border: 1px solid var(--prussian); background: transparent;
@@ -235,28 +244,28 @@ tfoot tr + tr td { border-top: 0; font-size: 14px; color: var(--prussian); paddi
 input[type="range"] { flex: 1; min-width: 0; margin: 0; accent-color: var(--prussian); min-height: 44px; }
 
 /* ---------- limitations, availability, references ---------- */
-.limits { margin-top: 0; padding-left: 1.1em; }
-.limits li { margin-bottom: 0.7em; }
+.limits { margin-top: 0; padding-left: 24px; }
+.limits li { margin-bottom: 12px; }
 .limits li:last-child, .refs li:last-child { margin-bottom: 0; }
-.cite { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 16px; margin: 24px 0; }
-.cite-key { grid-column: 1 / -1; margin: 12px 0 0; font-size: 15px; color: var(--prussian); }
-.cite-text { margin: 0; font-size: 15px; overflow-wrap: anywhere; } /* long DOIs and URLs on phones */
+.cite { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 18px; margin: 24px 0; }
+.cite-key { grid-column: 1 / -1; margin: 12px 0 0; font-size: 15px; line-height: 23px; color: var(--prussian); }
+.cite-text { margin: 0; font-size: 15px; line-height: 23px; overflow-wrap: anywhere; } /* long DOIs and URLs on phones */
 .copy {
-  align-self: start; min-height: 44px; padding: 0 14px; border: 1px solid var(--prussian);
-  background: transparent; color: var(--prussian); font: 14px var(--serif); cursor: pointer;
+  align-self: start; min-height: 44px; padding: 0 12px; border: 1px solid var(--prussian);
+  background: transparent; color: var(--prussian); font: 400 14px / 21px var(--serif); cursor: pointer;
 }
-.refs { margin-top: 0; padding-left: 1.6em; font-size: 15px; }
-.refs li { margin-bottom: 0.6em; }
+.refs { margin-top: 0; padding-left: 24px; font-size: 15px; line-height: 23px; }
+.refs li { margin-bottom: 12px; }
 /* A page range never breaks at its dash (site/js/plate.js, keepRanges). */
 .range { white-space: nowrap; }
 
 /* ---------- stacked plates: tablet and phone ---------- */
 @media (max-width: 899px) {
-  .split { grid-template-columns: minmax(0, 1fr); margin: 64px 0; min-height: 0; }
+  .split { grid-template-columns: minmax(0, 1fr); margin: 72px 0; min-height: 0; }
   .split > .plate { position: relative; height: min(92svh, 96vw); order: 0; }
   .split > .side {
     order: 1; width: 100%; max-width: calc(var(--measure) + 2 * var(--gutter)); margin: 0 auto;
-    padding: 32px var(--gutter) 8px; justify-self: center;
+    padding: 36px var(--gutter) 6px; justify-self: center;
   }
   .split.reverse > .side { justify-self: center; }
 }
@@ -264,7 +273,6 @@ input[type="range"] { flex: 1; min-width: 0; margin: 0; accent-color: var(--prus
 /* ---------- phone ---------- */
 @media (max-width: 720px) {
   .split > .plate { height: 118vw; max-height: 620px; }
-  .split > .side { padding: 28px var(--gutter) 8px; }
   .fig-1 .canvas { height: 440px; }
   .fig-2 .canvas { height: 520px; }
   .fig-4 .canvas, .fig-5 .canvas { height: 340px; }
@@ -272,10 +280,10 @@ input[type="range"] { flex: 1; min-width: 0; margin: 0; accent-color: var(--prus
   .fig-7 .canvas { height: 640px; }
   .fig-8 .canvas { height: 360px; }
   .fig-9 .canvas { height: 460px; }
-  .sec { margin-top: 64px; }
+  .sec { margin-top: 72px; }
   th, td { padding-right: 6px; }
   #table-1 .obs { display: none; }
-  .obs-under { display: block; font-size: 14px; color: var(--prussian); white-space: nowrap; }
+  .obs-under { display: block; font-size: 14px; line-height: 21px; color: var(--prussian); white-space: nowrap; }
   .plate-i .plate { height: min(100svh, 760px); }
 }
 
@@ -300,7 +308,16 @@ input[type="range"] { flex: 1; min-width: 0; margin: 0; accent-color: var(--prus
   .pair > figure[data-fig] + figure[data-fig] { margin-top: 24px; }
   .sec { margin: 28pt 0 4pt; }
   h2 { font-size: 22pt; margin-bottom: 10pt; }
-  h3 { margin-top: 18pt; }
+  h3 { margin-top: 18pt; line-height: 1.4; }
+  /* Print keeps the spacing it had in em of its 10.5 pt body (the screen scale is in px). */
+  p { margin-bottom: 1em; }
+  h3 .sc { margin-right: 0.4em; }
+  .quote { padding-left: 1.6em; margin-bottom: 28px; }
+  .quote .q-text { font-size: 1.06em; }
+  .limits { padding-left: 1.1em; }
+  .limits li { margin-bottom: 0.7em; }
+  .refs li { margin-bottom: 0.6em; }
+  .table { margin: 24pt 0; }
   .plate, .split > .plate, .plate-i .plate {
     position: relative; top: auto; height: auto; min-height: 0; max-height: none;
     break-inside: avoid;
