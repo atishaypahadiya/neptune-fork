@@ -10,7 +10,7 @@
   "spacing": {
     "scale": [6, 12, 18, 24, 36, 48, 72, 96],
     "groupRatioMin": 2,
-    "note": "Base unit 6 px, a third of the 18 px body; steps 6 x 1, 2, 3, 4, 6, 8, 12, 16 (docs/teardown.md, Spacing). 18 is the paragraph gap and R1's text-column gap; 36 the space around a figure; 48 above an h3; 72 above a section on the companion and on phones; 96 above a section on the main page and around a plate. The page's side padding (--gutter) is fluid and logged in docs/itten-overrides.md."
+    "note": "Base unit 6 px, a third of the 18 px body; steps 6 x 1, 2, 3, 4, 6, 8, 12, 16 (docs/teardown.md, Spacing). 18 is the paragraph gap and R1's text-column gap; 36 the space around a figure; 48 above an h3; 72 above a section on the companion and on phones; 96 above a section on the main page and around a plate. The page's side padding (--gutter) is fluid and logged in docs/itten-overrides.md. The build writes every step in rem (6 px = 0.375rem), so gaps follow the browser's text size as the type does."
   },
   "type": {
     "families": [
