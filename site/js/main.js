@@ -7,7 +7,7 @@ import {
   loadJSON, loadHeadline, loadConjunction, loadWindow, loadTimeline, loadChecks, fmt, drv,
 } from "./data.js";
 import * as C from "./copy.js";
-import { fill, fail, keepRanges } from "./plate.js";
+import { fill, fail, keepRanges, keepWhole } from "./plate.js";
 import { plateI, plateII, plateIII } from "./plates.js";
 import { fig1, fig2, fig4, fig5, fig6, fig7, fig8, fig9, fig10 } from "./figs.js";
 
@@ -189,6 +189,7 @@ async function main() {
   // Controls that only work with JS (Plate III's play and scrub, Copy) are hidden in the HTML.
   for (const el of document.querySelectorAll("[data-js]")) el.hidden = false;
   keepRanges(document.querySelector("main"));
+  keepWhole(document.querySelector("main"));
   document.documentElement.dataset.ready = "1";
 }
 

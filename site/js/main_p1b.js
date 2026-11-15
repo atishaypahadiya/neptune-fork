@@ -5,7 +5,7 @@
 
 import { loadJSON } from "./data.js";
 import * as C from "./copy_p1b.js";
-import { fill, fail, keepRanges } from "./plate.js";
+import { fill, fail, keepRanges, keepWhole } from "./plate.js";
 import { fig1, fig2, fig3, fig4 } from "./figs_p1b.js";
 
 async function load() {
@@ -122,6 +122,7 @@ async function main() {
   guard('[data-fig="fig-3"]', (el) => fig3(el, D));
   guard('[data-fig="fig-4"]', (el) => fig4(el, D));
   keepRanges(document.querySelector("main"));
+  keepWhole(document.querySelector("main"));
   document.documentElement.dataset.ready = "1";
 }
 

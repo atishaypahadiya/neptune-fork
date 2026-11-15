@@ -289,6 +289,16 @@ input[type="range"] { flex: 1; min-width: 0; margin: 0; accent-color: var(--prus
   .plate-i .plate { height: min(100svh, 760px); }
 }
 
+/* Hyphenation on phone screens only (print keeps its own setting). At a measure of about 34
+   characters the rag opens holes, and hyphenation closes them (CRF-22). Text in main; words of six
+   letters or more, three on each side of the break, and (in WebKit) no more than two hyphens in a
+   row. Kept whole: headings, links, tables (hyphenation would narrow their columns), Plate III's
+   quote (it changes as the plate plays), and plate.js's span.whole (names and addresses). */
+@media screen and (max-width: 720px) {
+  main { -webkit-hyphens: auto; hyphens: auto; hyphenate-limit-chars: 6 3 3; hyphenate-limit-lines: 2; }
+  main :is(h2, h3, a, table, .whole, [data-v="pull_text"]) { -webkit-hyphens: manual; hyphens: manual; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .fig .glow { transition: none; }
 }

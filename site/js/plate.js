@@ -172,6 +172,43 @@ export function keepRanges(root) {
   }
 }
 
+/**
+ * Words that hyphenation must not break (site.css sets hyphens: manual on span.whole, which
+ * matters on phones, where text is hyphenated): addresses (URLs, DOIs, arXiv ids, paths and file
+ * names, dotted field names), and every capitalised word, so that names stay whole in WebKit, which
+ * hyphenates them (Chromium does not). Each is wrapped in a span.whole; the text is unchanged.
+ * Called once, after the page is filled, like keepRanges; links, headings and figures are left alone.
+ */
+const END = String.raw`(?=[.,;:)\]]*(?:\s|$))`;
+export const WHOLE = new RegExp(
+  String.raw`(?:https?:\/\/|doi:|arXiv:)\S*?${END}` + // URL, DOI, arXiv id
+  String.raw`|[^\s(]*[/_]\S*?${END}` + // path or file name
+  String.raw`|\b[A-Za-z]\w*(?:\.\w+){2,}` + // dotted field name
+  String.raw`|\p{Lu}[\p{L}\p{M}'’]*(?:[-–]\p{L}[\p{L}\p{M}'’]*)*`, // capitalised word, with its compounds
+  "gu");
+export function keepWhole(root) {
+  const walk = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode: (n) => (n.parentElement.closest("svg, script, style, a, h1, h2, h3, .whole")
+      ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT),
+  });
+  const nodes = [];
+  for (let n = walk.nextNode(); n; n = walk.nextNode()) if (n.data.search(WHOLE) >= 0) nodes.push(n);
+  for (const n of nodes) {
+    const frag = document.createDocumentFragment();
+    let at = 0;
+    for (const m of n.data.matchAll(WHOLE)) {
+      frag.append(n.data.slice(at, m.index));
+      const s = document.createElement("span");
+      s.className = "whole";
+      s.textContent = m[0];
+      frag.append(s);
+      at = m.index + m[0].length;
+    }
+    frag.append(n.data.slice(at));
+    n.replaceWith(frag);
+  }
+}
+
 const figName = (fig) => fig.replace("plate-", "Plate ").replace("fig-", "Fig. ")
   .replace(/Plate (i+)$/, (_, r) => `Plate ${r.toUpperCase()}`);
 
