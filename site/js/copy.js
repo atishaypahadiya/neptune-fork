@@ -345,8 +345,8 @@ export function conjText(D) {
       `is its uncertainty here. ` +
       `The same rule applied to JPL's Uranus and Neptune gives ` +
       `${dateOfStr(c.epoch.jpl_uranus_neptune_conjunction_date_tdb)}, ${fmt(days, 1)} days ` +
-      `earlier, well inside that spread. This comparison was made after the fact; it was not ` +
-      `pre-registered.`,
+      `earlier, well inside that spread. This comparison was made after the fact; it was ` +
+      `not\u00a0pre-registered.`, // no-break space: no one-word last line (ITTEN widow)
     cap_plate_ii: `Heliocentric positions on ${dateOfStr(p.date_tdb)}, projected on the ecliptic ` +
       `of date, seen from the north with the equinox to the right. Radii to scale; angles about ` +
       `the line {S@plate-ii}{C@plate-ii} drawn ${p.angle_magnification} times larger than life (the ` +
@@ -356,7 +356,7 @@ export function conjText(D) {
       `(headline posterior). {C@plate-ii} their median direction. {N@plate-ii} Neptune ` +
       `(JPL Horizons). {L@plate-ii} Le Verrier's planet from his published elements (Krajnović ` +
       `2016; Britannica 1911). Dotted: the paths of Uranus and Neptune from JPL Horizons and Le ` +
-      `Verrier's ellipse. After-the-fact diagnostic, not pre-registered.`,
+      `Verrier's ellipse. After-the-fact diagnostic, not\u00a0pre-registered.`,
   };
 }
 
