@@ -35,3 +35,7 @@ data/historical/adams_challis/*.pdf
 docs/design-ref/
 # Screenshots of the companion page (tools/check_layout.py --shots); kept outside the repository
 docs/notes/p1b_site/
+
+# ITTEN inspector reports and crops (docs/itten/baseline.md)
+itten-output/
+itten-report/
