@@ -240,3 +240,37 @@ No interval of the headline other than the 95 % one is recomputed.
   `data/cache/nested/s1_mode/`, results `docs/notes/S1_mode.json`.
 
 ---
+
+## Amendment 1, 15 November 2026, before any run of Part A or B
+
+**A count in § 9 is wrong; the text of §§ 2 and 3 governs.** § 3 asks for eight seeds in each
+region and § 2 samples L as two boxes, so Part A has six sampled regions and 6 × 8 + 2 = 50
+runs, not 42: § 9 counted L as one region, and its cost line (40 × 2 + 2 × 8) did the same.
+With 50 runs Part A is about 115 CPU-h and the whole about 145 CPU-h. Nothing else changes.
+
+**Choices the plan leaves open, fixed in the runner before any run** (`src/fork/export/s1_mode.py`,
+commits 05a2dd3 and 6f7f3d4 on branch s1-mode; its docstring states them):
+
+- UltraNest draws from numpy's global generator, which the runner seeds with the plan's rng
+  list. A run resumed after a stop continues from its stored points with a new generator
+  state, so it is not bit-identical to an uninterrupted run.
+- A fast log-likelihood that is not finite is passed to UltraNest as −1e300.
+- A region's eight-seed merge is the pooled posterior: 750 of each seed's 6,000 reweighted
+  draws (3,000 of each of X's two). Its ln Z is the log of the mean of the seeds' Z, as § 3
+  says; its ESS/N (for G2 and G4), median and widths come from the pooled draws, so the merge
+  needs no likelihood call of its own.
+- The sampler error of P(a < 25 AU) is propagated to first order from each region's merged ln Z
+  error (standard deviation over seeds / √n); "P ± 2 sampler errors" in § 6 uses it.
+- Part B's seeds 5 to 8 are run by `m8_runs`' own job command into M8b's cache, with M8b's rng
+  rule. The eight-seed merge (dynesty's merge of seeds 1 to 8, as M8b merged four) is drawn and
+  reweighted in this plan's cache, with M8b's rng list and 8 appended, so none of M8b's
+  four-seed files is rewritten. Before any new run, the summary code was run on seeds 1 to 4
+  and M8b's own merge and reproduced `site/data/m8b.json` exactly (the 95 % bounds' spreads
+  0.4151° and 0.5097°, every fit, A8f); a test keeps that.
+
+**Before the runs.** G0 passed on 15 November (data/cache/nested/s1_mode/g0.json): true ln Z
+−0.0004; the eight seeds within −0.120 to +0.076 of it (tolerance 0.3), range 0.196
+(tolerance 0.5); about 300 CPU-s and 13.7 million calls per seed. The capped smoke run of the
+whole pipeline in a scratch cache (66 runs at 150 iterations, 12 draws each) went through the
+reweighting and the summary; the check values of `implied_p_below_25` were reproduced (0.00104
+and 0.10902). Nothing of the smoke run is read.
