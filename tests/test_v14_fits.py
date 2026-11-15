@@ -126,7 +126,11 @@ def test_g4_verdict():
 
 
 def test_the_published_free_distance_fit_is_reproduced():
-    lon, pub = V.free_distance_galle()
+    # Reads the published fit's reweighted draws from data/cache, which CI does not have.
+    try:
+        lon, pub = V.free_distance_galle()
+    except FileNotFoundError as e:
+        pytest.skip(f"the published fit's draws are not in data/cache ({e})")
     assert len(lon) == 6000
     assert pub["ln_z"] == pytest.approx(-361.5227, abs=1e-3)
     assert math.isfinite(float(np.mean(lon)))
