@@ -131,8 +131,9 @@ export function abstract(D) {
       `alone could account for it I could not settle: the pre-registered statistic measured ` +
       `something else, and the post hoc one reads weak. A pre-registered attribution ` +
       `between his observations and the tables of Bouvard he reduced them against depends ` +
-      `on the method, and I do not make it. A second, with the tables computed at each of ` +
-      `his epochs, shows that the attribution turns on one interpolated place, that of 1780.`,
+      `on the method, and I do not make it. A second, registered before it was run, computes ` +
+      `the tables at each of his epochs; in it the attribution turns on how the place of 1780 ` +
+      `is treated, a choice made after the first analysis's results had been seen.`,
     abstract_p3: `Under the reading I report, Challis's actual procedure has probability ` +
       `${p2(W.A0_mean)} of recognising the planet before ${galle(K)}. That is by ` +
       `construction and is not a finding: the realised events are held fixed, so the cases ` +
@@ -330,7 +331,7 @@ function routeBText(A) {
   }
   const ob = v("bvt_", "Ob"), r = v("bvt_", "R");
   return {
-    a35_p3b: `A second pre-registered analysis computes Bouvard's tables at each of Adams's ` +
+    a35_p3b: `A second analysis, registered before it was run, computes Bouvard's tables at each of Adams's ` +
       `epochs in place of the printed formula used above; its plan was pushed before any longitude was formed. In it the ` +
       `attribution turns on a single place, that of 1780, which Adams says he interpolated. ` +
       `Interpolated as he describes, a treatment the plan declares was chosen after the ` +

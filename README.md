@@ -189,10 +189,11 @@ two questions of the printed record.
   does not fix, three readings are prior-dependent, and none reaches "very probably".
 - *Reference or observations?* A pre-registered attribution of his nearness to his
   observations or to Bouvard's tables, against which he reduced them, depends on the method of
-  solution, and is not made ([notes](docs/notes/P1B_bouvard_attribution.md)). A second, with the
-  tables computed at his own epochs, shows that it turns on one interpolated place, that of
-  1780: interpolated as he describes, all four cases read "mostly the observations"; with 1780
-  as the first analysis fixed it, again "depends on the method"
+  solution, and is not made ([notes](docs/notes/P1B_bouvard_attribution.md)). A second, registered
+  before it was run, computes the tables at his own epochs. In it the attribution turns on how
+  one place, that of 1780, is treated, and that treatment was chosen after the first
+  analysis's results had been seen: interpolated as he describes, all four cases read "mostly
+  the observations"; with 1780 as the first analysis fixed it, again "depends on the method"
   ([notes](docs/notes/P1B_bouvard_tables.md)).
 
 **Toward Mercury (nothing fitted to observations).** For a later study of Mercury's perihelion,
