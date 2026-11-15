@@ -28,9 +28,9 @@
       { "name": "table", "fluid": { "min": 16, "max": 20, "minWidth": 666.67, "maxWidth": 1333.33 }, "leading": 1.56, "weight": 400, "family": "Source Serif 4" },
       { "name": "h2", "fluid": { "min": 30, "max": 42, "minWidth": 750, "maxWidth": 1250 }, "leading": 1.05, "weight": 400, "family": "GFS Didot" },
       { "name": "title-companion", "fluid": { "min": 32, "max": 50, "minWidth": 888.89, "maxWidth": 1388.89 }, "leading": 1.08, "weight": 400, "family": "GFS Didot" },
+      { "name": "year", "fluid": { "min": 64, "max": 104, "minWidth": 1066.67, "maxWidth": 1733.33 }, "leading": 1, "weight": 400, "family": "GFS Didot" },
       { "name": "title", "fluid": { "min": 40, "max": 100, "minWidth": 625, "maxWidth": 1562.5 }, "leading": 1.02, "weight": 400, "family": "GFS Didot" },
-      { "name": "title-wide", "fluid": { "min": 44, "max": 92, "minWidth": 785.71, "maxWidth": 1642.86 }, "leading": 1.02, "weight": 400, "family": "GFS Didot" },
-      { "name": "year", "fluid": { "min": 64, "max": 104, "minWidth": 1066.67, "maxWidth": 1733.33 }, "leading": 1, "weight": 400, "family": "GFS Didot" }
+      { "name": "title-wide", "fluid": { "min": 44, "max": 92, "minWidth": 785.71, "maxWidth": 1642.86 }, "leading": 1.02, "weight": 400, "family": "GFS Didot" }
     ],
     "measure": { "min": 45, "max": 90 }
   },
