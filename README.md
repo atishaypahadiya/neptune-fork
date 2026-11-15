@@ -313,9 +313,13 @@ site/           static site (GitHub Pages) and its data
 
 ## Compute
 
-The ledger (`site/data/ledger.json`) records **1193 CPU-hours** to date: 1109 timed live, plus 83
-estimated from logs. The main study accounts for 1090 of them and the companion study for 103 (the fit at Adams's
-distances 70.8, the reproduction 7.0, the noise test 24.9, the detection model 0.3). The main study
+The ledger (`site/data/ledger.json`) records **1319 CPU-hours** to date: 1235 timed live, plus 83
+estimated from logs. The main study accounts for 1090 of them, the companion study for 103 (the fit at Adams's
+distances 70.8, the reproduction 7.0, the noise test 24.9, the detection model 0.3), and the runs
+of v1.4 for 126 (the rerun of the eccentricity test's nearest cell, 126.0; the check against
+Lalande's places, 0.05). The synthetic gates of the two data choices, the stopped fit on Adams's
+rows and the Mercury study wrote no rows; they took about 40 more
+([reproduce.md](docs/reproduce.md)). The main study
 covers 1153 million likelihood evaluations, 624 million of them N-body
 integrations over 1690–1846 and the rest the fast linearized likelihood. Nested sampling
 accounts for nearly all of it: the posterior calibration on synthetic data, and the coverage
