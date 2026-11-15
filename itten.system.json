@@ -22,6 +22,8 @@
       { "name": "note", "size": 15, "lineHeight": 23, "weight": 400, "family": "Source Serif 4" },
       { "name": "body-phone", "size": 17, "lineHeight": 26, "weight": 400, "family": "Source Serif 4" },
       { "name": "body", "size": 18, "lineHeight": 28, "weight": 400, "family": "Source Serif 4" },
+      { "name": "h3-phone", "size": 17, "lineHeight": 26, "weight": 600, "family": "Source Serif 4" },
+      { "name": "h3", "size": 18, "lineHeight": 28, "weight": 600, "family": "Source Serif 4" },
       { "name": "byline", "fluid": { "min": 14, "max": 17, "minWidth": 1166.67, "maxWidth": 1416.67 }, "leading": 1.5, "weight": 400, "family": "Source Serif 4" },
       { "name": "subtitle", "fluid": { "min": 15, "max": 19, "minWidth": 1200, "maxWidth": 1520 }, "leading": 1.45, "weight": 400, "family": "Source Serif 4" },
       { "name": "table-companion", "fluid": { "min": 15, "max": 17, "minWidth": 750, "maxWidth": 1250 }, "leading": 1.56, "weight": 400, "family": "Source Serif 4" },

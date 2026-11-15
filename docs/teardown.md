@@ -170,6 +170,8 @@ changed.
 - Figure ÷ paragraph 2.0 (R2a) → `spacing.groupRatioMin`: 2.
 - Body 18/28 (R1 18/27.9, `docs/DESIGN.md` 18/28) and its phone size, 17/26 → `type.scale`
   `body` and `body-phone`, switched at 720 px, the site's phone breakpoint.
+- h3, the body size at weight 600 (R2a) → `h3` 18/28 and `h3-phone` 17/26, switched with the body
+  steps. Separate steps because ITTEN 0.2 matches a step on size, weight and family together.
 - Caption 14/21 (R1, R2) → `caption`. The site's 15 px second small step → `note`, 15/23.
 - h2, Plate III year, the two Plate I title ramps, companion title, subtitle, byline and the
   two Table 1 cell ramps (R2) → fluid steps, each the range the page renders now, with the
