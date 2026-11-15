@@ -396,3 +396,22 @@ RGO 6/96a, RGO 36/2/70 and RGO 7/247.
   cols. 131–148.
 - Le Verrier's paper of 1 June 1846: *Comptes rendus* 22, 907–918; the place of the planet is
   stated on p. 917.
+
+## Addendum, 15 November 2026: Rawlins's DIO papers obtained
+
+- The entry for *DIO* 9.1 in § 5 says "not obtained". It is now obtained, and its citation is
+  completed: [D. Rawlins], "British Neptune-disaster file recovered", *DIO* 9.1 (June 1999),
+  3–25, https://www.dioi.org/vols/w91.pdf. The online copy is a later printing ("This printing:
+  2015") with notes added in 2003 and 2011. The article has no byline; Kollerstrom attributes it
+  to Rawlins (2006, Part 1, note 130: "D. Rawlins, 'British Neptune-disaster file recovered',
+  Dio, ix/1 (June 1999), 17"). Read: p. 4, item [d], "about 12°" for Adams's place of
+  2 September 1846; p. 17, n. 62, "Hyp X was 12° west of Neptune, 11° west of Leverrier" [S].
+- D. Rawlins, "The Neptune conspiracy", *DIO* 2.3 (October 1992), 115–42,
+  https://www.dioi.org/vols/w23.pdf. Read: p. 130, "over 10° to the west of the real planet";
+  p. 132, Hyp X at 315° 16′ against Neptune at 326° 58′ on 23 September 1846 [S].
+- Kollerstrom's endorsement of Rawlins's thesis "that Adams had no confidence in any solutions
+  he reached, prior to 2 September 1846" (Part 2, p. 357; `prior_work/kollerstrom_2006.md`,
+  item 8) carries his note 193, "Rawlins, 'Conspiracy' (ref. 89), 132": it rests on *DIO* 2.3,
+  not on *DIO* 9.1. His note 89 is "The Neptune conspiracy", *DIO* ii/3 (1992), 115–42. Read in
+  the typeset copy of both parts linked from Kollerstrom's own list of papers,
+  https://dioi.org/kn/neptunestory.pdf.
