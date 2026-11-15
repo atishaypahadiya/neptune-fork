@@ -262,10 +262,14 @@ checks, the heading spacing and the page-range guard.
   the deferred fits' target version (1.5) and status in `site/data/m7_timeline.json` (edited
   to match `docs/notes/scripts/m7_timeline.py`, which needs the run logs to rerun) and the
   README; the README's Lalande, attribution and Mercury passages and one stale limitation.
-- [ ] Checks: ruff, tests, prerender, number audit on both pages, layout in Chromium and
-  WebKit, citation validation, one link pass.
-- [ ] Tag `v1.4.0`, GitHub release, Zenodo version DOI.
-- [ ] Follow-up commit: that DOI in `CITATION.cff`, `README.md` and `site/data/release.json`.
+- [x] Checks: ruff, tests (646 fast, 27 slow), prerender, number audit on both pages, layout
+  in Chromium and WebKit, citation validation, link passes (0 errors).
+- [x] CI on the metadata commit (9b3c51e) failed: a test merged with v14-runs-b read a run
+  cache that CI does not have (it also failed on 9a764fe). Fixed by a skip with its reason
+  (05f669a); test and pages green there.
+- [x] Tag `v1.4.0` on 05f669a, GitHub release published 2026-11-15 01:33:13 UTC, not a draft;
+  Zenodo minted version DOI 10.5281/zenodo.24237250 (https://zenodo.org/records/24237250).
+- [x] Follow-up commit: that DOI in `CITATION.cff`, `README.md` and `site/data/release.json`.
 
 ## v1.5 list (opened 2026-11-15; no release without the explicit word)
 

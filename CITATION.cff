@@ -33,10 +33,14 @@ license:
   - CC0-1.0
 version: "1.4.0"
 date-released: "2026-11-15"
+doi: "10.5281/zenodo.24237250"
 identifiers:
   - type: doi
     value: "10.5281/zenodo.24121059"
     description: "Concept DOI of the code archive on Zenodo: all versions."
+  - type: doi
+    value: "10.5281/zenodo.24237250"
+    description: "Version DOI of v1.4.0 (released 2026-11-15)."
   - type: doi
     value: "10.5281/zenodo.24195990"
     description: "Version DOI of v1.3.0 (released 2026-11-13)."
