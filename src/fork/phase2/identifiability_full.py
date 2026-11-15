@@ -133,6 +133,7 @@ V6_AMENDED = True  # amendment 1, item 9
 # amendment 1, item 8: fresh Jacobians along the singular directions
 JAC_MODE = os.environ.get("FORK_IDFULL_JAC", "whitened")
 N_INT = [0]  # full integrations in this process
+N_EDGE = [0]  # Jacobian columns taken one-sided at the edge of the elements' domain (_difference)
 
 
 def _log(msg: str) -> None:
@@ -265,6 +266,10 @@ class NoContact(Exception):
     """The model gives no contact within a day of a printed epoch: its likelihood is zero."""
 
 
+class OutsideDomain(Exception):
+    """Elements outside a > 0, 0 ≤ e < 1, where ``elements_to_state`` gives no orbit."""
+
+
 @dataclass(frozen=True)
 class Observation:
     jd: np.ndarray
@@ -294,6 +299,7 @@ class Call:
     n_int: int
     converged: bool
     no_contact: bool = False
+    edge_steps: int = 0  # Jacobian columns of this call taken at the domain's edge (_difference)
 
     def ln_l(self, level: float = 1.0) -> float:
         """Laplace's marginal over the six elements at error level ``level`` (× σ₁), up to
@@ -305,7 +311,50 @@ class Call:
     def row(self) -> dict:
         return {"chi2": self.chi2, "ln_s": self.ln_s, "theta6": self.theta6.tolist(),
                 "iterations": self.iterations, "n_int": self.n_int,
-                "converged": self.converged, "no_contact": self.no_contact}  # fmt: skip
+                "converged": self.converged, "no_contact": self.no_contact,
+                "edge_steps": self.edge_steps}  # fmt: skip
+
+
+def _in_domain(theta: np.ndarray) -> bool:
+    """The elements' domain: a > 0 and 0 ≤ e < 1 (``elements_to_state``)."""
+    return bool(theta[0] > 0.0 and 0.0 <= theta[1] < 1.0)
+
+
+def _difference(resid, theta: np.ndarray, r: np.ndarray, d: np.ndarray) -> np.ndarray:
+    """r(θ + d) − r(θ), the change of the residuals over the step d.
+
+    By a forward difference, as the plan has it, whenever the forward trial is allowed; one
+    with no contact takes the backward difference r(θ) − r(θ − d), as before. At the edge of
+    the allowed region (elements with a > 0 and 0 ≤ e < 1, ``OutsideDomain``, and with
+    contacts) the step is one-sided into it: backward when only the forward trial is outside,
+    and, when the backward trial is outside too, shortened by halves along d until one of the
+    two is inside, the difference then scaled back to the full step. Each column taken any
+    way but the old one is counted in ``N_EDGE``. Where the old code did not fail, the
+    arithmetic is the old one, bit for bit.
+    """
+
+    def trial(t: np.ndarray):
+        try:
+            return resid(t), None
+        except (NoContact, OutsideDomain) as exc:
+            return None, exc
+
+    f = 1.0
+    for _ in range(80):
+        rf, why = trial(theta + f * d)
+        if rf is not None:
+            if f == 1.0:
+                return rf - r  # the old arithmetic
+            N_EDGE[0] += 1
+            return (rf - r) / f
+        rb, _ = trial(theta - f * d)
+        if rb is not None:
+            if f == 1.0 and isinstance(why, NoContact):
+                return r - rb  # the old arithmetic: no contact forward, backward difference
+            N_EDGE[0] += 1
+            return (r - rb) / f
+        f *= 0.5
+    raise ValueError("_difference: no step along d reaches the allowed region")
 
 
 def _jacobian(resid, theta: np.ndarray, r: np.ndarray, steps: np.ndarray) -> np.ndarray:
@@ -313,24 +362,16 @@ def _jacobian(resid, theta: np.ndarray, r: np.ndarray, steps: np.ndarray) -> np.
     for k, h in enumerate(steps):
         d = np.zeros(len(theta))
         d[k] = h
-        try:
-            cols.append((resid(theta + d) - r) / h)
-        except NoContact:
-            cols.append((r - resid(theta - d)) / h)
+        cols.append(_difference(resid, theta, r, d) / h)
     return np.array(cols).T
 
 
 def _whitened_jacobian(resid, theta: np.ndarray, r: np.ndarray, basis: np.ndarray) -> np.ndarray:
     """Forward differences along the singular directions of ``basis``, each step one whitened
-    unit (θ + v_k / s_k), returned in the elements' coordinates."""
+    unit (θ + v_k / s_k), returned in the elements' coordinates; one-sided into the elements'
+    domain at its edge (``_difference``)."""
     _, s, vt = np.linalg.svd(basis, full_matrices=False)
-    cols = []
-    for k in range(len(s)):
-        d = vt[k] / s[k]
-        try:
-            cols.append(resid(theta + d) - r)
-        except NoContact:
-            cols.append(r - resid(theta - d))
+    cols = [_difference(resid, theta, r, vt[k] / s[k]) for k in range(len(s))]
     return np.array(cols).T @ (s[:, None] * vt)
 
 
@@ -344,7 +385,7 @@ def lm_fit(resid, start: np.ndarray, steps: np.ndarray, jac0: np.ndarray | None 
     predicts a further drop below ``tol``; that Jacobian gives Laplace's term. A fresh
     Jacobian is by forward differences with ``steps`` (``jac_mode="plan"``), or, given one to
     take directions from, along its singular directions (``"whitened"``)."""
-    n0 = N_INT[0]
+    n0, e0 = N_INT[0], N_EDGE[0]
     th = np.array(start, dtype=float)
     try:
         r = resid(th)
@@ -396,7 +437,8 @@ def lm_fit(resid, start: np.ndarray, steps: np.ndarray, jac0: np.ndarray | None 
                 jac, is_fresh, fails, last_drop = fresh(th, r, jac), True, 0, 0.0
     final = jac if is_fresh else fresh(th, r, jac)
     s = np.linalg.svd(final, compute_uv=False)
-    return Call(chi, float(np.sum(np.log(s))), th, final, it, N_INT[0] - n0, converged)
+    ln_s, n_edge = float(np.sum(np.log(s))), N_EDGE[0] - e0
+    return Call(chi, ln_s, th, final, it, N_INT[0] - n0, converged, edge_steps=n_edge)
 
 
 class Data:
@@ -407,6 +449,8 @@ class Data:
 
     def resid_fn(self, model: str, extra):
         def resid(theta6: np.ndarray) -> np.ndarray:
+            if not _in_domain(theta6):
+                raise OutsideDomain
             return (observe(MODEL_NAME[model], theta6, extra, self.obs) - self.y) / self.sigma
 
         return resid

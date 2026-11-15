@@ -333,3 +333,48 @@ saw it, and nothing here was set from it.
 The code also fixes a defect in the runner, which is not a change to the plan: a call that
 starts at its optimum (the truth's own model on its noise-free data) now passes the
 convergence test without taking a step.
+
+## Note, 15 November 2026: a runner failure in Stage 1, and its fix
+
+Stage 1 started at 05:45 PST on 15 November and was stopped by hand at 13:28, with one of its
+30 scans finished, 16 part done and 13 not started. No gate or reading had been computed.
+
+**The failure.** Eleven scan processes stopped with `elements_to_state: need a > 0 and
+0 <= e < 1`, in seven of the planet model's scans: t1_s0_l0_P_d0_b0, t1_s0_l0_P_d2_b0,
+t3_s0_l0_P_d0_b0 and t3_s0_l0_P_d1_b2_half twice each (the runner retries a scan once, so
+these four were left unfinished), and t1_s0_l0_P_d1_b0, t3_s0_l0_P_d1_b3_half and
+t4_s0_l0_P_d0_b0 once each (they resumed). Every one stopped at the same place: the fresh
+Jacobian taken along the singular directions of the current one (amendment 1, item 8), after
+two rejected steps. The elements are Mercury's, the only body whose elements are fitted, and
+its eccentricity was not near either bound: 0.204 at the two failures reproduced, and no
+lower than 0.198 at any of the 45,640 points recorded before the stop. The bound was crossed
+because the Jacobian being whitened, updated by Broyden's rule through the rejected steps,
+had lost a direction: its smallest singular value was 1.3 × 10⁻⁶ in t3_s0_l0_P_d0_b0 and
+6.9 × 10⁻⁷ in t3_s0_l0_P_d1_b2_half, against about 10⁵ for the next, so one whitened unit
+along it was a step of about 4 × 10⁵ in e and 10³ AU in a, outside the domain on both sides.
+
+**The fix.** A step of a finite-difference Jacobian is taken one-sided into the allowed
+region: the elements' domain (a > 0, 0 ≤ e < 1) with contacts. Forward, as before, when the
+forward trial is allowed; backward when it is not (as the runner already did for a trial
+with no contact); and when neither trial is allowed, the step is halved along the same
+direction until one is, the difference then scaled back to the full step. There is no change
+of parameters. Each Jacobian column taken any way but the old one is counted in the call's
+record (`edge_steps`), so that the readings can say how many such calls there are and how far
+each lies from its scan's best point. Where the old code did not fail, the arithmetic is the
+old one, bit for bit: at the 24 solutions of the finished scan (t3_s0_l0_P_d1_b3_half) the
+Jacobians by the plan's steps and along the singular directions are identical with the old
+and the new code. Tests: tests/test_phase2_identifiability_full.py (a near-circular orbit,
+e = 10⁻⁴, and the collapsed direction of t3_s0_l0_P_d0_b0, both of which the old code failed
+on). Rerun from their recorded points, the two reproduced failures now go on: the call at
+the failing point of t3_s0_l0_P_d0_b0 took four columns at the edge and did not converge, at
+χ² ≈ 2.96 × 10⁵, with two further unconverged calls beside it, all at the edge of the coarse
+scan and far outside Δχ² = 200 of any best point.
+
+The fix changes no model, prior, likelihood, data set, grid, tolerance or gate.
+
+**The restart.** The four scans that failed twice restart from the beginning; their earlier
+points are kept aside, not used. The other scans resume from their recorded points. A
+resumed scan does not have the Jacobian it would have carried into its next point (it is not
+recorded), so that point starts from a fresh one, as the first point of a scan does; each
+point is still a converged fit, but a resumed scan is not bit-identical to an unbroken run.
+The finished scan, and the three that resumed after one failure, are kept as they are.

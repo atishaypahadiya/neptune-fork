@@ -8,6 +8,7 @@ import math
 import numpy as np
 import pytest
 
+from fork.data.frames import elements_to_state
 from fork.model import inner_system as IS
 from fork.phase2 import identifiability as ID
 from fork.phase2 import identifiability_full as F
@@ -244,3 +245,76 @@ def test_amendment_one_is_in_force():
     assert F.JAC_MODE == "whitened" and F.V6_AMENDED and F.V6_FAR == 200.0
     below = F.PLAN.read_text()[len(F._plan_frozen_part()) :]
     assert "## Amendment 1" in below and "Δχ² = 200" in below
+
+
+# ---------------------------------------------------------------------------- domain's edge
+
+
+def _position(theta):
+    """A smooth residual that, like the model's, refuses elements outside a > 0, 0 ≤ e < 1."""
+    if not F._in_domain(theta):
+        raise F.OutsideDomain
+    return elements_to_state(*theta, F.MU_MERCURY)[0]
+
+
+def test_difference_is_the_old_forward_difference_inside_the_domain():
+    theta = np.array([0.387, 0.2056, 0.12, 0.85, 0.51, 1.8])
+    r = _position(theta)
+    for d in (np.array([0.0, 2e-7, 0, 0, 0, 0]), np.array([1e-4, -3e-3, 2e-3, 1e-3, -1e-3, 5e-3])):
+        n0 = F.N_EDGE[0]
+        assert np.array_equal(F._difference(_position, theta, r, d), _position(theta + d) - r)
+        assert F.N_EDGE[0] == n0
+    steps = np.array([1e-10, 2e-7, 2e-7, 2e-7, 2e-7, 2e-7])
+    old = np.array([(_position(theta + h * np.eye(6)[k]) - r) / h for k, h in enumerate(steps)]).T
+    assert np.array_equal(F._jacobian(_position, theta, r, steps), old)
+
+
+def test_near_circular_orbit_takes_the_backward_step():
+    """e = 1e-4 and a step that lowers e by 2e-4: the forward trial has e < 0, which crashed
+    the old code; the step is taken backward, into the domain, at its full length."""
+    theta = np.array([0.387, 1e-4, 0.12, 0.85, 0.51, 1.8])
+    d = np.array([0.0, -2e-4, 1e-5, 0.0, 0.0, 0.0])
+    r = _position(theta)
+    with pytest.raises(ValueError):
+        elements_to_state(*(theta + d), F.MU_MERCURY)  # what the old forward difference hit
+    n0 = F.N_EDGE[0]
+    diff = F._difference(_position, theta, r, d)
+    assert F.N_EDGE[0] == n0 + 1
+    assert np.array_equal(diff, r - _position(theta - d))
+    # a backward difference of the same length: agrees with the derivative to first order
+    h = 1e-9
+    deriv = (_position(theta + h * d / np.linalg.norm(d)) - r) / h * np.linalg.norm(d)
+    np.testing.assert_allclose(diff, deriv, rtol=0.05, atol=1e-9)
+
+
+def test_collapsed_direction_is_shortened_into_the_domain():
+    """The Stage 1 crash (t3_s0_l0_P_d0_b0): a Jacobian whose smallest singular value had
+    fallen to 1.3e-6 made one whitened unit a step of 4e5 in e and -1e3 AU in a, outside the
+    domain on both sides. The step is halved along d until a trial lies inside."""
+    theta = np.array([0.38709795748, 0.20375610234, 0.12415470373, 0.84568510339,
+                      0.50881257509, 1.81576156722])  # fmt: skip
+    d = np.array([-987.545, 373144.709, -54546.781, 407388.744, 282047.555, 426424.088])
+    r = _position(theta)
+    for sign in (1, -1):
+        with pytest.raises(ValueError):
+            elements_to_state(*(theta + sign * d), F.MU_MERCURY)
+    n0 = F.N_EDGE[0]
+    diff = F._difference(_position, theta, r, d)
+    assert F.N_EDGE[0] == n0 + 1
+    assert np.all(np.isfinite(diff))
+    f = 1.0
+    while not (F._in_domain(theta + f * d) or F._in_domain(theta - f * d)):
+        f *= 0.5
+    trial = theta + f * d if F._in_domain(theta + f * d) else theta - f * d
+    sign = 1.0 if F._in_domain(theta + f * d) else -1.0
+    np.testing.assert_allclose(diff, sign * (_position(trial) - r) / f, rtol=0, atol=0)
+
+
+def test_whitened_jacobian_survives_a_collapsed_basis():
+    theta = np.array([0.387, 0.2038, 0.124, 0.846, 0.509, 1.816])
+    rng = np.random.default_rng(0)
+    q, _ = np.linalg.qr(rng.normal(size=(6, 6)))
+    basis = q @ np.diag([5e10, 4e9, 7e5, 2.5e5, 1.2e5, 1.3e-6]) @ q.T
+    r = _position(theta)
+    jac = F._whitened_jacobian(_position, theta, r, basis)
+    assert jac.shape == (3, 6) and np.all(np.isfinite(jac))
