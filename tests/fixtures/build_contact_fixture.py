@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "tests" / "fixtures" / "phase2" / "contact_real_horizons.npz"
 
 # Espenak, "2016 Transit of Mercury" and "2019 Transit of Mercury", eclipsewise.com, Table 1
-# (geocentric phases, UT1; ephemerides from JPL DE406)
+# (geocentric phases, UT1; his Fig. 1 of each: ΔT 68.1 s, DE406 for 2016; 69.3 s, DE430 for 2019)
 PUBLISHED_UT1 = {
     "2016": ("2016-05-09", ("11:12:19", "11:15:31", "18:39:14", "18:42:26")),
     "2019": ("2019-11-11", ("12:35:27", "12:37:08", "18:02:33", "18:04:14")),

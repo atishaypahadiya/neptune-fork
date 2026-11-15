@@ -31,8 +31,10 @@ modules; it is unchanged.
 of the 2016 and 2019 transits of Mercury, for `tests/test_contact_real.py`.
 
 - **Contacts:** F. Espenak, "2016 Transit of Mercury" and "2019 Transit of Mercury"
-  (eclipsewise.com/oh/tm2016.html, tm2019.html), Table 1: geocentric phases in UT1, from JPL
-  DE406. Converted to TDB with the IERS UT1 − UTC values bundled with astropy (no download).
+  (eclipsewise.com/oh/tm2016.html, tm2019.html), Table 1: geocentric phases in UT1. His Fig. 1
+  of each transit prints the ΔT and ephemeris: 68.1 s and DE406 (2016), 69.3 s and DE430
+  (2019; the 2019 page's text says DE406). The fixture's epochs are converted to TDB with the
+  IERS UT1 − UTC values bundled with astropy (no download); the test converts back with his ΔT.
 - **Query:** for each contact, Sun-centred geometric states of Mercury (199) and the Earth's
   centre (399) as `fork.data.horizons.fetch_from_horizons` makes them, and Mercury's
   astrometric position from the Earth's centre (`CENTER='500@399'`, `VEC_CORR='LT'`, ecliptic

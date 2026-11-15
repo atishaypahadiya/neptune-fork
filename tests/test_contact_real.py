@@ -5,8 +5,14 @@ Tolerances were set from the error budgets in the docstrings before the comparis
 - light time against Horizons' astrometric vectors: the Sun's barycentric motion during the
   light time, under 0.01″, so 0.02″;
 - contacts against Espenak's published geocentric times: the times are printed to 1 s, the ΔT
-  used for them is not printed (a predicted value; IERS gives the one used here), and his solar
-  and planetary radii are taken to be the plan's, so 2 s.
+  used for them was at first taken from IERS (his web pages do not print it), and his solar and
+  planetary radii are taken to be the plan's, so 2 s.
+
+His figures for the two transits (eclipsewise.com/oh/oh-figures/tm2016-Fig01.pdf and
+tm2019-Fig01.pdf) print the ΔT and ephemeris he used: 68.1 s with DE406 (2016), 69.3 s with
+DE430 (2019). The comparison below converts with his ΔT. Against IERS (68.335 s, 69.347 s) this
+moves the 2016 contacts by +0.235 s and the 2019 contacts by +0.047 s; the tolerance is
+unchanged.
 """
 
 import math
@@ -21,6 +27,7 @@ from fork.phase2 import contact_real as CR
 FIXTURE = Path(__file__).parent / "fixtures" / "phase2" / "contact_real_horizons.npz"
 TOL_LIGHT_ARCSEC = 0.02
 TOL_CONTACT_S = 2.0
+ESPENAK_DELTA_T_S = {"2016": 68.1, "2019": 69.3}  # printed on his Fig. 1 of each transit
 
 
 # ---------------------------------------------------------------------------- ΔT
@@ -104,15 +111,18 @@ def test_light_time_matches_horizons_astrometric(horizons):
 
 
 def _offsets(horizons, **kw):
+    """Model minus published contact [s], in UT1 by Espenak's ΔT (the fixture's epochs are the
+    published UT1 plus the IERS ΔT, so his ΔT shifts the model's UT1 by IERS − his)."""
     m, e = horizons["mercury"], horizons["earth"]
     k = np.array([int(s.split()[1]) for s in horizons["labels"]])
     off, res = CR.contact_offsets(m[:, :3], m[:, 3:], e[:, :3], e[:, 3:], np.isin(k, (1, 4)), **kw)
-    return off, res
+    his = np.array([ESPENAK_DELTA_T_S[s.split()[0]] for s in horizons["labels"]])
+    return off + (horizons["delta_t_iers_s"] - his), res
 
 
 def test_contacts_match_the_published_geocentric_times(horizons):
-    """Espenak's geocentric contacts of 2016 and 2019 (UT1), at the IERS ΔT: the model's
-    contacts fall within 2 s of the printed times."""
+    """Espenak's geocentric contacts of 2016 and 2019 (UT1), converted with his own ΔT: the
+    model's contacts fall within 2 s of the printed times."""
     off, res = _offsets(horizons)
     assert np.all(res < CR.ROOT_TOL)
     assert np.abs(off).max() < TOL_CONTACT_S, dict(
