@@ -249,3 +249,87 @@ the longitude-only observation, which this plan removes. In addition:
   step writing a ledger row.
 
 ---
+
+## Amendment 1, 15 November 2026, before any Stage 1 scan
+
+Written after the runner's smoke test and before any scan in the study's cache. Items 1 to 7
+and 10 record choices the plan left open. Items 8 and 9 change text above the line (the Jacobian
+of § 4.1 and gate V6); both were approved before this amendment was committed. Nothing in
+this amendment was set from a Bayes factor or a reading.
+
+**What the smoke test computed.** In a scratch cache, on the study's own noise-free data
+sets: truth d fitted by J at nine strengths (once with each Jacobian of item 8), truth a
+fitted by N and G (with each Jacobian), and one complete J scan on truth d with the N and G
+calls on truth a. None of it is reused; Stage 1 computes everything again in the study's
+cache. That scan gave J's ln Z on truth d's noise-free data, which readings R1 and R3 use; I
+saw it, and nothing here was set from it.
+
+1. **The Earth is the Earth–Moon barycentre.** The integration carries the barycentre, not
+   the geocentre; data and model share it, so it cancels for synthetic data. A version with
+   real data needs the geocentre's offset from the barycentre (about 4,700 km, which moves
+   Mercury against the Sun by several arcseconds, of order a minute in a contact time),
+   together with light time and ΔT (§ 8).
+2. **V2′ has 9 points per fit, not 10.** The gate names the best point and Δχ² = 1, 4, 9 and
+   25 on either side: 9 points. That is 108 points in all, so the gate's 95 % allows at most
+   5 outside the tolerance.
+3. **A call with no contact has likelihood zero.** Where the model gives no contact within a
+   day of a printed epoch, or the root is not found to 10⁻¹² rad, the call's likelihood is
+   zero. Such calls are counted and listed separately; they are not failures to converge
+   under V6.
+4. **What is splined.** The fine scan splines ln L itself (−½ χ²/L² minus the Laplace term),
+   not χ² alone, since the Laplace term changes along the scan too. Outside the fine points,
+   ln L is interpolated linearly between the coarse and tail points on the same sub-grid
+   step. The integral is clipped to the prior box.
+5. **The planet's scans run one process per distance**, its 48 longitudes in sequence. V3′'s
+   halved grid (96 longitudes at the true distance) runs as 4 processes of 24 longitudes, and
+   the first longitude of each starts from its own coarse scan.
+6. **Refining and widening the fine scan.** The 15 points are recentred and their spacing
+   reset (at most six times) while the spline's best value moves by more than one width or
+   its width changes by more than a factor 0.7 to 1.5. The points are then extended at the
+   same spacing until both ends are at least Δχ² = 50 L² above the minimum for the largest
+   level the scan serves (L = 2 for noise-free data), so that ln L there is at least 25
+   below the peak. Where a tail point is not below e⁻²⁵ of the peak, the fine points are
+   extended toward it (at most 1,500 more).
+7. **The coarse scan** runs upward from the low end of its 8 decades. Its first point starts
+   from the base elements; each later point starts from its neighbour.
+
+8. **Fresh Jacobians along the singular directions (changes § 4.1).** The first Jacobian of
+   a scan stays the plan's: forward differences with the earlier plan's element steps. Every
+   later fresh Jacobian is taken by forward differences along the singular directions of the
+   Jacobian in hand, each step one whitened unit (θ + v_k/s_k). This covers the one after
+   two failed steps, the one for the convergence test and the one Laplace's method uses. It
+   still costs six integrations.
+
+   The reason is the forward model's own numerical noise. The scatter of χ² at an optimum is
+   about 2 × 10⁻³ at χ² ≈ 1,100, which is about 3 × 10⁻⁵ σ in each residual. Divided by the
+   element steps (10⁻¹⁰ to 2 × 10⁻⁷), that noise enters the Jacobian. Multiplied by large
+   residuals, it then dominates the predicted drop of the convergence test. The predicted
+   drop scales as the steps predict: 1.8 at a quarter of the steps, 0.038 at the plan's
+   steps, 0.0012 at four times them.
+
+   | | the plan's Jacobian | along the singular directions |
+   |---|---|---|
+   | converged, of 11 calls (J on truth d at 9 strengths; N, G on truth a) | 4 | 10 |
+   | χ² of the calls that did not converge | 281 to 48,114 | 48,114 |
+   | integrations, all 11 calls | 503 | 184 |
+   | χ²_min where both converged | the same to 10⁻³ | |
+   | Σ ln s_k | | 0.002 to 0.006 lower, at every point |
+
+9. **V6 counts calls that the evidence uses (changes § 5).** V6's 0.1 % is read on the calls
+   within Δχ² = 200 of the best point of their scan; the calls beyond are left out of it, and
+   their number and how many of them did not converge are reported. Δχ² =
+   200 is 50 L² at L = 2, so at every level their integrand is below e⁻²⁵ of the peak. The
+   clause that no failed call may lie within Δχ² = 25 of a scan's best point is unchanged.
+
+   The reason is that χ²'s numerical scatter grows with the residual, to a few × 10⁻² near χ²
+   = 5 × 10⁴. There the test's 10⁻³ cannot be met with any Jacobian (the one failure in
+   item 8's table). An error of that size in a call so far below the peak changes no ln Z.
+
+10. **V4 reads the minimum of the fine scan's spline of χ²** (or the best grid point, if
+    lower). The best grid point alone sits up to half a spacing from the minimum: in the
+    smoke test, χ² 0.145 at the best point of truth d's own scan, against 1.6 × 10⁻⁵ at the
+    truth.
+
+The code also fixes a defect in the runner, which is not a change to the plan: a call that
+starts at its optimum (the truth's own model on its noise-free data) now passes the
+convergence test without taking a step.
