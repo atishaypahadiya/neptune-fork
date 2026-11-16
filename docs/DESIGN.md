@@ -88,9 +88,10 @@ sit above the texture and stay sharp.
   - fine grain;
   - sparse dust specks;
   - a radial `--wash` vignette toward the plate edges;
-  - the corner that holds a plate's label deepened with `--deep` instead (and on Plate I from
-    900 px the lower left, under the title block), since the wash there left the label and
-    the byline under 4.5:1 (`site/js/plate.js`, `ground`);
+  - behind the small lettering (each plate's label, Plate I's subtitle and byline) a soft,
+    blurred shade of `--deep`, tight to the block and under the drawing: the wash and the
+    lightest cloud left the labels at 2.7:1 and the byline at 3.9:1, and the shade brings them
+    to 4.5:1 without changing the plate's corners (`site/css/site.css`);
   - a hairline plate mark inset from the edge (Plate I only).
 - **Glow:** a small Gaussian blur under the bodies on Plate III and the highlighted point, and
   nowhere else.

@@ -84,9 +84,10 @@ body > header > *, main > section > * { grid-column: body; } /* prose is body wi
 .full { grid-column: full; }
 
 /* ---------- figures: the archive layer ---------- */
-.plate { position: relative; margin: 0; background: var(--prussian); overflow: hidden; }
+/* Layers, bottom up: the ground, the shade behind small lettering, the drawing, the lettering. */
+.plate { position: relative; margin: 0; background: var(--prussian); overflow: hidden; isolation: isolate; }
 .plate > svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.plate > svg.ground { pointer-events: none; }
+.plate > svg.ground { pointer-events: none; z-index: -2; }
 .fig text { font-family: var(--serif); fill: var(--line); }
 .fig .lbl { font-size: 13px; letter-spacing: 1.2px; }
 .fig .lbl.row { letter-spacing: 0; font-size: 14px; }
@@ -108,6 +109,18 @@ body > header > *, main > section > * { grid-column: body; } /* prose is body wi
 .plate-label {
   position: absolute; right: 1.5rem; bottom: 1.125rem; color: var(--line); font-size: 1.125rem; line-height: 1.75rem;
   letter-spacing: 2px; pointer-events: none;
+}
+/* The small lettering over a plate (each plate's label, Plate I's subtitle and byline) sits on
+   a soft shade of --deep, tight behind the block and fading out like a cloud's shadow, so its
+   --line reaches 4.5:1 over the vignette's pale corners and the lightest cloud (COL-01). The
+   plate's ground is left as drawn, and the shade lies under the drawing, so a mark next to a
+   label keeps its full light. The title, large text, needs 3:1 and has none. */
+.plate-label, .titleblock :is(.subtitle, .byline) { --shade: color-mix(in srgb, var(--deep) 22%, transparent); }
+.plate-label { --shade: color-mix(in srgb, var(--deep) 44%, transparent); }
+.titleblock :is(.subtitle, .byline) { position: relative; }
+:is(.plate-label, .titleblock .subtitle, .titleblock .byline)::before {
+  content: ""; position: absolute; inset: -0.75em -1.25em; z-index: -1; pointer-events: none;
+  background: var(--shade); filter: blur(0.6em);
 }
 .plate .error {
   position: absolute; inset: auto 1.5rem 1.5rem; margin: 0; color: var(--line); font-size: 0.9375rem; line-height: 1.4375rem;
@@ -131,9 +144,6 @@ body > header > *, main > section > * { grid-column: body; } /* prose is body wi
 /* Below 900 px the drawing stands above the title block: room for it of up to 20rem (the
    drawing's width at 100 % text), kept when the text grows. */
 .plate-i .plate::before { content: ""; flex: none; height: min(92vw, 20rem); }
-/* The ground under the title block, deepened where the block sits in the lower left (from
-   900 px; site/js/plate.js, ground). */
-.plate-i .deepen-title { display: none; }
 .titleblock {
   position: relative; container-type: inline-size;
   color: var(--line); text-align: center; pointer-events: none;
@@ -149,7 +159,6 @@ h1 { margin: 0 auto 0.75rem; font: 400 clamp(2.5rem, 6.4vw, 6.25rem) / 1.02 var(
 @media (min-width: 900px) {
   .plate-i .plate { padding-bottom: 4.5rem; }
   .plate-i .plate::before { display: none; }
-  .plate-i .deepen-title { display: inline; }
   /* 44 % of the plate, as when the block was placed on it: the plate less its gutters, plus 44 %
      of them. */
   .titleblock { align-self: flex-start; width: calc(44% + 0.88 * var(--gutter)); text-align: left; }
