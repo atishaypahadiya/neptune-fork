@@ -17,7 +17,8 @@
   --fig-space: 2.25rem; /* above and below a wide block */
   color-scheme: light;
 }
-/* The side padding is fluid by design (docs/itten-overrides.md); whole pixels where round() is known. */
+/* The side padding is fluid by design (itten.system.json, the spacing.fluid range "gutter"); whole
+   pixels where round() is known. */
 @supports (width: round(1.5px, 1px)) {
   :root { --gutter: round(clamp(16px, 4vw, 56px), 1px); }
 }
