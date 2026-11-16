@@ -165,6 +165,13 @@ h2 { margin: 0 0 1.5rem; font: 400 clamp(1.875rem, 0.75rem + 2.4vw, 2.625rem) / 
 h3 { margin: 3rem 0 0.75rem; font-size: 1em; font-weight: 600; } /* the body step, bold */
 h3 .sc { font-weight: 400; color: var(--prussian); margin-right: 0.375rem; }
 p { margin: 0 0 1.125rem; }
+/* Headings break into even lines; text closes on more than one word where the browser can
+   (CRF-23). */
+h1, h2, h3 { text-wrap: balance; }
+p, li, figcaption, caption, blockquote, td { text-wrap: pretty; }
+/* Optical alignment (LAY-10, CRF-04): a Didot capital that is round or pointed, at the h2 step,
+   reaches 0.04 em past the text edge so that it looks on it (docs/itten-overrides.md). */
+#h-s1, .p1b :is(#h-s2, #h-s4, #h-ack) { text-indent: -0.04em; }
 .caption, figcaption, caption {
   font-size: 0.875rem; line-height: 1.3125rem; color: var(--prussian); text-align: left;
 }
