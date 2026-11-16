@@ -10,8 +10,13 @@ import { settle } from "./clear.js";
 
 const SVGNS = "http://www.w3.org/2000/svg";
 
-/** Insert the ground SVG behind a figure's data SVG. `mark`: the hairline plate mark (Plate I). */
-export function ground(fig, { mark = false } = {}) {
+/**
+ * Insert the ground SVG behind a figure's data SVG. `mark`: the hairline plate mark (Plate I).
+ * `label`: the corner that holds the plate's label ("top-right" or "bottom-right"; by default
+ * bottom-right when the figure has a .plate-label), where the vignette is deepened. `title`:
+ * deepen the lower left too, under Plate I's title block (shown from 900 px, site.css).
+ */
+export function ground(fig, { mark = false, title = false, label = fig.querySelector(":scope > .plate-label") ? "bottom-right" : null } = {}) {
   if (fig.querySelector(":scope > svg.ground")) return;
   const g = document.createElementNS(SVGNS, "svg");
   g.setAttribute("class", "ground");
@@ -31,6 +36,16 @@ export function ground(fig, { mark = false } = {}) {
   rect({ filter: "url(#tex-grain)", opacity: 0.07, style: "mix-blend-mode: screen" });
   rect({ filter: "url(#tex-dust)", opacity: 0.5 });
   rect({ fill: "url(#tex-vignette)" });
+  // The vignette lightens the corners, and a plate's label sits in one. There it is deepened
+  // instead, in a square sized in rem so it still covers the label at 200 % text: the label's
+  // --line reaches 4.5:1 over the lightest of the cloud behind it (ITTEN contrast, COL-01).
+  if (label) {
+    const top = label === "top-right";
+    const r = rect({ fill: `url(#tex-deepen-${top ? "tr" : "br"})` });
+    Object.assign(r.style, { x: "calc(100% - 24rem)", y: top ? "0" : "calc(100% - 24rem)", width: "24rem", height: "24rem" });
+  }
+  // The title block's subtitle and byline sit in the lower-left corner on wide screens.
+  if (title) rect({ class: "deepen-title", fill: "url(#tex-deepen-bl)", y: "30%", width: "60%", height: "70%" });
   if (mark) {
     const r = rect({ x: 14, y: 14, fill: "none", stroke: "var(--line)", "stroke-opacity": 0.3,
                      "stroke-width": 1 });

@@ -42,7 +42,7 @@ export function titleBlock(D) {
     code_version: D.release.tag,
     code_version_url: D.release.software_doi ? `https://doi.org/${D.release.software_doi}` : D.release.release_url,
     subtitle: `A pre-registered Bayesian reconstruction from the ${D.head.nObservations} ` +
-      `observations of Uranus he published in ${D.dataset.citation.source.year}`,
+      `observations of Uranus he published in\u00a0${D.dataset.citation.source.year}`, // never "1846" alone (ITTEN widow)
   };
 }
 

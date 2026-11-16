@@ -135,7 +135,7 @@ export function plateI(fig, D) {
     arcText(g, cx, cy, `${names.join(" · ")}, ${ty[0]}–${ty[1]}`,
       [235, 245, 225, 255, 215, 265, 205].flatMap((a) => [{ r: rU, lon: rad(a) }, { r: rU + 8, lon: rad(a) }]),
       { maxSpan: 0.9 * Math.PI });
-  }, { mark: true });
+  }, { mark: true, title: true, label: "top-right" });
 }
 
 /* ---------------- Plate II: the conjunction ---------------- */
