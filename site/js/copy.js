@@ -105,7 +105,7 @@ export function capPlateI(D) {
     `projected on the ecliptic of date, seen from the north with the equinox to the right; to ` +
     `scale. {S@plate-i} Sun. {U@plate-i} Uranus (median of the fitted positions) on its dotted ` +
     `path from JPL Horizons, lettered where there is room with the sources of Table 1 ` +
-    `(${names.join(" · ")}, ${ty[0]}–${ty[1]}). Stipple: ` +
+    `(${names.join("\u00a0· ")}, ${ty[0]}–${ty[1]}). Stipple: ` +
     `${p.posterior.subsample_xy.length} of the ${D.conj.n_samples} posterior samples of the ` +
     `planet (headline posterior). Their heliocentric longitude, 68 %: ` +
     `${rng(q.lo68, q.hi68)}, is not comparable with the geocentric ranges in the text. ` +
