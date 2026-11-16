@@ -61,17 +61,6 @@
       "floors": true,
       "date": "2026-11-15",
       "itten": "0.3.2"
-    },
-    {
-      "rule": "CRF-04",
-      "check": "near-miss-edge",
-      "selector": "#table-1 td.cond",
-      "value": "the reading's baseline, shared",
-      "instead": "the same baseline: no departure; the check is skipped on the condition cells",
-      "reason": "Table 1's cells are on one baseline (vertical-align: baseline): a zero-size inline-block in each cell of row 1 sits at 9049.516 px in WebKit and 9049.266 px in Chromium at 1040 px. ITTEN 0.3.2 estimates a baseline from the line's rect and the font's ascent and descent as canvas reports them, which WebKit rounds to whole pixels while its rects use the font's own; at 1040 px in WebKit the estimate puts the 14 px condition 0.5 px above the 16.16 px reading. Reported upstream (docs/itten/upstream.md, issue 6). The ignore also leaves these cells' left edges out of the check; they are one table column, so they share that edge by construction.",
-      "floors": true,
-      "date": "2026-11-15",
-      "itten": "0.3.2"
     }
   ]
 }
