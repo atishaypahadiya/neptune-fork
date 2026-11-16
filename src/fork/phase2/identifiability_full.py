@@ -15,8 +15,9 @@ The pieces:
 - **Forward model.** The inner-system integration of ``inner_system`` (Sun and eight
   planets, the validated step), returning Mercury and the Earth–Moon barycentre; each
   contact is the instant the apparent separation of Mercury's centre from the Sun's,
-  seen from the barycentre, equals R☉ ∓ r☿ (interior, exterior), found by Newton's method
-  on the offset from the printed epoch with both bodies carried by their Keplerian
+  seen from the barycentre, equals R☉ ∓ r☿ (interior, exterior): the row's own contact
+  (ingress or egress), found as a bracketed root within a day of the predicted mid-transit
+  (``contact_root``, amendment 2), with both bodies carried by their Keplerian
   acceleration.
 - **Likelihood call.** Levenberg–Marquardt on the six elements, every residual from a full
   integration, Broyden updates of the warm-start Jacobian, a fresh one when a step fails
@@ -46,14 +47,17 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
+from numba import njit
 from scipy.interpolate import CubicSpline
 from scipy.special import logsumexp
 
 from fork import ledger
 from fork.data.frames import elements_to_state
 from fork.integrators import wh_extra as W
+from fork.integrators.kepler import kepler_fg_scalar
 from fork.model import inner_system as IS
 from fork.model.bodies import G, masses_msun
+from fork.phase2 import contact_root as CR
 from fork.phase2 import identifiability as ID
 from fork.phase2 import identifiability_study as IDS
 
@@ -80,6 +84,9 @@ INPUTS = {
         "55d0eb506eaff1899731d119324474287bcb6091598e6dcd72e98213afab880b",
     "src/fork/phase2/identifiability.py":
         "14676bb8d02a945dae5ed66f8c75c13084857b4e899357cc0b5faf9fa3c4d3f0",
+    # amendment 2: which contact each row is
+    "data/historical/mercury/newcomb_1882_contact_identity.csv":
+        "6b03d75401d2bb2b15f31aed11f1f772cfac79871bbf54f6e8b898cd638c6193",
 }  # fmt: skip
 PLAN_TRUTHS = {
     "a": {"model": "gr", "extra": [1.0]},
@@ -105,8 +112,7 @@ R_MERCURY = 3.36 * ARCSEC
 LEFT_OUT_S = 3600.0
 V0_MAX_S = 1800.0
 ROOT_TOL = 1e-12
-MAX_OFFSET_DAYS = 1.0
-NEWTON_ITER = 60
+MAX_OFFSET_DAYS = 1.0  # the window of a contact about its printed epoch (amendment 2)
 
 # § 4: the likelihood and the evidence
 DCHI_TOL = 1e-3
@@ -170,9 +176,14 @@ def check_all_inputs() -> None:
 # ---------------------------------------------------------------------------- the table
 
 
-def contact_rows(path: Path = IDS.CONTACTS) -> dict:
+CONTACT_IDENTITY = IDS.CONTACTS.with_name("newcomb_1882_contact_identity.csv")
+SIDE_OF_CONTACT = {"I": CR.INGRESS, "II": CR.INGRESS, "III": CR.EGRESS, "IV": CR.EGRESS}
+
+
+def contact_rows(path: Path = IDS.CONTACTS, identity: Path = CONTACT_IDENTITY) -> dict:
     """Epochs (JD, printed time taken as TDB, as the earlier plan), weights, and whether
-    each contact is exterior (tables III and IV). Only the earlier plan's columns are read."""
+    each contact is exterior (tables III and IV); and, from the contact-identity file
+    (amendment 2), which contact each row is (I to IV) and so its side, ingress or egress."""
     ep = IDS.contact_epochs(path)
     table, row = [], []
     with path.open(newline="", encoding="utf-8") as fh:
@@ -180,8 +191,18 @@ def contact_rows(path: Path = IDS.CONTACTS) -> dict:
             table.append(r["table"])
             row.append(int(r["row"]))
     table = np.array(table)
-    return {"jd": ep["jd"], "weight": ep["weight"], "exterior": np.isin(table, ("III", "IV")),
-            "table": table, "row": np.array(row)}  # fmt: skip
+    with identity.open(newline="", encoding="utf-8") as fh:
+        ident = {(r["table"], int(r["row"])): r for r in csv.DictReader(fh)}
+    keys = list(zip(table.tolist(), row, strict=True))
+    if sorted(ident) != sorted(keys):
+        raise ValueError(f"{identity.name}: rows differ from {path.name}")
+    which = np.array([ident[k]["contact"] for k in keys])
+    exterior = np.isin(table, ("III", "IV"))
+    if np.any(exterior != np.isin(which, ("I", "IV"))):
+        raise ValueError(f"{identity.name}: a contact's kind disagrees with its table")
+    return {"jd": ep["jd"], "weight": ep["weight"], "exterior": exterior, "table": table,
+            "row": np.array(row), "contact": which,
+            "side": np.array([SIDE_OF_CONTACT[c] for c in which])}  # fmt: skip
 
 
 # ---------------------------------------------------------------------------- forward model
@@ -226,9 +247,21 @@ def states(model: str, theta6, extra, ctx, jd) -> tuple[np.ndarray, ...]:
     return x[:, 0], vv[:, 0], x[:, 2], vv[:, 2]
 
 
+@njit(cache=True)
 def _carried(x0: np.ndarray, v0: np.ndarray, mu: float, t: np.ndarray) -> np.ndarray:
-    a0 = -mu * x0 / np.linalg.norm(x0, axis=1)[:, None] ** 3
-    return x0 + v0 * t[:, None] + 0.5 * a0 * t[:, None] ** 2
+    """Positions after offsets t [d] from the epoch states (x0, v0): the exact two-body motion
+    about the Sun (amendment 2; the plan's carry by the epoch's Keplerian acceleration, a
+    second-order expansion, is off by 0.009″ in the direction from the Earth at 2 h and 16″
+    at a day)."""
+    out = np.empty_like(x0)
+    if mu == 0.0:  # straight lines (tests)
+        for i in range(x0.shape[0]):
+            out[i] = x0[i] + v0[i] * t[i]
+        return out
+    for i in range(x0.shape[0]):
+        r = kepler_fg_scalar(x0[i, 0], x0[i, 1], x0[i, 2], v0[i, 0], v0[i, 1], v0[i, 2], mu, t[i])
+        out[i, 0], out[i, 1], out[i, 2] = r[0], r[1], r[2]
+    return out
 
 
 def _gap(xm, vm, xe, ve, exterior: np.ndarray, t: np.ndarray) -> np.ndarray:
@@ -242,24 +275,28 @@ def _gap(xm, vm, xe, ve, exterior: np.ndarray, t: np.ndarray) -> np.ndarray:
     return sep - rc
 
 
-def contact_offsets(xm, vm, xe, ve, exterior: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-    """Offsets [s] of each contact from its printed epoch, and the root's residual [rad];
-    NaN where Newton's method finds no contact within a day."""
-    t = np.zeros(len(exterior))
-    h = 1e-6
-    ok = np.ones(len(t), bool)
-    for _ in range(NEWTON_ITER):
-        f = _gap(xm, vm, xe, ve, exterior, t)
-        d = (_gap(xm, vm, xe, ve, exterior, t + h) - f) / h
-        step = np.where(ok & (d != 0.0), f / np.where(d == 0.0, 1.0, d), 0.0)
-        t = t - step
-        ok &= np.isfinite(t) & (np.abs(t) <= MAX_OFFSET_DAYS)
-        t = np.where(ok, t, 0.0)
-        if np.all(np.abs(step[ok]) < 1e-9):
-            break
-    res = np.abs(_gap(xm, vm, xe, ve, exterior, t))
-    ok &= res < ROOT_TOL
-    return np.where(ok, t * 86400.0, np.nan), np.where(ok, res, np.nan)
+def contact_offsets(xm, vm, xe, ve, exterior: np.ndarray,
+                    side: np.ndarray) -> tuple[np.ndarray, np.ndarray]:  # fmt: skip
+    """Offsets [s] of each row's contact (``side``: −1 ingress, +1 egress) from its printed
+    epoch, and the root's residual [rad]; NaN where that contact does not exist within a day
+    (``contact_root``: no transit, or a grazing one)."""
+    exterior = np.asarray(exterior, dtype=bool)
+
+    def gap(i: np.ndarray, t: np.ndarray) -> np.ndarray:
+        return _gap(xm[i], vm[i], xe[i], ve[i], exterior[i], t)
+
+    t, res = CR.contact_roots(gap, side, ROOT_TOL, MAX_OFFSET_DAYS)
+    return t * 86400.0, res
+
+
+def nearer_side(off_in: np.ndarray, off_out: np.ndarray) -> np.ndarray:
+    """The side of whichever contact, ingress or egress, lies nearer the printed epoch, given a
+    model's offsets [s] of both (NaN where none: then 0). Used only to check the contact
+    identity against truth a (tests), never to choose a contact."""
+    a, b = np.abs(off_in), np.abs(off_out)
+    side = np.where(a <= b, CR.INGRESS, CR.EGRESS)
+    side = np.where(np.isnan(a), np.where(np.isnan(b), 0, CR.EGRESS), side)
+    return np.where(np.isnan(b) & ~np.isnan(a), CR.INGRESS, side)
 
 
 class NoContact(Exception):
@@ -276,11 +313,13 @@ class Observation:
     weight: np.ndarray
     exterior: np.ndarray
     ctx: object
+    side: np.ndarray  # −1 ingress, +1 egress (amendment 2)
 
 
 def observe(model: str, theta6, extra, obs: Observation) -> np.ndarray:
     """The model's contact times [s from the printed epochs] at the kept rows."""
-    off, _ = contact_offsets(*states(model, theta6, extra, obs.ctx, obs.jd), obs.exterior)
+    off, _ = contact_offsets(*states(model, theta6, extra, obs.ctx, obs.jd), obs.exterior,
+                             obs.side)  # fmt: skip
     if not np.all(np.isfinite(off)):
         raise NoContact
     return off
@@ -323,38 +362,31 @@ def _in_domain(theta: np.ndarray) -> bool:
 def _difference(resid, theta: np.ndarray, r: np.ndarray, d: np.ndarray) -> np.ndarray:
     """r(θ + d) − r(θ), the change of the residuals over the step d.
 
-    By a forward difference, as the plan has it, whenever the forward trial is allowed; one
-    with no contact takes the backward difference r(θ) − r(θ − d), as before. At the edge of
-    the allowed region (elements with a > 0 and 0 ≤ e < 1, ``OutsideDomain``, and with
-    contacts) the step is one-sided into it: backward when only the forward trial is outside,
-    and, when the backward trial is outside too, shortened by halves along d until one of the
-    two is inside, the difference then scaled back to the full step. Each column taken any
-    way but the old one is counted in ``N_EDGE``. Where the old code did not fail, the
-    arithmetic is the old one, bit for bit.
+    By a forward difference, as the plan has it; a forward trial with no contact takes the
+    backward difference r(θ) − r(θ − d), as before 38bde9f, and no contact on both sides is an
+    error. Only at the edge of the elements' domain (a > 0, 0 ≤ e < 1, ``OutsideDomain``) is
+    the step taken one-sided into it, shortened by halves along d until a trial is inside and
+    the difference scaled back to the full step (38bde9f, kept as a fallback, amendment 2);
+    each such column is counted in ``N_EDGE``. Where it does not fire, the arithmetic is the
+    plan's, bit for bit.
     """
-
-    def trial(t: np.ndarray):
-        try:
-            return resid(t), None
-        except (NoContact, OutsideDomain) as exc:
-            return None, exc
-
+    try:
+        return resid(theta + d) - r
+    except NoContact:
+        return r - resid(theta - d)
+    except OutsideDomain:
+        pass
     f = 1.0
     for _ in range(80):
-        rf, why = trial(theta + f * d)
-        if rf is not None:
-            if f == 1.0:
-                return rf - r  # the old arithmetic
+        for sign in (1.0, -1.0):
+            try:
+                rt = resid(theta + sign * f * d)
+            except OutsideDomain:
+                continue
             N_EDGE[0] += 1
-            return (rf - r) / f
-        rb, _ = trial(theta - f * d)
-        if rb is not None:
-            if f == 1.0 and isinstance(why, NoContact):
-                return r - rb  # the old arithmetic: no contact forward, backward difference
-            N_EDGE[0] += 1
-            return (r - rb) / f
+            return sign * (rt - r) / f
         f *= 0.5
-    raise ValueError("_difference: no step along d reaches the allowed region")
+    raise ValueError("_difference: no step along d reaches the elements' domain")
 
 
 def _jacobian(resid, theta: np.ndarray, r: np.ndarray, steps: np.ndarray) -> np.ndarray:
@@ -474,15 +506,19 @@ def prepare() -> dict:
     noise-free model), σ₁ (§ 3), V0 and V1. Cached."""
     path = CACHE / "prepared.json"
     if path.exists():
-        return json.loads(path.read_text())
+        out = json.loads(path.read_text())
+        if "side" not in out:
+            raise SystemExit(f"{path} predates amendment 2 (no contact sides): move it aside")
+        return out
     if _real():
         check_all_inputs()
     tr = truths()
     theta6, ctx = base_problem()
     rows = contact_rows()
     a = tr["a"]
+    side = rows["side"]
     off, res = contact_offsets(*states(a["model"], theta6, a["extra"], ctx, rows["jd"]),
-                               rows["exterior"])  # fmt: skip
+                               rows["exterior"], side)  # fmt: skip
     keep = np.isfinite(off) & (np.abs(off) <= LEFT_OUT_S)
     left = [f"{t} {r}" for t, r, k in zip(rows["table"], rows["row"], keep, strict=True) if not k]
     v0 = {"left_out": left, "max_kept_offset_s": float(np.max(np.abs(off[keep]))),
@@ -490,7 +526,8 @@ def prepare() -> dict:
           "offsets_s": [None if not math.isfinite(x) else float(x) for x in off]}  # fmt: skip
     v0["pass"] = bool(left == ["III 12"] and v0["max_kept_offset_s"] <= V0_MAX_S
                       and v0["max_root_residual_rad"] < ROOT_TOL)  # fmt: skip
-    obs = Observation(rows["jd"][keep], rows["weight"][keep], rows["exterior"][keep], ctx)
+    obs = Observation(rows["jd"][keep], rows["weight"][keep], rows["exterior"][keep], ctx,
+                      side[keep])  # fmt: skip
     unit = 1.0 / np.sqrt(obs.weight)
     base = observe("gr", theta6, [1.0], obs)
     cols = []
@@ -509,6 +546,7 @@ def prepare() -> dict:
         v1[t] = {"rate": rate, "pass": abs(rate - ID.TARGET_ARCSEC_PER_CENTURY) <= V1_TOL}
     out = {
         "keep": keep.tolist(),
+        "side": side.tolist(),
         "sigma1_s": sigma1,
         "n_kept": int(keep.sum()),
         "V0": v0,
@@ -531,7 +569,10 @@ def observation(prep: dict) -> Observation:
     _, ctx = base_problem()
     rows = contact_rows()
     keep = np.array(prep["keep"])
-    return Observation(rows["jd"][keep], rows["weight"][keep], rows["exterior"][keep], ctx)
+    if prep["side"] != rows["side"].tolist():
+        raise SystemExit("prepared.json's contact sides differ from the contact-identity file")
+    return Observation(rows["jd"][keep], rows["weight"][keep], rows["exterior"][keep], ctx,
+                       rows["side"][keep])  # fmt: skip
 
 
 def synthetic_data(y_truth, sigma, truth: int, seed: int) -> np.ndarray:

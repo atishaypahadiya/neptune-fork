@@ -378,3 +378,156 @@ resumed scan does not have the Jacobian it would have carried into its next poin
 recorded), so that point starts from a fresh one, as the first point of a scan does; each
 point is still a converged fit, but a resumed scan is not bit-identical to an unbroken run.
 The finished scan, and the three that resumed after one failure, are kept as they are.
+
+## Amendment 2, 15 November 2026: the contact solver, and Stage 1 voided
+
+Written after Stage 1's first launch was stopped and before it is launched again, and approved
+with two additions (the carry's range, and the decision on 38bde9f from the measured result)
+before it was committed. It changes
+text above the line (§ 3's solver, its carry and its "under 30 min"; § 2's inputs gain one
+file) and regenerates the truths' data. Nothing in it was set from a Bayes factor, a ln Z or a reading:
+none had been computed.
+
+**The defect.** § 3 finds each contact "by Newton's method on the offset" from the printed
+epoch, with the bodies carried "over the offset (under 30 min)". The premise is false for the
+study's own truths: truth a's contacts lie within 7.5 min of the printed epochs, but truth
+b's lie up to 1.1 h from them and truth c's up to 2.0 h (the planet and the ring move the
+transits). Over such offsets Newton's method from the epoch fails in two ways.
+
+- Where a model's mid-transit falls near the printed epoch, the gap's slope there is about
+  zero and the first step leaves the one-day window: the call is recorded as "no contact"
+  though the transit is central. In t3_s0_l0_P_d0_b0 this happened at x = −6.4 (row I 1,
+  1677): Mercury passes 12′ inside the limb, both interior contacts about 2.5 h from
+  mid-transit.
+- Which root Newton's method reaches depends on which side of the epoch mid-transit lies, so
+  a row can take the other contact of the same transit: a jump of hours in one residual.
+
+**What it did to Stage 1.** Truth c's data set took the other contact at three rows of 57
+(I 5, 1736 November; I 11, 1782 November; II 1, 1740 May). Every planet
+scan held spurious "no contact" points, and in seven of them χ² was still falling where such
+a run began, within Δχ² = 200 of the row's best; in t3_s0_l0_P_d0_b0 the scan's best was
+χ² = 100.0 at x = −6.5, against 32.9 at x ≈ −6.26 found by refitting in steps of 0.01. The
+11 crashes of the note above (15 November) come from the same defect: re-run with the
+corrected solver and data, under the old step code and the new, both scans pass the
+crash points with no edge column, e = 0.20572 throughout, χ² ≈ 485 at x = −11 (it was
+2.96 × 10⁵), and the smallest singular value of each call's final Jacobian 1.7 × 10⁴, 0.4
+of the next (it was 10⁻⁶ in the collapsed Broyden Jacobians). The jumps in the residuals had
+collapsed the rank-one updates.
+
+**The fix.** A contact is a root of the gap (the separation minus the contact radius) as
+before, found by bracketing instead of Newton's method (`src/fork/phase2/contact_root.py`):
+
+1. mid-transit is the minimum of the gap within a day of the printed epoch, by
+   golden-section search;
+2. the row's own contact, ingress (I, II) or egress (III, IV), is the root between
+   mid-transit and mid-transit ∓ 1 day, by bisection to a double's precision;
+3. there is no contact only when the gap has no root there (no transit, or a grazing one
+   whose limbs never reach this contact), or the root lies more than a day from the epoch,
+   or |gap| at it is not below 10⁻¹² rad. Item 3 of amendment 1 (no contact, likelihood
+   zero) applies to these cases only.
+
+**The carry, and how far it reaches.** Contacts are sought within a day of the printed epoch
+and no further: a contact more than a day from it is no contact (step 3), so no offset beyond
+a day reaches the likelihood. Within that window, offsets do reach it well beyond 30 min: the
+truths' own data lie up to 2.0 h from the printed epochs (truth a, the nearest to the real sky,
+up to 7.5 min), and over the 467 states of validation (a), across the four truths' prior
+ranges, contacts the solver returns lie up to 23.9 h from the epoch (b and c, at the largest
+strengths) and 9.1 h (d); of the 24,739 returned on kept rows, 5,219 lie beyond 2 h and 2,280
+beyond 6 h, almost all at strengths far from any truth's best fit. So every offset up to the
+window's day reaches the likelihood. The plan's
+carry, a second-order expansion in the epoch's Keplerian acceleration, is off by 0.009″ in the
+direction from the Earth to Mercury at 2 h (about 0.1 s in a contact), 0.25″ at 6 h and 16″ at
+a day, measured against exact two-body motion. A switch to exact motion past a bound such as
+2 h would sit inside the range of truth c's own data, so the carry is now **the exact two-body
+motion about the Sun at every offset** (Kepler's equation in universal variables, the repo's
+`kepler_fg_scalar`). What it still leaves out is the pull of the other bodies over the offset:
+against the full integration, at most 8.5 × 10⁻⁵″ in the separation at 2 h, 7.5 × 10⁻⁴″ at 6 h
+and 0.013″ (about 0.13 s) at a day, the largest at the prior's edge (a planet of 10⁻⁵ M☉ at
+0.15 AU); for truth a, 3 × 10⁻⁶″ at 2 h. The code enforces both halves: no contact is returned
+beyond a day (`contact_root`), and a test checks the carry against an independent integration
+of the two-body equations to 10⁻¹² AU at 2 h, 12 h and a day.
+
+**III 12** is left out of V0 and of the likelihood: the observation is built from V0's kept
+rows only, and a test asserts that III 12's epoch is not among the observation's 57.
+
+**Which contact each row is.** Defined in data terms and frozen in
+`data/historical/mercury/newcomb_1882_contact_identity.csv` (SHA-256
+`6b03d75401d2bb2b15f31aed11f1f772cfac79871bbf54f6e8b898cd638c6193`, added to § 2's inputs), one row per row of the contact table, with the printed number, the contact
+used and its basis:
+
+- tables I and II: the printed number (II or III), except I 11, printed III, which is contact
+  II: the misprints table already reads it so (the transit's two rows are both printed III;
+  this one is the earlier);
+- tables III and IV print no number. Nineteen of their 21 rows share a transit with rows of
+  table I or II, and each follows that transit's printed contact III, by 1 to 3 min: contact
+  IV. The other two are IV by Newcomb's Part I: 1690 (p. 385, Fontenay at Canton, "Sortie
+  certaine et entière", 19h 28m 52s against the table's 19h 28m 54s) and 1756 (p. 390,
+  Peking, "Egressus totus", "Sortie totale", "Fin de la sortie", 18h 54m 22s–49s against
+  18h 54m 34s).
+
+The solver reads this column and never chooses ingress or egress from a model. The contact
+table itself is unchanged (it keeps printed values; its hash is unchanged). As a check, not
+a rule, a test asserts that on truth a's noise-free model the contact nearer each printed
+epoch is the file's on every row but III 12, and that III 12 is the only row V0 leaves out:
+its printed day is one before table I's for the same transit, so both of truth a's contacts
+lie 18 to 24 h after the printed epoch.
+
+**Truth data regenerated.** With the file's contacts and the exact carry, truth c changes at
+those three rows by 5,100 to 10,100 s each; every other datum moves by the carry alone, by at
+most 1.6 × 10⁻⁵ s (truth a), 0.014 s (b), 0.096 s (c) and 0.0013 s (d). V0 is unchanged (III 12
+alone left out; largest kept offset 447.2 s). σ₁ changes from 17.079679672 to 17.079680564 s. The real-data module (`contact_real`) uses the same root finder and states each
+contact's side; its own carry is unchanged here and is for the real-data plan to set.
+
+**Validation, before any run.**
+
+(a) With the final code (solver, contact file and exact carry), on 467 states (truth a; truths b, c and d's model families over their prior strength
+ranges in steps of 0.05, c at its three distances; and t3_s0_l0_P_d0_b0's elements across the
+false edge, x = −6.6 to −6.2 in steps of 0.01), every row against an independent search: the
+gap on a 1 s grid over ±1 day, every sign change refined by Brent's method, ingress the first
+root and egress the second. 27,086 rows: 25,116 with two roots, where the solver's contact is
+the grid's on the row's side to 1.5 × 10⁻⁹ s at worst (tolerance 10⁻⁵ s, a change in χ² below
+10⁻⁴ for a 10 σ residual); 1,622 with none, where the solver gives none; 348 with one root
+inside the window (transits moved about a day at extreme strengths), rechecked on ±2 days: 201
+agree to 5.4 × 10⁻¹⁰ s and in 147 the row's contact lies beyond a day, where both give none. No
+row has more than two roots. On the same states Newton's method took the other contact at
+2,361 rows and gave a spurious "no contact" at 80.
+
+(b) The 2016 and 2019 transits (Espenak's published geocentric contacts, with light time and
+aberration, the real-data module): the new and the old solver agree to 0.1 ms, and the model
+is within 1.7 s of the printed times (tolerance 2 s, set before).
+
+(c) Every caller of the solver: every likelihood call of the study (Stage 1, Stage 2, V2′'s
+importance sampling), `prepare` (V0, σ₁, the truths' data), and the real-data module's tests.
+No real-data likelihood exists. With the final code all tests pass (the two modules' 47, slow
+ones included, and the fast suite's 733) once this amendment, with the identity file's hash,
+is in the plan; before it, the one failure was that check.
+
+**Decision on the 15 November fix (38bde9f).** Measured first: the two scans that crashed
+(t3_s0_l0_P_d0_b0 and t3_s0_l0_P_d1_b2_half), run from the start of their coarse scans past
+the crash points with the corrected solver and data and the step code from before 38bde9f, run
+clean: no crash, no column at the domain's edge, e = 0.20572 throughout, χ² ≈ 485 at
+x = −11 (it was 2.96 × 10⁵), and the smallest singular value of each call's final Jacobian
+1.7 × 10⁴, 0.4 of the next (10⁻⁶ in the collapsed Broyden Jacobians). The same run with
+38bde9f's code gives the same rows, and so does the final code of this amendment (the exact
+carry below moves χ² by 0.01). So the jumps in the residuals had collapsed the rank-one
+updates, and 38bde9f's extension to calls with no contact was covering for the solver. It is
+dropped: a forward trial with no contact takes the backward difference, as before 38bde9f, and
+no contact on both sides of a step is an error (the scan stops and is reported), as before.
+Step-halving is kept only as a fallback at the edge of the elements' domain (a > 0,
+0 ≤ e < 1); where it does not fire the arithmetic is the plan's, bit for bit, and each column
+it takes is counted (`edge_steps`) and reported at the gate reading. The note's account of why
+the Jacobian collapsed is superseded by this amendment.
+
+**Stage 1's first launch is void.** Started 05:45 PST and stopped at 15:22 PST on 15 November,
+it is not used: its points, logs and the four scans set aside at the earlier restart are kept
+outside the study's cache (`stage1_void_launch1/`), not deleted. An edge-handling change for
+the false cliff was approved earlier on 15 November and then withdrawn before it ran; nothing
+from it is used.
+
+**Before the relaunch.** A smoke test in a scratch cache: two or three scans per truth,
+including t3_s0_l0_P_d0_b0 (whose first row crosses the false edge) and the first row of the
+other scan that crashed; nothing from it is reused. Stage
+1 then starts again from nothing, with the regenerated data.
+
+**Unchanged.** The models, priors, likelihood, evidence quadrature, grids, tolerances,
+gates, readings and seeds.

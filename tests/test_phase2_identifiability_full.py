@@ -10,6 +10,7 @@ import pytest
 
 from fork.data.frames import elements_to_state
 from fork.model import inner_system as IS
+from fork.phase2 import contact_root as CRT
 from fork.phase2 import identifiability as ID
 from fork.phase2 import identifiability_full as F
 from fork.phase2 import identifiability_study as IDS
@@ -89,16 +90,90 @@ def test_contact_solver_on_a_straight_crossing(monkeypatch):
     monkeypatch.setattr(F, "MU_MERCURY", 0.0)  # straight lines
     monkeypatch.setattr(F, "MU_EMB", 0.0)
     e, ve = np.array([[1.0, 0.0, 0.0]]), np.zeros((1, 3))
-    d, b, speed = 0.6, 0.001, 1e-3  # distance from the Earth [AU], impact [rad], rad per day
+    # distance from the Earth [AU], impact [rad], rad per day (a real transit's rate: the disc,
+    # 0.0093 rad, in about 7 h; amendment 2 looks for mid-transit within a day of the epoch)
+    d, b, speed = 0.6, 0.001, 0.03
     for exterior, sign in ((False, -1.0), (True, 1.0)):
         rc = F.R_SUN + sign * F.R_MERCURY / d
         s_contact = -math.sqrt(rc**2 - b**2)
         s0 = s_contact + 0.002 * speed  # the printed epoch 0.002 d after the contact
         xm = e + d * np.array([[-1.0, s0, b]])
         vm = d * np.array([[0.0, speed, 0.0]])
-        off, res = F.contact_offsets(xm, vm, e, ve, np.array([exterior]))
+        off, res = F.contact_offsets(xm, vm, e, ve, np.array([exterior]), np.array([-1]))
         assert res[0] < 1e-12
         assert off[0] == pytest.approx(-0.002 * 86400.0, abs=5.0)
+
+
+def _crossing(b: float, t_mid: float, speed: float = 0.03, d: float = 0.6):
+    """Straight-line crossing seen from a fixed Earth: impact b [rad], mid-transit at t_mid
+    [d] from the epoch, at a real transit's rate. Returns the states for ``contact_offsets``."""
+    e, ve = np.array([[1.0, 0.0, 0.0]]), np.zeros((1, 3))
+    xm = e + d * np.array([[-1.0, -t_mid * speed, b]])
+    vm = d * np.array([[0.0, speed, 0.0]])
+    return xm, vm, e, ve
+
+
+def test_contact_solver_mid_transit_at_the_epoch(monkeypatch):
+    """Amendment 2's regression: mid-transit exactly at the printed epoch, where the gap's slope
+    is zero (Newton's first step left the window there). Both contacts are found, ingress
+    before and egress after, symmetric about the epoch."""
+    monkeypatch.setattr(F, "MU_MERCURY", 0.0)
+    monkeypatch.setattr(F, "MU_EMB", 0.0)
+    st = _crossing(b=0.001, t_mid=0.0)
+    for ext in (False, True):
+        t_in, r_in = F.contact_offsets(*st, np.array([ext]), np.array([-1]))
+        t_out, r_out = F.contact_offsets(*st, np.array([ext]), np.array([1]))
+        assert r_in[0] < 1e-12 and r_out[0] < 1e-12
+        assert t_in[0] < 0.0 < t_out[0]
+        assert t_in[0] == pytest.approx(-t_out[0], abs=0.5)  # small-angle asymmetry only
+
+
+def test_contact_solver_chooses_the_side_not_the_nearer_root(monkeypatch):
+    """Mid-transit 2 h after the epoch: the ingress contact is the one asked for even where the
+    egress contact lies nearer the epoch, and vice versa (Newton took the nearer one)."""
+    monkeypatch.setattr(F, "MU_MERCURY", 0.0)
+    monkeypatch.setattr(F, "MU_EMB", 0.0)
+    for t_mid in (2.0 / 24.0, -2.0 / 24.0):
+        st = _crossing(b=0.001, t_mid=t_mid)
+        t_in, _ = F.contact_offsets(*st, np.array([False]), np.array([-1]))
+        t_out, _ = F.contact_offsets(*st, np.array([False]), np.array([1]))
+        assert t_in[0] < t_mid * 86400.0 < t_out[0]
+
+
+def test_contact_solver_no_contact_only_without_a_root(monkeypatch):
+    """A miss gives no contact of either kind; a grazing transit that crosses the limb but never
+    lies wholly inside gives exterior contacts and no interior ones."""
+    monkeypatch.setattr(F, "MU_MERCURY", 0.0)
+    monkeypatch.setattr(F, "MU_EMB", 0.0)
+    d = 0.6
+    miss = _crossing(b=F.R_SUN + 2.0 * F.R_MERCURY / d, t_mid=0.0, d=d)
+    graze = _crossing(b=F.R_SUN, t_mid=0.0, d=d)
+    for side in (-1, 1):
+        for ext in (False, True):
+            off, _ = F.contact_offsets(*miss, np.array([ext]), np.array([side]))
+            assert np.isnan(off[0])
+        off_i, _ = F.contact_offsets(*graze, np.array([False]), np.array([side]))
+        off_e, _ = F.contact_offsets(*graze, np.array([True]), np.array([side]))
+        assert np.isnan(off_i[0]) and np.isfinite(off_e[0])
+
+
+def test_contact_root_refuses_an_unstated_side():
+    with pytest.raises(ValueError):
+        CRT.contact_roots(lambda i, t: t**2 - 1e-4, np.array([0]), 1e-12)
+
+
+def test_contact_root_matches_a_fine_grid_on_a_parabola():
+    """g(t) = (t − m)² − w²: roots at m ± w, found to the double's precision."""
+    m, w = np.array([0.3, -0.7, 0.0]), np.array([0.05, 0.01, 0.2])
+
+    def gap(i, t):
+        return (t - m[i]) ** 2 - w[i] ** 2
+
+    t_in, r_in = CRT.contact_roots(gap, np.full(3, -1), 1e-12)
+    t_out, _ = CRT.contact_roots(gap, np.full(3, 1), 1e-12)
+    np.testing.assert_allclose(t_in, m - w, rtol=0, atol=1e-13)
+    np.testing.assert_allclose(t_out, m + w, rtol=0, atol=1e-13)
+    assert np.all(r_in < 1e-12)
 
 
 def test_lm_fit_cold_and_warm_reach_the_same_optimum():
@@ -182,7 +257,7 @@ def test_data_depend_only_on_epochs_kinds_weights_truth_and_seed(tmp_path):
         w.writeheader()
         w.writerows(rows)
     a, b = F.contact_rows(), F.contact_rows(p)
-    for k in ("jd", "weight", "exterior"):
+    for k in ("jd", "weight", "exterior", "contact", "side"):
         np.testing.assert_array_equal(a[k], b[k])
     y = np.arange(5.0)
     s = np.full(5, 2.0)
@@ -318,3 +393,74 @@ def test_whitened_jacobian_survives_a_collapsed_basis():
     r = _position(theta)
     jac = F._whitened_jacobian(_position, theta, r, basis)
     assert jac.shape == (3, 6) and np.all(np.isfinite(jac))
+
+
+def test_contact_identity_file_against_the_table():
+    """Amendment 2: the identity file covers every row, repeats each printed number except the
+    misprint I 11 (contact II), and makes every exterior row contact IV."""
+    rows = F.contact_rows()
+    lab = [f"{t} {r}" for t, r in zip(rows["table"], rows["row"], strict=True)]
+    with IDS.CONTACTS.open(newline="", encoding="utf-8") as fh:
+        printed = [r["contact"] for r in csv.DictReader(fh)]
+    with F.CONTACT_IDENTITY.open(newline="", encoding="utf-8") as fh:
+        assert [r["printed_contact"] for r in csv.DictReader(fh)] == printed
+    changed = [n for n, p, c in zip(lab, printed, rows["contact"], strict=True) if p and p != c]
+    assert changed == ["I 11"]
+    assert set(rows["contact"][rows["exterior"]]) == {"IV"}
+    assert set(rows["contact"][~rows["exterior"]]) == {"II", "III"}
+
+
+@pytest.mark.slow
+def test_contact_identity_agrees_with_truth_a():
+    """Amendment 2's check, not its rule: on truth a's noise-free model, the contact nearer each
+    printed epoch is the identity file's on every row but III 12, which is also the only row
+    V0 leaves out (its printed day is one before table I's for the same transit, so both of
+    truth a's contacts lie 18 to 24 h after it and the nearer one is ingress)."""
+    rows = F.contact_rows()
+    theta6, ctx = F.base_problem()
+    a = F.truths()["a"]
+    st = F.states(a["model"], theta6, a["extra"], ctx, rows["jd"])
+    n = len(rows["jd"])
+    off_in, _ = F.contact_offsets(*st, rows["exterior"], np.full(n, CRT.INGRESS))
+    off_out, _ = F.contact_offsets(*st, rows["exterior"], np.full(n, CRT.EGRESS))
+    near = F.nearer_side(off_in, off_out)
+    lab = np.array([f"{t} {r}" for t, r in zip(rows["table"], rows["row"], strict=True)])
+    assert lab[near != rows["side"]].tolist() == ["III 12"]
+    off, _ = F.contact_offsets(*st, rows["exterior"], rows["side"])
+    left = lab[~(np.isfinite(off) & (np.abs(off) <= F.LEFT_OUT_S))].tolist()
+    assert left == ["III 12"]
+
+
+def test_carry_is_the_exact_two_body_motion():
+    """Amendment 2: the contact solver carries Mercury and the Earth from the epoch by the exact
+    two-body motion about the Sun at every offset in its window (to a day), checked against an
+    independent integration of the two-body equations."""
+    from scipy.integrate import solve_ivp
+
+    x0 = np.array([[0.30, -0.12, 0.03], [-0.6, 0.78, 0.0]])
+    v0 = np.array([[0.008, 0.028, 0.002], [-0.014, -0.011, 0.0]])
+    for mu in (F.MU_MERCURY, F.MU_EMB):
+        for t in (2.0 / 24.0, 0.5, 1.0):
+
+            def f(_, y, mu=mu):
+                return np.concatenate([y[3:], -mu * y[:3] / np.linalg.norm(y[:3]) ** 3])
+
+            got = F._carried(x0, v0, mu, np.full(2, t))
+            for i in range(2):
+                ref = solve_ivp(f, (0.0, t), np.concatenate([x0[i], v0[i]]), rtol=1e-13,
+                                atol=1e-15).y[:3, -1]  # fmt: skip
+                np.testing.assert_allclose(got[i], ref, rtol=0, atol=1e-12)
+
+
+@pytest.mark.slow
+def test_iii_12_is_left_out_of_the_likelihood(tmp_path, monkeypatch):
+    """III 12 is the only row V0 leaves out, and it is not among the observation's rows, so no
+    likelihood call sees it."""
+    monkeypatch.setattr(F, "CACHE", tmp_path)
+    prep = F.prepare()
+    assert prep["V0"]["left_out"] == ["III 12"]
+    rows = F.contact_rows()
+    obs = F.observation(prep)
+    k = [f"{t} {r}" for t, r in zip(rows["table"], rows["row"], strict=True)].index("III 12")
+    assert len(obs.jd) == len(rows["jd"]) - 1 == prep["n_kept"]
+    assert not np.any(obs.jd == rows["jd"][k])
