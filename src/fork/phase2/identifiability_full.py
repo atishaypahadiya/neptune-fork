@@ -368,8 +368,9 @@ def _difference(resid, theta: np.ndarray, r: np.ndarray, d: np.ndarray) -> np.nd
     error. Only at the edge of the elements' domain (a > 0, 0 ≤ e < 1, ``OutsideDomain``) is
     the step taken one-sided into it, shortened by halves along d until a trial is inside and
     the difference scaled back to the full step (38bde9f, kept as a fallback, amendment 2);
-    each such column is counted in ``N_EDGE``. Where it does not fire, the arithmetic is the
-    plan's, bit for bit.
+    within that fallback a trial with no contact is skipped like one outside the domain
+    (amendment 3, addendum). Each such column is counted in ``N_EDGE``. Where it does not
+    fire, the arithmetic is the plan's, bit for bit.
     """
     try:
         return resid(theta + d) - r
@@ -382,12 +383,12 @@ def _difference(resid, theta: np.ndarray, r: np.ndarray, d: np.ndarray) -> np.nd
         for sign in (1.0, -1.0):
             try:
                 rt = resid(theta + sign * f * d)
-            except OutsideDomain:
+            except (OutsideDomain, NoContact):  # amendment 3, addendum: both are skipped here
                 continue
             N_EDGE[0] += 1
             return sign * (rt - r) / f
         f *= 0.5
-    raise ValueError("_difference: no step along d reaches the elements' domain")
+    raise ValueError("_difference: no step along d reaches an allowed trial")
 
 
 def _jacobian(resid, theta: np.ndarray, r: np.ndarray, steps: np.ndarray) -> np.ndarray:

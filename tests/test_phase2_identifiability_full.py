@@ -534,3 +534,37 @@ def test_a_start_with_no_contact_is_retried(tmp_path, monkeypatch):
     assert d2["no_contact"] and d2["retries"] == 0  # the start was the base: nothing else
     d3 = sc2.call(0.0, -5.0, "tail", (bad, None))
     assert d3["no_contact"] and d3["retries"] == 1  # the base, after the given start
+
+
+def test_no_contact_inside_the_edge_fallback_is_skipped():
+    """The smoke-test crash of t3_s0_l0_P_d1_b2_half (amendment 3, addendum): the forward
+    trial of a whitened column fell outside the elements' domain, which sends the column to
+    the fallback, and the backward trial there had no contact, which the fallback did not
+    catch. Now a trial with no contact inside the fallback is skipped like one outside the
+    domain, the step is halved until a trial is allowed, and the column is counted."""
+    theta = np.array([0.387, 0.2056, 0.12, 0.84, 1.35, 4.4])
+    d = np.array([-0.5, 0.0, 0.0, 0.0, 0.0, 3.0])  # forward: a = −0.113, outside the domain
+
+    def resid(t):
+        if not F._in_domain(t):
+            raise F.OutsideDomain
+        if t[5] < theta[5] - 1.0:  # backward: λ moved by more than 1 rad, no contact
+            raise F.NoContact
+        return _position(t)
+
+    r = resid(theta)
+    with pytest.raises(F.OutsideDomain):
+        resid(theta + d)
+    with pytest.raises(F.NoContact):
+        resid(theta - d)
+    n0 = F.N_EDGE[0]
+    diff = F._difference(resid, theta, r, d)  # crashed with NoContact before the addendum
+    assert F.N_EDGE[0] == n0 + 1
+    f = 0.5  # the first allowed trial: forward at half the step (a = 0.137)
+    np.testing.assert_allclose(diff, (_position(theta + f * d) - r) / f, rtol=0, atol=0)
+
+    def nowhere(t):  # forward of theta outside the domain, elsewhere no contact
+        raise F.OutsideDomain if t[0] < theta[0] else F.NoContact
+
+    with pytest.raises(ValueError, match="no step along d reaches an allowed trial"):
+        F._difference(nowhere, theta, r, d)

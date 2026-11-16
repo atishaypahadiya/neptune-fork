@@ -611,3 +611,34 @@ nothing.
 
 **Unchanged.** The models, priors, likelihood, contact window, evidence quadrature inside the
 box, grids inside the box, tolerances, gates, readings and seeds.
+
+### Addendum to amendment 3, 16 November 2026: a trial with no contact inside the edge fallback; smoke condition 2
+
+Written after the second smoke test and before the third; approved before it was committed.
+
+**What happened.** In the second smoke test (amendments 2 and 3, ten scans from scratch),
+nine scans finished and t3_s0_l0_P_d1_b2_half stopped after 50 min, at x ≈ −7.15
+(χ² ≈ 850). A column of a fresh whitened Jacobian had its forward trial outside the elements'
+domain, which sends the column to the edge fallback kept by amendment 2; the fallback's
+backward trial had no contact, and the fallback, as amendment 2 narrowed it, caught only
+trials outside the domain, so the scan stopped. Before 38bde9f the column would have stopped
+at the forward trial; 38bde9f's fallback skipped both kinds of trial.
+
+**The fix.** Inside the edge fallback only, a trial with no contact is skipped like one
+outside the domain, and the step is halved until a trial is allowed; each column taken there
+is counted in `edge_steps`, and a column with no allowed trial is an error. Outside the
+fallback nothing changes: a forward trial with no contact takes the backward difference, and
+no contact on both sides of a full step is an error. Test: a residual whose forward trial is
+outside the domain and whose backward trial has no contact (it raises NoContact on the code
+before this addendum, as the scan did).
+
+**Smoke condition 2, made precise before the rerun.** "Every no contact is a genuine miss
+after retries" is checked as: every call with no contact was retried from every start B
+allows, and none lies below (at a weaker strength than) a call of the same scan that has
+contacts and whose fit converged. A call whose fit did not converge is not counted as a
+contact neighbour. In the second smoke test the two calls with no contact below the last
+call with contacts (x = −5.52 and −4.97, in the scan that stopped) had as neighbours only
+calls that stopped at the iteration cap with χ² of 2 × 10⁵ to 5 × 10⁷; the nearest converged
+call was at x ≤ −5.7.
+
+**Unchanged.** Everything else in amendments 1 to 3.
