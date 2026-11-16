@@ -531,3 +531,83 @@ other scan that crashed; nothing from it is reused. Stage
 
 **Unchanged.** The models, priors, likelihood, evidence quadrature, grids, tolerances,
 gates, readings and seeds.
+
+## Amendment 3, 16 November 2026: the fine points stay in the box, and a start with no contact is retried
+
+Written after amendment 2's smoke test and before Stage 1 is launched again; approved before
+it was committed. It changes how items 3 and 6 of amendment 1 are carried out. Nothing in it
+was set from a Bayes factor, a ln Z or a reading: none had been computed.
+
+**What the smoke test showed.** Amendment 2's smoke test (a scratch cache; ten scans, each at
+the first value of its second parameter) ran clean on what amendment 2 changed: no crash, no
+edge column, the false edge gone (t3_s0_l0_P_d0_b0's best point at x = −6.27, χ² = 28.4). It
+also showed two faults that predate amendment 2 and were in Stage 1's first launch too.
+
+- *The fine points had no bound.* Item 6 extends them until both ends are Δχ² = 50 L² above
+  the minimum. Where the data do not limit a weak perturber, χ² is flat at low strength and
+  that never happens: the extension ran to its cap of 4,000 steps. The first launch's scans
+  reached x = −686 (and +13 at the other end); in the smoke test, 10,093 of its 11,970 points
+  lay outside the box. Every integral is clipped to the box (item 4), so none of those points
+  entered one; they cost hours of computing each.
+- *"No contact" was never the result of a fit.* Every no-contact call, 252 in the smoke
+  test and 1,001 in the first launch, stopped at its first iteration: the call's starting
+  elements gave no contact, so no fit was made, and item 3 set its likelihood to zero. A
+  start is not a fit. In t1_s0_l0_P_d0_b0 all six tail points started from the best point's
+  elements, fitted with the planet at x = −6.18, and stopped there; their zero likelihood
+  passed the tail check, while the coarse point beside one of them (x = −10.2) is fitted, at
+  χ² = 1,107.
+
+**A. Nothing outside the box.** The box is the widest any integral uses, the coarse scan's 8
+decades: x from −11 to −3 for the ring and the planet, −7.5 to 0.5 for J2. No strength outside
+it is computed:
+
+1. the fine points, their extension (item 6) and their widening toward a tail point stop at
+   the box: when the next step would pass an edge, the edge itself is the last point;
+2. tail points outside the box are not computed, and the tail check uses those inside;
+3. the best value of a scan is the best inside the box.
+
+Where the fine points stay inside the box, nothing changes: the same points, the same spline,
+the same integrals. Where the old extension passed an edge, the integrals change only through
+the spline's end: the fine points now end at the edge itself, and the spline is fitted to the
+points inside. Measured on the smoke scans, recomputing every ln Z (each box, each level) from
+the same points with those outside the box left out: the largest change is 1.6 × 10⁻⁴ (the
+scan whose best value lies below the box, t3_s0_l0_P_d1_b2_half, at the widest box), at most
+4 × 10⁻⁷ in the others, and none in the six whose points stayed inside. V3′'s tolerance is
+0.05.
+
+(a) *A best value at an edge.* Where the best value inside the box lies within one fine spacing
+of an edge (the data pushing toward no perturber, at the lower edge), the fine points are
+anchored at that edge, at a spacing no wider than the coarse scan's (0.1 decade; 0.05 for
+V3′), so the integrand is dense where it is largest. A coarse point the fine points land on
+counts as one of them. Each scan records whether its best point is at an edge
+(`best_at_box_edge`), and the gate reading reports how many are, at which edge.
+
+**B. A start with no contact is retried.** A call whose start gives no contact is called again
+from the nearest call of the same scan (the same second parameter) that converged with
+contacts, then from the base elements, skipping any start already tried. It has no contact,
+and item 3 sets its likelihood to zero, only if every start gives none. The contact window
+stays a day either side of the printed epoch (amendment 2); nothing here widens it. Each call
+records how many starts it retried (`retries`); each result counts the calls retried and
+those that then found contacts, and the gate reading reports both.
+
+(b) *The smoke test's zero points under B.* Each of the 252 no-contact calls of amendment 2's
+smoke test, called again under B with the first run's other calls as neighbours: 7 become
+finite (4 of the 19 tail points, 3 of the 228 coarse points, none of the 5 fine points); the
+other 245 have no contact from any start, at strengths that move a transit more than a day.
+
+Where a call's first start gives contacts, nothing changes. A call retried and fitted is a
+converged fit like any other; the scan's next point starts from it, so later points in the
+same scan can differ from the old run's within the fit's tolerance.
+
+**Tests.** A stub likelihood with its minimum outside the box (no point outside it, the best
+point at the lower edge and reported so, fine points there no wider apart than 0.1); one with
+its minimum inside (fine points on the plan's x₀ + k h, best value unchanged); a start with
+no contact retried from the nearest converged call, and no contact only when the base
+elements fail too.
+
+**Before the relaunch.** The smoke test again, all ten scans to the end, including the two
+stopped last time (t2_s0_l0_R and t3_s0_l0_P_d1_b2_half). Stage 1 then starts again from
+nothing.
+
+**Unchanged.** The models, priors, likelihood, contact window, evidence quadrature inside the
+box, grids inside the box, tolerances, gates, readings and seeds.

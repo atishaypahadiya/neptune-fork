@@ -464,3 +464,73 @@ def test_iii_12_is_left_out_of_the_likelihood(tmp_path, monkeypatch):
     k = [f"{t} {r}" for t, r in zip(rows["table"], rows["row"], strict=True)].index("III 12")
     assert len(obs.jd) == len(rows["jd"]) - 1 == prep["n_kept"]
     assert not np.any(obs.jd == rows["jd"][k])
+
+
+class _StubData:
+    """A likelihood in the strength alone: χ²(x) given, elements returned as started, and no
+    contact from any start whose first element is in ``bad_a``."""
+
+    def __init__(self, chi2_of_x, bad_a=()):
+        self.chi2_of_x, self.bad_a, self.starts = chi2_of_x, tuple(bad_a), []
+
+    def call(self, model, extra, start, jac0=None):
+        x = math.log10(extra[0])
+        self.starts.append(np.array(start))
+        if start[0] in self.bad_a:
+            return F.Call(math.inf, 0.0, np.array(start), None, 0, 0, False, no_contact=True)
+        return F.Call(float(self.chi2_of_x(x)), 0.0, np.array(start), None, 1, 1, True)
+
+
+def _stub_scanner(tmp_path, monkeypatch, data, model="P"):
+    monkeypatch.setattr(F, "CACHE", tmp_path)
+    task = F.Task(3, 0, 0, model, 0, 0) if model == "P" else F.Task(4, 0, 0, model)
+    start = np.array([0.387, 0.2056, 0.12, 0.84, 1.35, 4.4])
+    return F.Scanner(task, data, start), task
+
+
+def test_scan_stops_at_the_box_when_the_data_push_out_of_it(tmp_path, monkeypatch):
+    """Amendment 3 (A, a): with χ² still falling below the box (best value at x = −15), no
+    point is computed outside the box, the best point is its lower edge, reported so, and the
+    fine points there are no wider apart than the coarse scan's."""
+    sc, _ = _stub_scanner(tmp_path, monkeypatch, _StubData(lambda x: 0.5 * (x + 15.0) ** 2))
+    s = sc.scan_second(0.0, None, None)
+    xs = sorted(p["x"] for p in sc.points.calls.values())
+    lo, hi = F.box("P", max(F.R3_WIDTHS))
+    assert lo - 1e-12 <= xs[0] and xs[-1] <= hi + 1e-12
+    assert s["best_at_box_edge"] == "low" and s["best_point"]["x"] == pytest.approx(lo)
+    fine = sorted(p["x"] for p in sc.points.calls.values() if p["kind"] == "fine")
+    assert fine[0] == pytest.approx(lo) and fine[1] - fine[0] <= F.COARSE_STEP + 1e-12
+    assert len(sc.points.calls) < 400
+
+
+def test_scan_inside_the_box_is_unchanged(tmp_path, monkeypatch):
+    """Amendment 3 (A): where the fine points stay inside the box they are the plan's,
+    x0 + k·h, and no best value is reported at an edge."""
+    sc, _ = _stub_scanner(tmp_path, monkeypatch, _StubData(lambda x: 400.0 * (x + 7.2) ** 2))
+    s = sc.scan_second(0.0, None, None)
+    assert s["best_at_box_edge"] is None
+    fine = np.array(sorted(p["x"] for p in sc.points.calls.values() if p["kind"] == "fine"))
+    k = (fine - fine[0]) / s["h"]
+    np.testing.assert_allclose(k, np.round(k), atol=1e-6)
+    assert s["x_best"] == pytest.approx(-7.2, abs=1e-3)
+
+
+def test_a_start_with_no_contact_is_retried(tmp_path, monkeypatch):
+    """Amendment 3 (B): a call whose start has no contact is retried from the nearest
+    converged call of the scan with contacts, then the base elements; it has no contact only
+    if every start has none, and its retries are recorded."""
+    data = _StubData(lambda x: (x + 7.0) ** 2, bad_a=(9.0,))
+    sc, _ = _stub_scanner(tmp_path, monkeypatch, data)
+    good = sc.call(0.0, -7.0, "coarse")
+    assert good["retries"] == 0 and not good["no_contact"]
+    bad = np.array([9.0, 0.2, 0.1, 0.8, 1.3, 4.4])
+    d = sc.call(0.0, -6.5, "tail", (bad, None))
+    assert d["retries"] == 1 and not d["no_contact"] and d["chi2"] == pytest.approx(0.25)
+    np.testing.assert_array_equal(data.starts[-1], good["theta6"])
+
+    data2 = _StubData(lambda x: (x + 7.0) ** 2, bad_a=(9.0, 0.387))  # the base fails too
+    sc2, _ = _stub_scanner(tmp_path / "b", monkeypatch, data2)
+    d2 = sc2.call(0.0, -6.0, "coarse")
+    assert d2["no_contact"] and d2["retries"] == 0  # the start was the base: nothing else
+    d3 = sc2.call(0.0, -5.0, "tail", (bad, None))
+    assert d3["no_contact"] and d3["retries"] == 1  # the base, after the given start

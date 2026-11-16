@@ -118,6 +118,7 @@ MAX_OFFSET_DAYS = 1.0  # the window of a contact about its printed epoch (amendm
 DCHI_TOL = 1e-3
 MAX_IT = 20
 COARSE_STEP, COARSE_HALF = 0.1, 4.0  # decades
+BOX_EPS = 1e-9  # decades: a point this close to a box edge is at it
 FINE_N, FINE_HALF = 15, 6.0  # points, widths
 SUB = 20
 TAIL_DECADES = (1.0, 2.0, 4.0)
@@ -693,8 +694,16 @@ class Points:
     def get(self, p2, x):
         return self.calls.get(self.key(p2, x))
 
-    def add(self, p2, x, call: Call, kind: str) -> dict:
-        d = {"p2": float(p2), "x": float(x), "kind": kind, **call.row()}
+    def relabel(self, d: dict, kind: str) -> dict:
+        """The same call under another kind (the later line wins when the file is read)."""
+        d = {**d, "kind": kind}
+        self.calls[self.key(d["p2"], d["x"])] = d
+        with self.path.open("a") as fh:
+            fh.write(json.dumps(d) + "\n")
+        return d
+
+    def add(self, p2, x, call: Call, kind: str, retries: int = 0) -> dict:
+        d = {"p2": float(p2), "x": float(x), "kind": kind, **call.row(), "retries": retries}
         self.calls[self.key(p2, x)] = d
         self.path.parent.mkdir(parents=True, exist_ok=True)
         with self.path.open("a") as fh:
@@ -712,21 +721,58 @@ class Scanner:
         self.jacs: dict[tuple[float, float], np.ndarray] = {}
         self.h_scale = 0.5 if task.half else 1.0
         self.max_level = max(task.levels())
+        # Amendment 3, A: no strength is computed outside the widest box any integral uses
+        # (the coarse scan's 8 decades); the integrals are clipped to it.
+        self.box = box(task.model, max(R3_WIDTHS)) if task.model != "NG" else None
 
     def call(self, p2: float, x: float, kind: str, warm=None) -> dict:
         got = self.points.get(p2, x)
         if got is not None:
+            if kind == "fine" and got["kind"] == "coarse":
+                # a coarse point the fine grid lands on (a grid anchored at the box's edge, on
+                # the coarse step) is one of the fine points too (amendment 3)
+                got = self.points.relabel(got, "fine")
             if not got["no_contact"]:
                 self.warm = self._warm_of(got)
             return got
         th0, j0 = warm if warm is not None else self.warm
-        c = self.data.call(self.task.model, self.task.extra(x, p2), th0, j0)
+        extra = self.task.extra(x, p2)
+        c = self.data.call(self.task.model, extra, th0, j0)
+        retries = 0
+        if c.no_contact:
+            # Amendment 3, B: a start with no contact is not a fit. Retry from the nearest
+            # converged call of this scan with contacts, then from the base elements; the
+            # call has no contact only if every start has none.
+            for th1, j1 in self._retry_starts(p2, x, th0):
+                retries += 1
+                c = self.data.call(self.task.model, extra, th1, j1)
+                if not c.no_contact:
+                    break
         if not c.no_contact:
             self.jacs[Points.key(p2, x)] = c.jac
             self.warm = (c.theta6, c.jac)
         else:
             self.warm = (th0, None)
-        return self.points.add(p2, x, c, kind)
+        return self.points.add(p2, x, c, kind, retries)
+
+    def _retry_starts(self, p2: float, x: float, tried: np.ndarray):
+        """The starts amendment 3 (B) retries a call from, in order, skipping any already tried:
+        the nearest call of this scan (same second parameter) that converged with contacts,
+        then the base elements."""
+        k2 = Points.key(p2, 0)[0]
+        near = [d for d in self.points.calls.values()
+                if Points.key(d["p2"], 0)[0] == k2
+                and d["converged"] and not d["no_contact"]]  # fmt: skip
+        starts = []
+        if near:
+            starts.append(self._warm_of(min(near, key=lambda d: (abs(d["x"] - x), d["x"]))))
+        starts.append((self.start, None))
+        seen = [np.asarray(tried)]
+        for th, jac in starts:
+            if any(np.array_equal(th, t) for t in seen):
+                continue
+            seen.append(th)
+            yield th, jac
 
     def _warm_of(self, d: dict) -> tuple[np.ndarray, np.ndarray | None]:
         return (np.array(d["theta6"]), self.jacs.get(Points.key(d["p2"], d["x"])))
@@ -764,6 +810,14 @@ class Scanner:
                 warm = self._warm_of(min(pts, key=lambda p: abs(p["x"] - xb)))
                 continue
             break
+        lo, hi = self.box
+        edge = self._edge_of(xb, h)
+        if edge is not None:
+            # Amendment 3 (a): a best value at the box's edge is a fine point, with the fine
+            # points dense there (spacing no wider than the coarse scan's).
+            x0 = edge
+            h = min(h, COARSE_STEP * self.h_scale)
+            pts = self._grid(p2, x0, h, round(FINE_HALF * w / h), None)
         need = 2.0 * TAIL_LN * self.max_level**2
         lo_n = hi_n = round(FINE_HALF * w / h)
         for _ in range(4000):
@@ -771,10 +825,10 @@ class Scanner:
             xs = sorted(fin)
             cmin = min(p["chi2"] for p in pts)
             grow = False
-            if fin[xs[0]]["chi2"] - cmin < need:
+            if fin[xs[0]]["chi2"] - cmin < need and xs[0] > lo + BOX_EPS:
                 lo_n += 1
                 grow = True
-            if fin[xs[-1]]["chi2"] - cmin < need:
+            if fin[xs[-1]]["chi2"] - cmin < need and xs[-1] < hi - BOX_EPS:
                 hi_n += 1
                 grow = True
             if not grow:
@@ -782,17 +836,46 @@ class Scanner:
             pts = self._grid(p2, x0, h, (lo_n, hi_n), None)
         return pts, x0, w, h, (lo_n, hi_n)
 
+    def _edge_of(self, x: float, h: float) -> float | None:
+        """The box edge within one fine spacing of x, if any."""
+        lo, hi = self.box
+        if x - lo < h:
+            return lo
+        if hi - x < h:
+            return hi
+        return None
+
+    def _side(self, x0: float, h: float, n: int, sign: int) -> list[float]:
+        """x0 + sign·k·h for k = 1..n, stopping at the box: the last point is the box's edge
+        when the step would pass it (amendment 3, A)."""
+        lo, hi = self.box
+        edge = hi if sign > 0 else lo
+        out, prev = [], x0
+        for k in range(1, n + 1):
+            x = x0 + sign * k * h
+            if (sign > 0 and x >= hi - BOX_EPS) or (sign < 0 and x <= lo + BOX_EPS):
+                if abs(prev - edge) > BOX_EPS:
+                    out.append(edge)
+                break
+            out.append(x)
+            prev = x
+        return out
+
     def _grid(self, p2, x0, h, n, warm) -> list[dict]:
+        """Fine points x0 + k·h, k = −lo_n..hi_n, inside the box (amendment 3, A): the centre,
+        then upward, then downward from the centre."""
         lo_n, hi_n = (n, n) if isinstance(n, int) else n
-        ks = list(range(0, hi_n + 1)) + list(range(-1, -lo_n - 1, -1))
-        out, centre = [], None
-        for k in ks:
-            if k == -1 and centre is not None:
-                self.warm = self._warm_of(centre)
-            d = self.call(p2, x0 + k * h, "fine", warm if k == 0 else None)
-            if k == 0:
-                centre = d
-            out.append(d)
+        lo, hi = self.box
+        x0 = min(max(x0, lo), hi)
+        centre = self.call(p2, x0, "fine", warm)
+        out = [centre]
+        for x in self._side(x0, h, hi_n, 1):
+            out.append(self.call(p2, x, "fine"))
+        down = self._side(x0, h, lo_n, -1)
+        if down:
+            self.warm = self._warm_of(centre)
+        for x in down:
+            out.append(self.call(p2, x, "fine"))
         return out
 
     @staticmethod
@@ -807,11 +890,16 @@ class Scanner:
         return (xb, wb, float(cs(xb))) if with_min else (xb, wb)
 
     def tails(self, p2: float, xb: float, best: dict) -> list[dict]:
+        """The tail points inside the box (amendment 3, A: outside it nothing enters an
+        integral, so nothing is computed there)."""
+        lo, hi = self.box
         out = []
         for dx in TAIL_DECADES:
             for sgn in (1.0, -1.0):
-                self.warm = self._warm_of(best)
-                out.append(self.call(p2, xb + sgn * dx, "tail"))
+                x = xb + sgn * dx
+                if lo - BOX_EPS <= x <= hi + BOX_EPS:
+                    self.warm = self._warm_of(best)
+                    out.append(self.call(p2, x, "tail"))
         return out
 
     def widen_to(self, p2: float, x0: float, h: float, n: tuple[int, int], target: float,
@@ -819,6 +907,7 @@ class Scanner:
         """Extend the fine points at spacing h toward ``target`` (a tail point whose integrand
         is not negligible), until they reach it or MAX_WIDEN points are added."""
         lo_n, hi_n = n
+        lo, hi = self.box
         side = 1 if target > x0 else -1
         self.warm = self._warm_of(best)
         for _ in range(MAX_WIDEN):
@@ -826,10 +915,16 @@ class Scanner:
                 break
             if side > 0:
                 hi_n += 1
-                self.call(p2, x0 + hi_n * h, "fine")
+                x = x0 + hi_n * h
+                self.call(p2, min(x, hi), "fine")
+                if x >= hi - BOX_EPS:
+                    break
             else:
                 lo_n += 1
-                self.call(p2, x0 - lo_n * h, "fine")
+                x = x0 - lo_n * h
+                self.call(p2, max(x, lo), "fine")
+                if x <= lo + BOX_EPS:
+                    break
         return lo_n, hi_n
 
     def scan_second(self, p2: float, guess: tuple[float, float] | None, warm) -> dict:
@@ -856,9 +951,13 @@ class Scanner:
             ]
             best = min(fine, key=lambda p: p["chi2"])
         xb, wb, spline_min = self._best(fine, with_min=True)
+        lo, hi = self.box
+        at_edge = ("low" if best["x"] <= lo + BOX_EPS else
+                   "high" if best["x"] >= hi - BOX_EPS else None)  # fmt: skip
         return {"p2": p2, "x_best": xb, "width": wb, "h": h, "chi2_min": best["chi2"],
                 "chi2_spline_min": spline_min,
-                "best_point": best, "widened_to_tails": widened}  # fmt: skip
+                "best_point": best, "widened_to_tails": widened,
+                "best_at_box_edge": at_edge}  # fmt: skip
 
     def run(self) -> list[dict]:
         out, guess, warm = [], None, None
@@ -988,6 +1087,9 @@ def run_task(task: Task) -> dict:
         "n": len(calls), "not_converged": sum(not c["converged"] and not c["no_contact"]
                                               for c in calls),
         "no_contact": sum(c["no_contact"] for c in calls),
+        "retried": sum(c.get("retries", 0) > 0 for c in calls),
+        "retried_with_contacts": sum(c.get("retries", 0) > 0 and not c["no_contact"]
+                                     for c in calls),
         "max_iterations": max(c["iterations"] for c in calls),
         "integrations": sum(c["n_int"] for c in calls)}  # fmt: skip
     out["wall_s"] = time.time() - t0
@@ -1206,11 +1308,16 @@ def gates_stage1(prep: dict, results: dict, n_workers: int) -> dict:
     v6 = v6_check(results)
     tails = [(k, s["p2"]) for k, r in results.items() for s in r.get("scans", [])
              if not s["tails_ok"]]  # fmt: skip
+    at_edge = [(k, s["p2"], s["best_at_box_edge"]) for k, r in results.items()
+               for s in r.get("scans", []) if s.get("best_at_box_edge")]  # fmt: skip
+    retries = {k: (r["calls_summary"]["retried"], r["calls_summary"]["retried_with_contacts"])
+               for k, r in results.items() if r["calls_summary"].get("retried")}  # fmt: skip
     out = {"V0": prep["V0"], "V1": prep["V1"],
            "V2'": v2(n_workers, results),
            "V3'": {"rows": v3, "pass": all(r["pass"] for r in v3)},
            "V4": {"chi2_min": v4, "pass": all(v < V4_TOL for v in v4.values())},
-           "V6": v6, "tails_not_negligible": tails, "level_used": lv1}  # fmt: skip
+           "V6": v6, "tails_not_negligible": tails, "level_used": lv1,
+           "best_at_box_edge": at_edge, "retried_calls": retries}  # fmt: skip
     out["pass"] = all(out[k]["pass"] for k in ("V0", "V1", "V2'", "V3'", "V4", "V6"))
     return out
 
