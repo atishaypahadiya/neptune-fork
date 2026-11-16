@@ -398,7 +398,7 @@ export function windowText(D) {
       `${yr(w.series.year[0])}–${yr(w.series.year.at(-1))}: the 68 % band (solid edges) and 95 % ` +
       `band (dashed edges) of the headline posterior; {L@fig-5} Le Verrier's planet (heavy ` +
       `line); {N@fig-5} Neptune (JPL Horizons). {C@fig-5} the conjunction of § 4.2; ` +
-      `{G@fig-5} Galle's night. After-the-fact diagnostic, not pre-registered.`,
+      `{G@fig-5} Galle's night. After-the-fact diagnostic, not\u00a0pre-registered.`,
   };
 }
 
@@ -762,7 +762,7 @@ export function limits(D) {
     `The headline plan was first pushed after its run had launched; the logs cannot rule out ` +
       `that one of its result files was opened by hand during the run (§ 3.1).`,
     `Plate II and Fig. 5 are diagnostics made after the fact from the pre-registered posterior; ` +
-      `they were not pre-registered.`,
+      `they were not\u00a0pre-registered.`,
   );
   return out;
 }
