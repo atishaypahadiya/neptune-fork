@@ -183,3 +183,54 @@ resumes with the same command. Cell 0 of the gate took 1,039 min per seed, again
 bouvard's.
 
 **shape38, shape36:** not started, by decision.
+
+## Results, 16 November 2026: the adams fit, not read (T1 fails: median range 0.353° vs 0.35°)
+
+Nothing above the line is changed. The 16 runs finished on 15 November (18:16 PST); the
+reweighting, G4 and the summary on 16 November 00:13 PST. Runner commit f8c7c6d.
+
+**The runs.** All 16 stopped on dlogz. Four (cell 0, seeds 1 to 4) stopped once at 18:02 on
+15 November when the disk filled, while writing a checkpoint. A checkpoint is written to a
+temporary file and renamed into place, so a failed write leaves the previous checkpoint
+whole; each run was started again and resumed from that previous checkpoint (iterations
+197,143 to 198,123, written about four minutes before the failure) and ran to dlogz.
+
+**Gates.** G1 passes (every run stopped on dlogz). G2 passes (smallest cell ESS/N 0.963;
+fit-level reweighting shares 0.9993 to 0.9994). G3 passes (no draw's truncation bound at or
+above 10⁻⁶). G4 passes (200 draws, all within both tolerances; largest differences
+3.3 × 10⁻⁷ in χ² and 1.8 × 10⁻⁵ in −2 ln L).
+
+**T1 fails, on the medians alone.** The range of the four single-seed fits' medians is
+0.353°, against 0.35° (seeds 1 to 4: 316.171°, 316.491°, 316.157°, 316.138°). In the cells
+that carry evidence (cells 2 and 3, shares 0.505 and 0.494) the 68 % widths are within 4 %
+of their mean and the ln Z ranges are 0.05 and 0.10. Cell 0 (share 0.0007) passes both tests,
+its ln Z range 0.35; cell 1 (share 0.0001) fails the width test (seed 4's 68 % width 5.34°
+against 19.5° to 20.2°) and is not read in it, having under 1 % of the evidence. Across the
+four single-seed fits ln Z spans 0.064.
+
+**So nothing is read** (§ 5: "otherwise the fit's numbers are reported as not repeatable
+or not validated, and nothing is read"). The numbers below are not repeatable at the plan's
+tolerance; they are recorded here only, not on the site or in the README.
+
+| not repeatable | merged fit |
+|---|---|
+| longitude on Galle's night, median | 316.204° |
+| 68 % | 312.606° to 320.775° (width 8.170°) |
+| 95 % | 310.131° to 325.093° (width 14.962°) |
+| miss from 325.873° | −9.669° (−2.12 of the 68 % half-width on the target's side, 4.571°) |
+| P(\|λ − 325.873°\| ≤ 0.87°) | 0.018 |
+| mass | 33.1 M⊕ (68 %: 25.5 to 41.9) |
+| distance | 38.6 AU (68 %: 33.9 to 45.2) |
+| e | 0.119 (68 %: 0.056 to 0.227) |
+| ln Z | −355.924 ± 0.057 |
+| cells' shares | 0.0007, 0.0001, 0.505, 0.494 |
+
+The std of the four single-seed fits' 95 % bounds is 0.09° (lower) and 0.33° (upper).
+
+*Post hoc, not part of the rule:* three seeds' medians lie within 0.04° of one another
+(316.138° to 316.171°); seed 2's is 316.491°.
+
+**Open item.** A future registered rerun of the Adams fit with eight seeds, as S1_mode's
+rule B did for the headline (`docs/notes/S1_mode.md`): seeds 5 to 8 added by the same rng
+rule, the rule for reading set before the runs. Added to the v1.5 list in
+`docs/release_checklist.md`.

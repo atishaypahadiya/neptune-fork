@@ -276,7 +276,8 @@ checks, the heading spacing and the page-range guard.
 | item | state | next step |
 |---|---|---|
 | Le Verrier's shape model against free distance (the Peirce-number analysis) | pre-registered (`docs/notes/M6d.md`), not run | run (about 7 CPU-h) |
-| The data choice with Adams's rows | pre-registered (`docs/notes/M6c_variants.md`); synthetic gate passed; real fit started and stopped by decision, checkpoints kept locally | resume, about three days on 12 workers |
+| The data choice with Adams's rows | run 15–16 November; gates pass, T1 fails (median range of the single-seed fits 0.353° against 0.35°): not read (`docs/notes/M6c_variants.md`, results of 16 November) | the eight-seed rerun below |
+| An eight-seed rerun of the Adams fit | not registered | a registered rerun as S1_mode's rule B did for the headline: seeds 5 to 8 by the same rng rule, the reading rule set before the runs |
 | The data choice with Bouvard's rows (modern observations only) | stopped at its synthetic gate: the Uranus prior box sits off-centre without the pre-1781 rows | a new plan with a different box rule |
 | A different method for the low-distance cell | S1 cell 0 by sub-cells did not resolve it (`docs/notes/S1_cell0.md`) | a new plan |
 | The Mercury identifiability study | stopped at its linearity gate (`docs/phase2/identifiability_study.md`) | a new plan treating the elements by full integration |
