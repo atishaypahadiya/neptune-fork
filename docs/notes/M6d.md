@@ -129,3 +129,78 @@ workers. Runs start after the data-choice fits.
 - Cache: `data/cache/nested/v14_fits/<fit>/`. Results: `docs/notes/M6d.json`.
 
 ---
+
+## Results, 16 November 2026: the primary shape fit (a = 38.4 AU), read
+
+Nothing above the line is changed. G0 passed on 16 November (03:15 PST); the eight runs
+finished at 04:53, the reweighting, G4 and the summary at 05:39. Runner commit 92d1fbe (the
+code as at f8c7c6d; only notes changed between them).
+
+**The runs.** All eight stopped on dlogz. At 03:26 all eight were stopped, each just after
+writing a fresh checkpoint, to free the cores for another job; at 04:02 each resumed from that
+checkpoint (iterations 28,441 to 31,092) and ran to dlogz. A checkpoint is written to a
+temporary file and renamed into place.
+
+**The free-distance fit.** Rebuilt from its cached draws: median 325.7350° against the
+published 325.735° (tolerance 0.001°), ln Z −361.523 ± 0.078 as published. The item goes on.
+
+**Gates.**
+
+| gate | number | result |
+|---|---|---|
+| G0 (synthetic, two seeds, quarter live points) | smallest cell ESS/N 0.999; truncation below 10⁻⁶; G4 on 50 draws all within both tolerances | pass |
+| G1 | all 8 runs stopped on dlogz | pass |
+| G2 | smallest cell ESS/N 0.999; fit-level reweighting share 0.9990 for the merged fit and for each single-seed fit | pass |
+| G3 | no draw's truncation bound at or above 10⁻⁶ (largest 4.6 × 10⁻¹⁰⁸) | pass |
+| G4 | 200 draws, all within both tolerances; largest differences 3.4 × 10⁻⁷ in χ², 1.5 × 10⁻⁵ in −2 ln L | pass |
+
+**T1.**
+
+| test | number | limit | result |
+|---|---|---|---|
+| cell 0 (e < 0.12), 68 % widths | 2.074°, 2.015°, 2.021°, 1.961°; largest deviation from the mean 2.8 % | 10 % | pass (share 9 × 10⁻²⁸: reported, not read) |
+| cell 0, ln Z range | 0.18 | 0.5 | pass |
+| cell 1 (e 0.12 to 0.3), 68 % widths | 2.257°, 2.245°, 2.308°, 2.307°; largest deviation 1.5 % | 10 % | pass |
+| cell 1, ln Z range | 0.26 | 0.5 | pass |
+| median range, four single-seed fits | 0.020° (315.234°, 315.245°, 315.244°, 315.254°) | 0.35° | pass |
+| ln Z range, four single-seed fits (§ 4) | 0.26 | 0.5 | pass |
+
+The std of the four single-seed fits' 95 % bounds is 0.04° (lower) and 0.02° (upper), within
+0.4°, so the 95 % interval carries no "provisional" label.
+
+**The fit.**
+
+| merged fit, a held at 38.4 AU | value |
+|---|---|
+| longitude on Galle's night, median | 315.250° |
+| 68 % | 314.133° to 316.380° (width 2.247°) |
+| 95 % | 313.072° to 317.532° (width 4.459°) |
+| mass | 22.1 M⊕ (68 %: 21.1 to 23.1) |
+| e | 0.247 (68 %: 0.233 to 0.262) |
+| ln Z | −365.007 ± 0.083 |
+| cells' shares | 9 × 10⁻²⁸, 1.000 |
+
+**Reading (§ 5), on the primary fit.**
+
+*Bayes factor.* L = ln B(shape : free) = −365.007 − (−361.523) = −3.484, σ = 0.113 (the two
+errors in quadrature; the reweighting's part of the shape fit's error is 0.0004, so how it is
+added does not change σ at this precision). L − 2σ = −3.711 and L + 2σ = −3.257 both lie in
+3 ≤ |L| < 5: **a strong preference for free distance.**
+
+*Ratio.* P_free = 0.350 (2,100 of 6,000 draws within 0.87° of 325.873°; the reported
+posterior's published 0.3655, from a different sampler path, printed beside it). P_shape = 0:
+none of the 6,000 draws lies within 0.87°, the window beginning 7.5° above the fit's 95 %
+upper bound. R = 0, its 68 % bootstrap interval 0 to 0. The four single-seed values of
+P_shape are 0, 0, 0, 0 (range 0, within 0.1), so the ratio is read: the interval lies below 1,
+and **holding the distance at his value made a prediction as close as his less probable**, by
+a factor 1/R. *Derived from the draw counts:* P_shape = 0 of 6,000 draws; the exact 95 % upper
+bound is 5.0 × 10⁻⁴ (Clopper–Pearson), so R < 1.4 × 10⁻³ and the shape model is less probable
+by a factor of at least about 700.
+
+*What "Peirce's accident" becomes.* P_free = 0.35 is the chance that the data alone, with no
+assumption about the distance, give a prediction as good as Le Verrier's; P_shape = 0 (none of
+6,000 draws) is the same chance under his assumption, the distance held at 38.4 AU; R = 0
+compares them.
+
+**The secondary fit (a = 36.154 AU)** has passed G0 (16 November, 05:56) and is paused behind
+the Mercury study's Stage 1; it is stated beside this reading when it has run.
