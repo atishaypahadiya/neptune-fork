@@ -4,7 +4,7 @@ name: itten
 # (320, 768, 1440 and 1920 px) on every pull request, keeping one comment on the pull request;
 # the full sweep (every 40 px from 320 to 1920 px, WebKit across all of it) every Monday and on
 # demand. Both fail on any warning or error not in the baseline. Pinned by the commit SHA of the
-# v0.3.2 tag, the same commit as the itten/ submodule, so a moved tag changes nothing here.
+# v0.3.4 tag, the same commit as the itten/ submodule, so a moved tag changes nothing here.
 # The baseline, itten-baseline.json, is written by this workflow (write-baseline), never on a
 # laptop: fonts and line breaks differ between platforms.
 
@@ -40,7 +40,7 @@ jobs:
           persist-credentials: false
       # site/ is the page as it is served; the JavaScript renders the same page the Pages build
       # prerenders (tools/prerender_site.py).
-      - uses: atishaypahadiya/itten@bdc0968e6dcde84e8f43fcd904af6fe9701bc0a3  # v0.3.2
+      - uses: atishaypahadiya/itten@8b1d066f0f7f8d75991c9d37dec4c6d35c99d67e  # v0.3.4
         with:
           static-dir: site
           pages: |
