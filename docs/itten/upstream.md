@@ -188,7 +188,10 @@ although at any one width there are 6 and 5. We report per-width counts for that
 
 ## 4. Text edges measured from a block's own text nodes only
 
-Found with ITTEN v0.2.0 (d998de0).
+Found with ITTEN v0.2.0 (d998de0). **Fixed in ITTEN 0.3** (`near-miss-edge` measures a text
+block's edges over all its text, inline children included). With ITTEN v0.3.2 the reference
+lists and the citation blocks clear without `data-itten-ignore`; the marker and the override
+were removed on 2026-11-15.
 
 **What happens.** `near-miss-edge` takes a text block's left and right edges from the client
 rects of the block's own text nodes (`e.textNodes` in `inspector/collect.js`: direct children of
@@ -232,7 +235,10 @@ own-text-node rule only for deciding which blocks are text.
 
 ## 5. An arXiv id or a path as a widow
 
-Found with ITTEN v0.2.0 (d998de0).
+Found with ITTEN v0.2.0 (d998de0). **Fixed in ITTEN 0.3** (`widow` does not count a last line
+that is an arXiv id, another prefixed id or a path). With ITTEN v0.3.2 the companion's
+reference list and data-availability paragraph clear without `data-itten-ignore`; the
+markers and the override were removed on 2026-11-15.
 
 **What happens.** `widow` does not count a last line that is a URL or a DOI
 (`inspector/typography.js`: `^(https?://|www\.|doi:)` or a host followed by a path). Other

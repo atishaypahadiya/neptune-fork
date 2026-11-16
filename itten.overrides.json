@@ -1,0 +1,66 @@
+{
+  "$schema": "itten/schema/overrides.schema.json",
+  "overrides": [
+    {
+      "rule": "CRF-06",
+      "selector": ".fig text",
+      "value": "the caption 14 / note 15 / body steps, in rem",
+      "instead": "13 px (.lbl), 14 px (.lbl.row), 12.5 px (.tick) and 19 px (.letter), in the drawing's coordinates; sizes set in site/js/plates.js",
+      "reason": "Lettering is part of the drawing, placed against marks and held to tools/check_layout.py's text-over-marks and label-length checks; it scales with the plate, not with the text setting, as in an engraved plate. The same entry covers CRF-07 (the 12.5 px tick size is a fraction) and TYP-03 (the lettering does not grow with the reader's text size). The inspector does not judge inside graphics. Contrast: --line on --prussian is 8.9:1.",
+      "floors": true,
+      "date": "2026-11-15",
+      "itten": "0.2.0"
+    },
+    {
+      "rule": "CRF-01",
+      "selector": ".plate .tip",
+      "value": "a spacing step",
+      "instead": "8 px from the plate's edge, 14 px right of and 10 px above the pointer (site/js/plate.js)",
+      "reason": "Offsets from the pointer, set while hovering; not layout.",
+      "floors": true,
+      "date": "2026-11-15",
+      "itten": "0.2.0"
+    },
+    {
+      "rule": "CRF-01",
+      "selector": ":focus-visible",
+      "value": "a spacing step",
+      "instead": "outline: 2px, outline-offset: 2px",
+      "reason": "A ring drawn outside the box, not a gap between blocks; 2 px keeps it next to the control it marks. Non-text contrast 3:1 holds: --prussian on --paper is 8.5:1.",
+      "floors": true,
+      "date": "2026-11-15",
+      "itten": "0.2.0"
+    },
+    {
+      "rule": "CRF-01",
+      "scope": "Print stylesheet (@media print in site/css/site.css)",
+      "value": "the px and rem steps of the system",
+      "instead": "pt sizes and the em spacing print had before the ITTEN pass",
+      "reason": "Print is a separate medium with its own 10.5 pt body; the inspector does not run in print, and tools/check_layout.py checks print layout separately.",
+      "date": "2026-11-15",
+      "itten": "0.2.0"
+    },
+    {
+      "rule": "LAY-10",
+      "check": "near-miss-edge",
+      "selector": "#h-s1, .p1b #h-s2, .p1b #h-s4, .p1b #h-ack, .p1b .paper-title h1",
+      "value": "the heading's box on the text edge",
+      "instead": "text-indent: -0.04em (h2) and -0.05em (the companion's title): the box 1.2 to 1.6 px left of the edge",
+      "reason": "Optical alignment. These headings start with a round or pointed Didot capital (A, S, C, T) whose ink sat 1 px inside the ink of the text below at 42 px (ITTEN optical-margin); pulled left by the amount the check advises, the ink passes the edge slightly and looks on it. Headings that start with a straight stem are not moved.",
+      "floors": true,
+      "date": "2026-11-15",
+      "itten": "0.3.2"
+    },
+    {
+      "rule": "CRF-08",
+      "check": "hairline-subpixel",
+      "selector": "#table-1 tfoot, .play, .copy",
+      "value": "hairlines on whole device pixels",
+      "instead": "1 px borders at the fractional positions layout gives them (Table 1's rule above its notes, on both pages; Plate III's play button; the two copy buttons)",
+      "reason": "Not a departure in what the reader sees. The positions follow the fluid type above them, so no fixed value would land on whole pixels at every width. Chromium and WebKit both snap the table rule to whole pixels (the check measured 5 of 5 and 3 of 3 samples crisp), and the copy buttons' borders are one crisp pixel in both engines, zoomed eight times at 1x. The play button is a circle, drawn anti-aliased at any position, which the check cannot profile.",
+      "floors": true,
+      "date": "2026-11-15",
+      "itten": "0.3.2"
+    }
+  ]
+}
