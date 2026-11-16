@@ -217,8 +217,6 @@ tolerance; they are recorded here only, not on the site or in the README.
 | longitude on Galle's night, median | 316.204° |
 | 68 % | 312.606° to 320.775° (width 8.170°) |
 | 95 % | 310.131° to 325.093° (width 14.962°) |
-| miss from 325.873° | −9.669° (−2.12 of the 68 % half-width on the target's side, 4.571°) |
-| P(\|λ − 325.873°\| ≤ 0.87°) | 0.018 |
 | mass | 33.1 M⊕ (68 %: 25.5 to 41.9) |
 | distance | 38.6 AU (68 %: 33.9 to 45.2) |
 | e | 0.119 (68 %: 0.056 to 0.227) |
