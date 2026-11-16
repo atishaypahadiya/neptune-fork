@@ -630,3 +630,44 @@ def test_fine_spacing_has_a_floor(tmp_path, monkeypatch):
     assert s["h"] >= F.H_MIN - 1e-15
     fine = sorted(p["x"] for p in sc.points.calls.values() if p["kind"] == "fine")
     assert len(fine) < 2000
+
+
+def _flank_points():
+    """A box edge on a steep flank, as in t3_s0_l0_P_d1_b2_half's 1-decade box: χ² a parabola
+    with its minimum at x = −11, below the box (−7.5, −6.5); knots every 0.05 decade, the one at
+    the box's lower edge stored 1e-11 outside it, as the coarse grid's floating point left it,
+    and one uneven knot near the minimum, as refinement leaves them."""
+    pts = [{"x": -10.97, "kind": "fine", "chi2": 485.0 + 120.0 * 0.03**2, "ln_s": 0.0,
+            "converged": True, "no_contact": False}]  # fmt: skip
+    for k in range(161):
+        x = -11.0 + 0.05 * k
+        if abs(x + 7.5) < 1e-9:
+            x = -7.5 - 1e-11
+        pts.append({"x": x, "kind": "fine", "chi2": 485.0 + 120.0 * (x + 11.0) ** 2,
+                    "ln_s": 0.0, "converged": True, "no_contact": False})  # fmt: skip
+    return pts
+
+
+def test_box_edges_are_points_of_the_integral():
+    """Amendment 3, third addendum: a knot within EDGE_EPS of a box edge is the knot at it, and
+    the edge is a point of the integral. Before it, the edge was not a point of the grid and
+    ln Z of a box cut on a steep flank depended on where the sub-grid fell: 0.18 too low here
+    (0.53 and 0.76 in the fourth smoke test's 1-decade boxes); now it matches the exact Gaussian
+    integral within 0.01, as does the box containing the peak."""
+    from scipy.special import log_ndtr
+
+    pts = _flank_points()
+    lo, hi = -7.5, -6.5
+    sig = 1.0 / math.sqrt(120.0)  # ln L = −242.5 − 60 (x + 11)²  at level 1
+
+    def exact(a, b):
+        la, lb = log_ndtr(-(a + 11.0) / sig), log_ndtr(-(b + 11.0) / sig)
+        return (-242.5 + 0.5 * math.log(2 * math.pi) + math.log(sig)
+                + la + math.log(-math.expm1(lb - la)) - math.log(b - a))  # fmt: skip
+
+    got = F.ln_z_strength(pts, 1.0, (lo, hi), 0.05)
+    assert got == pytest.approx(exact(lo, hi), abs=0.01)
+    kn = F._box_knots(sorted(pts, key=lambda p: p["x"]), (lo, hi))
+    assert any(p["x"] == lo for p in kn)  # exactly the edge, by construction
+    wide = F.ln_z_strength(pts, 1.0, (-11.0, -3.0), 0.05)
+    assert wide == pytest.approx(exact(-11.0, -3.0), abs=0.01)

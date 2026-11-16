@@ -688,3 +688,94 @@ box's edge, within Δχ² 1 of the spline's minimum, and the two integrals agree
 each level. A likelihood whose width would give a spacing below the floor keeps 10⁻³.
 
 **Unchanged.** Everything else in amendments 1 to 3 and the first addendum.
+
+### Third addendum to amendment 3, 16 November 2026: the box edges in the integral, and a ground-truth check
+
+Written after the fourth smoke test and before the fifth; approved before it was committed.
+Nothing in it was set from a Bayes factor or a reading: the only ln Z values computed are the
+smoke tests' and the spot check's below, on synthetic data in a scratch cache.
+
+**What the fourth smoke test showed.** Conditions 1 to 4 and 6 held; 5 and 7 failed, both in
+the 1-decade box of t3_s0_l0_P_d1_b2_half, where the box leaves out the scan's best value and
+its lower edge cuts the likelihood's flank about 230 in ln L below the peak. Two things were
+found.
+
+- *The edge was not a point of the integral.* Item 4's "clipped to the box" was carried out by
+  dropping grid points outside the box, never by evaluating at the edge. Where ln L falls by
+  hundreds per decade, the integral then depends on where the sub-grid happens to fall: in
+  that scan the knot at the edge was stored at −7.50000000001 and dropped. Against a ground
+  truth (below), the runner's ln Z was off by up to 0.76 in 5 of 54 scan × box × level cases,
+  all in the 1-decade box, and by at most 0.011 in the prior box.
+- *Linear ln L is not an accurate check at the peaks.* ln L linear between the knots and
+  integrated exactly (piecewise-exponential) differed from the ground truth by up to 0.31, in
+  23 of the 54 cases, at the peaks: the fine spacing is about 0.86 widths, 1.7 standard
+  deviations at level 0.5, and a chord cuts under the parabola. The trapezoid rule on the knots
+  is worse on the flanks (up to 2.8). Neither can be the condition.
+
+The ground truth there: 96 to 117 real likelihood fits added to each of three smoke scans
+(t3_s0_l0_P_d1_b2_half, t1_s0_l0_P_d0_b0, t3_s0_l0_P_d0_b0), placed as in item 3 below; ln Z
+from the scan's points and the extra fits together. Its spline and piecewise-exponential values
+agreed within 0.019 in every case. With the edge fix of item 1, the runner (the scan's own
+points) agreed with it within 0.013 in all 54.
+
+**1. The box edges are points of every integral.** A converged call with contacts within
+10⁻⁹ decade of a box edge (the coarse grid has one on every edge) is that box's knot at exactly
+the edge; fine knots within 10⁻⁴ decade of it give way to it. Both edges are points of the
+quadrature grid, valued by the same interpolant as their neighbours (the spline inside the
+knots, linear ln L outside them). The knot interval containing an edge is sub-divided 200 times
+(20 elsewhere); outside the knots, the step at each edge is sub-divided 10 times more finely
+(h/200). Nothing else in item 4 changes.
+
+**2. Smoke conditions 5 and 7, restated.** The ground-truth spot check (item 3) is run on three
+scans of the smoke test: t3_s0_l0_P_d1_b2_half, t1_s0_l0_P_d0_b0 and t3_s0_l0_P_d0_b0.
+
+7. In each of the three, for every box (the prior box and the five R3 boxes) and every level,
+   the runner's ln Z agrees with the ground truth within 0.05; each has at least 50 extra fits
+   converged with contacts; and the ground truth is valid, its spline and piecewise-exponential
+   values agreeing within 0.05. A case in which every rule gives zero likelihood in the box
+   passes.
+5. The box-bound integrals, measured against the same ground truth, within V3′'s 0.05: the same
+   comparison as condition 7, read for the boxes' bounds; it holds when 7 does.
+
+The piecewise-exponential and trapezoid values on the scan's own points are reported, not
+conditions. Conditions 1 to 4 and 6 are unchanged.
+
+**3. The ground-truth spot check.** In one scan (one value of the second parameter), real
+likelihood fits, made as the scan's own calls are (started from the nearest converged call with
+contacts, then from the base elements), at:
+
+- 0.002, 0.005, 0.01 and 0.02 decade either side of every box edge (half those for V3′);
+- 0.2, 0.4, 0.6 and 0.8 of the way along each of the six steepest knot intervals inside the
+  widest box (steepest in ln L at the task's lowest level);
+- 21 points across ± 2.5 widths of the best value, unless it sits on a box edge;
+
+inside the widest box, none where the scan already has a point. If fewer than 50 converge with
+contacts, four more in each of the next six steepest intervals, until 50 do or no interval is
+left (then the check fails). The scan's own points are not changed. For every box and level:
+the runner's ln Z from the scan's points; the ground truth, ln Z by the same rule from the
+scan's points and the extra fits; and the piecewise-exponential value on those same points.
+It passes where the ground truth is valid (its two values within 0.05) and the runner is within
+0.05 of it.
+
+**4. At Stage 1's gate reading**, the same spot check, with the same 0.05, on this sample,
+fixed now:
+
+- every scan whose best point inside the box sits on a box edge;
+- every scan with a box that leaves out its best value and whose edge nearest that value lies
+  within the knots' range with ln L there, by linear interpolation between the knots, more
+  than 10 below the scan's peak ln L at some level;
+- five scans drawn by `numpy.random.default_rng(20261116)` (`choice`, without replacement) from
+  all of Stage 1's scans other than the no-perturber ones, listed by task identifier and then
+  by scan index.
+
+A scan in more than one part is checked once. Any failure is reported at the gate reading with
+its scan, box, level and the three values.
+
+**Tests.** A box edge on a steep flank with the edge's knot stored 10⁻¹¹ outside it: the code
+before this addendum was 0.18 low there, and now ln Z matches the exact Gaussian integral
+within 0.01, as does the box containing the peak.
+
+**Before the relaunch.** The ten smoke scans again from nothing, then conditions 1 to 7 with the
+spot check. Stage 1 starts again from nothing only if all hold.
+
+**Unchanged.** Everything else in amendments 1 to 3 and the first two addenda.

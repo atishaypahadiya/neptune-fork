@@ -37,6 +37,7 @@ from __future__ import annotations
 import argparse
 import csv
 import hashlib
+import itertools
 import json
 import math
 import os
@@ -125,6 +126,11 @@ BOX_EPS = 1e-9  # decades: a point this close to a box edge is at it
 KNOT_TOL = 1e-4  # decades
 H_MIN = 1e-3  # decades (halved with the grid for V3′)
 MAX_REFINE = 6
+# Amendment 3, third addendum: the box edges are points of every integral; a call within
+# EDGE_EPS of an edge is the call at it; the knot interval at an edge is sub-divided SUB_EDGE
+# times (SUB elsewhere).
+EDGE_EPS = 1e-9  # decades
+SUB_EDGE = 200
 FINE_N, FINE_HALF = 15, 6.0  # points, widths
 SUB = 20
 TAIL_DECADES = (1.0, 2.0, 4.0)
@@ -1001,44 +1007,101 @@ def knots(pts: list[dict]) -> list[dict]:
     return out
 
 
+def _box_knots(allp: list[dict], box: tuple[float, float]) -> list[dict]:
+    """The knots for one box (amendment 3, third addendum): the scan's knots, plus each box
+    edge that lies within their range as a knot of its own at exactly the edge, from the call
+    computed there (the coarse scan has a point on every box edge) if it converged with
+    contacts; fine knots within KNOT_TOL of such an edge give way to it."""
+    kn = knots(allp)
+    if not kn:
+        return kn
+    x0, x1 = kn[0]["x"], kn[-1]["x"]
+    for e in box:
+        if not x0 < e < x1:
+            continue
+        at = [p for p in allp if abs(p["x"] - e) <= EDGE_EPS and p["converged"]
+              and not p["no_contact"] and math.isfinite(p["chi2"])]  # fmt: skip
+        if at:
+            kn = [p for p in kn if abs(p["x"] - e) >= KNOT_TOL] + [{**at[0], "x": float(e)}]
+    return sorted(kn, key=lambda p: p["x"])
+
+
 def ln_z_strength(pts: list[dict], level: float, box: tuple[float, float],
                   h_fine: float, method: str = "spline") -> float:  # fmt: skip
-    """ln of (1/width of box) ∫ L dx over the box at one value of the second parameter: ln L
-    splined on the knots (``knots``) and integrated on a sub-grid 20 times finer; outside the
-    knots, ln L interpolated linearly between the other points (coarse, tail, and fine points
-    that are not knots) on the same step. ``method="trapezoid"`` integrates L over the knots
-    themselves by the trapezoid rule instead (smoke condition 7's check)."""
+    """ln of (1/width of box) ∫ L dx over the box at one value of the second parameter.
+
+    ``spline`` (the plan's rule, item 4, with amendment 3's addenda): ln L splined on the
+    box's knots (``_box_knots``) and integrated on a sub-grid 20 times finer than the knots'
+    spacing, SUB_EDGE times in the knot interval at each box edge; outside the knots, ln L
+    interpolated linearly between the other points on steps of h/20 (h/SUB_EDGE in the step
+    at each edge). The box edges themselves are always points of the grid, valued by the same
+    interpolant, so nothing is dropped at an edge.
+
+    ``pexp`` (smoke condition 7's independent rule): ln L linear between the same nodes (the
+    box's knots, the other points inside the box, and the two edges) and exp integrated
+    exactly on each interval. ``trapezoid``: the same nodes, L by the trapezoid rule (report
+    only)."""
+    lo, hi = box
     allp = sorted(pts, key=lambda p: p["x"])
     x = np.array([p["x"] for p in allp])
     ll = np.array([_ln_l(p, level) for p in allp])
     fin = np.isfinite(ll)
-    fine = knots(allp)
-    xf = np.array([p["x"] for p in fine])
-    llf = np.array([_ln_l(p, level) for p in fine])
-    if method == "spline":
-        sub_f = np.linspace(xf[0], xf[-1], (len(xf) - 1) * SUB + 1)
-        val_f = CubicSpline(xf, llf)(sub_f) if len(xf) > 1 else llf
-    elif method == "trapezoid":
-        sub_f, val_f = xf, llf
-    else:
-        raise ValueError(method)
-    lo, hi = box
-    step = h_fine / SUB
-    left = np.arange(xf[0] - step, lo - step, -step)[::-1] if lo < xf[0] else np.empty(0)
-    right = np.arange(xf[-1] + step, hi + step, step) if hi > xf[-1] else np.empty(0)
+    kn = _box_knots(allp, box)
+    if not kn:
+        return -math.inf
+    xk = np.array([p["x"] for p in kn])
+    lk = np.array([_ln_l(p, level) for p in kn])
+    cs = CubicSpline(xk, lk) if len(xk) > 1 else None
 
     def lin(xx: np.ndarray) -> np.ndarray:
         if xx.size == 0 or not fin.any():
             return np.full(xx.size, -np.inf)
         return np.interp(xx, x[fin], ll[fin], left=-np.inf, right=-np.inf)
 
-    xs = np.concatenate([left, sub_f, right])
-    vals = np.concatenate([lin(left), val_f, lin(right)])
-    m = (xs >= lo) & (xs <= hi)
-    xs, vals = xs[m], vals[m]
-    if xs.size < 2:
-        return -math.inf
-    return float(logsumexp(vals, b=trapezoid_weights(xs)) - math.log(hi - lo))
+    def value(xx: np.ndarray, inner: str) -> np.ndarray:
+        inside = (xx >= xk[0]) & (xx <= xk[-1])
+        if inner == "spline" and cs is not None:
+            v_in = cs(np.clip(xx, xk[0], xk[-1]))
+        else:
+            v_in = np.interp(xx, xk, lk)
+        return np.where(inside, v_in, lin(xx))
+
+    if method == "spline":
+        parts = []
+        for a, b in itertools.pairwise(xk):
+            n = SUB_EDGE if (a <= lo <= b or a <= hi <= b) else SUB
+            parts.append(np.linspace(a, b, n + 1)[:-1])
+        parts.append(xk[-1:])
+        step = h_fine / SUB
+        if lo < xk[0]:
+            g = np.arange(xk[0] - step, lo - step, -step)[::-1]
+            parts.append(g)
+            parts.append(np.linspace(lo, lo + step, SUB_EDGE // SUB + 1))
+        if hi > xk[-1]:
+            g = np.arange(xk[-1] + step, hi + step, step)
+            parts.append(g)
+            parts.append(np.linspace(hi - step, hi, SUB_EDGE // SUB + 1))
+        xs = np.unique(np.concatenate(parts))
+        xs = np.unique(np.concatenate([xs[(xs > lo) & (xs < hi)], [lo, hi]]))
+        vals = value(xs, "spline")
+        return float(logsumexp(vals, b=trapezoid_weights(xs)) - math.log(hi - lo))
+    if method not in ("pexp", "trapezoid"):
+        raise ValueError(method)
+    nodes = np.unique(np.concatenate([xk[(xk > lo) & (xk < hi)],
+                                      x[fin & (x > lo) & (x < hi)
+                                        & ((x < xk[0]) | (x > xk[-1]))],
+                                      [lo, hi]]))  # fmt: skip
+    vals = value(nodes, "linear")
+    if method == "trapezoid":
+        return float(logsumexp(vals, b=trapezoid_weights(nodes)) - math.log(hi - lo))
+    terms = []
+    for a, b, va, vb in zip(nodes[:-1], nodes[1:], vals[:-1], vals[1:], strict=True):
+        if not (np.isfinite(va) and np.isfinite(vb)):
+            continue  # an interval ending at a point of zero likelihood adds nothing
+        d = abs(vb - va)
+        terms.append(max(va, vb) + math.log(b - a)
+                     + (math.log(-math.expm1(-d)) - math.log(d) if d > 1e-12 else 0.0))  # fmt: skip
+    return float(logsumexp(terms) - math.log(hi - lo)) if terms else -math.inf
 
 
 def trapezoid_weights(x: np.ndarray) -> np.ndarray:
@@ -1492,10 +1555,175 @@ def summarize() -> None:
     _log(f"summary: {target}")
 
 
+# --- Ground-truth spot check (amendment 3, third addendum) ---------------------------------
+SPOT_TOL = 0.05  # ln Z: runner against ground truth, and ground truth's two rules
+SPOT_MIN = 50  # extra fits converged with contacts, per scan
+SPOT_EDGE_OFFSETS = (
+    0.002,
+    0.005,
+    0.01,
+    0.02,
+)  # decades either side of each box edge (halved for V3′)
+SPOT_STEEP, SPOT_PER = 6, (0.2, 0.4, 0.6, 0.8)  # steepest knot intervals; points inside each
+SPOT_PEAK_N, SPOT_PEAK_HALF = 21, 2.5  # points across the peak, ± widths
+SPOT_FLANK = 10.0  # Δ ln L below the peak at which a box edge on a flank enters the sample
+SPOT_SEED, SPOT_RANDOM = 20261116, 5  # the gate reading's random part
+
+
+def _boxes(model: str) -> list[tuple[str, tuple[float, float]]]:
+    return [("prior", box(model))] + [(f"r3_{w:g}", box(model, w)) for w in R3_WIDTHS]
+
+
+def _scan_points(task: Task, p2: float) -> list[dict]:
+    k = Points.key(p2, 0.0)[0]
+    pts = Points(task.dir / "points.jsonl").calls.values()
+    return [p for p in pts if Points.key(p["p2"], 0.0)[0] == k]
+
+
+def _steep_intervals(task: Task, kn: list[dict]) -> list[tuple[float, float]]:
+    """Knot intervals inside the widest box, steepest first in ln L at the lowest level."""
+    lo, hi = box(task.model, max(R3_WIDTHS))
+    lv = min(task.levels())
+    iv = [(abs(_ln_l(b, lv) - _ln_l(a, lv)), a["x"], b["x"])
+          for a, b in itertools.pairwise(kn) if lo <= a["x"] and b["x"] <= hi]  # fmt: skip
+    return [(a, b) for _, a, b in sorted(iv, reverse=True)]
+
+
+def spot_xs(task: Task, scan: dict, pts: list[dict], n_steep: int = SPOT_STEEP) -> list[float]:
+    """The extra strengths of a spot check: SPOT_EDGE_OFFSETS either side of every box edge,
+    SPOT_PER of the way along each of the n_steep steepest knot intervals, and SPOT_PEAK_N
+    across ± SPOT_PEAK_HALF widths of the best value unless it sits on a box edge; inside the
+    widest box, none where the scan already has a point."""
+    f = 0.5 if task.half else 1.0
+    out = {round(e + sg * d * f, 6) for _, b in _boxes(task.model) for e in b
+           for d in SPOT_EDGE_OFFSETS for sg in (-1, 1)}  # fmt: skip
+    for a, b in _steep_intervals(task, knots(pts))[:n_steep]:
+        out |= {round(a + q * (b - a), 6) for q in SPOT_PER}
+    if not scan["best_at_box_edge"]:
+        out |= {round(scan["x_best"] + k * scan["width"], 6)
+                for k in np.linspace(-SPOT_PEAK_HALF, SPOT_PEAK_HALF, SPOT_PEAK_N)}  # fmt: skip
+    lo, hi = box(task.model, max(R3_WIDTHS))
+    have = {round(p["x"], 6) for p in pts}
+    return sorted(x for x in out if lo <= x <= hi and x not in have)
+
+
+def spot_check(task: Task, i: int) -> dict:
+    """Real fits at the spot check's extra strengths in scan i of a finished task (the scan's
+    own points are not touched), then, for every box and level, the runner's ln Z from the
+    scan's points against the ground truth: ln Z by the same rule from the scan's points and
+    the extra fits together, valid where that agrees with the piecewise-exponential rule on
+    the same points within SPOT_TOL. Fewer than SPOT_MIN extra fits converged with contacts:
+    SPOT_PER points in the next SPOT_STEEP steepest intervals, until there are or none is left.
+    Written to the cache's spotcheck directory."""
+    scan = json.loads(task.done_path.read_text())["scans"][i]
+    pts = _scan_points(task, scan["p2"])
+    data = dataset(prepare(), task.truth, task.seed, LEVELS[task.level])
+    base, _ = base_problem()
+    good = [p for p in pts if p["converged"] and not p["no_contact"]]
+    extra: list[dict] = []
+
+    def fit(x: float) -> None:
+        near = sorted(good + [e for e in extra if e["converged"] and not e["no_contact"]],
+                      key=lambda p: abs(p["x"] - x))[:1]  # fmt: skip
+        starts = [np.array(near[0]["theta6"])] if near else []
+        tried = 0
+        for th in [*starts, base]:
+            c = data.call(task.model, task.extra(x, scan["p2"]), th)
+            tried += 1
+            if not c.no_contact:
+                break
+        extra.append({"p2": scan["p2"], "x": x, "kind": "fine", **c.row(), "retries": tried - 1})
+
+    n_steep = SPOT_STEEP
+    for x in spot_xs(task, scan, pts, n_steep):
+        fit(x)
+    while sum(e["converged"] and not e["no_contact"] for e in extra) < SPOT_MIN:
+        n_steep += SPOT_STEEP
+        xs = [x for x in spot_xs(task, scan, pts, n_steep) if x not in {e["x"] for e in extra}]
+        if not xs:
+            break
+        for x in xs:
+            fit(x)
+    dense = pts + extra
+    rows = []
+    for name, b in _boxes(task.model):
+        for lv in task.levels():
+            r = {"box": name, "level": lv,
+                 "runner": ln_z_strength(pts, lv, b, scan["h"]),
+                 "pexp": ln_z_strength(pts, lv, b, scan["h"], "pexp"),
+                 "trapezoid": ln_z_strength(pts, lv, b, scan["h"], "trapezoid"),
+                 "truth": ln_z_strength(dense, lv, b, scan["h"]),
+                 "truth_pexp": ln_z_strength(dense, lv, b, scan["h"], "pexp")}  # fmt: skip
+            both = [r["truth"], r["truth_pexp"], r["runner"]]
+            if all(v == -math.inf for v in both):  # zero likelihood in the box by every rule
+                r["valid"], r["pass"] = True, True
+            else:
+                r["valid"] = abs(r["truth"] - r["truth_pexp"]) < SPOT_TOL
+                r["pass"] = r["valid"] and abs(r["runner"] - r["truth"]) < SPOT_TOL
+            rows.append(r)
+    n_ok = sum(e["converged"] and not e["no_contact"] for e in extra)
+    out = {"task": task.id, "scan": i, "p2": scan["p2"], "extra_fits": len(extra),
+           "extra_converged": n_ok,
+           "extra_unconverged": sum(not e["converged"] and not e["no_contact"] for e in extra),
+           "extra_no_contact": sum(e["no_contact"] for e in extra),
+           "enough": n_ok >= SPOT_MIN, "rows": rows,
+           "pass": n_ok >= SPOT_MIN and all(r["pass"] for r in rows), "extra": extra}  # fmt: skip
+    d = CACHE / "spotcheck"
+    d.mkdir(parents=True, exist_ok=True)
+    (d / f"{task.id}__{i}.json").write_text(json.dumps(out, default=float))
+    return out
+
+
+def spot_sample(tasks: list[Task]) -> list[tuple[str, int, str]]:
+    """The gate reading's spot-check sample: every scan whose best point inside the box sits on
+    a box edge; every scan with a box that leaves out its best value and whose edge nearest it
+    has ln L more than SPOT_FLANK below the scan's peak at some level; and SPOT_RANDOM scans
+    drawn by default_rng(SPOT_SEED) from all scans (sorted by task, then scan index)."""
+    picked: dict[tuple[str, int], str] = {}
+    every = []
+    for t in sorted(tasks, key=lambda t: t.id):
+        if t.model == "NG" or not t.done_path.exists():
+            continue
+        for i, s in enumerate(json.loads(t.done_path.read_text())["scans"]):
+            every.append((t.id, i))
+            if s["best_at_box_edge"]:
+                picked.setdefault((t.id, i), "best on a box edge")
+                continue
+            kn = knots(_scan_points(t, s["p2"]))
+            if len(kn) < 2:
+                continue
+            xk = np.array([p["x"] for p in kn])
+            for _, (lo, hi) in _boxes(t.model):
+                if lo <= s["x_best"] <= hi:
+                    continue
+                e = lo if s["x_best"] < lo else hi
+                for lv in t.levels():
+                    lk = np.array([_ln_l(p, lv) for p in kn])
+                    if xk[0] <= e <= xk[-1] and np.interp(e, xk, lk) < lk.max() - SPOT_FLANK:
+                        picked.setdefault((t.id, i), "box edge on a flank")
+    rng = np.random.default_rng(SPOT_SEED)
+    for j in rng.choice(len(every), size=min(SPOT_RANDOM, len(every)), replace=False):
+        picked.setdefault(every[int(j)], "random")
+    return [(k[0], k[1], why) for k, why in sorted(picked.items())]
+
+
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=("prepare", "stage1", "stage2", "scan", "plan", "summarize"))
+    ap.add_argument(
+        "cmd",
+        choices=(
+            "prepare",
+            "stage1",
+            "stage2",
+            "scan",
+            "plan",
+            "summarize",
+            "spotcheck",
+            "spotsample",
+        ),
+    )
     ap.add_argument("task", nargs="?")
+    ap.add_argument("--scan", type=int, default=0)
     ap.add_argument("--n-workers", type=int, default=12)
     a = ap.parse_args(argv)
     if a.cmd == "prepare":
@@ -1509,6 +1737,12 @@ def main(argv: list[str] | None = None) -> None:
         stage2(a.n_workers)
     elif a.cmd == "scan":
         run_task(Task.from_id(a.task))
+    elif a.cmd == "spotcheck":
+        r = spot_check(Task.from_id(a.task), a.scan)
+        print(json.dumps({k: v for k, v in r.items() if k not in ("rows", "extra")}))
+    elif a.cmd == "spotsample":
+        for row in spot_sample(stage1_tasks()):
+            print(*row)
     elif a.cmd == "plan":
         for name, ts in (("Stage 1", stage1_tasks()), ("Stage 2", stage2_tasks())):
             done = sum(t.done_path.exists() for t in ts)
