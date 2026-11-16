@@ -3,7 +3,7 @@
 
 .p1b .paper-title { padding-top: 4.5rem; }
 @media (min-width: 900px) { .p1b .paper-title { padding-top: 6rem; } }
-.p1b .paper-title h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 3.6vw, 3.125rem); line-height: 1.08; text-wrap: balance; }
+.p1b .paper-title h1 { margin: 0 0 0.75rem; font-size: clamp(2rem, 3.6vw, 3.125rem); line-height: 1.08; text-wrap: balance; text-indent: -0.05em; }
 .p1b .paper-title .back { margin: 0 0 1.5rem; font-size: 0.9375rem; line-height: 1.4375rem; color: var(--prussian); }
 .p1b .paper-title .byline { color: var(--prussian); }
 .p1b .paper-title .error { color: var(--deep); }
