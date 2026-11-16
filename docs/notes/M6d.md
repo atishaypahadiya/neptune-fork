@@ -193,9 +193,9 @@ none of the 6,000 draws lies within 0.87°, the window beginning 7.5° above the
 upper bound. R = 0, its 68 % bootstrap interval 0 to 0. The four single-seed values of
 P_shape are 0, 0, 0, 0 (range 0, within 0.1), so the ratio is read: the interval lies below 1,
 and **holding the distance at his value made a prediction as close as his less probable**, by
-a factor 1/R. *Derived from the draw counts:* P_shape = 0 of 6,000 draws; the exact 95 % upper
-bound is 5.0 × 10⁻⁴ (Clopper–Pearson), so R < 1.4 × 10⁻³ and the shape model is less probable
-by a factor of at least about 700.
+a factor 1/R. *Derived from the draw counts:* P_shape = 0 of 6,000 draws; the exact one-sided
+95 % upper bound is 5.0 × 10⁻⁴ (Clopper–Pearson), so R < 1.4 × 10⁻³ and the shape model is less
+probable by a factor of at least about 700.
 
 *What "Peirce's accident" becomes.* P_free = 0.35 is the chance that the data alone, with no
 assumption about the distance, give a prediction as good as Le Verrier's; P_shape = 0 (none of
