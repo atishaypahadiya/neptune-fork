@@ -117,20 +117,43 @@ body > header > *, main > section > * { grid-column: body; } /* prose is body wi
   pointer-events: none;
 }
 
-/* ---------- Plate I: the title plate ---------- */
-.plate-i .plate { height: min(100svh, 940px); min-height: 560px; }
+/* ---------- Plate I: the title plate ----------
+   The plate is at least the window's height (up to 940 px) and grows with its title block,
+   which is in the flow at the plate's foot: at 200 % text the plate gets taller instead of
+   clipping the title or running it under the label. Above the title block the padding keeps
+   the label's corner and, below 900 px, room for the drawing (plates.js, plateI). */
+.plate-i .plate {
+  display: flex; flex-direction: column; justify-content: flex-end;
+  min-height: max(560px, min(100svh, 940px));
+  padding: 4.5rem var(--gutter) 3rem;
+}
+/* Below 900 px the drawing stands above the title block: room for it of up to 20rem (the
+   drawing's width at 100 % text), kept when the text grows. */
+.plate-i .plate::before { content: ""; flex: none; height: min(92vw, 20rem); }
+/* The ground under the title block, deepened where the block sits in the lower left (from
+   900 px; site/js/plate.js, ground). */
+.plate-i .deepen-title { display: none; }
 .titleblock {
-  position: absolute; left: var(--gutter); right: var(--gutter); bottom: clamp(28px, 6vh, 64px);
+  position: relative; container-type: inline-size;
   color: var(--line); text-align: center; pointer-events: none;
 }
 .titleblock a { pointer-events: auto; color: var(--line); }
 h1 { margin: 0 auto 0.75rem; font: 400 clamp(2.5rem, 6.4vw, 6.25rem) / 1.02 var(--didot); }
+/* The title breaks only between words: its size stops where its longest word, "prediction"
+   (4.52 em in GFS Didot), fills the title block (TYP-03 at 200 % text). */
+.titleblock h1 { overflow-wrap: normal; font-size: min(clamp(2.5rem, 6.4vw, 6.25rem), 100cqi / 4.6); }
 .subtitle { margin: 0 auto 0.375rem; max-width: 46em; font-size: clamp(0.9375rem, 1.25vw, 1.1875rem); line-height: 1.45; }
 .byline { margin: 0; font-size: clamp(0.875rem, 1.2vw, 1.0625rem); line-height: 1.5; }
 .plate-i .plate-label { top: 1.5rem; bottom: auto; }
 @media (min-width: 900px) {
-  .titleblock { right: auto; max-width: 44%; text-align: left; bottom: clamp(40px, 8vh, 80px); }
+  .plate-i .plate { padding-bottom: 4.5rem; }
+  .plate-i .plate::before { display: none; }
+  .plate-i .deepen-title { display: inline; }
+  /* 44 % of the plate, as when the block was placed on it: the plate less its gutters, plus 44 %
+     of them. */
+  .titleblock { align-self: flex-start; width: calc(44% + 0.88 * var(--gutter)); text-align: left; }
   h1 { margin-bottom: 1.125rem; font-size: clamp(2.75rem, 5.6vw, 5.75rem); }
+  .titleblock h1 { font-size: min(clamp(2.75rem, 5.6vw, 5.75rem), 100cqi / 4.6); }
   .subtitle { margin-left: 0; }
 }
 .plate-i > .caption { margin: 0.75rem 0 0; }
@@ -293,14 +316,15 @@ input[type="range"] { flex: 1; min-width: 0; margin: 0; accent-color: var(--prus
   th, td { padding-right: 0.375rem; }
   #table-1 .obs { display: none; }
   .obs-under { display: block; font-size: 0.875rem; line-height: 1.3125rem; color: var(--prussian); white-space: nowrap; }
-  .plate-i .plate { height: min(100svh, 760px); }
+  .plate-i .plate { min-height: max(560px, min(100svh, 760px)); }
 }
 
 /* Hyphenation where a text column is narrow (CRF-22): there the rag opens holes and hyphens close
    them. Screen only; print keeps its own setting. Words of six letters or more, three on each side
    of the break, and (in WebKit) no more than two hyphens in a row. Two columns, each measured on
    its own width:
-     the main column, while the body measure is under 34em: 578 px of the 17 px phone body, at
+     the main column, and Plate I's caption on the same measure above it, while the body
+       measure is under 34em: 578 px of the 17 px phone body, at
        a window of 39.25rem (628 px; the measure is the window less two gutters of 4vw). The
        column is a track of main's grid, not a box, so this is a media query; an inline-size
        container on main (or any ancestor of the companion's tables) changes WebKit's automatic
@@ -313,7 +337,7 @@ input[type="range"] { flex: 1; min-width: 0; margin: 0; accent-color: var(--prus
    plate.js's appendText). The hyphenating rules have no specificity, so these always win. */
 .split > .side { container: column / inline-size; }
 @media screen and (max-width: 39.25rem) {
-  :where(main), :where(main caption) { -webkit-hyphens: auto; hyphens: auto; hyphenate-limit-chars: 6 3 3; hyphenate-limit-lines: 2; }
+  :where(main), :where(main caption), :where(.plate-i > .caption) { -webkit-hyphens: auto; hyphens: auto; hyphenate-limit-chars: 6 3 3; hyphenate-limit-lines: 2; }
 }
 @media screen {
   @container column (width < 26em) {
@@ -377,10 +401,13 @@ main :is(h2, h3, a, table, .whole, [data-v="pull_text"]) { -webkit-hyphens: manu
      drawing on its ground. Plate I stays a full title page. */
   .split > .plate > svg.fig, .canvas > svg.fig { max-height: 120mm; }
   .split#plate-iii .side > .sec { margin-top: 18pt; }
+  .plate-i .plate { display: block; padding: 0; }
+  .plate-i .plate::before { display: none; }
   .titleblock {
-    position: relative; left: auto; right: auto; bottom: auto; max-width: none;
+    position: relative; left: auto; right: auto; bottom: auto; width: auto; max-width: none;
     padding: 0 24pt 22pt; text-align: left;
   }
+  .titleblock h1 { font-size: 30pt; }
   h1 { font-size: 30pt; }
   .plate-i > .caption { margin: 8pt 0 0; }
   .controls, .copy, .tip, .error { display: none !important; }

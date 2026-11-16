@@ -88,6 +88,9 @@ sit above the texture and stay sharp.
   - fine grain;
   - sparse dust specks;
   - a radial `--wash` vignette toward the plate edges;
+  - the corner that holds a plate's label deepened with `--deep` instead (and on Plate I from
+    900 px the lower left, under the title block), since the wash there left the label and
+    the byline under 4.5:1 (`site/js/plate.js`, `ground`);
   - a hairline plate mark inset from the edge (Plate I only).
 - **Glow:** a small Gaussian blur under the bodies on Plate III and the highlighted point, and
   nowhere else.
@@ -326,7 +329,10 @@ wording is unverified.
   the factor, and the angle label gives the true value.
 - **Plate I** on wide screens (≥ 900 px) puts the title block at the bottom left and the
   figure on the right, so the figure can use the plate's full height. On phones the title sits
-  below the figure, as specified.
+  below the figure, as specified. The plate is at least the window's height (to 940 px; 760 px
+  on phones) and grows with its title block, which is in the plate's flow: at 200 % text the
+  plate gets taller rather than clipping the title or running it under the label. The title
+  breaks only between words; its size stops where "prediction" fills the title block.
 - **Title:** "Refitting Le Verrier's prediction of Neptune", with a subtitle from the data
   ("A pre-registered Bayesian reconstruction from the 279 observations of Uranus he published
   in 1846").
@@ -632,8 +638,9 @@ no width of its own.
 - **Figs. 8 and 9** from 900 px stand side by side, each on half of the wide pair less half
   the 32 px gap. Below 900 px and in print each is `wide`, with a `body` caption.
 
-Not a block of the grid and not checked against it: **Plate I's title block**, lettering laid
-over the plate (from 900 px at most 44 % of it, from the plate's left padding).
+Not a block of the grid and not checked against it: **Plate I's title block**, lettering set
+in the plate's flow at its foot, inside the plate's padding (from 900 px 44 % of the plate,
+at its left).
 
 **What moved** when the grid replaced the per-element widths: the captions under wide figures,
 from the figure's left edge to the text's (200 px at 1440, 151 px at 1024). Text and figures
