@@ -642,3 +642,49 @@ calls that stopped at the iteration cap with χ² of 2 × 10⁵ to 5 × 10⁷; t
 call was at x ≤ −5.7.
 
 **Unchanged.** Everything else in amendments 1 to 3.
+
+### Second addendum to amendment 3, 16 November 2026: the spline's knots, a floor on the fine spacing; smoke conditions 6 and 7
+
+Written after the third smoke test and before the fourth; approved before it was committed.
+
+**What happened.** In the third smoke test all ten scans finished, but in
+t3_s0_l0_P_d1_b2_half the cubic spline of item 4 and § 4.2, fitted through every fine point
+with a finite χ² (one unconverged call at χ² = 3.3 × 10⁷, and points from several fine grids
+as little as 1.6 × 10⁻⁶ decade apart), swung to χ² = −64,798 at x = −6.665. The scan took that
+as its best value, with a width of 0.0002 decade, and its refinement chased it, adding points
+about 10⁻⁵ decade apart (1,043 calls against about 130 in the other planet scans). The scan's
+lowest converged point is at the box's lower edge, χ² = 485.0. Its integrals escaped only
+because fine points with no contact switched them to linear interpolation; without those the
+spline itself would have been integrated. The other nine scans' spline minima lay within
+0.15 of their lowest points.
+
+**The fix.**
+
+1. *Knots.* The spline of the best value, the width, the refinement and the integral (item 4)
+   is fitted to the knots only: fine points whose fit converged with contacts, of any two
+   closer than 10⁻⁴ decade the one with the lower χ². An unconverged or no-contact fine point
+   is never a knot; it is treated as the coarse and tail points are, entering only the linear
+   interpolation outside the knots (a no-contact point there as zero likelihood, item 3). The
+   best point of a scan is the knot with the lowest χ².
+2. *Refinement guard.* The fine spacing of a grid is never below 10⁻³ decade (5 × 10⁻⁴ for
+   V3′'s halved grids), and a scan value is refined at most six times (item 6's count, now
+   enforced in code as a named limit).
+
+**Smoke conditions 6 and 7, set before the fourth smoke test.**
+
+6. In every scan, the spline's minimum is within Δχ² = 1.0 below the lowest knot's χ², and its
+   position within one fine spacing (the scan's `h`) of that knot.
+7. In every scan, at every level and for every box, ln Z by the spline integral and ln Z by
+   the trapezoid rule on the same knots (the same treatment outside them) agree within 0.05.
+   If they do not, the result is reported and no interpolant is changed without a further
+   addendum.
+
+Conditions 1 to 5 are as before (condition 2 as made precise in the first addendum; condition
+4: edge steps zero or each reported).
+
+**Tests.** A point set with the smoke test's shape: the spline through every finite point
+reaches χ² below −10⁴, as it did; from the knots the best value is the lowest point, at the
+box's edge, within Δχ² 1 of the spline's minimum, and the two integrals agree within 0.05 at
+each level. A likelihood whose width would give a spacing below the floor keeps 10⁻³.
+
+**Unchanged.** Everything else in amendments 1 to 3 and the first addendum.

@@ -119,6 +119,12 @@ DCHI_TOL = 1e-3
 MAX_IT = 20
 COARSE_STEP, COARSE_HALF = 0.1, 4.0  # decades
 BOX_EPS = 1e-9  # decades: a point this close to a box edge is at it
+# Amendment 3, second addendum: the spline's knots are converged fine points with contacts, no
+# two closer than KNOT_TOL; fine points are never closer than H_MIN apart in one grid; a scan
+# value is refined at most MAX_REFINE times.
+KNOT_TOL = 1e-4  # decades
+H_MIN = 1e-3  # decades (halved with the grid for V3′)
+MAX_REFINE = 6
 FINE_N, FINE_HALF = 15, 6.0  # points, widths
 SUB = 20
 TAIL_DECADES = (1.0, 2.0, 4.0)
@@ -802,8 +808,8 @@ class Scanner:
         """Fine points about x0 at spacing 12 w / 14 (halved for V3′), recentred and refined
         until they cover ±6 widths of the best value, then widened until the integrand at
         both ends is below e⁻²⁵ of its peak at every level the scan serves."""
-        for _ in range(6):
-            h = 2.0 * FINE_HALF * w / (FINE_N - 1) * self.h_scale
+        for _ in range(MAX_REFINE):
+            h = max(2.0 * FINE_HALF * w / (FINE_N - 1), H_MIN) * self.h_scale
             pts = self._grid(p2, x0, h, round(FINE_HALF * w / h), warm)
             xb, wb = self._best(pts)
             if wb < 0.7 * w or wb > 1.5 * w or abs(xb - x0) > w:
@@ -817,14 +823,14 @@ class Scanner:
             # Amendment 3 (a): a best value at the box's edge is a fine point, with the fine
             # points dense there (spacing no wider than the coarse scan's).
             x0 = edge
-            h = min(h, COARSE_STEP * self.h_scale)
+            h = max(min(h, COARSE_STEP * self.h_scale), H_MIN * self.h_scale)
             pts = self._grid(p2, x0, h, round(FINE_HALF * w / h), None)
         need = 2.0 * TAIL_LN * self.max_level**2
         lo_n = hi_n = round(FINE_HALF * w / h)
         for _ in range(4000):
             fin = {round(p["x"], 10): p for p in pts}
             xs = sorted(fin)
-            cmin = min(p["chi2"] for p in pts)
+            cmin = min(p["chi2"] for p in knots(pts))
             grow = False
             if fin[xs[0]]["chi2"] - cmin < need and xs[0] > lo + BOX_EPS:
                 lo_n += 1
@@ -881,8 +887,13 @@ class Scanner:
 
     @staticmethod
     def _best(pts: list[dict], with_min: bool = False):
-        ok = sorted((p for p in pts if math.isfinite(p["chi2"])), key=lambda p: p["x"])
+        """Best value, width and (optionally) the spline's minimum, from the knots alone
+        (``knots``: converged fine points with contacts, amendment 3's second addendum)."""
+        ok = knots(pts)
         x = np.array([p["x"] for p in ok])
+        if len(ok) < 2:
+            xb = float(x[0])
+            return (xb, COARSE_STEP, float(ok[0]["chi2"])) if with_min else (xb, COARSE_STEP)
         cs = CubicSpline(x, [p["chi2"] for p in ok])
         sub = np.linspace(x[0], x[-1], (len(x) - 1) * SUB + 1)
         xb = float(sub[int(np.argmin(cs(sub)))])
@@ -938,7 +949,7 @@ class Scanner:
             x0, w = guess
         fine, x0, w, h, n = self.fine(p2, x0, w, warm)
         xb, wb = self._best(fine)
-        best = min(fine, key=lambda p: p["chi2"])
+        best = min(knots(fine), key=lambda p: p["chi2"])
         widened = []
         for t in self.tails(p2, xb, best):
             if any(_ln_l(t, lv) - _ln_l(best, lv) >= -TAIL_LN for lv in self.task.levels()):
@@ -950,7 +961,7 @@ class Scanner:
                 for p in self.points.calls.values()
                 if p["kind"] == "fine" and Points.key(p["p2"], 0)[0] == Points.key(p2, 0)[0]
             ]
-            best = min(fine, key=lambda p: p["chi2"])
+            best = min(knots(fine), key=lambda p: p["chi2"])
         xb, wb, spline_min = self._best(fine, with_min=True)
         lo, hi = self.box
         at_edge = ("low" if best["x"] <= lo + BOX_EPS else
@@ -973,20 +984,44 @@ class Scanner:
 # ---------------------------------------------------------------------------- quadrature
 
 
+def knots(pts: list[dict]) -> list[dict]:
+    """The spline's knots (amendment 3, second addendum): fine points whose fit converged with
+    contacts, in increasing x, and of any two closer than KNOT_TOL the one with the lower χ²
+    (the first in x on a tie). Unconverged and no-contact points are never knots."""
+    ok = sorted((p for p in pts if p["kind"] == "fine" and p["converged"]
+                 and not p["no_contact"] and math.isfinite(p["chi2"])),
+                key=lambda p: p["x"])  # fmt: skip
+    out: list[dict] = []
+    for p in ok:
+        if out and p["x"] - out[-1]["x"] < KNOT_TOL:
+            if p["chi2"] < out[-1]["chi2"]:
+                out[-1] = p
+            continue
+        out.append(p)
+    return out
+
+
 def ln_z_strength(pts: list[dict], level: float, box: tuple[float, float],
-                  h_fine: float) -> float:  # fmt: skip
+                  h_fine: float, method: str = "spline") -> float:  # fmt: skip
     """ln of (1/width of box) ∫ L dx over the box at one value of the second parameter: ln L
-    splined on the fine points and integrated on a sub-grid 20 times finer; outside the fine
-    points, ln L interpolated linearly between the coarse and tail points on the same step."""
+    splined on the knots (``knots``) and integrated on a sub-grid 20 times finer; outside the
+    knots, ln L interpolated linearly between the other points (coarse, tail, and fine points
+    that are not knots) on the same step. ``method="trapezoid"`` integrates L over the knots
+    themselves by the trapezoid rule instead (smoke condition 7's check)."""
     allp = sorted(pts, key=lambda p: p["x"])
     x = np.array([p["x"] for p in allp])
     ll = np.array([_ln_l(p, level) for p in allp])
     fin = np.isfinite(ll)
-    fine = sorted((p for p in allp if p["kind"] == "fine"), key=lambda p: p["x"])
+    fine = knots(allp)
     xf = np.array([p["x"] for p in fine])
     llf = np.array([_ln_l(p, level) for p in fine])
-    sub_f = np.linspace(xf[0], xf[-1], (len(xf) - 1) * SUB + 1)
-    val_f = CubicSpline(xf, llf)(sub_f) if np.all(np.isfinite(llf)) else np.interp(sub_f, xf, llf)
+    if method == "spline":
+        sub_f = np.linspace(xf[0], xf[-1], (len(xf) - 1) * SUB + 1)
+        val_f = CubicSpline(xf, llf)(sub_f) if len(xf) > 1 else llf
+    elif method == "trapezoid":
+        sub_f, val_f = xf, llf
+    else:
+        raise ValueError(method)
     lo, hi = box
     step = h_fine / SUB
     left = np.arange(xf[0] - step, lo - step, -step)[::-1] if lo < xf[0] else np.empty(0)

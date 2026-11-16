@@ -205,9 +205,9 @@ def _profile(x0=-6.7, w=0.013, ln_s=3.0):
     xs_c = x0 + np.arange(-4.0, 4.0001, 0.1)
     xs_f = x0 + w * np.linspace(-14, 14, 33)
     pts = [{"x": float(x), "kind": "coarse", "chi2": ((x - x0) / w) ** 2, "ln_s": ln_s,
-            "no_contact": False} for x in xs_c]  # fmt: skip
+            "no_contact": False, "converged": True} for x in xs_c]  # fmt: skip
     pts += [{"x": float(x), "kind": "fine", "chi2": ((x - x0) / w) ** 2, "ln_s": ln_s,
-             "no_contact": False} for x in xs_f]  # fmt: skip
+             "no_contact": False, "converged": True} for x in xs_f]  # fmt: skip
     return pts, xs_f[1] - xs_f[0]
 
 
@@ -568,3 +568,65 @@ def test_no_contact_inside_the_edge_fallback_is_skipped():
 
     with pytest.raises(ValueError, match="no step along d reaches an allowed trial"):
         F._difference(nowhere, theta, r, d)
+
+
+def _oscillating_fine_points():
+    """The shape of t3_s0_l0_P_d1_b2_half's fine points in the third smoke test: χ² rising from
+    the box's lower edge, a cluster of points 4e-5 apart with χ² noise of ±0.2 (refinement
+    chasing a false minimum), a gap, one unconverged call at χ² 3.3e7, one with no contact."""
+    rng = np.random.default_rng(0)
+
+    def chi2(x):
+        return 485.0 + 120.0 * (x + 11.0) ** 2
+
+    pts = []
+
+    def add(x, c, conv=True, nc=False):
+        pts.append({"x": float(x), "kind": "fine", "chi2": float(c), "ln_s": 0.0,
+                    "converged": conv, "no_contact": nc})  # fmt: skip
+
+    for x in np.arange(-11.0, -6.85, 0.054):
+        add(x, chi2(x))
+    for x in np.arange(-6.8418, -6.8294, 4e-5):
+        add(x, chi2(x) + rng.uniform(-0.2, 0.2))
+    for x in np.arange(-6.8256, -6.76, 0.0054):
+        add(x, chi2(x))
+    add(-6.6128, chi2(-6.6128))
+    add(-6.064, 3.3e7, conv=False)
+    add(-5.516, math.inf, conv=False, nc=True)
+    return pts
+
+
+def test_spline_does_not_oscillate_on_unconverged_and_crowded_points():
+    """Amendment 3, second addendum: the spline through every finite fine point (the code
+    before it) swings to χ² ≈ −6e4 near x = −6.66, as in the smoke test; from the knots alone
+    (converged, with contacts, no two closer than KNOT_TOL) the best value is the lowest point,
+    at the box's edge, and the spline and trapezoid integrals agree."""
+    from scipy.interpolate import CubicSpline
+
+    pts = _oscillating_fine_points()
+    fin = sorted((p for p in pts if math.isfinite(p["chi2"])), key=lambda p: p["x"])
+    x = np.array([p["x"] for p in fin])
+    sub = np.linspace(x[0], x[-1], (len(x) - 1) * F.SUB + 1)
+    assert CubicSpline(x, [p["chi2"] for p in fin])(sub).min() < -1e4  # the old failure
+
+    kn = F.knots(pts)
+    assert all(p["converged"] and not p["no_contact"] for p in kn)
+    assert np.all(np.diff([p["x"] for p in kn]) >= F.KNOT_TOL)
+    xb, _, smin = F.Scanner._best(pts, with_min=True)
+    lowest = min(kn, key=lambda p: p["chi2"])
+    assert xb == pytest.approx(-11.0) and lowest["chi2"] - smin <= 1.0
+    for lv in (0.5, 1.0, 2.0):
+        a = F.ln_z_strength(pts, lv, (-11.0, -3.0), 0.054)
+        b = F.ln_z_strength(pts, lv, (-11.0, -3.0), 0.054, method="trapezoid")
+        assert abs(a - b) < 0.05
+
+
+def test_fine_spacing_has_a_floor(tmp_path, monkeypatch):
+    """Amendment 3, second addendum: however narrow the width, fine points of one grid are at
+    least H_MIN apart."""
+    sc, _ = _stub_scanner(tmp_path, monkeypatch, _StubData(lambda x: 1e8 * (x + 7.2) ** 2))
+    s = sc.scan_second(0.0, None, None)
+    assert s["h"] >= F.H_MIN - 1e-15
+    fine = sorted(p["x"] for p in sc.points.calls.values() if p["kind"] == "fine")
+    assert len(fine) < 2000
