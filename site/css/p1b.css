@@ -32,14 +32,24 @@
 }
 /* A case is a name of one to three lines: balanced, so a two-line case never ends on one word. */
 .p1b #table-1 td:first-child { text-wrap: balance; }
+/* A reading and the note end on two words (main_p1b.js, span.end), except under 400 px, where
+   the reading's column is as narrow as its longest run and two words would widen the table past
+   its column. */
+.p1b #table-1 .end { white-space: nowrap; }
+@media (max-width: 399px) { .p1b #table-1 .end { white-space: normal; } }
 
 @media (max-width: 720px) {
   .p1b .fig-1 .canvas { height: 560px; }
   .p1b .fig-2 .canvas { height: 560px; }
   .p1b .fig-3 .canvas { height: 300px; }
   .p1b .fig-4 .canvas { height: 700px; }
-  /* Table 2 on phones: the case on its own line, its four offsets under it. */
-  .p1b #table-2 tr { display: grid; grid-template-columns: repeat(4, 1fr); }
+  /* Table 2 on phones: the case on its own line, its four offsets under it. Each row is a grid
+     of its own, so every row takes the same tracks, sized without its content (CRF-04: header
+     and values on one edge). Each track's least width is its longest header word or widest
+     value, with the 0.375rem padding, in rem so it grows with the text: "squares" (3.68 em of
+     the 0.875rem header, 3.22rem) for least squares, "elimination" (5.56 em, 4.86rem) for
+     elimination; the values are at most 2.9 em of 1.0625rem. */
+  .p1b #table-2 tr { display: grid; grid-template-columns: repeat(2, minmax(3.625rem, 1fr) minmax(5.25rem, 1fr)); }
   .p1b #table-2 th:first-child { display: none; }
   .p1b #table-2 td:first-child { grid-column: 1 / -1; border-bottom: 0; padding-bottom: 0; }
   .p1b #table-2 th.n, .p1b #table-2 td.n { text-align: left; }

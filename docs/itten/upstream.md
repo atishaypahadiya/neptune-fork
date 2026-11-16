@@ -1,6 +1,7 @@
 # Issues for ITTEN
 
-ITTEN version: v0.1.0 (c1962e2) for issues 1 to 3, v0.2.0 (d998de0) for issues 4 and 5. Found while
+ITTEN version: v0.1.0 (c1962e2) for issues 1 to 3, v0.2.0 (d998de0) for issues 4 and 5, v0.3.2
+(bdc0968) for issue 6. Found while
 running ITTEN's loop on this site (`docs/itten/baseline.md`, `docs/itten/after.md`,
 `docs/itten/after-0.2.md`). Written to be filed upstream; nothing in `itten/` was changed.
 
@@ -277,3 +278,37 @@ with `data-itten-ignore="widow"`.
 **Suggestion.** Treat a last line that is one identifier as not a widow: besides URLs and
 DOIs, a `scheme:` prefix with no spaces (`arXiv:`, `urn:`, `isbn:`) and a token holding a `/`
 or `_` with no spaces.
+
+---
+
+## 6. Baselines estimated from canvas metrics, which WebKit rounds
+
+Found with ITTEN v0.3.2 (bdc0968).
+
+**What happens.** `near-miss-edge` estimates a text block's baseline as the top of its first
+line's rect plus the rect's height times `fontBoundingBoxAscent / (fontBoundingBoxAscent +
+fontBoundingBoxDescent)`, measured on a canvas (`inspector/collect.js`, `ascent`). In WebKit
+the canvas reports the ascent and descent rounded to whole pixels, while the text's rects use
+the font's own metrics. Two cells on one baseline in different sizes then get estimates up to
+a pixel apart, and the check reports them.
+
+**Reproduction.** Measured on this site's companion page, Table 1, row 1, at 1040 px. The true
+baseline is the bottom of a zero-size `inline-block` put first in each cell.
+
+| Engine | Cell | Font | Rect top, height | Canvas ascent, descent | Estimate | True baseline |
+|---|---|---|---|---|---|---|
+| WebKit | reading | 16.16 px | 9032.781, 22.141 | 17, 5 | 9049.890 | 9049.516 |
+| WebKit | condition | 14 px | 9035.000, 19.188 | 15, 5 | 9049.391 | 9049.516 |
+| Chromium | reading | 16.16 px | 9032.266, 22.000 | 17, 5 | 9049.266 | 9049.266 |
+| Chromium | condition | 14 px | 9034.266, 20.000 | 15, 5 | 9049.266 | 9049.266 |
+
+In WebKit the rect puts the reading's baseline 16.73 px below its top, not the 17 px the
+canvas reports; the condition's 14.52 px, not 15. The check reports *"Baselines 0.5 px apart"*
+for the eleven rows at 1040 px in WebKit only. A single-page reproduction was not built.
+
+**As met on this site.** Logged in `itten.overrides.json` (CRF-04, `#table-1 td.cond`), with
+`data-itten-ignore="near-miss-edge"` on the condition cells.
+
+**Suggestion.** Measure the baseline rather than estimate it: the bottom of a zero-size
+`inline-block` inserted at the start of the block (removed after), or the ratio taken from the
+line rect's own height in the engine being measured.
