@@ -27,9 +27,18 @@ function table1(D, note) {
   const tb = document.querySelector("#table-1 tbody"), tf = document.querySelector("#table-1 tfoot");
   tb.replaceChildren();
   tf.replaceChildren();
+  // Text cells hyphenate (p1b.css), so names go in span.whole as in the prose (appendText), and
+  // a short last word (four characters or fewer, such as "1859") goes with the word before it
+  // (ITTEN widow, CRF-21). Longer pairs are left to text-wrap: a tied pair is one run, and on
+  // phones the columns are as narrow as their longest run.
+  const tie = (s) => s.replace(/ (\S{1,4})$/u, "\u00a0$1");
+  // A probability breaks only after its estimate: "0.71 (0.50 to 0.97)" is "0.71" and the range
+  // under it on phones, where the column cannot hold both (p1b.css).
+  const range = (s) => s.replace(/\(([^)]*)\)/u, (m) => m.replace(/ /g, "\u00a0"));
   const cell = (tr, text, cls = "") => {
     const td = document.createElement("td");
-    td.textContent = text;
+    if (cls === "n") td.textContent = range(text);
+    else appendText(td, tie(text));
     if (cls) td.className = cls;
     tr.append(td);
     return td;
@@ -40,7 +49,7 @@ function table1(D, note) {
     // The condition twice: its own column, and under the case on phones (p1b.css).
     const under = document.createElement("span");
     under.className = "cond-under";
-    under.textContent = `Conditional on ${r.cond}`;
+    appendText(under, tie(`Conditional on ${r.cond}`));
     name.append(under);
     cell(tr, r.p, "n");
     cell(tr, r.reading);

@@ -608,7 +608,10 @@ no width of its own.
 - **full:** Plate I, and the sections of Plate II and Plate III. Nothing else, and nothing on
   the companion page.
 - **wide:** Figs. 1, 2, 4 to 9 and the pair that holds Figs. 8 and 9 on the main page; Figs. 1
-  to 4 and Table 1 on the companion page.
+  to 4 and Tables 1 and 2 on the companion page. A wide table sits in a block of its own on
+  the wide lines (`.table-scroll`), which scrolls if the table is wider, and not on the
+  figure's subgrid: WebKit keeps the columns of a table that is a subgrid item from its first
+  layout, so after a resize they no longer match a fresh load.
 - **body:** everything else, among it Table 1 of the main page (seven short columns; the
   companion's four hold sentences) and every caption: under a wide figure the caption is on
   the text's lines, not the figure's.

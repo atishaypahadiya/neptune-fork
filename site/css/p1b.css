@@ -23,6 +23,15 @@
 .p1b #table-1 td.cond { font-size: 0.875rem; line-height: 1.3125rem; color: var(--prussian); }
 .p1b #table-1 .cond-under { display: none; }
 .p1b #table-1 tfoot td { font-size: 0.875rem; line-height: 1.3125rem; color: var(--prussian); }
+/* Table 1's text cells are narrow measures, 5 to 20 em: hyphenated as the site's other narrow
+   columns are (site.css, CRF-22), with the same limits, and closed with text-wrap: pretty.
+   Probabilities, headers and names stay whole. */
+.p1b #table-1 td:not(.n) {
+  -webkit-hyphens: auto; hyphens: auto; hyphenate-limit-chars: 6 3 3; hyphenate-limit-lines: 2;
+  text-wrap: pretty;
+}
+/* A case is a name of one to three lines: balanced, so a two-line case never ends on one word. */
+.p1b #table-1 td:first-child { text-wrap: balance; }
 
 @media (max-width: 720px) {
   .p1b .fig-1 .canvas { height: 560px; }
@@ -36,6 +45,7 @@
   .p1b #table-2 th.n, .p1b #table-2 td.n { text-align: left; }
   .p1b #table-2 th { white-space: normal; }
   .p1b #table-1 .cond { display: none; }
+  .p1b #table-1 td.n { white-space: normal; }
   .p1b #table-1 .cond-under { display: block; font-size: 0.875rem; line-height: 1.3125rem; color: var(--prussian); }
 }
 
