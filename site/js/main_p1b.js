@@ -29,15 +29,28 @@ function table1(D, note) {
   tf.replaceChildren();
   // Text cells hyphenate (p1b.css), so names go in span.whole as in the prose (appendText), and
   // a short last word (four characters or fewer, such as "1859") goes with the word before it
-  // (ITTEN widow, CRF-21). Longer pairs are left to text-wrap: a tied pair is one run, and on
-  // phones the columns are as narrow as their longest run.
+  // (ITTEN widow, CRF-21). Longer pairs are left to text-wrap in the case and condition columns:
+  // a tied pair is one run, and on phones those columns are as narrow as their longest run.
   const tie = (s) => s.replace(/ (\S{1,4})$/u, "\u00a0$1");
+  // The reading and the note end on their last two words in span.end ("routine recording", "is
+  // withdrawn."), kept on one line where the column holds them (p1b.css): text-wrap: pretty
+  // leaves a long last word alone in Chromium.
+  const tieLast = (td, s) => {
+    const at = s.lastIndexOf(" ", s.lastIndexOf(" ") - 1);
+    if (at < 0) return appendText(td, s);
+    appendText(td, s.slice(0, at + 1));
+    const end = document.createElement("span");
+    end.className = "end";
+    appendText(end, s.slice(at + 1));
+    td.append(end);
+  };
   // A probability breaks only after its estimate: "0.71 (0.50 to 0.97)" is "0.71" and the range
   // under it on phones, where the column cannot hold both (p1b.css).
   const range = (s) => s.replace(/\(([^)]*)\)/u, (m) => m.replace(/ /g, "\u00a0"));
-  const cell = (tr, text, cls = "") => {
+  const cell = (tr, text, cls = "", ends = false) => {
     const td = document.createElement("td");
     if (cls === "n") td.textContent = range(text);
+    else if (ends) tieLast(td, text);
     else appendText(td, tie(text));
     if (cls) td.className = cls;
     tr.append(td);
@@ -52,12 +65,14 @@ function table1(D, note) {
     appendText(under, tie(`Conditional on ${r.cond}`));
     name.append(under);
     cell(tr, r.p, "n");
-    cell(tr, r.reading);
-    cell(tr, r.cond, "cond");
+    cell(tr, r.reading, "", true);
+    // On the reading's baseline; ITTEN 0.3.2 estimates it 0.5 px off in WebKit at some widths
+    // (itten.overrides.json, docs/itten/upstream.md, issue 6).
+    cell(tr, r.cond, "cond").dataset.ittenIgnore = "near-miss-edge";
     tb.append(tr);
   }
   const tr = document.createElement("tr");
-  const td = cell(tr, note);
+  const td = cell(tr, note, "", true);
   td.colSpan = 4;
   tf.append(tr);
 }
