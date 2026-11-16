@@ -66,9 +66,7 @@ function table1(D, note) {
     name.append(under);
     cell(tr, r.p, "n");
     cell(tr, r.reading, "", true);
-    // On the reading's baseline; ITTEN 0.3.2 estimates it 0.5 px off in WebKit at some widths
-    // (itten.overrides.json, docs/itten/upstream.md, issue 6).
-    cell(tr, r.cond, "cond").dataset.ittenIgnore = "near-miss-edge";
+    cell(tr, r.cond, "cond");
     tb.append(tr);
   }
   const tr = document.createElement("tr");
