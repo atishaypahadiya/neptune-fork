@@ -1,0 +1,51 @@
+name: itten
+
+# The ITTEN inspector on both pages (itten/ITTEN.md, "On every pull request"): the quick sweep
+# (320, 768, 1440 and 1920 px) on every pull request, failing on any new warning or error and
+# keeping one comment on the pull request; the full sweep (every 40 px from 320 to 1920 px,
+# WebKit across all of it) every Monday and on demand. Pinned by tag, as ITTEN.md documents.
+# The baseline, itten-baseline.json, is written by this workflow (write-baseline), never on a
+# laptop: fonts and line breaks differ between platforms.
+
+on:
+  pull_request:
+  schedule:
+    - cron: "23 5 * * 1"
+  workflow_dispatch:
+    inputs:
+      write-baseline:
+        description: Write a fresh itten-baseline.json into the report artifact
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: itten-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    # Fresh loads at every width: the full sweep of two pages takes about half an hour locally.
+    timeout-minutes: 120
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+      # site/ is the page as it is served; the JavaScript renders the same page the Pages build
+      # prerenders (tools/prerender_site.py).
+      - uses: atishaypahadiya/itten@v0.3.2
+        with:
+          static-dir: site
+          pages: |
+            /
+            /adams-challis/
+          mode: ${{ github.event_name == 'pull_request' && 'quick' || 'full' }}
+          fail-on: ${{ github.event_name == 'pull_request' && 'warnings' || 'errors' }}
+          comment: true
+          write-baseline: ${{ inputs.write-baseline && 'true' || 'false' }}
