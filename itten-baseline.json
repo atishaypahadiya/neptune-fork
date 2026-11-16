@@ -1,0 +1,21 @@
+{
+  "tool": "itten-inspector",
+  "note": "Known findings per page. Written by inspect.js --write-baseline; compared by --baseline and the ITTEN action.",
+  "pages": {
+    "/": {
+      "date": "2026-11-16T03:58:31.162Z",
+      "version": "0.3.2",
+      "system": "itten.system.json",
+      "widths": "320, 768, 1440, 1920",
+      "findings": []
+    },
+    "/adams-challis/": {
+      "date": "2026-11-16T04:01:00.401Z",
+      "version": "0.3.2",
+      "system": "itten.system.json",
+      "widths": "320, 768, 1440, 1920",
+      "findings": []
+    }
+  },
+  "version": "0.3.2"
+}
