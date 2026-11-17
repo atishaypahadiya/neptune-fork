@@ -1714,7 +1714,6 @@ def readings(results: dict, seeds: tuple[int, ...]) -> dict:
     return out
 
 
-@ledger.recorded
 def _condition6(tasks: list[Task], results: dict[str, dict]) -> dict:
     """Smoke condition 6 on every Stage 1 scan value, with every waived case listed (fifth
     addendum)."""
@@ -1734,6 +1733,7 @@ def _condition6(tasks: list[Task], results: dict[str, dict]) -> dict:
     return {"failures": fails, "waived_flat_valley": waived}
 
 
+@ledger.recorded
 def stage1(n_workers: int) -> dict:
     prep = prepare()
     tasks = stage1_tasks()
