@@ -671,3 +671,76 @@ def test_box_edges_are_points_of_the_integral():
     assert any(p["x"] == lo for p in kn)  # exactly the edge, by construction
     wide = F.ln_z_strength(pts, 1.0, (-11.0, -3.0), 0.05)
     assert wide == pytest.approx(exact(-11.0, -3.0), abs=0.01)
+
+
+class _StubP:
+    """A planet likelihood in strength and longitude: χ² = 400 (x − x₀(λ))², and no contact
+    from any start where ``nc(x, λ)``."""
+
+    def __init__(self, x0_of, nc):
+        self.x0_of, self.nc = x0_of, nc
+
+    def call(self, model, extra, start, jac0=None):
+        x, lam = math.log10(extra[0]), extra[2]
+        if self.nc(x, lam):
+            return F.Call(math.inf, 0.0, np.array(start), None, 0, 0, False, no_contact=True)
+        chi2 = 400.0 * (x - self.x0_of(lam)) ** 2
+        return F.Call(chi2, 0.0, np.array(start), None, 1, 1, True)
+
+
+def test_a_guess_with_no_knot_falls_back_to_the_coarse_scan(tmp_path, monkeypatch):
+    """Amendment 3, fourth addendum: the crash of t3_s0_l0_P_d0_b0 at λ = 7.5°. The fine points
+    placed from the previous longitude's best (x = −6.26) all have no contact; before it, the
+    best value of a grid with no knot raised IndexError. Now the longitude is scanned as the
+    first one is, and the restart is counted."""
+    data = _StubP(lambda lam: -6.26 if lam == 0.0 else -7.5,
+                  lambda x, lam: lam > 0.0 and x > -6.8)  # fmt: skip
+    sc, _ = _stub_scanner(tmp_path, monkeypatch, data)
+    r0 = sc.scan_second(0.0, None, None)
+    assert r0["x_best"] == pytest.approx(-6.26, abs=0.01)
+    fine0 = [p for p in sc.points.calls.values() if p["kind"] == "fine"]
+    r1 = sc.scan_second(0.1309, (r0["x_best"], r0["width"]), sc._warm_of(r0["best_point"]))
+    assert r1["x_best"] == pytest.approx(-7.5, abs=0.01) and "flag" not in r1
+    assert sc.coarse_restarts == [0.1309]
+    at = [p for p in sc.points.calls.values() if F.Points.key(p["p2"], 0)[0] == 0.1309]
+    assert any(p["kind"] == "coarse" for p in at)
+    assert any(p["kind"] == "fine" and p["no_contact"] for p in at)  # the guess's points stay
+    assert all(p["commit"] for p in fine0)  # every call stamped with the code's commit
+
+
+def test_no_contact_anywhere_in_the_box_is_recorded_and_the_scan_goes_on(tmp_path, monkeypatch):
+    """Amendment 3, fourth addendum: a longitude with no contact anywhere in the box is recorded
+    as zero-likelihood points, flagged "no contact in box", and the next longitude starts from
+    the coarse scan."""
+    data = _StubP(lambda lam: -6.26, lambda x, lam: abs(lam - 0.2618) < 1e-6)
+    sc, _ = _stub_scanner(tmp_path, monkeypatch, data)
+    monkeypatch.setattr(F.Task, "second_grid", lambda self: np.array([0.0, 0.2618, 0.3927]))
+    out = sc.run()
+    assert [r.get("flag") for r in out] == [None, "no contact in box", None]
+    assert out[1]["best_point"] is None and out[2]["x_best"] == pytest.approx(-6.26, abs=0.01)
+    pts = [p for p in sc.points.calls.values() if F.Points.key(p["p2"], 0)[0] == 0.2618]
+    assert pts and all(p["no_contact"] for p in pts)
+    assert F.ln_z_strength(pts, 1.0, F.box("P"), out[1]["h"]) == -math.inf
+    assert sc.coarse_restarts == [0.2618]
+
+
+def test_a_task_given_up_is_reported(tmp_path, monkeypatch):
+    """Amendment 3, fourth addendum: a task failed twice is listed by every status check, from
+    its marker or, for a driver started before markers, from the driver's log."""
+    monkeypatch.setattr(F, "CACHE", tmp_path)
+    tasks = [F.Task(3, 0, 0, "P", 0, 0), F.Task(1, 0, 0, "J"), F.Task(2, 0, 0, "J")]
+    for t in tasks:
+        t.dir.mkdir(parents=True)
+    (tmp_path / "driver.log").write_text(
+        "2026-11-16 06:07:20 start t3_s0_l0_P_d0_b0\n"
+        "2026-11-16 06:30:00 FAILED t3_s0_l0_P_d0_b0 (exit 1, attempt 1)\n"
+        "2026-11-16 06:30:00 start t3_s0_l0_P_d0_b0\n"
+        "2026-11-16 06:30:20 FAILED t3_s0_l0_P_d0_b0 (exit 1, attempt 2)\n"
+        "2026-11-16 07:00:00 start t1_s0_l0_J\n"
+        "2026-11-16 07:10:00 FAILED t1_s0_l0_J (exit 1, attempt 1)\n"
+        "2026-11-16 07:10:00 start t1_s0_l0_J\n"
+    )
+    assert F.failed_tasks(tasks) == ["t3_s0_l0_P_d0_b0"]
+    (tasks[2].dir / "log.txt").write_text("Traceback\nValueError: x\n")
+    F._gave_up(tasks[2], 1, 2)
+    assert F.failed_tasks(tasks) == ["t2_s0_l0_J", "t3_s0_l0_P_d0_b0"]

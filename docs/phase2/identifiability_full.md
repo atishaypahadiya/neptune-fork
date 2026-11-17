@@ -779,3 +779,60 @@ within 0.01, as does the box containing the peak.
 spot check. Stage 1 starts again from nothing only if all hold.
 
 **Unchanged.** Everything else in amendments 1 to 3 and the first two addenda.
+
+### Fourth addendum to amendment 3, 16 November 2026: a deviation, after a crash in Stage 1
+
+Written after Stage 1's relaunch (commit 7f180cf) and approved before it was committed. It is
+a deviation from the plan, triggered by a crash: t3_s0_l0_P_d0_b0 failed twice at 06:30 on
+16 November, at its second longitude (λ = 7.5°), and the driver gave up on it. It was decided
+before this task had any result past 7.5°: its points then were its first longitude's
+(computed in full) and the 15 that crashed. It changes the search procedure only; the
+likelihood, the priors, the grids of the second parameter, the integrals, tolerances, gates
+and readings are as before. The other Stage 1 tasks keep running with the code they started
+with (below: what they compute is unchanged).
+
+**What happened.** From the second value of the second parameter on, a scan does not repeat
+the coarse scan: the fine points are placed about the previous value's best (item 6). In this
+task that was x = −6.26, close to the strength above which a planet at 0° moves a transit more
+than a day. At 7.5° all 15 fine points there had no contact from any start (amendment 3, B),
+so the grid had no knot (second addendum), and the best value of a grid without a knot was not
+defined: the code raised an IndexError. The smoke tests ran only each scan's first value, the
+one that starts from the coarse scan, so this path was never run in them. The same task also
+failed twice in the void first launch (15 November, 14:30); that was not followed up then.
+
+**The change.**
+
+1. *A guess with no knot.* When the fine points placed from the previous value's best contain
+   no knot, that value is scanned as the first value is: the coarse scan over the box, then the
+   fine points from its best. The points already computed stay and enter as any point does (a
+   no-contact point as zero likelihood, item 3). Each task records the values at which this
+   happened (`coarse_restarts`), and the gate reading reports them.
+2. *No contact anywhere in the box.* If no coarse call at that value converged with contacts,
+   the value is recorded with its points (all zero likelihood, so ln Z = −∞ in every box),
+   flagged "no contact in box", without a best value; the next value starts from the coarse
+   scan. If the coarse scan has such a call but the fine points from it still have no knot,
+   the value is flagged "no knot after the coarse scan" and its ln Z is ln L interpolated
+   linearly between its finite points. Each task lists its flagged values (`flagged`), and the
+   gate reading reports them.
+3. *What it does not change.* Where a fine grid has a knot, every call, point and number is as
+   before: the change acts only where the code before it crashed. Checked before the rerun:
+   the first three longitudes of a finished task (t3_s0_l0_P_d2_b0) rerun with the new code in
+   a scratch cache must give every point and every result field bit-identical to Stage 1's,
+   apart from the commit stamps of item 4. If they do not, nothing is relaunched.
+4. *Commit stamps.* Every call records the git commit of the code that computed it ("+dirty"
+   if the runner's source differed from it); each result row lists the commits among its
+   longitude's points, and each task's result the commit that assembled it.
+5. *Failures reported.* A task the driver gives up on (two failures) is marked in its directory
+   and logged in capitals, and every status check (`identifiability_full plan`) lists it, also
+   for a driver started before the marker existed (from its log).
+
+**Before the rerun.** t3_s0_l0_P_d0_b0's first three longitudes (0°, 7.5°, 15°) in a scratch
+cache with the new code, checked against smoke conditions 2 and 6. Then its directory is set
+aside (not deleted) and the task is run again from nothing with the new code.
+
+**Tests.** The crash's shape (fine points from the previous best with no contact): before
+this addendum an IndexError, now the coarse scan, counted. A longitude with no contact anywhere
+in the box: recorded, flagged, ln Z = −∞, the next longitude scanned. A task failed twice is
+listed by the status check, from the driver's log and from its marker.
+
+**Unchanged.** Everything else in amendments 1 to 3 and the first three addenda.

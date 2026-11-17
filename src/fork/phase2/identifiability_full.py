@@ -320,6 +320,29 @@ class OutsideDomain(Exception):
     """Elements outside a > 0, 0 ≤ e < 1, where ``elements_to_state`` gives no orbit."""
 
 
+class NoKnots(Exception):
+    """A fine grid with no knot: no fine point converged with contacts (amendment 3, fourth
+    addendum)."""
+
+
+_COMMIT: list[str] = []
+
+
+def _commit() -> str:
+    """The git commit of the code computing (amendment 3, fourth addendum), "+dirty" when the
+    runner's source differs from it."""
+    if not _COMMIT:
+
+        def git(*a: str) -> str:
+            return subprocess.run(["git", *a], cwd=ROOT, capture_output=True,
+                                  text=True).stdout.strip()  # fmt: skip
+
+        head = git("rev-parse", "HEAD") or "unknown"
+        dirty = git("status", "--porcelain", "--", "src")
+        _COMMIT.append(head + ("+dirty" if dirty else ""))
+    return _COMMIT[0]
+
+
 @dataclass(frozen=True)
 class Observation:
     jd: np.ndarray
@@ -716,7 +739,8 @@ class Points:
         return d
 
     def add(self, p2, x, call: Call, kind: str, retries: int = 0) -> dict:
-        d = {"p2": float(p2), "x": float(x), "kind": kind, **call.row(), "retries": retries}
+        d = {"p2": float(p2), "x": float(x), "kind": kind, **call.row(), "retries": retries,
+             "commit": _commit()}  # fmt: skip
         self.calls[self.key(p2, x)] = d
         self.path.parent.mkdir(parents=True, exist_ok=True)
         with self.path.open("a") as fh:
@@ -737,6 +761,7 @@ class Scanner:
         # Amendment 3, A: no strength is computed outside the widest box any integral uses
         # (the coarse scan's 8 decades); the integrals are clipped to it.
         self.box = box(task.model, max(R3_WIDTHS)) if task.model != "NG" else None
+        self.coarse_restarts: list[float] = []  # amendment 3, fourth addendum
 
     def call(self, p2: float, x: float, kind: str, warm=None) -> dict:
         got = self.points.get(p2, x)
@@ -896,6 +921,8 @@ class Scanner:
         """Best value, width and (optionally) the spline's minimum, from the knots alone
         (``knots``: converged fine points with contacts, amendment 3's second addendum)."""
         ok = knots(pts)
+        if not ok:
+            raise NoKnots
         x = np.array([p["x"] for p in ok])
         if len(ok) < 2:
             xb = float(x[0])
@@ -945,15 +972,53 @@ class Scanner:
                     break
         return lo_n, hi_n
 
+    def _from_coarse(self, p2: float):
+        """The coarse scan, and the start of the fine points from it; None when no coarse call
+        converged with contacts (no contact anywhere in the box at this p2)."""
+        pts = self.coarse(p2)
+        good = [p for p in pts if p["converged"] and not p["no_contact"]
+                and math.isfinite(p["chi2"])]  # fmt: skip
+        if not good:
+            return None
+        x0, w = self._parabola(pts)
+        return x0, w, self._warm_of(min(good, key=lambda p: p["chi2"]))
+
+    def _no_knot_row(self, p2: float, flag: str) -> dict:
+        """A value of p2 with no knot after the coarse scan (amendment 3, fourth addendum):
+        recorded, flagged, and integrated from its points (zero likelihood where none has
+        contacts); no best value."""
+        return {"p2": p2, "x_best": None, "width": None, "h": COARSE_STEP * self.h_scale,
+                "chi2_min": None, "chi2_spline_min": None, "best_point": None,
+                "widened_to_tails": [], "best_at_box_edge": None, "flag": flag}  # fmt: skip
+
     def scan_second(self, p2: float, guess: tuple[float, float] | None, warm) -> dict:
         if guess is None:
-            pts = self.coarse(p2)
-            x0, w = self._parabola(pts)
-            warm = self._warm_of(min((p for p in pts if math.isfinite(p["chi2"])),
-                                     key=lambda p: p["chi2"]))  # fmt: skip
+            # the first value of p2 (unchanged): the coarse scan; amendment 3's fourth addendum
+            # only adds the case of no call with contacts in it
+            got = self._from_coarse(p2)
+            if got is None:
+                return self._no_knot_row(p2, "no contact in box")
+            x0, w, warm = got
+            try:
+                fine, x0, w, h, n = self.fine(p2, x0, w, warm)
+            except NoKnots:
+                return self._no_knot_row(p2, "no knot after the coarse scan")
         else:
             x0, w = guess
-        fine, x0, w, h, n = self.fine(p2, x0, w, warm)
+            try:
+                fine, x0, w, h, n = self.fine(p2, x0, w, warm)
+            except NoKnots:
+                # Amendment 3, fourth addendum: the fine points placed from the previous
+                # value's best have no knot; this value is scanned as the first one is.
+                self.coarse_restarts.append(p2)
+                got = self._from_coarse(p2)
+                if got is None:
+                    return self._no_knot_row(p2, "no contact in box")
+                x0, w, warm = got
+                try:
+                    fine, x0, w, h, n = self.fine(p2, x0, w, warm)
+                except NoKnots:
+                    return self._no_knot_row(p2, "no knot after the coarse scan")
         xb, wb = self._best(fine)
         best = min(knots(fine), key=lambda p: p["chi2"])
         widened = []
@@ -982,6 +1047,9 @@ class Scanner:
         for p2 in self.task.second_grid():
             r = self.scan_second(float(p2), guess, warm)
             out.append(r)
+            if r["best_point"] is None:  # flagged: the next value starts from the coarse scan
+                guess, warm = None, None
+                continue
             guess = (r["x_best"], r["width"])
             warm = self._warm_of(r["best_point"])
         return out
@@ -1046,17 +1114,22 @@ def ln_z_strength(pts: list[dict], level: float, box: tuple[float, float],
     x = np.array([p["x"] for p in allp])
     ll = np.array([_ln_l(p, level) for p in allp])
     fin = np.isfinite(ll)
-    kn = _box_knots(allp, box)
-    if not kn:
-        return -math.inf
-    xk = np.array([p["x"] for p in kn])
-    lk = np.array([_ln_l(p, level) for p in kn])
-    cs = CubicSpline(xk, lk) if len(xk) > 1 else None
 
     def lin(xx: np.ndarray) -> np.ndarray:
         if xx.size == 0 or not fin.any():
             return np.full(xx.size, -np.inf)
         return np.interp(xx, x[fin], ll[fin], left=-np.inf, right=-np.inf)
+
+    kn = _box_knots(allp, box)
+    if not kn:  # a flagged value (fourth addendum): ln L linear between its finite points
+        g = np.unique(np.concatenate([x[fin & (x > lo) & (x < hi)], [lo, hi]]))
+        v = lin(g) if fin.any() else np.full(g.size, -np.inf)
+        if not np.isfinite(v).any():
+            return -math.inf
+        return float(logsumexp(v, b=trapezoid_weights(g)) - math.log(hi - lo))
+    xk = np.array([p["x"] for p in kn])
+    lk = np.array([_ln_l(p, level) for p in kn])
+    cs = CubicSpline(xk, lk) if len(xk) > 1 else None
 
     def value(xx: np.ndarray, inner: str) -> np.ndarray:
         inside = (xx >= xk[0]) & (xx <= xk[-1])
@@ -1176,11 +1249,19 @@ def run_task(task: Task) -> dict:
                            **{f"r3_{d:g}": ln_z_strength(pts, lv, box(model, d), s["h"])
                               for d in R3_WIDTHS}}
                  for lv in task.levels()}  # fmt: skip
+            bp = s["best_point"]
             rows.append({**{k: v for k, v in s.items() if k != "best_point"},
-                         "best_theta6": s["best_point"]["theta6"], "ln_z": z,
-                         "tails_ok": tail_check(s, pts, task.levels()),
-                         "n_points": len(pts)})  # fmt: skip
-        out = {"task": task.id, "scans": rows}
+                         "best_theta6": None if bp is None else bp["theta6"], "ln_z": z,
+                         "tails_ok": None if bp is None else tail_check(s, pts, task.levels()),
+                         "n_points": len(pts),
+                         "commits": sorted({p.get("commit", "before stamping")
+                                            for p in pts})})  # fmt: skip
+        out = {
+            "task": task.id,
+            "scans": rows,
+            "coarse_restarts": sc.coarse_restarts,
+            "flagged": [{"p2": r["p2"], "flag": r["flag"]} for r in rows if "flag" in r],
+        }
     calls = list(Points(task.dir / "points.jsonl").calls.values())
     out["calls_summary"] = {
         "n": len(calls), "not_converged": sum(not c["converged"] and not c["no_contact"]
@@ -1192,6 +1273,7 @@ def run_task(task: Task) -> dict:
         "max_iterations": max(c["iterations"] for c in calls),
         "integrations": sum(c["n_int"] for c in calls)}  # fmt: skip
     out["wall_s"] = time.time() - t0
+    out["commit"] = _commit()
     tmp = task.done_path.with_suffix(".tmp")
     tmp.write_text(json.dumps(out, indent=1, default=float))
     tmp.replace(task.done_path)
@@ -1348,6 +1430,34 @@ def _spawn(task: Task) -> subprocess.Popen:
         return subprocess.Popen(cmd, stdout=fh, stderr=subprocess.STDOUT, cwd=ROOT, env=env)
 
 
+def _gave_up(task: Task, rc: int, attempts: int) -> None:
+    """A task the driver will not start again: marked in its directory and logged in capitals,
+    so every status check reports it (amendment 3, fourth addendum)."""
+    log = (task.dir / "log.txt").read_text(errors="replace").splitlines()[-5:]
+    rec = {"task": task.id, "exit": rc, "attempts": attempts,
+           "time": time.strftime("%Y-%m-%d %H:%M:%S"), "last_log_lines": log}  # fmt: skip
+    (task.dir / "FAILED.json").write_text(json.dumps(rec, indent=1))
+    _log(f"GAVE UP {task.id} after {attempts} attempts (exit {rc}); see {task.dir}/log.txt")
+
+
+def failed_tasks(tasks: list[Task]) -> list[str]:
+    """Tasks not done that the driver gave up on: a FAILED.json marker, or a second failure in
+    the driver's log with no later start (for a driver started before the marker existed)."""
+    out = {t.id for t in tasks if not t.done_path.exists() and (t.dir / "FAILED.json").exists()}
+    log = CACHE / "driver.log"
+    if log.exists():
+        last: dict[str, str] = {}
+        for line in log.read_text(errors="replace").splitlines():
+            parts = line.split()
+            if len(parts) >= 4 and parts[2] in ("start", "FAILED", "done"):
+                last[parts[3]] = line
+        for t in tasks:
+            line = last.get(t.id, "")
+            if not t.done_path.exists() and " FAILED " in line and "attempt 1)" not in line:
+                out.add(t.id)
+    return sorted(out)
+
+
 def schedule(tasks: list[Task], n_slots: int) -> bool:
     """One process per scan, the planet's first (the longest); one retry per failure."""
     order = sorted(tasks, key=lambda t: (t.model != "P", t.model != "R", not t.half))
@@ -1363,11 +1473,14 @@ def schedule(tasks: list[Task], n_slots: int) -> bool:
             del running[tid]
             if rc == 0 and task.done_path.exists():
                 _log(f"done {tid} ({(time.time() - t0) / 60:.1f} min)")
+                (task.dir / "FAILED.json").unlink(missing_ok=True)
             else:
                 fails[tid] = fails.get(tid, 0) + 1
                 _log(f"FAILED {tid} (exit {rc}, attempt {fails[tid]})")
                 if fails[tid] < 2:
                     pending.insert(0, task)
+                else:
+                    _gave_up(task, rc, fails[tid])
         while pending and len(running) < n_slots:
             task = pending.pop(0)
             running[task.id] = (_spawn(task), time.time(), task)
@@ -1746,7 +1859,12 @@ def main(argv: list[str] | None = None) -> None:
     elif a.cmd == "plan":
         for name, ts in (("Stage 1", stage1_tasks()), ("Stage 2", stage2_tasks())):
             done = sum(t.done_path.exists() for t in ts)
+            bad = failed_tasks(ts)
             print(f"{name}: {done}/{len(ts)} scans done")
+            for tid in bad:
+                print(
+                    f"  *** FAILED, not being retried: {tid} (see {CACHE / 'scans' / tid}/log.txt)"
+                )
     else:
         summarize()
 
