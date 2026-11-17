@@ -2345,8 +2345,8 @@ D1_V4_DCHI2 = 0.05  # V4: a call where the χ² spline's minimum lies this far b
 D1_CORRECTION = 0.05  # condition (c): a change this large on a passing row is a correction
 D1_CHECK = 0.05  # the seventh addendum's check: spline within this of the exponential rule
 D1_NSUB = 64  # steps per knot interval in the error estimate
-PIN, REFINE, V4CALL = "edge pin", "refine", "v4 call"
-D1_STAMPS = (PIN, REFINE, V4CALL)
+PIN, PIN_RETRY, REFINE, V4CALL = "edge pin", "edge pin retry", "refine", "v4 call"
+D1_STAMPS = (PIN, PIN_RETRY, REFINE, V4CALL)
 D1_GO = "go_stage1_gates"
 # the validation's six named rows (task, value), refined in full whatever their share
 D1_NAMED = (("t2_s0_l0_P_d0_b0", 6.0214), ("t4_s0_l0_P_d1_b0", 0.9163),
@@ -2365,11 +2365,29 @@ def boundaries(model: str) -> list[float]:
     return sorted({e for _, b in _boxes(model) for e in b})
 
 
-def _needs_pin(pts: list[dict], e: float) -> bool:
-    """No call within EDGE_EPS of the boundary converged with contacts, and none was pinned."""
+def _ok(p: dict) -> bool:
+    """A call that converged with contacts."""
+    return bool(p["converged"] and not p["no_contact"] and math.isfinite(p["chi2"]))
+
+
+def _pin_state(pts: list[dict], e: float) -> str | None:
+    """What a boundary needs: "pin" where no call within EDGE_EPS converged with contacts and
+    none was pinned; "retry" where a pin failed and was not retried (the note to deviation 1);
+    None otherwise."""
     near = [p for p in pts if abs(p["x"] - e) <= EDGE_EPS]
-    return not any(p.get("placed_by") == PIN or (p["converged"] and not p["no_contact"]
-                   and math.isfinite(p["chi2"])) for p in near)  # fmt: skip
+    if any(_ok(p) for p in near):
+        return None
+    stamps = {p.get("placed_by") for p in near}
+    if PIN_RETRY in stamps:
+        return None
+    return "retry" if PIN in stamps else "pin"
+
+
+def _rule_b_starts(pts: list[dict], x: float) -> list[dict]:
+    """The calls a retry starts from (amendment 3, B): those that converged with contacts,
+    nearest first, the lower x first on a tie."""
+    ok = [p for p in pts if _ok(p) and "theta6" in p]
+    return sorted(ok, key=lambda p: (abs(p["x"] - x), p["x"]))
 
 
 def refine_mode(shares: dict[str, float], validation: bool = False) -> str:
@@ -2469,11 +2487,21 @@ def refine_row(pts: list[dict], levels, boxes: list[tuple[str, tuple[float, floa
     by the interval's quarter points, once. New calls are appended to ``pts``."""
     pts = list(pts)
     pins, new = [], []
-    for e in sorted({e for _, b in boxes for e in b}):
-        if _needs_pin(pts, e):
+    edges = sorted({e for _, b in boxes for e in b})
+    for e in edges:
+        state = _pin_state(pts, e)
+        if state == "pin":
             d = fit(float(e), pts, PIN)
             pts.append(d)
             pins.append(d)
+            state = None if _ok(d) else "retry"
+        if state == "retry":  # the note to deviation 1: once more, under rule B
+            d = fit(float(e), pts, PIN_RETRY)
+            pts.append(d)
+            pins.append(d)
+    unresolved = [e for e in edges if not any(_ok(p) for p in pts if abs(p["x"] - e) <= EDGE_EPS)
+                  and any(p.get("placed_by") == PIN_RETRY for p in pts
+                          if abs(p["x"] - e) <= EDGE_EPS)]  # fmt: skip
     tol = tol or {}
     eps = {name: tol.get(name, D1_TAU_MAX) / 4.0 for name, _ in boxes}
     failed: set[tuple[float, float]] = set()
@@ -2527,7 +2555,7 @@ def refine_row(pts: list[dict], levels, boxes: list[tuple[str, tuple[float, floa
             status = "cap"
             break
     return {"pins": pins, "new": new, "status": status, "fits": len(new),
-            "failed_intervals": sorted(failed)}  # fmt: skip
+            "failed_intervals": sorted(failed), "unresolved_edges": unresolved}  # fmt: skip
 
 
 def check_rows(pts: list[dict], levels, boxes, h: float) -> list[dict]:
@@ -2583,19 +2611,25 @@ def row_points(task: Task, p2: float) -> list[dict]:
     one per (value, strength), the scan's first."""
     out = {Points.key(p["p2"], p["x"]): p for p in _scan_points(task, p2)}
     k2 = Points.key(p2, 0)[0]
+
+    def add(d: dict) -> None:
+        # the note to deviation 1: at one point, the record that converged with contacts;
+        # where none did, the later one
+        k = Points.key(d["p2"], d["x"])
+        if k not in out or (not _ok(out[k]) and (_ok(d) or not _ok(out[k]))):
+            out[k] = d
+
     for f in sorted((CACHE / "gapcheck").glob(f"{task.id}__*.json")):
         g = json.loads(f.read_text())
         if Points.key(g["p2"], 0)[0] != k2:
             continue
         for e in g["extra"]:
-            out.setdefault(Points.key(e["p2"], e["x"]),
-                           {**e, "commit": g["commit"], "placed_by": "gap check"})  # fmt: skip
+            add({**e, "commit": g["commit"], "placed_by": "gap check"})
     rp = _refine_path(task, p2)
     if rp.exists():
         for line in rp.read_text().splitlines():
             if line.strip():
-                d = json.loads(line)
-                out.setdefault(Points.key(d["p2"], d["x"]), d)
+                add(json.loads(line))
     return list(out.values())
 
 
@@ -2613,19 +2647,28 @@ def _row_fit(task: Task, p2: float, record: bool = True, mode: str = ""):
     base, _ = base_problem()
 
     def fit(x: float, pts: list[dict], stamp: str) -> dict:
-        kn = knots(pts)
-        lo = [p for p in kn if p["x"] < x][-1:]
-        hi = [p for p in kn if p["x"] > x][:1]
-        order = sorted(lo + hi, key=lambda p: abs(p["x"] - x))
+        if stamp == PIN_RETRY:  # rule B: the nearest converged call on each side, then base
+            rb = _rule_b_starts(pts, x)
+            order = [p for p in rb if p["x"] < x][:1] + [p for p in rb if p["x"] > x][:1]
+            order.sort(key=lambda p: (abs(p["x"] - x), p["x"]))
+        else:
+            kn = knots(pts)
+            lo = [p for p in kn if p["x"] < x][-1:]
+            hi = [p for p in kn if p["x"] > x][:1]
+            order = sorted(lo + hi, key=lambda p: abs(p["x"] - x))
         tried = 0
         c = None
-        for th in [*(np.array(p["theta6"]) for p in order), base]:
+        start_x = None
+        for p0, th in [*((p, np.array(p["theta6"])) for p in order), (None, base)]:
             c = data.call(task.model, task.extra(x, p2), th)
             tried += 1
-            if not c.no_contact:
+            start_x = None if p0 is None else p0["x"]
+            done = (c.converged and not c.no_contact) if stamp == PIN_RETRY else not c.no_contact
+            if done:
                 break
         d = {"p2": float(p2), "x": float(x), "kind": "fine", **c.row(), "retries": tried - 1,
-             "placed_by": stamp, "d1_mode": mode, "commit": _commit()}  # fmt: skip
+             "start_x": start_x, "placed_by": stamp, "d1_mode": mode,
+             "commit": _commit()}  # fmt: skip
         if record:
             rp = _refine_path(task, p2)
             rp.parent.mkdir(parents=True, exist_ok=True)
@@ -2651,7 +2694,8 @@ def _d1_job(args) -> dict:
                    _row_h(task, p2), tol, D1_CAP - done)  # fmt: skip
     return {"task": tid, "p2": p2, "mode": mode, "status": r["status"], "fits": r["fits"],
             "pins": len(r["pins"]), "pins_no_contact": sum(p["no_contact"] for p in r["pins"]),
-            "failed_intervals": r["failed_intervals"]}  # fmt: skip
+            "failed_intervals": r["failed_intervals"],
+            "unresolved_edges": r["unresolved_edges"]}  # fmt: skip
 
 
 def _group_key(task: Task) -> tuple:

@@ -1227,3 +1227,41 @@ CPU-s each 20 to 47 CPU-h, 2 to 4 h on 12 workers. The smoke test: about 27 pins
   t4_s0_l0_P_d1_b0 at λ 0.9163, with the cap set to 8, 8 real fits were made (21 CPU-s each, one
   not converged, followed by its quarter points).
 - No gate, reading or Bayes factor has been computed.
+
+**Deviation 1, note (17 November 2026, written after its smoke test and before any recompute).**
+
+*The smoke test* (commit 3d69dd2, a fresh copy of the cache, 11:55 to 12:05): (a) holds (no fit,
+bit-identical); (b) holds (t2_s0_l0_P_d0_b0 at λ 6.1523: +0.044, +0.013, +0.016 in the prior box,
+every box passing); (c) no correction (that row's largest change 0.0009). The two rows that
+failed the seventh addendum's check still fail it, by less: t2 at λ 6.0214 +0.059 and +0.145
+(levels 1 and 0.5), t4_s0_l0_P_d1_b0 at λ 0.9163 +0.070 (level 0.5) and in `r3_2`. Their spline
+values moved by at most 0.018; the exponential-between-points values moved by 0.26 to 0.89
+toward them. Both rows ended below their tolerance (0.1; shares near 10⁻¹⁵ and 10⁻³⁹). Pins
+at −5, −4 and −3 found no contact in all three rows. In t4 the pin at −9 did not converge, and
+its narrow boxes rose sharply (`r3_1` by +5,524 at level 0.5), the old values having been
+interpolated linearly across far-apart points.
+
+*Rulings, in force from this note:*
+
+1. **A fix.** Reading a row's points back, a later record at the same point was dropped, so a
+   pin made where the scan had a failed call was hidden and made again in the next pass (in the
+   smoke test, at −3 in all three rows, every such pin failing too, so no value was affected).
+   Now, at one point, the record that converged with contacts is kept; where none did, the
+   later one.
+2. **A failed pin is retried once at once, under rule B** (amendment 3, B): from the nearest
+   call that converged with contacts on each side, nearer first, then the base elements, taking
+   the first start that converges with contacts. It is stamped "edge pin retry". A boundary
+   still without a converged call is listed as unresolved, per row.
+3. **What "pass" means for a row:** the validation's dense-fit ground truth (D), not the
+   seventh addendum's spline-against-exponential check, which is reported beside it.
+
+*Facts stated for the record.* The prior box is log₁₀ mass −9 to −5 for the planet and the ring
+and log₁₀ J2 −7 to −2 (the earlier plan's priors, adopted by this plan); −11 to −3 (−7.5 to 0.5
+for J2) is the scan box, the widest R3 box. No prior-box integral includes strengths below its
+lower edge: the integration grid and the exponential rule's nodes are cut at the box's edges.
+The scan's best value (`x_best`) is the minimum of the χ² spline through the fine knots; in five
+rows (t2_s0_l0_P_d0_b0 at λ 5.63 and 6.15, t1_s0_l0_R at r 0.14, t1_s0_l0_P_d2_b0 at λ 1.70,
+t4_s0_l0_P_d1_b0 at λ 0.92) that spline dips far below every knot across a wide gap, and
+`x_best` lies 3.3 to 4.1 decades from the lowest call (at −11.0). V4 never read it (it reads the
+smallest knot and the sixth addendum's corrected minimum, −11.0 in all five), nor does any
+part of deviation 1; it placed the next value's fine scan.

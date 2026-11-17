@@ -992,10 +992,13 @@ def test_a_boundary_without_a_knot_is_pinned_once():
     assert not [c for c in calls2 if c[1] == F.PIN]
 
 
-def test_a_pin_with_no_contact_is_not_tried_again():
-    pts = [*_sparse(), _knot(-9.0, 1.0) | {"no_contact": True, "placed_by": F.PIN}]
-    assert not F._needs_pin(pts, -9.0)
-    assert F._needs_pin(_sparse(xs=np.array([-8.5, -7.0])), -9.0)
+def test_a_pin_with_no_contact_is_not_tried_after_its_retry():
+    nc = {"no_contact": True}
+    pts = [*_sparse(xs=np.array([-8.5, -7.0])), _knot(-9.0, 1.0) | nc | {"placed_by": F.PIN}]
+    assert F._pin_state(pts, -9.0) == "retry"
+    pts.append(_knot(-9.0, 1.0) | nc | {"placed_by": F.PIN_RETRY})
+    assert F._pin_state(pts, -9.0) is None
+    assert F._pin_state(_sparse(xs=np.array([-8.5, -7.0])), -9.0) == "pin"
 
 
 def test_refinement_reaches_the_tolerance_on_sparse_knots():
@@ -1097,3 +1100,58 @@ def test_v4_reads_the_calls_after_deviation_1():
     s = {"chi2_min": 10.0, "chi2_min_corrected": 9.0, "chi2_min_calls": 9.6, "d1": {}}
     assert F._v4_chi2(s) == 9.6
     assert F._v4_chi2({"chi2_min": 10.0, "chi2_min_corrected": 9.0}) == 9.0
+
+
+def _d1_row(tmp_path, monkeypatch, scan_rows, refine_rows):
+    monkeypatch.setattr(F, "CACHE", tmp_path)
+    t = F.Task.from_id("t1_s0_l0_J")
+    _write_points(t, scan_rows)
+    rp = F._refine_path(t, 0.0)
+    rp.parent.mkdir(parents=True)
+    rp.write_text("".join(json.dumps(d) + "\n" for d in refine_rows))
+    return t
+
+
+def test_a_pin_that_converged_is_kept_over_a_failed_scan_call_at_the_same_point(
+    tmp_path, monkeypatch
+):
+    """Deviation 1, note: at one point the record that converged with contacts is the one
+    read back; where none did, the later one (the refinement's after the scan's)."""
+    pin = {"p2": 0.0, "x": -3.0, "kind": "fine", "chi2": 5.0, "converged": True,
+           "no_contact": False, "placed_by": F.PIN}  # fmt: skip
+    t = _d1_row(tmp_path, monkeypatch, [(-3.0, math.inf, False, True), (-4.0, 9.0, True, False)],
+                [pin])  # fmt: skip
+    got = {p["x"]: p for p in F.row_points(t, 0.0)}
+    assert got[-3.0]["placed_by"] == F.PIN and got[-3.0]["converged"]
+    failed = pin | {"converged": False, "chi2": 7.0}
+    t = _d1_row(tmp_path / "b", monkeypatch, [(-3.0, math.inf, False, True)], [failed])
+    assert F.row_points(t, 0.0)[0]["placed_by"] == F.PIN
+
+
+def test_a_failed_pin_is_retried_once_under_rule_b():
+    """Deviation 1, note: a pin that does not converge with contacts is made again at once,
+    stamped as a retry, from the converged neighbours (rule B); then the edge is unresolved."""
+    ok = [_knot(x, 1.0) for x in (-9.5, -8.5, -7.5)]
+    bad = {"converged": False}
+    assert F._pin_state(ok, -9.0) == "pin"
+    first = [*ok, _knot(-9.0, 2.0) | bad | {"placed_by": F.PIN}]
+    assert F._pin_state(first, -9.0) == "retry"
+    both = [*first, _knot(-9.0, 2.0) | bad | {"placed_by": F.PIN_RETRY}]
+    assert F._pin_state(both, -9.0) is None
+    assert F._pin_state([*ok, _knot(-9.0, 1.0)], -9.0) is None
+    stamps = []
+
+    def fit(x, pts, stamp):
+        stamps.append((x, stamp))
+        return _knot(float(x), 2.0) | bad | {"placed_by": stamp}
+
+    r = F.refine_row(ok, (1.0,), [("prior", (-9.0, -8.0))], fit, "guard", 0.1)
+    assert stamps == [(-9.0, F.PIN), (-9.0, F.PIN_RETRY), (-8.0, F.PIN), (-8.0, F.PIN_RETRY)]
+    assert r["unresolved_edges"] == [-9.0, -8.0]
+
+
+def test_pin_starts_are_the_converged_neighbours_nearest_first():
+    pts = [_knot(x, 1.0) | {"theta6": [x] * 6} for x in (-10.0, -9.4, -8.7, -8.0)]
+    pts.append(_knot(-9.1, 1.0) | {"theta6": [0.0] * 6, "no_contact": True})
+    # nearest first, the lower x first on a tie, as amendment 3 (B) orders its retries
+    assert [p["x"] for p in F._rule_b_starts(pts, -9.0)] == [-8.7, -9.4, -10.0, -8.0]
