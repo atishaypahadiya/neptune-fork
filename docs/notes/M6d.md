@@ -129,3 +129,150 @@ workers. Runs start after the data-choice fits.
 - Cache: `data/cache/nested/v14_fits/<fit>/`. Results: `docs/notes/M6d.json`.
 
 ---
+
+## Results, 16 November 2026: the primary shape fit (a = 38.4 AU), read
+
+Nothing above the line is changed. G0 passed on 16 November (03:15 PST); the eight runs
+finished at 04:53, the reweighting, G4 and the summary at 05:39. Runner commit 92d1fbe (the
+code as at f8c7c6d; only notes changed between them).
+
+**The runs.** All eight stopped on dlogz. At 03:26 all eight were stopped, each just after
+writing a fresh checkpoint, to free the cores for another job; at 04:02 each resumed from that
+checkpoint (iterations 28,441 to 31,092) and ran to dlogz. A checkpoint is written to a
+temporary file and renamed into place.
+
+**The free-distance fit.** Rebuilt from its cached draws: median 325.7350° against the
+published 325.735° (tolerance 0.001°), ln Z −361.523 ± 0.078 as published. The item goes on.
+
+**Gates.**
+
+| gate | number | result |
+|---|---|---|
+| G0 (synthetic, two seeds, quarter live points) | smallest cell ESS/N 0.999; truncation below 10⁻⁶; G4 on 50 draws all within both tolerances | pass |
+| G1 | all 8 runs stopped on dlogz | pass |
+| G2 | smallest cell ESS/N 0.999; fit-level reweighting share 0.9990 for the merged fit and for each single-seed fit | pass |
+| G3 | no draw's truncation bound at or above 10⁻⁶ (largest 4.6 × 10⁻¹⁰⁸) | pass |
+| G4 | 200 draws, all within both tolerances; largest differences 3.4 × 10⁻⁷ in χ², 1.5 × 10⁻⁵ in −2 ln L | pass |
+
+**T1.**
+
+| test | number | limit | result |
+|---|---|---|---|
+| cell 0 (e < 0.12), 68 % widths | 2.074°, 2.015°, 2.021°, 1.961°; largest deviation from the mean 2.8 % | 10 % | pass (share 9 × 10⁻²⁸: reported, not read) |
+| cell 0, ln Z range | 0.18 | 0.5 | pass |
+| cell 1 (e 0.12 to 0.3), 68 % widths | 2.257°, 2.245°, 2.308°, 2.307°; largest deviation 1.5 % | 10 % | pass |
+| cell 1, ln Z range | 0.26 | 0.5 | pass |
+| median range, four single-seed fits | 0.020° (315.234°, 315.245°, 315.244°, 315.254°) | 0.35° | pass |
+| ln Z range, four single-seed fits (§ 4) | 0.26 | 0.5 | pass |
+
+The std of the four single-seed fits' 95 % bounds is 0.04° (lower) and 0.02° (upper), within
+0.4°, so the 95 % interval carries no "provisional" label.
+
+**The fit.**
+
+| merged fit, a held at 38.4 AU | value |
+|---|---|
+| longitude on Galle's night, median | 315.250° |
+| 68 % | 314.133° to 316.380° (width 2.247°) |
+| 95 % | 313.072° to 317.532° (width 4.459°) |
+| mass | 22.1 M⊕ (68 %: 21.1 to 23.1) |
+| e | 0.247 (68 %: 0.233 to 0.262) |
+| ln Z | −365.007 ± 0.083 |
+| cells' shares | 9 × 10⁻²⁸, 1.000 |
+
+**Reading (§ 5), on the primary fit.**
+
+*Bayes factor.* L = ln B(shape : free) = −365.007 − (−361.523) = −3.484, σ = 0.113 (the two
+errors in quadrature; the reweighting's part of the shape fit's error is 0.0004, so how it is
+added does not change σ at this precision). L − 2σ = −3.711 and L + 2σ = −3.257 both lie in
+3 ≤ |L| < 5: **a strong preference for free distance.**
+
+*Ratio.* P_free = 0.350 (2,100 of 6,000 draws within 0.87° of 325.873°; the reported
+posterior's published 0.3655, from a different sampler path, printed beside it). P_shape = 0:
+none of the 6,000 draws lies within 0.87°, the window beginning 7.5° above the fit's 95 %
+upper bound. R = 0, its 68 % bootstrap interval 0 to 0. The four single-seed values of
+P_shape are 0, 0, 0, 0 (range 0, within 0.1), so the ratio is read: the interval lies below 1,
+and **holding the distance at his value made a prediction as close as his less probable**, by
+a factor 1/R. *Derived from the draw counts:* P_shape = 0 of 6,000 draws; the exact one-sided
+95 % upper bound is 5.0 × 10⁻⁴ (Clopper–Pearson), so R < 1.4 × 10⁻³ and the shape model is less
+probable by a factor of at least about 700.
+
+*What "Peirce's accident" becomes.* P_free = 0.35 is the chance that the data alone, with no
+assumption about the distance, give a prediction as good as Le Verrier's; P_shape = 0 (none of
+6,000 draws) is the same chance under his assumption, the distance held at 38.4 AU; R = 0
+compares them.
+
+**The secondary fit (a = 36.154 AU)** has passed G0 (16 November, 05:56) and is paused behind
+the Mercury study's Stage 1; it is stated beside this reading when it has run.
+
+## Results, 17 November 2026: the secondary shape fit (a = 36.154 AU), stated beside the primary
+
+Nothing above the line is changed. G0 passed on 16 November (05:56 PST). The eight runs started at
+05:56 (runner commit 92d1fbe); at 06:12 all eight were stopped, each just after writing a fresh
+checkpoint, to free the cores for another job; on 17 November at 07:11 each resumed from that
+checkpoint (runner commit 843af65) and ran to dlogz by 07:52; the reweighting, G4 and the summary
+followed by 07:58. Between the two commits only the results-file writer changed (how a fit that
+is not read is written out); the runs, the reweighting and the reading are the same code.
+
+**The free-distance fit.** Rebuilt from its cached draws by the pipeline's own check: median
+325.735° against the published 325.735° (tolerance 0.001°), ln Z −361.523 ± 0.078 as published.
+The item goes on.
+
+**Gates.**
+
+| gate | number | result |
+|---|---|---|
+| G0 (synthetic, two seeds, quarter live points) | smallest cell ESS/N 0.999; truncation below 10⁻⁶ (largest 3.6 × 10⁻⁵⁴); G4 on 50 draws all within both tolerances | pass |
+| G1 | all 8 runs stopped on dlogz | pass |
+| G2 | smallest cell ESS/N 0.999; fit-level reweighting share 0.9987 for the merged fit and for each single-seed fit | pass |
+| G3 | no draw's truncation bound at or above 10⁻⁶ (largest 3.0 × 10⁻⁸¹) | pass |
+| G4 | 200 draws, all within both tolerances; largest differences 7.3 × 10⁻⁷ in χ², 2.0 × 10⁻⁵ in −2 ln L | pass |
+
+**T1.**
+
+| test | number | limit | result |
+|---|---|---|---|
+| cell 0 (e < 0.12), 68 % widths | 1.935°, 1.981°, 1.956°, 1.955°; largest deviation from the mean 1.2 % | 10 % | pass (share 1.1 × 10⁻¹⁰: reported, not read) |
+| cell 0, ln Z range | 0.22 | 0.5 | pass |
+| cell 1 (e 0.12 to 0.3), 68 % widths | 2.146°, 2.185°, 2.178°, 2.135°; largest deviation 1.2 % | 10 % | pass |
+| cell 1, ln Z range | 0.11 | 0.5 | pass |
+| median range, four single-seed fits | 0.040° (316.824°, 316.820°, 316.844°, 316.804°) | 0.35° | pass |
+| ln Z range, four single-seed fits (§ 4) | 0.11 | 0.5 | pass |
+
+The std of the four single-seed fits' 95 % bounds is 0.02° (lower) and 0.05° (upper), within
+0.4°, so the 95 % interval carries no "provisional" label.
+
+**The fit.**
+
+| merged fit, a held at 36.154 AU | value |
+|---|---|
+| longitude on Galle's night, median | 316.831° |
+| 68 % | 315.766° to 317.914° (width 2.148°) |
+| 95 % | 314.748° to 318.957° (width 4.208°) |
+| mass | 20.9 M⊕ (68 %: 20.0 to 21.9) |
+| e | 0.197 (68 %: 0.183 to 0.211) |
+| ln Z | −363.841 ± 0.082 |
+| cells' shares | 1.1 × 10⁻¹⁰, 1.000 |
+
+**Stated beside the primary (§ 3: the reading is made on the primary; a different band for the
+secondary is reported as a dependence on the held value).**
+
+*Bayes factor.* L = ln B(shape : free) = −363.841 − (−361.523) = −2.318, σ = 0.113 (the two
+errors in quadrature). L − 2σ = −2.545 and L + 2σ = −2.092 both lie in 1 ≤ |L| < 3: **a weak
+preference for free distance**, against the primary's strong preference (−3.484 ± 0.113). The
+band depends on the held value: holding the distance at 36.154 AU costs the shape model less
+evidence than holding it at 38.4 AU, by 1.166 in ln Z.
+
+*Ratio.* P_free = 0.350 (2,100 of 6,000 draws, as for the primary). P_shape = 0: none of the
+6,000 draws lies within 0.87° of 325.873°, the window beginning 6.0° above the fit's 95 % upper
+bound. R = 0, its 68 % bootstrap interval 0 to 0. The four single-seed values of P_shape are 0,
+0, 0, 0 (range 0, within 0.1), so the ratio is read: the interval lies below 1, and **holding the
+distance at his value made a prediction as close as his less probable**, by a factor 1/R, the
+same reading as the primary's. *Derived from the draw counts:* P_shape = 0 of 6,000 draws; the
+exact one-sided 95 % upper bound is 5.0 × 10⁻⁴ (Clopper–Pearson), so R < 1.4 × 10⁻³ and the
+shape model is less probable by a factor of at least about 700.
+
+*What "Peirce's accident" becomes, at this held value.* P_free = 0.35 is the chance that the
+data alone, with no assumption about the distance, give a prediction as good as Le Verrier's;
+P_shape = 0 (none of 6,000 draws) is the same chance with the distance held at 36.154 AU, his
+value of 31 August 1846; R = 0 compares them.

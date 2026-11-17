@@ -134,3 +134,49 @@ def test_the_published_free_distance_fit_is_reproduced():
     assert len(lon) == 6000
     assert pub["ln_z"] == pytest.approx(-361.5227, abs=1e-3)
     assert math.isfinite(float(np.mean(lon)))
+
+
+def _walk_keys(o):
+    if isinstance(o, dict):
+        for k, v in o.items():
+            yield k
+            yield from _walk_keys(v)
+    elif isinstance(o, list):
+        for v in o:
+            yield from _walk_keys(v)
+
+
+def _unread_summary(gate_fails=False):
+    lon = {"median": 316.204, "lo68": 312.606, "hi68": 320.775, "width68": 8.17,
+           "vs": {"jpl": {"target": 325.873, "median_minus_target_deg": -9.669}}}  # fmt: skip
+    fit = {"ln_z": -355.9, "galle_lon_ecl_of_date_deg": lon, "p_within_0p87_deg": 0.018,
+           "mass_earth": {"median": 33.1}}  # fmt: skip
+    cell = {"cell": 2, "material": True, "width_pass": True, "ln_z_pass": True,
+            "max_rel_dev": 0.04, "ln_z_range": 0.1}  # fmt: skip
+    return {
+        "fit": "adams", "held_a_au": None, "read": False, "fits": {"merged": fit, "s1": fit},
+        "gates": {g: {"pass": not (gate_fails and g == "G2")} for g in ("G1", "G2", "G3", "G4")},
+        "T1": {"cells": [cell], "median_range_single_seed_fits": 0.353,
+               "ln_z_range_single_seed_fits": 0.064, "pass": False},
+        "std_95_bounds": {"lo95": 0.09, "hi95": 0.33}, "label_95": "final",
+        "reading": {"not_read": "a gate or T1 failed", "values": {
+            "shift_deg": -9.531, "shift_wording": "outside", "width_ratio": 1.963,
+            "width_wording": "wider", "jpl_in_68": False, "jpl_in_95": False}},
+    }  # fmt: skip
+
+
+def test_an_unread_fit_carries_no_comparison_or_band():
+    """§ 5: a fit not read is written with its status and label, its posterior summaries, and no
+    headline comparison, band wording, true-place field or final/provisional label."""
+    out = V.unread_public(_unread_summary())
+    banned = {"reading", "label_95", "vs", "jpl", "target", "median_minus_target_deg",
+              "p_within_0p87_deg", "shift_deg", "shift_wording", "width_ratio", "width_wording",
+              "jpl_in_68", "jpl_in_95", "not_read", "values"}  # fmt: skip
+    assert not banned & set(_walk_keys(out))
+    assert out["status"] == "not read (T1 fails: median range 0.353° vs 0.35°)"
+    assert out["label"] == "not repeatable"
+    assert out["fits"]["merged"]["galle_lon_ecl_of_date_deg"]["median"] == 316.204
+    assert out["fits"]["s1"]["mass_earth"] == {"median": 33.1}
+    gate = V.unread_public(_unread_summary(gate_fails=True))
+    assert gate["label"] == "not validated"
+    assert gate["status"].startswith("not read (G2 fails; T1 fails")

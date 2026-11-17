@@ -894,6 +894,44 @@ def summarize(fit: Fit, n_workers: int, synthetic: bool = False) -> dict:
     return out
 
 
+def _not_read_reasons(s: dict) -> tuple[str, list[str]]:
+    """Why a fit is not read (§ 5): the gates that fail ("not validated") and the T1 tests that
+    fail ("not repeatable"); a gate failure sets the label."""
+    gates = [g for g in ("G1", "G2", "G3", "G4") if not s["gates"].get(g, {}).get("pass", False)]
+    t1, why = s["T1"], [f"{g} fails" for g in gates]
+    for c in t1["cells"]:
+        if c["material"] and not c["width_pass"]:
+            why.append(f"T1 fails: cell {c['cell']} 68 % widths {100 * c['max_rel_dev']:.1f} %"
+                       f" from their mean vs {100 * TOL['width_rel']:g} %")  # fmt: skip
+        if not c["ln_z_pass"]:
+            why.append(f"T1 fails: cell {c['cell']} ln Z range {c['ln_z_range']:.2f}"
+                       f" vs {TOL['ln_z']:g}")  # fmt: skip
+    if t1["median_range_single_seed_fits"] > TOL["median"]:
+        why.append(f"T1 fails: median range {t1['median_range_single_seed_fits']:.3f}°"
+                   f" vs {TOL['median']:g}°")  # fmt: skip
+    if s.get("held_a_au") is not None and t1["ln_z_range_single_seed_fits"] > TOL["ln_z"]:
+        why.append(f"T1 fails: ln Z range of the single-seed fits"
+                   f" {t1['ln_z_range_single_seed_fits']:.2f} vs {TOL['ln_z']:g}")  # fmt: skip
+    return ("not validated" if gates else "not repeatable"), why
+
+
+def unread_public(s: dict) -> dict:
+    """A fit that is not read, as the results file carries it: its status and label (§ 5), the
+    gates, T1 and the posterior summaries, and nothing that compares it with the headline or
+    with Neptune's place, no band wording and no final/provisional label."""
+    label, why = _not_read_reasons(s)
+    out = {k: v for k, v in s.items() if k not in ("reading", "label_95")}
+    out["fits"] = {
+        name: {k: v for k, v in f.items() if k != "p_within_0p87_deg"}
+        | {"galle_lon_ecl_of_date_deg":
+           {k: v for k, v in f["galle_lon_ecl_of_date_deg"].items() if k != "vs"}}
+        for name, f in s["fits"].items()
+    }  # fmt: skip
+    out["status"] = f"not read ({'; '.join(why) or 'a gate or T1 failed'})"
+    out["label"] = label
+    return out
+
+
 def report() -> None:
     """Collect the finished fits' summaries into the two results files."""
     for out_name in sorted({f.out for f in FITS.values()}):
@@ -908,6 +946,9 @@ def report() -> None:
                 "g0": json.loads(g0.read_text())["g0"] if g0.exists() else None,
                 "summary": json.loads(s.read_text()) if s.exists() else None,
             }
+            sm = fits[name]["summary"]
+            if sm is not None and not sm["read"]:
+                fits[name]["summary"] = unread_public(sm)
         plan = "M6c_variants.md" if out_name.startswith("M6c") else "M6d.md"
         payload = {"plan": f"docs/notes/{plan}", "headline": headline(), "fits": fits}
         (ROOT / "docs" / "notes" / out_name).write_text(
