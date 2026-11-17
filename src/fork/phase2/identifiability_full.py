@@ -2002,15 +2002,31 @@ def _placement_x(row: dict) -> float:
 
 
 def report_best(row: dict, pts: list[dict]) -> None:
-    """Deviation 1, second note: the results report as ``x_best`` the argmin of the corrected
-    interpolant (``corrected_min``) on the row's points; the scan's own value is kept once as
-    ``x_best_placement``. Placement is unchanged."""
-    if row.get("x_best") is None:
+    """Deviation 1, second and third notes: the results report the argmin of the corrected
+    interpolant (``corrected_min``) on the row's points, kept as ``x_best_argmin``; the scan's
+    own value is kept once as ``x_best_placement``. Where the argmin lies at, or within one fine
+    spacing of, an edge of the row's scanned range (its lowest or highest call), ``x_best`` is
+    None and ``x_best_bound`` holds "≤ low edge" or "≥ high edge", flagged "edge"; otherwise
+    ``x_best`` is the argmin. Placement is unchanged."""
+    if row.get("x_best_placement", row.get("x_best")) is None:
         return
     row.setdefault("x_best_placement", row["x_best"])
     x, _ = corrected_min(pts)
-    if x is not None:
+    if x is None:
+        return
+    lo = min(p["x"] for p in pts)
+    hi = max(p["x"] for p in pts)
+    row["x_best_argmin"] = x
+    row.pop("x_best_bound", None)
+    row.pop("x_best_flag", None)
+    if x - lo <= row["h"] + 1e-12:
+        row["x_best"], row["x_best_bound"] = None, {"side": "≤", "value": lo}
+    elif hi - x <= row["h"] + 1e-12:
+        row["x_best"], row["x_best_bound"] = None, {"side": "≥", "value": hi}
+    else:
         row["x_best"] = x
+        return
+    row["x_best_flag"] = "edge"
 
 
 def spline_minimum_check(row: dict, pts: list[dict]) -> dict:

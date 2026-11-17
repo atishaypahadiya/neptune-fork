@@ -1296,3 +1296,21 @@ finished row in a scratch copy of the cache, then the 11-row validation exactly 
 (amendment 4, D, as kept by deviation 1) on that copy; both are reported first. (3) Smoke
 condition 6 and the spot-check placement keep reading the scan's own best value
 (`x_best_placement`). The gates run only on the go file.
+
+**Deviation 1, third note (17 November 2026, written after the second note, before any
+recompute on the study's cache or its scratch copy).**
+
+| No. | Type | Reason | Timing | Original wording | Deviation description | Reader impact |
+|---|---|---|---|---|---|---|
+| 4 | Variable operationalization or computation | Researchers gained new knowledge | After results of the preregistered approach were known (the per-row best values and the second note's count) | "The spline of the best value, the width, the refinement and the integral (item 4) is fitted to the knots only" (second addendum, item 1) | Applied to every row with a best value, whatever its result: where the argmin of the corrected interpolant lies at, or within one fine spacing h of, an edge of the row's scanned range (its lowest or highest call), the results report the best value as a bound, "≤ low edge" or "≥ high edge", flagged "edge" (`x_best` empty, `x_best_bound`, `x_best_flag`), not as a point; the argmin itself is kept as `x_best_argmin` and the scan's own value as `x_best_placement`. Elsewhere `x_best` is the argmin, as in the second note. | 265 of the 625 finished rows are reported as bounds, all at the low edge: 247 planet rows (≤ −11.0), 17 ring rows (≤ −11.0) and 1 J2 row (≤ −7.5); 360 keep a point value. The rows' scanned range, the scan box and the knots' range give the same 265 rows. No integral, gate or reading uses the value; a mass or J2 near the edge is stated as an upper limit, not an estimate. |
+
+Counted on the points as they stand; the recompute adds fits and the count is given again with
+its results. The five rows of the second note, before and after:
+
+| row | value | x_best before | argmin of the corrected interpolant | reported | flag | h |
+|---|---|---|---|---|---|---|
+| t1_s0_l0_R | r 0.1400 | −6.907 | −11.000 | ≤ −11.0 | edge | 0.0374 |
+| t1_s0_l0_P_d2_b0 | λ 1.7017 | −7.416 | −11.000 | ≤ −11.0 | edge | 0.0183 |
+| t2_s0_l0_P_d0_b0 | λ 5.6287 | −6.865 | −11.000 | ≤ −11.0 | edge | 0.0073 |
+| t2_s0_l0_P_d0_b0 | λ 6.1523 | −7.690 | −10.999 | ≤ −11.0 | edge | 0.9274 |
+| t4_s0_l0_P_d1_b0 | λ 0.9163 | −7.178 | −11.000 | ≤ −11.0 | edge | 1.1215 |

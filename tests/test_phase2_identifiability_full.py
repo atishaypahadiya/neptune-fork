@@ -1164,13 +1164,48 @@ def test_the_reported_best_value_is_the_corrected_minimum():
     knot's end of the valley."""
     pts, _, _ = _overshoot_row()
     placed, _ = F.Scanner._best([p for p in pts if p["kind"] == "fine"])
-    row = {"p2": pts[0]["p2"], "x_best": placed}
+    row = {"p2": pts[0]["p2"], "x_best": placed, "h": 0.007}
     F.report_best(row, pts)
     assert row["x_best_placement"] == placed
-    assert row["x_best"] == F.corrected_min(pts)[0]
-    assert row["x_best"] < -10.5 < -7.0 < placed
+    assert row["x_best_argmin"] == F.corrected_min(pts)[0]
+    assert row["x_best_argmin"] < -10.5 < -7.0 < placed
+    # the argmin lies on the scanned range's low edge: a bound, not a point
+    assert row["x_best"] is None and row["x_best_flag"] == "edge"
+    assert row["x_best_bound"] == {"side": "≤", "value": min(p["x"] for p in pts)}
     F.report_best(row, pts)  # a second report keeps the scan's own value
     assert row["x_best_placement"] == placed
+
+
+def _bowl(x0, lo=-11.0, hi=-3.0, n=81):
+    return [_knot(x, 10.0 + 4.0 * (x - x0) ** 2) for x in np.linspace(lo, hi, n)]
+
+
+@pytest.mark.parametrize(
+    ("x0", "h", "flag", "side", "value"),
+    [(-7.0, 0.1, None, None, None), (-10.95, 0.1, "edge", "≤", -11.0),
+     (-10.85, 0.1, None, None, None), (-10.85, 0.2, "edge", "≤", -11.0),
+     (-3.05, 0.1, "edge", "≥", -3.0)],
+)  # fmt: skip
+def test_the_best_value_within_one_spacing_of_an_edge_is_a_bound(x0, h, flag, side, value):
+    pts = _bowl(x0)
+    row = {"p2": 0.0, "x_best": x0, "h": h}
+    F.report_best(row, pts)
+    assert row["x_best_argmin"] == pytest.approx(x0, abs=0.02)
+    assert row.get("x_best_flag") == flag
+    if flag is None:
+        assert row["x_best"] == row["x_best_argmin"] and "x_best_bound" not in row
+    else:
+        assert row["x_best"] is None
+        assert row["x_best_bound"]["side"] == side
+        assert row["x_best_bound"]["value"] == pytest.approx(value, abs=1e-12)
+
+
+def test_the_edge_is_the_rows_scanned_range_not_the_box():
+    pts = _bowl(-10.45, lo=-10.5, n=66)
+    row = {"p2": 0.0, "x_best": -10.45, "h": 0.1}
+    F.report_best(row, pts)
+    assert row["x_best_flag"] == "edge"
+    assert row["x_best_bound"]["value"] == pytest.approx(-10.5, abs=1e-12)
 
 
 def test_condition_6_reads_the_scans_own_best_value():
