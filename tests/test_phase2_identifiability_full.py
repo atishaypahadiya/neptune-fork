@@ -1214,3 +1214,17 @@ def test_condition_6_reads_the_scans_own_best_value():
            "h": 0.1}  # fmt: skip
     r = F.spline_minimum_check(row, kn)
     assert r["dx"] == pytest.approx(0.0, abs=1e-12) and r["pass"]
+
+
+def test_validation_ground_truth_runs_each_row_once_in_a_pool(monkeypatch, tmp_path):
+    """The validate command computes each missing row's dense fits in a worker (each row's
+    fits sequential, as d1_validate makes them), skips rows already written, then compares."""
+    seen = []
+    monkeypatch.setattr(F, "CACHE", tmp_path)
+    monkeypatch.setattr(F, "d1_validate", lambda t, p2: seen.append((t.id, p2)))
+    rows = [("t2_s0_l0_P_d0_b0", 6.0214), ("t1_s0_l0_R", 0.14)]
+    (tmp_path / "d1_validation").mkdir()
+    k = F.Points.key(0.14, 0)[0]
+    (tmp_path / "d1_validation" / f"t1_s0_l0_R__{k:.10f}.json").write_text("{}")
+    F.d1_ground_truth(rows, n_workers=0)
+    assert seen == [("t2_s0_l0_P_d0_b0", 6.0214)]

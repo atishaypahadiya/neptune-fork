@@ -3022,6 +3022,27 @@ def d1_validate(task: Task, p2: float) -> dict:
     return out
 
 
+def _d1_validate_job(args) -> None:
+    tid, p2 = args
+    d1_validate(Task.from_id(tid), p2)
+
+
+def d1_ground_truth(rows: list[tuple[str, float]], n_workers: int) -> None:
+    """The validation's dense fits for every row not yet written, one row to a worker (each
+    row's fits in sequence, as ``d1_validate`` makes them); n_workers 0 runs them in turn."""
+    d = CACHE / "d1_validation"
+    todo = [(tid, p2) for tid, p2 in rows
+            if not (d / f"{tid}__{Points.key(p2, 0)[0]:.10f}.json").exists()]  # fmt: skip
+    if n_workers == 0:
+        for job in todo:
+            _d1_validate_job(job)
+        return
+    from concurrent.futures import ProcessPoolExecutor
+
+    with ProcessPoolExecutor(max(1, min(n_workers, len(todo)))) as ex:
+        list(ex.map(_d1_validate_job, todo))
+
+
 def d1_compare(task: Task, p2: float) -> dict:
     """Validation: the refined ln Z (the result's) against the ground truth in every box and
     level: the truth valid where its spline and exponential values agree within τ/2; a pass
@@ -3130,11 +3151,12 @@ def main(argv: list[str] | None = None) -> None:
     elif a.cmd == "validate":
         tasks = [t for t in stage1_tasks() if t.done_path.exists() and t.model != "NG"]
         out = []
-        for tid, p2 in d1_validation_rows(tasks):
+        vrows = d1_validation_rows(tasks)
+        print("validation rows:", *(f"{tid} p2 {p2:.4f}" for tid, p2 in vrows), sep="\n  ",
+              flush=True)  # fmt: skip
+        d1_ground_truth(vrows, a.n_workers)
+        for tid, p2 in vrows:
             t = Task.from_id(tid)
-            k2 = Points.key(p2, 0)[0]
-            if not (CACHE / "d1_validation" / f"{tid}__{k2:.10f}.json").exists():
-                d1_validate(t, p2)
             c = d1_compare(t, p2)
             out.append(c)
             print(tid, f"p2 {p2:.4f}", f"share {c['share']:.2e}", "pass" if c["pass"] else "FAIL",
