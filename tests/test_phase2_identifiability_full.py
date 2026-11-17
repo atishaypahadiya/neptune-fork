@@ -916,3 +916,27 @@ def test_a_rise_near_the_peak_keeps_the_spline_and_a_flank_rise_does_not():
     assert F._fallback(xk, lk, 0.0)[1]
     lk = np.array([-40.0, 0.0, 0.0, -40.0])  # a rise of more than 0.5 above the best knot
     assert F._fallback(xk, lk, 0.0)[1]
+
+
+def test_a_weighted_gap_is_filled_and_a_far_one_is_not():
+    """Seventh addendum: an interval the rule selects is filled only if its higher knot is
+    within 25 of the best in ln L; the λ 5.63 gap (χ² 491 against the best 290, so more than
+    25 below at every level) keeps the straight line."""
+    pts, _, _ = _overshoot_row()
+    assert not F.weighted_gaps(pts, (0.5, 1.0, 2.0), "P")
+    xk = [-11.0 + 0.1 * k for k in range(10)]
+    near = [_knot(x, 290.0 + 2.0 * (x + 10.5) ** 2) for x in xk] + [_knot(-9.0, 296.0)]
+    near += [_knot(-7.3, 374.0), _knot(-7.25, 600.0), _knot(-7.2, 900.0)]  # a wall after a gap
+    assert F.fallback_intervals(near, 1.0, F.box("P")) == [(-9.0, -7.3)]
+    assert F.weighted_gaps(near, (1.0,), "P") == [(-9.0, -7.3)]
+
+
+def test_a_narrow_box_in_a_selected_interval_compares_the_spline_alone():
+    """Seventh addendum: inside a selected interval the corrected value is the exponential
+    rule's, so a narrow box there is judged by the spline alone against it."""
+    pts, h, _ = _overshoot_row()
+    f = F.sixth_fields(pts, "P", (1.0,), h)
+    assert "r3_1" in f["not_determined"]
+    f = F.sixth_fields(pts, "P", (1.0,), h, filled=[[-7.676, -6.259]])
+    assert all(o["box"] != "r3_1" for o in f["not_determined_overlap"])  # listed once, above
+    assert any(o["box"] == "r3_2" for o in f["not_determined_overlap"])

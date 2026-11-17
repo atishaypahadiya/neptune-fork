@@ -1309,7 +1309,8 @@ def corrected_min(pts: list[dict]) -> tuple[float | None, float | None]:
     return float(sub[i]), float(v[i])
 
 
-def sixth_fields(pts: list[dict], model: str, levels, h: float) -> dict:
+def sixth_fields(pts: list[dict], model: str, levels, h: float,
+                 filled: list | None = None) -> dict:  # fmt: skip
     """A result row's fields from the sixth addendum: ln Z by the corrected rule (``ln_z``)
     and by the spline alone (``ln_z_spline_only``), the intervals integrated by the
     exponential-between-points rule, the corrected χ² minimum, and the narrow boxes with no
@@ -1326,8 +1327,22 @@ def sixth_fields(pts: list[dict], model: str, levels, h: float) -> dict:
                 fb[f"{lv}/{name}"] = iv
     xm, cm = corrected_min(pts)
     nd = [name for name, (lo, hi) in _boxes(model)[1:] if not any(lo < x < hi for x in kx)]
+    # seventh addendum: a narrow box overlapping an interval the rule selects, or a filled
+    # gap, has a value only where the spline (alone) and the exponential rule agree within
+    # SPOT_TOL; otherwise it is not determined at that level (inside a selected interval the
+    # corrected value is the exponential rule's, so it is not the comparison)
+    ov = []
+    for lv in levels:
+        for name, (lo, hi) in _boxes(model)[1:]:
+            sel = [*fb.get(f"{lv}/{name}", []), *(filled or [])]
+            if name in nd or not any(a < hi and c > lo for a, c in sel):
+                continue
+            d = z0[str(lv)][name] - ln_z_strength(pts, lv, (lo, hi), h, "pexp")
+            if not abs(d) < SPOT_TOL:
+                ov.append({"box": name, "level": lv, "spline_minus_exponential": d})
     return {"ln_z": z, "ln_z_spline_only": z0, "fallback_intervals": fb,
-            "x_min_corrected": xm, "chi2_min_corrected": cm, "not_determined": nd}  # fmt: skip
+            "x_min_corrected": xm, "chi2_min_corrected": cm, "not_determined": nd,
+            "not_determined_overlap": ov}  # fmt: skip
 
 
 def recompute_task(task: Task) -> dict:
@@ -1347,7 +1362,8 @@ def recompute_task(task: Task) -> dict:
     for row, old in zip(res["scans"], before["scans"], strict=True):
         k2 = Points.key(row["p2"], 0)[0]
         pts = [p for p in allp if Points.key(p["p2"], 0)[0] == k2]
-        f = sixth_fields(pts, task.model, task.levels(), row["h"])
+        f = sixth_fields(pts, task.model, task.levels(), row["h"],
+                         [q["gap"] for q in row.get("filled_gaps", [])])  # fmt: skip
         for lv, zz in f["ln_z"].items():
             for name, v in zz.items():
                 was = old["ln_z"][lv][name]
@@ -1366,18 +1382,11 @@ def recompute_task(task: Task) -> dict:
 GAP_N, GAP_ROUNDS = 60, 3  # sixth addendum, item 2: fits per gap and round, rounds at most
 
 
-def gap_check(task: Task, i: int) -> dict:
-    """The sixth addendum, item 2: real fits inside every knot interval of scan i that the
-    rule integrates by the exponential-between-points rule (any box, any level), GAP_N evenly
-    spaced per round, marching from the gap's better knot, until each gap has SPOT_MIN
-    converged with contacts or GAP_ROUNDS have run; then, for every box and level, the
-    corrected ln Z from the scan's points against the ground truth (the same rule on the scan's
-    points and the extra fits together, valid where it agrees with the exponential-between-
-    points rule within SPOT_TOL). Written to the cache's gapcheck directory."""
-    scan = json.loads(task.done_path.read_text())["scans"][i]
-    pts = _scan_points(task, scan["p2"])
-    gaps = sorted({iv for lv in task.levels() for _, b in _boxes(task.model)
-                   for iv in fallback_intervals(pts, lv, b)})  # fmt: skip
+def _gap_fits(task: Task, p2: float, pts: list[dict],
+              gaps: list[tuple[float, float]]) -> tuple[list[dict], list[dict]]:  # fmt: skip
+    """Real fits inside each gap, GAP_N evenly spaced per round (the midpoints next), marching
+    from the gap's better knot, until the gap has SPOT_MIN converged with contacts or
+    GAP_ROUNDS have run (the sixth addendum's gap check; the seventh's fill)."""
     data = dataset(prepare(), task.truth, task.seed, LEVELS[task.level])
     base, _ = base_problem()
     good = [p for p in pts if p["converged"] and not p["no_contact"]]
@@ -1388,11 +1397,11 @@ def gap_check(task: Task, i: int) -> dict:
                       key=lambda p: abs(p["x"] - x))[:1]  # fmt: skip
         tried = 0
         for th in [*([np.array(near[0]["theta6"])] if near else []), base]:
-            c = data.call(task.model, task.extra(x, scan["p2"]), th)
+            c = data.call(task.model, task.extra(x, p2), th)
             tried += 1
             if not c.no_contact:
                 break
-        extra.append({"p2": scan["p2"], "x": x, "kind": "fine", **c.row(), "retries": tried - 1})
+        extra.append({"p2": p2, "x": x, "kind": "fine", **c.row(), "retries": tried - 1})
 
     per_gap = []
     for a, b in gaps:
@@ -1409,6 +1418,21 @@ def gap_check(task: Task, i: int) -> dict:
                 break
         per_gap.append({"gap": [a, b], "fits": sum(a < e["x"] < b for e in extra),
                         "converged_with_contacts": n_in, "enough": n_in >= SPOT_MIN})  # fmt: skip
+    return extra, per_gap
+
+
+def gap_check(task: Task, i: int) -> dict:
+    """The sixth addendum, item 2: real fits inside every knot interval of scan i that the
+    rule integrates by the exponential-between-points rule (any box, any level), placed by
+    ``_gap_fits``; then, for every box and level, the corrected ln Z from the scan's points
+    against the ground truth (the same rule on the scan's points and the extra fits together,
+    valid where it agrees with the exponential-between-points rule within SPOT_TOL). Written
+    to the cache's gapcheck directory."""
+    scan = json.loads(task.done_path.read_text())["scans"][i]
+    pts = _scan_points(task, scan["p2"])
+    gaps = sorted({iv for lv in task.levels() for _, b in _boxes(task.model)
+                   for iv in fallback_intervals(pts, lv, b)})  # fmt: skip
+    extra, per_gap = _gap_fits(task, scan["p2"], pts, gaps)
     dense = pts + extra
     rows = []
     for name, b in _boxes(task.model):
@@ -1434,6 +1458,109 @@ def gap_check(task: Task, i: int) -> dict:
     d.mkdir(parents=True, exist_ok=True)
     (d / f"{task.id}__{i}.json").write_text(json.dumps(out, default=float))
     return out
+
+
+FILL_DLN = 25.0  # seventh addendum: a selected interval carries weight within this of the best
+FILL = "gap fill"
+
+
+def weighted_gaps(pts: list[dict], levels, model: str) -> list[tuple[float, float]]:
+    """The seventh addendum: the knot intervals the sixth addendum's rule selects (any box,
+    any level) whose higher knot lies within FILL_DLN of the scan's best knot in ln L at that
+    level; these are filled with real fits."""
+    allp = sorted(pts, key=lambda p: p["x"])
+    out = set()
+    for lv in levels:
+        for _, b in _boxes(model):
+            kn = _box_knots(allp, b)
+            if len(kn) < 2:
+                continue
+            xk = np.array([p["x"] for p in kn])
+            lk = np.array([_ln_l(p, lv) for p in kn])
+            best = _best_ln(allp, kn, lv)
+            for i in np.nonzero(_fallback(xk, lk, best))[0]:
+                if max(lk[i], lk[i + 1]) >= best - FILL_DLN:
+                    out.add((float(xk[i]), float(xk[i + 1])))
+    return sorted(out)
+
+
+def _covered(gap: tuple[float, float], done: list[list[float]]) -> bool:
+    return any(abs(gap[0] - a) < KNOT_TOL and abs(gap[1] - b) < KNOT_TOL for a, b in done)
+
+
+def fill_task(task: Task) -> dict:
+    """The seventh addendum: in every row, fill the weighted gaps (``weighted_gaps``) with real
+    fits placed by ``_gap_fits``, appended to the task's points stamped FILL with the commit
+    that computed them; a gap the sixth addendum's gap check already filled takes that check's
+    fits (stamped with its commit, placed by its pre-set rule). Then ln Z is recomputed
+    (``recompute_task``) and, in every filled row, the prior box is checked: the corrected ln Z
+    within SPOT_TOL of the exponential-between-points rule at every level."""
+    res = json.loads(task.done_path.read_text())
+    if task.model == "NG":
+        return {"task": task.id, "rows": []}
+    pf = task.dir / "points.jsonl"
+    rows = []
+    for i, row in enumerate(res["scans"]):
+        pts = _scan_points(task, row["p2"])
+        if any(p.get("fill") == FILL for p in pts):
+            continue  # filled already
+        gaps = weighted_gaps(pts, task.levels(), task.model)
+        if not gaps:
+            continue
+        have = {Points.key(p["p2"], p["x"]) for p in pts}
+        gc = CACHE / "gapcheck" / f"{task.id}__{i}.json"
+        new: list[dict] = []
+        per_gap: list[dict] = []
+        todo = list(gaps)
+        if gc.exists():
+            g = json.loads(gc.read_text())
+            done = [q["gap"] for q in g["gaps"]]
+            new += [{**e, "fill": FILL, "commit": g["commit"], "placed_by": "gap check"}
+                    for e in g["extra"]]  # fmt: skip
+            per_gap += [{**q, "placed_by": "gap check", "commit": g["commit"]}
+                        for q in g["gaps"]]  # fmt: skip
+            todo = [gp for gp in gaps if not _covered(gp, done)]
+        if todo:
+            extra, pg = _gap_fits(task, row["p2"], pts, todo)
+            new += [{**e, "fill": FILL, "commit": _commit(), "placed_by": "fill"} for e in extra]
+            per_gap += [{**q, "placed_by": "fill", "commit": _commit()} for q in pg]
+        skipped = [e for e in new if Points.key(e["p2"], e["x"]) in have]
+        with pf.open("a") as fh:
+            for e in new:
+                if Points.key(e["p2"], e["x"]) not in have:
+                    fh.write(json.dumps(e, default=float) + "\n")
+        row["filled_gaps"] = per_gap
+        row["fill_skipped_existing"] = len(skipped)
+        rows.append(i)
+    path = task.done_path
+    path.write_text(json.dumps(res, default=float))
+    if not path.with_name("result_before_sixth.json").exists():
+        raise RuntimeError(f"{task.id}: recompute (sixth addendum) before the fill")
+    recompute_task(task)
+    res = json.loads(path.read_text())
+    out = []
+    b = box(task.model)
+    for i, row in enumerate(res["scans"]):
+        if "filled_gaps" not in row:
+            continue
+        pts = _scan_points(task, row["p2"])
+        chk = []
+        for lv in task.levels():
+            z = row["ln_z"][str(lv)]["prior"]
+            pe = ln_z_strength(pts, lv, b, row["h"], "pexp")
+            chk.append({"level": lv, "corrected": z, "pexp": pe, "pass": abs(z - pe) < SPOT_TOL})
+        row["fill_check"] = {
+            "prior": chk,
+            "gaps_enough": all(q["enough"] for q in row["filled_gaps"]),
+            "weighted_left": weighted_gaps(pts, task.levels(), task.model),
+        }
+        row["fill_check"]["pass"] = (all(c["pass"] for c in chk)
+                                     and row["fill_check"]["gaps_enough"])  # fmt: skip
+        out.append({"scan": i, "p2": row["p2"], **row["fill_check"]})
+    res["seventh_addendum"] = {"commit": _commit(), "filled_rows": [r["scan"] for r in out],
+                               "pass": all(r["pass"] for r in out)}  # fmt: skip
+    path.write_text(json.dumps(res, default=float))
+    return {"task": task.id, "rows": out}
 
 
 def trapezoid_weights(x: np.ndarray) -> np.ndarray:
@@ -2215,6 +2342,7 @@ def main(argv: list[str] | None = None) -> None:
             "spotsample",
             "recompute",
             "gapcheck",
+            "fill",
         ),
     )
     ap.add_argument("task", nargs="?")
@@ -2241,6 +2369,12 @@ def main(argv: list[str] | None = None) -> None:
                 r = recompute_task(t)
                 print(t.id, len(r["changed"]), "changed;", len(r["spline_only_mismatch"]),
                       "spline-only values differing from those stored")  # fmt: skip
+    elif a.cmd == "fill":
+        for t in [Task.from_id(a.task)] if a.task else stage1_tasks():
+            if t.done_path.exists():
+                for r in fill_task(t)["rows"]:
+                    print(t.id, f"p2 {r['p2']:.4f}", "pass" if r["pass"] else "FAIL",
+                          [round(c["corrected"] - c["pexp"], 4) for c in r["prior"]])  # fmt: skip
     elif a.cmd == "gapcheck":
         r = gap_check(Task.from_id(a.task), a.scan)
         print(json.dumps({k: v for k, v in r.items() if k not in ("rows", "extra")}))

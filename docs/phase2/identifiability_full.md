@@ -944,3 +944,39 @@ it is reported "not determined"; it is listed per row. (4) Every ln Z is recompu
 existing points (no scan is rerun); each row keeps the spline-only values beside the corrected
 ones and the result as it was is kept beside it; every changed value is reported with its size.
 Test: the λ = 5.63 row from Stage 1's points, the spline alone reproducing the stored +16,941.
+
+**Amendment 3, seventh addendum: filling the gaps that carry weight (17 November 2026, written
+after the sixth addendum's gap check and before any gate was computed).** The gap check (commit
+671f469) found the corrected ln Z equal to its ground truth to 10⁻⁴ in the prior box where the
+selected gap lies far below the best (t2_s0_l0_P_d0_b0 at λ 5.63, t1_s0_l0_R at r 0.14,
+t1_s0_l0_P_d2_b0 at λ 1.70), but low by 0.35, 0.42 and 0.16 (levels 1, 0.5, 2) at
+t2_s0_l0_P_d0_b0, λ 6.15, whose two gaps lie within Δχ² 6 of the best: there the straight line
+under-integrates, and the check's fits brought the integral to the ground truth. Narrow boxes
+inside the gaps were off by up to 12,685 either way.
+
+The rule. A knot interval the sixth addendum's rule selects (any box, any level) whose higher
+knot lies within 25 of the scan's best knot in ln L at that level carries weight, and is filled
+with real fits: 60 evenly spaced in the interval, marching from its better knot, each started
+from the nearest converged call with contacts (then the base); 60 more at the midpoints, and once
+more, until at least 50 converge with contacts. The fits join the scan's points as fine points,
+stamped "gap fill" with the commit that computed them, and ln Z is recomputed (the spline now
+spans them). A selected interval whose higher knot is more than 25 below the best keeps the
+straight line, which the gap check found exact in the prior box. Where the gap check has already
+fitted a weighted gap, its fits are the fill: they were placed by the check's pre-set rule
+(the one above, fixed in the sixth addendum before the check ran) and keep its commit. By this
+rule the check's rows at r 0.14 and λ 6.15 are filled; λ 5.63 and λ 1.70 are not (their gaps'
+higher knots lie more than 25 below the best at every level), and their check fits stay in the
+check's record only. A fill call landing exactly on an existing point is not added (counted).
+
+Validity: in every filled row, the corrected ln Z in the prior box within 0.05 of the
+exponential-between-points rule on the filled points, at every level, and every gap with at
+least 50 converged fits with contacts; any weighted interval the rule still selects after the
+fill is reported. If any prior-box check fails after the fill, Mercury is paused and reported
+for a design review of the fine-grid placement; no further addendum is drafted.
+
+Narrow boxes. A narrow box overlapping an interval the rule selects, or a filled gap, has a value
+at a level only where the spline alone and the exponential rule agree within 0.05 there;
+otherwise it is "not determined" at that level (listed per row with the difference). Inside a
+selected interval the corrected value is the exponential rule's, so the spline alone is the
+comparison. The six tasks that finish after this addendum are recomputed and filled the same way
+before the gates run.
