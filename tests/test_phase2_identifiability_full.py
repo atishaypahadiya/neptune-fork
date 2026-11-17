@@ -1155,3 +1155,27 @@ def test_pin_starts_are_the_converged_neighbours_nearest_first():
     pts.append(_knot(-9.1, 1.0) | {"theta6": [0.0] * 6, "no_contact": True})
     # nearest first, the lower x first on a tie, as amendment 3 (B) orders its retries
     assert [p["x"] for p in F._rule_b_starts(pts, -9.0)] == [-8.7, -9.4, -10.0, -8.0]
+
+
+def test_the_reported_best_value_is_the_corrected_minimum():
+    """Deviation 1, second note: in the results the best value is the argmin of the corrected
+    interpolant; the scan's own value, which placed the next scan, is kept beside it. At λ 5.63
+    the χ² spline dips far below every knot near −6.9; the corrected minimum is at the lowest
+    knot's end of the valley."""
+    pts, _, _ = _overshoot_row()
+    placed, _ = F.Scanner._best([p for p in pts if p["kind"] == "fine"])
+    row = {"p2": pts[0]["p2"], "x_best": placed}
+    F.report_best(row, pts)
+    assert row["x_best_placement"] == placed
+    assert row["x_best"] == F.corrected_min(pts)[0]
+    assert row["x_best"] < -10.5 < -7.0 < placed
+    F.report_best(row, pts)  # a second report keeps the scan's own value
+    assert row["x_best_placement"] == placed
+
+
+def test_condition_6_reads_the_scans_own_best_value():
+    kn = [_knot(x, 10.0 + (x + 8.0) ** 2) for x in np.linspace(-9.0, -7.0, 21)]
+    row = {"p2": 0.0, "x_best": -3.0, "x_best_placement": -8.0, "chi2_spline_min": 10.0,
+           "h": 0.1}  # fmt: skip
+    r = F.spline_minimum_check(row, kn)
+    assert r["dx"] == pytest.approx(0.0, abs=1e-12) and r["pass"]

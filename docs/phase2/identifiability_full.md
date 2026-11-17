@@ -1265,3 +1265,34 @@ t4_s0_l0_P_d1_b0 at λ 0.92) that spline dips far below every knot across a wide
 `x_best` lies 3.3 to 4.1 decades from the lowest call (at −11.0). V4 never read it (it reads the
 smallest knot and the sixth addendum's corrected minimum, −11.0 in all five), nor does any
 part of deviation 1; it placed the next value's fine scan.
+
+**Deviation 1, second note (17 November 2026, written after the first note and the retry of
+t4's pins, before any recompute on the study's cache).**
+
+*The deviation table's citation, checked.* Willroth, E. C., & Atherton, O. E. (2024). Best laid
+plans: A guide to reporting preregistration deviations. *Advances in Methods and Practices in
+Psychological Science*, 7(1), 1–14. https://doi.org/10.1177/25152459231213802. Its template is
+Table 1 (p. 8), "Example Preregistration Deviations Table Template": one row per deviation, with
+the columns No., Details (type, reason and timing, each from the categories of its pp. 9–10:
+Tables 2 and 3 and the five timings), Original wording, Deviation description and Reader impact;
+unregistered steps follow in a section of their own. The table in § 6 above has other columns
+(no type, the plan paraphrased rather than quoted, "effect on the estimate" for reader impact),
+so it does not follow that template. It stands as written; the deviations in that format:
+
+| No. | Type | Reason | Timing | Original wording | Deviation description | Reader impact |
+|---|---|---|---|---|---|---|
+| 1 | Analytic approach | Preregistered plan not possible or inappropriate because of data | After results of the preregistered approach were known (Stage 1's per-row ln Z values and the seventh addendum's check; no gate, reading or Bayes factor) | "a fine scan of 15 points over ±6 posterior widths about the best value, χ² interpolated by a cubic spline and the integral of exp(−χ²/2) taken on a sub-grid 20 times finer" (§ 3, the strength) | Real fits pinned at every integration boundary of every row, then midpoint fits until a share-weighted error estimate lies below τ_j (τ_m = 0.005) and the sixth addendum's overshoot rule selects nothing; rows below a share of 10⁻⁶ get the pins and that guard only. The integral's formula is unchanged. | Every row's ln Z in every box may change; each change is reported with its size beside the value before, changes above 0.05 on rows that had passed are flagged as corrections, and readings use only the values after. Because the rule was written after per-row values were seen, a reader may weigh Stage 1's readings as less protected against data-dependent choices than those of a plan followed as written. |
+| 2 | Inferential criteria | Researchers gained new knowledge | After results of the preregistered approach were known (the smoke test of deviation 1) | "in every filled row, the corrected ln Z in the prior box within 0.05 of the exponential-between-points rule on the filled points, at every level" (seventh addendum, validity) | A row passes against the validation's dense-fit ground truth (amendment 4, D, kept by deviation 1); the spline-against-exponential check is reported beside it. | In the smoke test the two rows that failed the old check moved toward passing it mostly because the exponential rule's value moved; judging against dense real fits tests the integral itself. Rows failing the old check are listed whatever the validation finds. |
+| 3 | Variable operationalization or computation | Researchers gained new knowledge | After results of the preregistered approach were known | "The spline of the best value, the width, the refinement and the integral (item 4) is fitted to the knots only" (second addendum, item 1) | In the results, the best value reported (`x_best`) is the argmin of the corrected interpolant on the row's points (the sixth addendum's, as V4 already read); the scan's own value is kept as `x_best_placement`. Placement of the next value's scan is unchanged for the rest of Stage 1. | Five rows' reported best values move from −6.9 to −7.7 to −11.0, where their lowest calls lie; no integral, gate or reading used the value. |
+
+The labelling of this change as a deviation (§ 6 above, second row) is not a deviation of the
+plan's content and is not repeated here.
+
+*Rulings, in force from this note.* (1) The three suspended Stage 1 scans (t3_s0_l0_P_d0_b0,
+t4_s0_l0_P_d0_b0, t2_s0_l0_R_half) resume on their existing code (commit ca8ea04), with the
+same placement rule as the other 27 tasks; their rows get deviation 1 later, with the rest.
+(2) Validation, in this order, before anything touches the study's cache: deviation 1 over every
+finished row in a scratch copy of the cache, then the 11-row validation exactly as registered
+(amendment 4, D, as kept by deviation 1) on that copy; both are reported first. (3) Smoke
+condition 6 and the spot-check placement keep reading the scan's own best value
+(`x_best_placement`). The gates run only on the go file.

@@ -1994,6 +1994,25 @@ def no_contact_check(row: dict, pts: list[dict]) -> dict:
     return {"p2": row["p2"], "inside": inside, "outside": outside, "pass": not inside}
 
 
+def _placement_x(row: dict) -> float:
+    """The scan's own best value (the χ² spline's minimum, which placed the next scan): kept
+    as ``x_best_placement`` once the results report the corrected minimum (deviation 1,
+    second note)."""
+    return row.get("x_best_placement", row["x_best"])
+
+
+def report_best(row: dict, pts: list[dict]) -> None:
+    """Deviation 1, second note: the results report as ``x_best`` the argmin of the corrected
+    interpolant (``corrected_min``) on the row's points; the scan's own value is kept once as
+    ``x_best_placement``. Placement is unchanged."""
+    if row.get("x_best") is None:
+        return
+    row.setdefault("x_best_placement", row["x_best"])
+    x, _ = corrected_min(pts)
+    if x is not None:
+        row["x_best"] = x
+
+
 def spline_minimum_check(row: dict, pts: list[dict]) -> dict:
     """Smoke condition 6 for one scan value, with the fifth addendum's waiver: the spline's
     minimum within Δχ² 1.0 below the lowest knot (always), and its position within one fine
@@ -2004,8 +2023,9 @@ def spline_minimum_check(row: dict, pts: list[dict]) -> dict:
     kn = knots(pts)
     low = min(kn, key=lambda p: p["chi2"])
     dchi = low["chi2"] - row["chi2_spline_min"]
-    dx = abs(row["x_best"] - low["x"])
-    a, b = sorted((row["x_best"], low["x"]))
+    xb = _placement_x(row)
+    dx = abs(xb - low["x"])
+    a, b = sorted((xb, low["x"]))
     between = [p["chi2"] - low["chi2"] for p in kn if a <= p["x"] <= b]
     position = dx <= row["h"] + 1e-12
     flat = all(d <= FLAT_DCHI2 for d in between)
@@ -2222,7 +2242,7 @@ def spot_xs(task: Task, scan: dict, pts: list[dict], n_steep: int = SPOT_STEEP) 
     for a, b in _steep_intervals(task, knots(pts))[:n_steep]:
         out |= {round(a + q * (b - a), 6) for q in SPOT_PER}
     if not scan["best_at_box_edge"]:
-        out |= {round(scan["x_best"] + k * scan["width"], 6)
+        out |= {round(_placement_x(scan) + k * scan["width"], 6)
                 for k in np.linspace(-SPOT_PEAK_HALF, SPOT_PEAK_HALF, SPOT_PEAK_N)}  # fmt: skip
     lo, hi = box(task.model, max(R3_WIDTHS))
     have = {round(p["x"], 6) for p in pts}
@@ -2316,9 +2336,9 @@ def spot_sample(tasks: list[Task]) -> list[tuple[str, int, str]]:
                 continue
             xk = np.array([p["x"] for p in kn])
             for _, (lo, hi) in _boxes(t.model):
-                if lo <= s["x_best"] <= hi:
+                if lo <= _placement_x(s) <= hi:
                     continue
-                e = lo if s["x_best"] < lo else hi
+                e = lo if _placement_x(s) < lo else hi
                 for lv in t.levels():
                     lk = np.array([_ln_l(p, lv) for p in kn])
                     if xk[0] <= e <= xk[-1] and np.interp(e, xk, lk) < lk.max() - SPOT_FLANK:
@@ -2880,6 +2900,7 @@ def d1_write_result(task: Task, v: dict, used: dict, failed: set) -> list[dict]:
                  for lv in task.levels()}  # fmt: skip
         out += changes(task, row, z_new, (task.id, k2) in failed)
         row.setdefault("ln_z_before_d1", row["ln_z"])
+        report_best(row, pts)
         row["ln_z"] = {str(lv): {n: z_new[(n, lv)] for n, _ in _boxes(task.model)}
                        for lv in task.levels()}  # fmt: skip
         ok = [p["chi2"] for p in pts if p["converged"] and not p["no_contact"]
