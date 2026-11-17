@@ -858,3 +858,61 @@ def test_condition_2_blocks_only_within_200_of_the_best():
     c = F.no_contact_check(row, near)
     assert not c["pass"] and [d["x"] for d in c["inside"]] == [-6.9]
     assert c["inside"][0]["dchi2_neighbours"] == pytest.approx(115.0)
+
+
+def _overshoot_row():
+    from pathlib import Path
+
+    d = json.loads(
+        (Path(__file__).parent / "fixtures/phase2/idfull_overshoot_row.json").read_text()
+    )
+    return d["points"], d["h"], d["stored_ln_z"]
+
+
+def test_the_lambda_563_overshoot_is_integrated_by_the_exponential_rule():
+    """Sixth addendum: Stage 1's t2_s0_l0_P_d0_b0 at λ 5.63, where the spline across the gap
+    from x −7.68 (χ² 491) to −6.26 (χ² 52,751) rose far above every knot, so ln Z at level 1
+    in the prior box read +16,941. The spline alone reproduces the stored value; the corrected
+    rule integrates that gap by the exponential-between-points rule, the result lies below
+    the scan's best knot, and it is near that rule's value on the whole box."""
+    pts, h, stored = _overshoot_row()
+    b = F.box("P")
+    assert F.ln_z_strength(pts, 1.0, b, h, "spline_only") == stored["1.0"]["prior"]
+    iv = F.fallback_intervals(pts, 1.0, b)
+    assert any(a == pytest.approx(-7.676, abs=1e-3) and c == pytest.approx(-6.259, abs=1e-3)
+               for a, c in iv)  # fmt: skip
+    best = max(F._ln_l(p, 1.0) for p in F.knots(pts))
+    z = F.ln_z_strength(pts, 1.0, b, h)
+    assert z < best
+    assert z == pytest.approx(F.ln_z_strength(pts, 1.0, b, h, "pexp"), abs=1.0)
+    _, cm = F.corrected_min(pts)
+    assert cm >= min(p["chi2"] for p in F.knots(pts)) - 1.0
+    for lv in ("0.5", "2.0"):
+        assert F.ln_z_strength(pts, float(lv), b, h) < max(
+            F._ln_l(p, float(lv)) for p in F.knots(pts))  # fmt: skip
+
+
+def _knot(x, chi2):
+    return {"x": x, "kind": "fine", "chi2": chi2, "ln_s": 0.0, "converged": True,
+            "no_contact": False}  # fmt: skip
+
+
+def test_where_the_rule_selects_nothing_the_spline_is_kept_bit_for_bit():
+    xs = np.linspace(-11.0, -5.0, 61)
+    pts = [_knot(float(x), 50.0 * (x + 8.0) ** 2) for x in xs]
+    b = F.box("P")
+    for lv in (0.5, 1.0, 2.0):
+        assert not F.fallback_intervals(pts, lv, b)
+        assert F.ln_z_strength(pts, lv, b, 0.1) == F.ln_z_strength(pts, lv, b, 0.1, "spline_only")
+
+
+def test_a_rise_near_the_peak_keeps_the_spline_and_a_flank_rise_does_not():
+    """(a) applies only where the interval's higher knot is more than 2 below the best knot in
+    ln L; near the peak a rise above the knots stays (unless it passes the best by 0.5)."""
+    xk = np.array([0.0, 1.0, 2.0, 3.0])
+    lk = np.array([-1.0, 0.0, 0.0, -1.0])  # the spline rises between the two top knots
+    assert not F._fallback(xk, lk, 0.0).any()
+    lk = np.array([-100.0, -10.0, -10.0, -100.0])  # the same shape far down a flank
+    assert F._fallback(xk, lk, 0.0)[1]
+    lk = np.array([-40.0, 0.0, 0.0, -40.0])  # a rise of more than 0.5 above the best knot
+    assert F._fallback(xk, lk, 0.0)[1]

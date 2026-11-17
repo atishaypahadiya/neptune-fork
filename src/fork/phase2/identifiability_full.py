@@ -133,6 +133,11 @@ EDGE_EPS = 1e-9  # decades
 SUB_EDGE = 200
 FINE_N, FINE_HALF = 15, 6.0  # points, widths
 SUB = 20
+# Amendment 3, sixth addendum: a knot interval is integrated by the exponential-between-points
+# rule, not the spline, where (a) its higher knot is more than FLANK_DLN below the scan's best
+# knot in ln L and the spline rises more than FLANK_RISE above that higher knot, or (b) the
+# spline exceeds the scan's best knot by more than OVER_BEST in ln L.
+FLANK_DLN, FLANK_RISE, OVER_BEST = 2.0, 0.05, 0.5
 TAIL_DECADES = (1.0, 2.0, 4.0)
 TAIL_LN = 25.0
 HALF_BLOCKS = 4  # V3′'s halved planet grid (96 longitudes) runs as 4 processes of 24
@@ -1137,6 +1142,44 @@ def _box_knots(allp: list[dict], box: tuple[float, float]) -> list[dict]:
     return sorted(kn, key=lambda p: p["x"])
 
 
+def _fallback(xk: np.ndarray, lk: np.ndarray, best: float) -> np.ndarray:
+    """The sixth addendum's rule: for each knot interval, whether it is integrated by the
+    exponential-between-points rule (True) or the spline (False). ``lk`` is ln L at the knots
+    ``xk``; ``best`` the scan's best knot in ln L."""
+    n = len(xk) - 1
+    if n < 1:
+        return np.zeros(0, dtype=bool)
+    cs = CubicSpline(xk, lk)
+    high = np.maximum(lk[:-1], lk[1:])
+    top = high.copy()
+    r = cs.derivative().roots(extrapolate=False)
+    r = r[np.isfinite(r) & (r > xk[0]) & (r < xk[-1])]
+    if r.size:
+        i = np.clip(np.searchsorted(xk, r, side="right") - 1, 0, n - 1)
+        np.maximum.at(top, i, cs(r))
+    flank = (high < best - FLANK_DLN) & (top > high + FLANK_RISE)
+    return flank | (top > best + OVER_BEST)
+
+
+def _best_ln(allp: list[dict], kn: list[dict], level: float) -> float:
+    """The scan's best knot in ln L (its knots and any box-edge knot)."""
+    return max(_ln_l(p, level) for p in [*knots(allp), *kn])
+
+
+def fallback_intervals(pts: list[dict], level: float,
+                       box: tuple[float, float]) -> list[tuple[float, float]]:  # fmt: skip
+    """The knot intervals of one box and level that the sixth addendum integrates by the
+    exponential-between-points rule."""
+    allp = sorted(pts, key=lambda p: p["x"])
+    kn = _box_knots(allp, box)
+    if len(kn) < 2:
+        return []
+    xk = np.array([p["x"] for p in kn])
+    lk = np.array([_ln_l(p, level) for p in kn])
+    fb = _fallback(xk, lk, _best_ln(allp, kn, level))
+    return [(float(xk[i]), float(xk[i + 1])) for i in np.nonzero(fb)[0]]
+
+
 def ln_z_strength(pts: list[dict], level: float, box: tuple[float, float],
                   h_fine: float, method: str = "spline") -> float:  # fmt: skip
     """ln of (1/width of box) ∫ L dx over the box at one value of the second parameter.
@@ -1151,7 +1194,12 @@ def ln_z_strength(pts: list[dict], level: float, box: tuple[float, float],
     ``pexp`` (smoke condition 7's independent rule): ln L linear between the same nodes (the
     box's knots, the other points inside the box, and the two edges) and exp integrated
     exactly on each interval. ``trapezoid``: the same nodes, L by the trapezoid rule (report
-    only)."""
+    only).
+
+    The sixth addendum: in ``spline``, a knot interval its rule selects (``_fallback``) is
+    integrated by the exponential-between-points rule on the same sub-grid (ln L linear
+    between the knots, exp integrated exactly); where it selects none the result is the
+    spline's, bit for bit. ``spline_only`` is the spline everywhere (the rule before it)."""
     lo, hi = box
     allp = sorted(pts, key=lambda p: p["x"])
     x = np.array([p["x"] for p in allp])
@@ -1182,7 +1230,7 @@ def ln_z_strength(pts: list[dict], level: float, box: tuple[float, float],
             v_in = np.interp(xx, xk, lk)
         return np.where(inside, v_in, lin(xx))
 
-    if method == "spline":
+    if method in ("spline", "spline_only"):
         parts = []
         for a, b in itertools.pairwise(xk):
             n = SUB_EDGE if (a <= lo <= b or a <= hi <= b) else SUB
@@ -1200,7 +1248,26 @@ def ln_z_strength(pts: list[dict], level: float, box: tuple[float, float],
         xs = np.unique(np.concatenate(parts))
         xs = np.unique(np.concatenate([xs[(xs > lo) & (xs < hi)], [lo, hi]]))
         vals = value(xs, "spline")
-        return float(logsumexp(vals, b=trapezoid_weights(xs)) - math.log(hi - lo))
+        fb = (np.zeros(0, dtype=bool) if method == "spline_only" or cs is None
+              else _fallback(xk, lk, _best_ln(allp, kn, level)))  # fmt: skip
+        if not fb.any():
+            return float(logsumexp(vals, b=trapezoid_weights(xs)) - math.log(hi - lo))
+        last = len(xk) - 2
+        ip = np.clip(np.searchsorted(xk, xs, side="right") - 1, 0, last)
+        # a sub-grid point in a selected interval (its knots included) takes the linear value
+        on_knot = np.isin(xs, xk)
+        pt = (xs >= xk[0]) & (xs <= xk[-1]) & (fb[ip] | on_knot & fb[np.clip(ip - 1, 0, last)])
+        vals = np.where(pt, np.interp(xs, xk, lk), vals)
+        a, b, va, vb = xs[:-1], xs[1:], vals[:-1], vals[1:]
+        im = np.clip(np.searchsorted(xk, 0.5 * (a + b), side="right") - 1, 0, last)
+        seg = (0.5 * (a + b) > xk[0]) & (0.5 * (a + b) < xk[-1]) & fb[im]
+        with np.errstate(invalid="ignore", divide="ignore", over="ignore"):
+            trap = np.log(0.5 * (b - a)) + np.logaddexp(va, vb)
+            d = np.abs(vb - va)
+            f = np.where(d > 1e-12, np.log(-np.expm1(-d)) - np.log(np.where(d > 0, d, 1.0)), 0.0)
+            pexp = np.maximum(va, vb) + np.log(b - a) + f
+            pexp = np.where(np.isfinite(va) & np.isfinite(vb), pexp, -np.inf)
+        return float(logsumexp(np.where(seg, pexp, trap)) - math.log(hi - lo))
     if method not in ("pexp", "trapezoid"):
         raise ValueError(method)
     nodes = np.unique(np.concatenate([xk[(xk > lo) & (xk < hi)],
@@ -1218,6 +1285,155 @@ def ln_z_strength(pts: list[dict], level: float, box: tuple[float, float],
         terms.append(max(va, vb) + math.log(b - a)
                      + (math.log(-math.expm1(-d)) - math.log(d) if d > 1e-12 else 0.0))  # fmt: skip
     return float(logsumexp(terms) - math.log(hi - lo)) if terms else -math.inf
+
+
+def corrected_min(pts: list[dict]) -> tuple[float | None, float | None]:
+    """The sixth addendum, item 1: the smallest χ² of the corrected interpolant, on the
+    sub-grid of ``_best``: the χ² spline on the scan's knots, linear in the knot intervals
+    that the sixth addendum's rule selects for ln L = −χ²/2 (no spline value from those)."""
+    kn = knots(pts)
+    if not kn:
+        return None, None
+    x = np.array([p["x"] for p in kn])
+    c = np.array([p["chi2"] for p in kn])
+    if len(kn) < 2:
+        return float(x[0]), float(c[0])
+    sub = np.linspace(x[0], x[-1], (len(x) - 1) * SUB + 1)
+    v = CubicSpline(x, c)(sub)
+    fb = _fallback(x, -0.5 * c, float(np.max(-0.5 * c)))
+    if fb.any():
+        ip = np.clip(np.searchsorted(x, sub, side="right") - 1, 0, len(x) - 2)
+        on = np.isin(sub, x) & fb[np.clip(ip - 1, 0, len(x) - 2)]
+        v = np.where(fb[ip] | on, np.interp(sub, x, c), v)
+    i = int(np.argmin(v))
+    return float(sub[i]), float(v[i])
+
+
+def sixth_fields(pts: list[dict], model: str, levels, h: float) -> dict:
+    """A result row's fields from the sixth addendum: ln Z by the corrected rule (``ln_z``)
+    and by the spline alone (``ln_z_spline_only``), the intervals integrated by the
+    exponential-between-points rule, the corrected χ² minimum, and the narrow boxes with no
+    knot inside ("not determined")."""
+    kx = [p["x"] for p in knots(pts)]
+    z, z0, fb = {}, {}, {}
+    for lv in levels:
+        z[str(lv)], z0[str(lv)] = {}, {}
+        for name, b in _boxes(model):
+            z[str(lv)][name] = ln_z_strength(pts, lv, b, h)
+            z0[str(lv)][name] = ln_z_strength(pts, lv, b, h, "spline_only")
+            iv = fallback_intervals(pts, lv, b)
+            if iv:
+                fb[f"{lv}/{name}"] = iv
+    xm, cm = corrected_min(pts)
+    nd = [name for name, (lo, hi) in _boxes(model)[1:] if not any(lo < x < hi for x in kx)]
+    return {"ln_z": z, "ln_z_spline_only": z0, "fallback_intervals": fb,
+            "x_min_corrected": xm, "chi2_min_corrected": cm, "not_determined": nd}  # fmt: skip
+
+
+def recompute_task(task: Task) -> dict:
+    """The sixth addendum: a finished task's ln Z again from its points, written into its
+    result (the result as it was kept beside it once, as result_before_sixth.json). Reports
+    every changed value and whether the spline-only values equal those stored."""
+    path = task.done_path
+    res = json.loads(path.read_text())
+    if task.model == "NG":
+        return {"task": task.id, "changed": [], "spline_only_mismatch": []}
+    keep = path.with_name("result_before_sixth.json")
+    if not keep.exists():
+        keep.write_text(path.read_text())
+    before = json.loads(keep.read_text())
+    allp = list(Points(task.dir / "points.jsonl").calls.values())
+    changed, mismatch = [], []
+    for row, old in zip(res["scans"], before["scans"], strict=True):
+        k2 = Points.key(row["p2"], 0)[0]
+        pts = [p for p in allp if Points.key(p["p2"], 0)[0] == k2]
+        f = sixth_fields(pts, task.model, task.levels(), row["h"])
+        for lv, zz in f["ln_z"].items():
+            for name, v in zz.items():
+                was = old["ln_z"][lv][name]
+                if f["ln_z_spline_only"][lv][name] != was:
+                    mismatch.append({"p2": row["p2"], "level": lv, "box": name})
+                if v != was:
+                    changed.append({"p2": row["p2"], "level": lv, "box": name,
+                                    "before": was, "after": v, "change": v - was})  # fmt: skip
+        row.update(f)
+    res["sixth_addendum"] = {"commit": _commit(), "changed": changed,
+                             "spline_only_mismatch": mismatch}  # fmt: skip
+    path.write_text(json.dumps(res, default=float))
+    return {"task": task.id, "changed": changed, "spline_only_mismatch": mismatch}
+
+
+GAP_N, GAP_ROUNDS = 60, 3  # sixth addendum, item 2: fits per gap and round, rounds at most
+
+
+def gap_check(task: Task, i: int) -> dict:
+    """The sixth addendum, item 2: real fits inside every knot interval of scan i that the
+    rule integrates by the exponential-between-points rule (any box, any level), GAP_N evenly
+    spaced per round, marching from the gap's better knot, until each gap has SPOT_MIN
+    converged with contacts or GAP_ROUNDS have run; then, for every box and level, the
+    corrected ln Z from the scan's points against the ground truth (the same rule on the scan's
+    points and the extra fits together, valid where it agrees with the exponential-between-
+    points rule within SPOT_TOL). Written to the cache's gapcheck directory."""
+    scan = json.loads(task.done_path.read_text())["scans"][i]
+    pts = _scan_points(task, scan["p2"])
+    gaps = sorted({iv for lv in task.levels() for _, b in _boxes(task.model)
+                   for iv in fallback_intervals(pts, lv, b)})  # fmt: skip
+    data = dataset(prepare(), task.truth, task.seed, LEVELS[task.level])
+    base, _ = base_problem()
+    good = [p for p in pts if p["converged"] and not p["no_contact"]]
+    extra: list[dict] = []
+
+    def fit(x: float) -> None:
+        near = sorted(good + [e for e in extra if e["converged"] and not e["no_contact"]],
+                      key=lambda p: abs(p["x"] - x))[:1]  # fmt: skip
+        tried = 0
+        for th in [*([np.array(near[0]["theta6"])] if near else []), base]:
+            c = data.call(task.model, task.extra(x, scan["p2"]), th)
+            tried += 1
+            if not c.no_contact:
+                break
+        extra.append({"p2": scan["p2"], "x": x, "kind": "fine", **c.row(), "retries": tried - 1})
+
+    per_gap = []
+    for a, b in gaps:
+        lo_better = min(good, key=lambda p: abs(p["x"] - a))["chi2"] <= min(
+            good, key=lambda p: abs(p["x"] - b))["chi2"]  # fmt: skip
+        n_in = 0
+        for r in range(GAP_ROUNDS):
+            ks = np.arange(1, GAP_N + 1) if r == 0 else np.arange(GAP_N) + 0.5**r
+            xs = [a + (b - a) * k / (GAP_N + 1) for k in ks]
+            for x in sorted(xs, reverse=not lo_better):
+                fit(float(x))
+            n_in = sum(a < e["x"] < b and e["converged"] and not e["no_contact"] for e in extra)
+            if n_in >= SPOT_MIN:
+                break
+        per_gap.append({"gap": [a, b], "fits": sum(a < e["x"] < b for e in extra),
+                        "converged_with_contacts": n_in, "enough": n_in >= SPOT_MIN})  # fmt: skip
+    dense = pts + extra
+    rows = []
+    for name, b in _boxes(task.model):
+        for lv in task.levels():
+            r = {"box": name, "level": lv,
+                 "runner": ln_z_strength(pts, lv, b, scan["h"]),
+                 "spline_only": ln_z_strength(pts, lv, b, scan["h"], "spline_only"),
+                 "pexp": ln_z_strength(pts, lv, b, scan["h"], "pexp"),
+                 "truth": ln_z_strength(dense, lv, b, scan["h"]),
+                 "truth_pexp": ln_z_strength(dense, lv, b, scan["h"], "pexp"),
+                 "truth_fallback": fallback_intervals(dense, lv, b)}  # fmt: skip
+            if all(r[k] == -math.inf for k in ("runner", "truth", "truth_pexp")):
+                r["valid"], r["pass"] = True, True
+            else:
+                r["valid"] = abs(r["truth"] - r["truth_pexp"]) < SPOT_TOL
+                r["pass"] = r["valid"] and abs(r["runner"] - r["truth"]) < SPOT_TOL
+            rows.append(r)
+    out = {"task": task.id, "scan": i, "p2": scan["p2"], "gaps": per_gap,
+           "enough": all(g["enough"] for g in per_gap), "rows": rows,
+           "pass": all(g["enough"] for g in per_gap) and all(r["pass"] for r in rows),
+           "commit": _commit(), "extra": extra}  # fmt: skip
+    d = CACHE / "gapcheck"
+    d.mkdir(parents=True, exist_ok=True)
+    (d / f"{task.id}__{i}.json").write_text(json.dumps(out, default=float))
+    return out
 
 
 def trapezoid_weights(x: np.ndarray) -> np.ndarray:
@@ -1288,13 +1504,10 @@ def run_task(task: Task) -> dict:
         model = task.model
         for s in scans:
             pts = pts_by[Points.key(s["p2"], 0)[0]]
-            z = {str(lv): {"prior": ln_z_strength(pts, lv, box(model), s["h"]),
-                           **{f"r3_{d:g}": ln_z_strength(pts, lv, box(model, d), s["h"])
-                              for d in R3_WIDTHS}}
-                 for lv in task.levels()}  # fmt: skip
+            f6 = sixth_fields(pts, model, task.levels(), s["h"])  # sixth addendum
             bp = s["best_point"]
             rows.append({**{k: v for k, v in s.items() if k != "best_point"},
-                         "best_theta6": None if bp is None else bp["theta6"], "ln_z": z,
+                         "best_theta6": None if bp is None else bp["theta6"], **f6,
                          "tails_ok": None if bp is None else tail_check(s, pts, task.levels()),
                          "n_points": len(pts),
                          "commits": sorted({p.get("commit", "before stamping")
@@ -1563,8 +1776,11 @@ def gates_stage1(prep: dict, results: dict, n_workers: int) -> dict:
             v4[TRUTHS[t - 1]] = results[Task(t, 0, 0, "NG").id]["calls"]["G"]["chi2"]
         else:
             ids = [k for k in results if k.startswith(f"t{t}_s0_l0_{own}") and "half" not in k]
-            v4[TRUTHS[t - 1]] = min(min(s["chi2_spline_min"], s["chi2_min"])
-                                    for k in ids for s in results[k]["scans"])  # fmt: skip
+            # sixth addendum, item 1: the corrected interpolant's minimum, never a spline value
+            # from an interval the rule integrates by the exponential-between-points rule
+            v4[TRUTHS[t - 1]] = min(min(s["chi2_min_corrected"], s["chi2_min"])
+                                    for k in ids for s in results[k]["scans"]
+                                    if s["chi2_min"] is not None)  # fmt: skip
     v6 = v6_check(results)
     tails = [(k, s["p2"]) for k, r in results.items() for s in r.get("scans", [])
              if not s["tails_ok"]]  # fmt: skip
@@ -1997,6 +2213,8 @@ def main(argv: list[str] | None = None) -> None:
             "summarize",
             "spotcheck",
             "spotsample",
+            "recompute",
+            "gapcheck",
         ),
     )
     ap.add_argument("task", nargs="?")
@@ -2016,6 +2234,15 @@ def main(argv: list[str] | None = None) -> None:
         run_task(Task.from_id(a.task))
     elif a.cmd == "spotcheck":
         r = spot_check(Task.from_id(a.task), a.scan)
+        print(json.dumps({k: v for k, v in r.items() if k not in ("rows", "extra")}))
+    elif a.cmd == "recompute":
+        for t in [Task.from_id(a.task)] if a.task else stage1_tasks():
+            if t.done_path.exists():
+                r = recompute_task(t)
+                print(t.id, len(r["changed"]), "changed;", len(r["spline_only_mismatch"]),
+                      "spline-only values differing from those stored")  # fmt: skip
+    elif a.cmd == "gapcheck":
+        r = gap_check(Task.from_id(a.task), a.scan)
         print(json.dumps({k: v for k, v in r.items() if k not in ("rows", "extra")}))
     elif a.cmd == "spotsample":
         for row in spot_sample(stage1_tasks()):

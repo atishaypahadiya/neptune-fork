@@ -910,3 +910,37 @@ far below the 0.05 in ln Z the integrals are held to, so such calls are counted 
 at the gate reading (Stage 1's result lists both kinds for every scan value) but do not block.
 The call at −6.2 is of the second kind. Test: that case counted and not blocking; a no-contact
 call between neighbours 115 above the best blocking.
+
+**Amendment 3, sixth addendum: the spline across wide knot gaps (16 November 2026, written after
+the Stage 1 ln Z values were seen and before any gate was computed).** Reading the 24 finished
+Stage 1 tasks showed that where a scan's knots jump a steep stretch (at t2_s0_l0_P_d0_b0,
+λ = 5.63, from χ² 491 at x = −7.68 to 52,751 at −6.26) the cubic spline through ln L rose far
+above every knot inside the gap, and the integral took the bulge: ln Z at level 1 in the prior
+box read +16,941 against −234 by the exponential-between-points rule. Since a model's ln Z sums
+over its rows, one such row decides it. Smoke condition 6 had flagged these rows; none of the
+smoke scans had such a gap.
+
+The rule. A knot interval is integrated by the exponential-between-points rule (ln L linear
+between its two knots, exp integrated exactly, on the same sub-grid), not the spline, when
+either (a) flank: the interval's higher knot is more than 2 below the scan's best knot in ln L
+and the spline rises more than 0.05 above that higher knot; or (b) anywhere: the spline exceeds
+the scan's best knot by more than 0.5 in ln L. The scan's best knot is the largest ln L among its
+knots (and a box-edge knot) at that level; the spline's largest value in an interval is taken at
+its knots and at the roots of its derivative. Every other interval keeps the spline, so the peaks
+stay as the ground-truth spot check validated them, and a row where the rule selects nothing is
+integrated bit for bit as before (tested). The rule is applied per level and per box.
+
+Also: (1) V4 takes its minimum from the corrected interpolant: the χ² spline on the knots, linear
+in the intervals the same rule selects for ln L = −χ²/2 (with ln L = −χ²/2, (a) is a knot more
+than 4 above the best in χ² and a dip of more than 0.1 below it, (b) a dip of more than 1.0 below
+the best), never a spline value from such an interval. (2) A ground-truth check on the four rows
+flagged (t2_s0_l0_P_d0_b0 at λ 5.63 and 6.15, t1_s0_l0_R at r 0.14, t1_s0_l0_P_d2_b0 at λ 1.70):
+real fits inside each gap the rule selects (60 evenly spaced, from the gap's better knot; 60 more
+at the midpoints, and once more, until at least 50 converge with contacts), then every box and
+level: the corrected ln Z from the scan's points within 0.05 of the ground truth (the same rule
+on the scan's points and the fits together, valid where it agrees with the exponential-between-
+points rule within 0.05). Reported before the gates run. (3) A narrow R3 box with no knot inside
+it is reported "not determined"; it is listed per row. (4) Every ln Z is recomputed from the
+existing points (no scan is rerun); each row keeps the spline-only values beside the corrected
+ones and the result as it was is kept beside it; every changed value is reported with its size.
+Test: the λ = 5.63 row from Stage 1's points, the spline alone reproducing the stored +16,941.
