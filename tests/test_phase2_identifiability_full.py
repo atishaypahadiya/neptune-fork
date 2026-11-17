@@ -940,3 +940,146 @@ def test_a_narrow_box_in_a_selected_interval_compares_the_spline_alone():
     f = F.sixth_fields(pts, "P", (1.0,), h, filled=[[-7.676, -6.259]])
     assert all(o["box"] != "r3_1" for o in f["not_determined_overlap"])  # listed once, above
     assert any(o["box"] == "r3_2" for o in f["not_determined_overlap"])
+
+
+# ---- amendment 4: the strength integral by adaptive refinement
+
+
+def _chi2(x, x0=-6.7, w=0.1):
+    """A profile whose ln L is no polynomial, so no spline reproduces it exactly."""
+    return 40.0 * (math.sqrt(1.0 + ((x - x0) / w) ** 2) - 1.0)
+
+
+def _exact_ln_z(x0=-6.7, w=0.1, ln_s=3.0, bx=(-9.0, -5.0)):
+    from scipy.integrate import quad
+
+    v, _ = quad(lambda x: math.exp(-0.5 * _chi2(x, x0, w)), *bx, points=[x0], limit=400,
+                epsabs=0, epsrel=1e-12)  # fmt: skip
+    return math.log(v) - ln_s - math.log(bx[1] - bx[0])
+
+
+def _exact_fit(x0=-6.7, w=0.1, ln_s=3.0):
+    calls = []
+
+    def fit(x, pts):
+        calls.append(x)
+        return _knot(float(x), _chi2(x, x0, w)) | {"ln_s": ln_s, "kind": F.A4_KIND}
+
+    return fit, calls
+
+
+def _sparse(x0=-6.7, w=0.1, ln_s=3.0, xs=None):
+    xs = np.linspace(-9.0, -5.0, 9) if xs is None else xs
+    return [_knot(float(x), _chi2(float(x), x0, w)) | {"ln_s": ln_s} for x in xs]
+
+
+def test_the_refined_integral_of_a_gaussian_is_exact():
+    """Amendment 4, B.7: the spline on many knots, each interval in A4_NSUB exponential steps.
+    The steps' chord error is about h² / (12 w²) = 3 × 10⁻⁶ here (h the step, w the width), far
+    below the smallest row tolerance (τ_m / 2 = 0.0025)."""
+    w, ln_s = 0.013, 3.0
+    pts = [_knot(float(x), ((x + 6.7) / w) ** 2) | {"ln_s": ln_s}
+           for x in np.linspace(-9.0, -5.0, 801)]  # fmt: skip
+    want = math.log(math.sqrt(2 * math.pi) * w) - ln_s - math.log(4.0)
+    assert F.row_ln_z(pts, 1.0, (-9.0, -5.0)) == pytest.approx(want, abs=1e-5)
+
+
+def test_refinement_reaches_the_tolerance_on_sparse_knots():
+    """Amendment 4, B.2 to B.4: from 9 knots 0.5 decade apart the estimate drives midpoint fits
+    until it is below the tolerance, and the integral then lies within it of the exact one."""
+    fit, _ = _exact_fit()
+    bx = [("prior", (-9.0, -5.0))]
+    r = F.refine_row(_sparse(), (1.0,), bx, fit, "full", {"prior": 0.0025})
+    assert r["status"] == "converged" and 0 < r["fits"] < F.A4_CAP
+    pts = _sparse() + r["new"]
+    assert abs(F.row_ln_z(pts, 1.0, (-9.0, -5.0)) - _exact_ln_z()) < 0.0025
+    _, _, e = F.row_estimates(pts, (1.0,), (-9.0, -5.0))
+    assert e.sum() < 0.0025
+
+
+def test_the_guard_finds_the_lambda_563_overshoot_and_fits_remove_it():
+    """Amendment 4, B.3: in the stored row the gap from x −7.68 to −6.26 holds one coarse call
+    (−7.0), a knot under amendment 4; the guard selects the interval from it to −6.26. With
+    fits from a smooth stand-in for the row the guard holds nowhere at the end."""
+    pts, _, _ = _overshoot_row()
+    b = F.box("P")
+    g = F.guard_intervals(pts, (1.0,), b)
+    assert any(a == pytest.approx(-7.0, abs=1e-6) and c == pytest.approx(-6.259, abs=1e-3)
+               for a, c in g)  # fmt: skip
+    kn = F.knots_all(pts)
+    xk = np.array([p["x"] for p in kn])
+    ck = np.array([p["chi2"] for p in kn])
+    sk = np.array([p["ln_s"] for p in kn])
+
+    def fit(x, _):  # χ² and ln s linear between the knots: no overshoot can come from them
+        return _knot(float(x), float(np.interp(x, xk, ck))) | {
+            "ln_s": float(np.interp(x, xk, sk)),
+            "p2": pts[0]["p2"],
+            "kind": F.A4_KIND,
+        }
+
+    r = F.refine_row(pts, (1.0,), [("prior", b)], fit, "guard")
+    assert r["fits"] > 0
+    assert F.guard_intervals(pts + r["new"], (1.0,), b) == []
+    best = max(F._ln_l(p, 1.0) for p in F.knots_all(pts))
+    assert F.row_ln_z(pts + r["new"], 1.0, b) < best
+
+
+def test_guard_mode_makes_no_fit_where_the_guard_holds_nowhere():
+    fit, calls = _exact_fit()
+    pts = _sparse(xs=np.linspace(-9.0, -5.0, 401))
+    r = F.refine_row(pts, (1.0,), [("prior", (-9.0, -5.0))], fit, "guard")
+    assert r["fits"] == 0 and calls == [] and r["status"] == "converged"
+
+
+def test_the_cap_stops_a_row():
+    fit, _ = _exact_fit()
+    r = F.refine_row(_sparse(), (1.0,), [("prior", (-9.0, -5.0))], fit, "full",
+                     {"prior": 1e-12}, cap=20)  # fmt: skip
+    assert r["status"] == "cap" and r["fits"] == 20
+
+
+def test_row_tolerance_is_share_weighted_and_clipped():
+    m = F.A4_TAU_M
+    assert F.row_tolerance(1.0, 144) == m / 2
+    assert F.row_tolerance(0.0, 144) == F.A4_TAU_MAX
+    assert F.row_tolerance(1e-3, 144) == pytest.approx(m / (2 * 144 * 1e-3))
+    assert F.row_tolerance(1e-9, 144) == F.A4_TAU_MAX
+
+
+def test_the_share_floor_decides_guard_or_full_refinement():
+    """Amendment 4 with the floor: a row below 10⁻⁶ in every box and level gets the guard only;
+    at or above it in any box, full refinement; a named validation row always in full."""
+    assert F.refine_mode({"prior": 1e-7, "r3_1": 9e-7}) == "guard"
+    assert F.refine_mode({"prior": 1e-7, "r3_1": 1e-6}) == "full"
+    assert F.refine_mode({"prior": 0.0}, validation=True) == "full"
+
+
+def test_a_plateau_from_the_lower_edge_needs_three_flat_knots():
+    xk = np.array([-9.0, -8.5, -8.0, -7.5, -7.0])
+    assert F._plateau_end(xk, np.array([0.0, 0.004, -0.003, 0.002, -5.0]), -9.0, 0.01) == -7.5
+    assert F._plateau_end(xk, np.array([0.0, 0.004, -0.5, 0.0, 0.0]), -9.0, 0.01) is None
+    assert F._plateau_end(xk + 0.1, np.zeros(5), -9.0, 0.01) is None  # no knot on the edge
+
+
+def test_a_plateau_is_integrated_as_its_mean_times_its_width():
+    xs = np.r_[np.linspace(-9.0, -7.0, 5), np.linspace(-6.9, -5.0, 40)]
+    pts = [_knot(float(x), 0.0 if x <= -7.0 else 1e4) for x in xs]
+    z = F.row_ln_z(pts, 1.0, (-9.0, -5.0), plateau=-7.0)
+    assert z == pytest.approx(math.log(2.0 / 4.0), abs=0.02)
+
+
+def test_stage1_computes_no_gate_without_the_go_file(tmp_path, monkeypatch):
+    """Amendment 4, E: no driver or queue can start the gates; stage1 stops before it
+    schedules or reads anything unless the go file is in the study's cache."""
+    monkeypatch.setattr(F, "CACHE", tmp_path)
+    monkeypatch.setattr(F, "prepare", lambda: pytest.fail("prepare was called"))
+    monkeypatch.setattr(F, "schedule", lambda *a: pytest.fail("schedule was called"))
+    with pytest.raises(SystemExit, match="go_stage1_gates"):
+        F.stage1(1)
+
+
+def test_v4_reads_the_calls_after_amendment_4():
+    s = {"chi2_min": 10.0, "chi2_min_corrected": 9.0, "chi2_min_calls": 9.6, "a4": {}}
+    assert F._v4_chi2(s) == 9.6
+    assert F._v4_chi2({"chi2_min": 10.0, "chi2_min_corrected": 9.0}) == 9.0

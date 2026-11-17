@@ -980,3 +980,124 @@ otherwise it is "not determined" at that level (listed per row with the differen
 selected interval the corrected value is the exponential rule's, so the spline alone is the
 comparison. The six tasks that finish after this addendum are recomputed and filled the same way
 before the gates run.
+
+## Amendment 4, 17 November 2026: the strength integral by adaptive refinement
+
+Written after the seventh addendum's stop rule paused Stage 1 (two filled rows failed the
+prior-box check) and before any gate was computed or any refinement fit made. It replaces the
+integration rules of the sixth and seventh addenda (the straight-line fallback, the gap fill and
+their checks); their records, fits and recomputed results are kept as they are, the values they
+gave kept in each result as `ln_z_before_a4`. Nothing else in the plan changes.
+
+### A. What each gate needs from ln Z (the tolerance)
+
+A row is one strength scan at one radius or longitude; its integral is z_j. A model's ln Z is
+ln Σ_j w_j e^{z_j} (the planet: equal weights over 3 distances × 48 longitudes; the ring: the
+trapezoid over radii; J: one row). An error δ_j in each row moves the model by
+ln Σ_j π_j e^{δ_j} ≈ Σ_j π_j δ_j, where π_j = w_j e^{z_j} / Σ w e^{z} is the row's share.
+
+- V0, V1, V5: no evidence. V2′: Laplace against importance sampling at single points; no
+  strength integral. V6: counts calls; the new fits are calls and count as such.
+- V4: a χ² minimum, not an integral. It reads the smallest χ² among the row's calls; where the
+  χ² spline's minimum lies more than 0.05 below the smallest call (a tenth of V4's 0.5), a call
+  is made there first.
+- V3′: |ln Z(full) − ln Z(half)| < 0.05 for each truth's own model at each level. Both sides
+  carry an integration error of at most τ_m, so their difference carries at most 2τ_m. For
+  integration error to move the measured difference by at most a fifth of the tolerance,
+  2τ_m ≤ 0.05 / 5, so **τ_m = 0.005** in each model's ln Z. With a refined strength integral V3′
+  tests the radius and longitude grids and the integration tolerance; the halved strength
+  spacing of its tasks remains as their initial calls.
+- Readings: grades change at |L| = 1, 3 and 5, and R1 needs a lead of 3. L is a difference of
+  two models, so its error is at most 2τ_m = 0.01; a reading within 0.01 of a boundary is
+  reported as at the boundary. Not binding.
+
+Row tolerance. With N rows in a model's sum, row j is held to
+τ_j = clip(τ_m / (2 N π_j), τ_m / 2, 0.1). Rows held to τ_m/2 contribute at most τ_m/2 in all
+(Σπ ≤ 1); each relaxed row contributes at most 1.05 τ_m / (2N) (e^0.1 − 1 = 0.105), so the
+model's error is at most 1.03 τ_m. A row's share is the largest over boxes and levels, from the
+larger of its spline and exponential values (an upper bound), and is recomputed after each pass.
+
+### B. Refinement
+
+1. **Initial calls.** Every call already made at the row's value that converged with contacts
+   is a knot, of any kind (fine, coarse, tail, gap fill), deduplicated within KNOT_TOL as now;
+   the gap check's fits (sixth addendum, item 2) join their rows as calls. No scan is rerun.
+2. **Error estimate.** For each knot interval inside a box, e_k = |∫ spline(all knots) −
+   ∫ spline(every other knot)| over the interval, divided by the row's integral over the box,
+   at each level; the largest over levels counts. (Every other knot counted from the first, the
+   last always kept; the coarser spline is evaluated over the same interval.)
+3. **Overshoot guard.** Any interval where the spline on all knots rises more than 0.05 above its
+   higher knot while that knot is more than 2 below the row's best knot in ln L, or more than 0.5
+   above the best knot, at any level, gets a real fit at its midpoint whatever its estimate, until
+   the guard holds nowhere (the sixth addendum's limits, now a trigger for fits).
+4. **Step.** Every interval with e_k > ε gets a real fit at its midpoint (warm-started from the
+   nearer knot, from the other on no contact, then from the base elements). ε starts at τ_j / 4
+   and halves when no interval exceeds it while Σ_k e_k ≥ τ_j. Repeat until Σ_k e_k < τ_j in
+   every box and the guard holds nowhere.
+5. **A midpoint that fails.** If it does not converge or finds no contact, the quarter points are
+   tried once; if they fail too, the interval keeps its estimate and is listed.
+6. **Cap: 150 fits per row.**
+7. **The integral** is the spline on the refined knots, each knot interval in 64 steps on which
+   the exponential of the chord is integrated exactly; outside the outermost knots the old
+   linear rule on the other finite calls. No fallback interval remains.
+
+### The share floor
+
+A row whose share is below **10⁻⁶ in every box and level** gets the overshoot guard (B.3) only,
+not the error-driven steps (B.4). After the guard pass every share is recomputed, and any row now
+at or above 10⁻⁶ in some box and level gets full refinement; the shares are recomputed again
+after each refinement pass (at most five times) and a row is refined again wherever its tolerance
+tightened or it crossed the floor.
+
+The bound. A model's sum has at most N = 144 rows, so the rows under the floor carry a share
+below 1.44 × 10⁻⁴ in all. An error δ_j in such a row moves the model's ln Z by
+ln(1 + Σ π_j (e^{δ_j} − 1)). An integral too large (δ_j > 0 from overshoot) is what the guard
+removes, and whatever remains is already inside the computed share, so it moves the model by
+less than 1.44 × 10⁻⁴; an integral too small moves it by less than 1.44 × 10⁻⁴ (e^{δ} − 1),
+which is below **10⁻³** for every δ_j < 2.0 (a row underestimated by less than a factor 7.4). The
+six named validation rows (D) all lie under the floor; their values after the guard pass alone
+are compared with the ground truth and reported as the measured δ (reported, not a pass test).
+
+### C. The plateau toward the lower edge
+
+Where a knot lies on the box's lower edge (strength → 0, no perturber), the plateau is the
+longest run of consecutive knots from that edge whose ln L at the smallest level lies within p of
+the first knot's, if the run has at least 3 knots. It is integrated as L₀ × width (L₀ the mean of
+L over the run's knots, width from the edge to the run's last knot), and only the intervals
+beyond it are refined. The error of that product is at most (e^p − 1) times the plateau's share
+of the row, so p = min(0.01, τ_j).
+
+### D. Validation, before any gate
+
+Ground truth by dense real fits, independent of the refinement: a fit every 0.01 decade where
+ln L at the smallest level lies within 25 of the row's best knot, every 0.05 decade elsewhere in
+the widest box, with the row's calls from before this amendment. It is valid where its spline and
+exponential values agree within τ_j / 2; a row passes where the refined ln Z lies within τ_j of
+it at every level in the prior box (where the ground truth must be valid), and in each R3 box
+where both are determined. Rows: t2_s0_l0_P_d0_b0 at λ 6.02, t4_s0_l0_P_d1_b0 at λ 0.92, the
+four gap rows (t2_s0_l0_P_d0_b0 at λ 5.63 and 6.15, t1_s0_l0_R at r 0.14, t1_s0_l0_P_d2_b0 at
+λ 1.70), and 5 rows drawn by the seed 20261117 from the rows with a share of at least 10⁻³ in
+some box and level after the refinement (sorted by task and value, the named rows left out).
+The six named rows are refined in full whatever their share, so that the validation tests the
+refinement itself.
+
+### E. Stop rule, and who starts the gates
+
+If a validation row fails, or a row with a share of at least 10⁻³ in some box and level ends its
+refinement above its tolerance (at the cap, or with an interval whose fits failed), Stage 1
+pauses and is reported; no further amendment is drafted. Rows with smaller shares that end above
+tolerance are listed with their shares.
+
+The gates run only on an explicit go: `stage1` computes no gate, schedules nothing and reads
+nothing unless the file `go_stage1_gates` exists in the study's cache, written by hand after the
+validation and the refinement are reported. No driver or queue writes it.
+
+### F. Cost
+
+Simulated on the 625 finished rows' knots (the workings are kept with the review records): with
+the floor, about 2,100 error-driven fits in the 178 rows at or above 10⁻⁶ (none at the cap) and
+about 900 guard fits in the rows below it, plus the six named rows in full; the 117 rows of the
+three unfinished tasks add about a fifth. In all about 3,600 fits, at 9 to 21 CPU-s a fit
+(21 s measured on a named row with other jobs running): 9 to 21 CPU-h, 1 to 2 h on 12 workers.
+The validation: about 4,000 fits, 10 to 23 CPU-h. The three unfinished scans: about 11,000
+calls, about 20 CPU-h, about 11 h (one process per task).
