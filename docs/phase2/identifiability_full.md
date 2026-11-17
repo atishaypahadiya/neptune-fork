@@ -851,3 +851,44 @@ linearly, a sensitivity line gives every ln B against G of the readings with and
 values (the values dropped from their tasks; a task whose every value is such is kept whole and
 named); if none was, the line says so. Invariance (item 3) is checked with the code that
 carries this clarification, and the rerun of t3_s0_l0_P_d0_b0 uses it.
+
+### Fifth addendum to amendment 3, 16 November 2026: a second retry at fallback values, and condition 6 in a flat valley
+
+Written after the fourth addendum's check run and approved before it was committed. That run
+reran t3_s0_l0_P_d0_b0's first three longitudes in a scratch cache: invariance held
+(t3_s0_l0_P_d2_b0's first three longitudes bit-identical), but smoke conditions 2 and 6 failed
+at λ = 7.5°, the longitude that fell back to the coarse scan. The task was not relaunched.
+
+**1. A second retry at fallback values (search only).** At 7.5°, 13 calls with no contact lay
+among converged calls with contacts: they were the fine points placed from the previous
+longitude's best, retried (rule B) before any call at 7.5° had converged, so from that best and
+the base elements only; their neighbours fitted later, from this longitude's converged calls,
+have contacts (χ² 2,221 to 3,867, against the best 485). Now, at a value that fell back to the
+coarse scan, every call with no contact made before that value had a converged call with
+contacts is called again under rule B once the fine points are done, from the nearest such call
+then there. A call that then has contacts replaces the first; one that has none is recorded
+again, with one retry more. Each call so made is marked (`retried_again`), and each task
+records per value the calls retried again and the contacts newly found (`retried_again`), which
+the gate reading reports. The fine points of that value are then all its fine points. Nothing
+changes at a value that did not fall back, so invariance (fourth addendum, item 3) still holds.
+
+**2. Smoke condition 6 in a flat valley (written after the λ = 7.5° result; prospective).** At
+7.5° χ² is flat from x = −11 to −10.74 to within 0.01 (the fits' tolerance shows as jitter of
+about 10⁻³): the spline's minimum (485.0116 at −10.74) is 0.0004 below the lowest knot (485.0120
+at −11), so the Δχ² part holds, but it lies 0.26 decade from that knot against h = 0.054.
+In a valley this flat the minimum's position is not determined. From now on: condition 6's
+Δχ² ≤ 1.0 part always applies; its position part (within one fine spacing) is waived when every
+knot between the spline's minimum and the lowest knot lies within Δχ² 0.1 of the lowest knot.
+Every waived case is reported, at the smoke check and at the gate reading (Stage 1's result
+lists condition 6's failures and waived cases for every scan value).
+
+**Tests.** Calls with no contact before a fallback (a stub in which only a start from a
+converged call at the same longitude has contacts) are retried again, find contacts, are marked
+in the point file and counted, and no call with no contact is left below a converged call with
+contacts. Condition 6: the 7.5° shape is waived and passes; a knot between rising by 0.5 fails;
+a spline minimum 1.5 below the lowest knot fails; a minimum within h passes unwaived.
+
+**Before the relaunch.** The three longitudes again from nothing, invariance on the same check,
+and conditions 2 and 6; the task is relaunched as planned only if both hold.
+
+**Unchanged.** Everything else in amendments 1 to 3 and the first four addenda.

@@ -779,3 +779,62 @@ def test_the_sensitivity_drops_linear_values_only():
     assert [s["p2"] for s in out["P"]["scans"]] == [0.0, 0.2618]
     assert kept == ["J"] and out["J"] is res["J"] and out["R"] is res["R"]
     assert F.no_knot_sensitivity({"R": res["R"]}, ())["n_values"] == 0
+
+
+class _StubStart(_StubP):
+    """As _StubP, but a converged fit returns elements marked by its longitude, and in
+    x ∈ (−6.6, −5.9) at λ > 0 only a start so marked has contacts: there a call has no contact
+    unless it starts from a converged call at the same longitude."""
+
+    def call(self, model, extra, start, jac0=None):
+        x, lam = math.log10(extra[0]), extra[2]
+        mark = 0.4 + lam
+        if lam > 0.0 and -6.6 < x < -5.9 and abs(start[0] - mark) > 1e-12:
+            return F.Call(math.inf, 0.0, np.array(start), None, 0, 0, False, no_contact=True)
+        theta = np.array(start, float)
+        theta[0] = mark
+        return F.Call(400.0 * (x - self.x0_of(lam)) ** 2, 0.0, theta, None, 1, 1, True)
+
+
+def test_calls_before_a_fallback_are_retried_again(tmp_path, monkeypatch):
+    """Amendment 3, fifth addendum: the fine points placed from the previous best (λ = 7.5°)
+    have no contact from the starts there were then; after the coarse scan they are called
+    again from this longitude's converged calls, have contacts, and are counted. No call with no
+    contact is then left below a converged call with contacts (smoke condition 2)."""
+    data = _StubStart(lambda lam: -6.26 if lam == 0.0 else -7.5, None)
+    sc, _ = _stub_scanner(tmp_path, monkeypatch, data)
+    monkeypatch.setattr(F.Task, "second_grid", lambda self: np.array([0.0, 0.1309]))
+    out = sc.run()
+    assert sc.coarse_restarts == [0.1309] and out[1]["x_best"] == pytest.approx(-7.5, abs=0.01)
+    (ra,) = sc.retried_again
+    assert ra["p2"] == 0.1309 and ra["calls"] > 0 and ra["found_contacts"] == ra["calls"]
+    at = [p for p in sc.points.calls.values() if F.Points.key(p["p2"], 0)[0] == 0.1309]
+    again = [p for p in at if p.get("retried_again")]
+    assert len(again) == ra["calls"] and all(not p["no_contact"] for p in again)
+    top = max(p["x"] for p in at if p["converged"] and not p["no_contact"])
+    assert not [p for p in at if p["no_contact"] and p["x"] < top]
+    # the rows written to the file carry the mark (a resumed scan does not retry them again)
+    lines = [json.loads(s) for s in sc.points.path.read_text().splitlines()]
+    assert sum(bool(d.get("retried_again")) for d in lines) == ra["calls"]
+
+
+def _knot(x, chi2):
+    return {"x": x, "kind": "fine", "chi2": chi2, "ln_s": 0.0, "converged": True,
+            "no_contact": False}  # fmt: skip
+
+
+def test_condition_6_waives_the_position_in_a_flat_valley_only():
+    """Amendment 3, fifth addendum: as at λ = 7.5° (spline minimum 0.26 decade from the lowest
+    knot, every knot between within 0.01 in χ²), the position test is waived; where a knot
+    between rises by more than 0.1 it is not; Δχ² ≤ 1.0 always applies."""
+    flat = [_knot(-11.0 + 0.05 * k, 485.012 + 0.0004 * k) for k in range(7)]
+    row = {"p2": 0.1309, "x_best": -10.74, "h": 0.054, "chi2_spline_min": 485.0116}
+    c = F.spline_minimum_check(row, flat)
+    assert c["waived"] and c["pass"] and not c["position_ok"]
+    bumpy = [*flat[:3], _knot(-10.85, 485.5), *flat[4:]]
+    assert not F.spline_minimum_check(row, bumpy)["pass"]
+    deep = {**row, "chi2_spline_min": 483.5}
+    assert not F.spline_minimum_check(deep, flat)["pass"]
+    near = {**row, "x_best": -10.98}
+    c = F.spline_minimum_check(near, flat)
+    assert c["pass"] and c["position_ok"] and not c["waived"]

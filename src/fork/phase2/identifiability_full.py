@@ -741,9 +741,12 @@ class Points:
             fh.write(json.dumps(d) + "\n")
         return d
 
-    def add(self, p2, x, call: Call, kind: str, retries: int = 0) -> dict:
+    def add(self, p2, x, call: Call, kind: str, retries: int = 0,
+            retried_again: bool = False) -> dict:  # fmt: skip
         d = {"p2": float(p2), "x": float(x), "kind": kind, **call.row(), "retries": retries,
              "commit": _commit()}  # fmt: skip
+        if retried_again:  # amendment 3, fifth addendum
+            d["retried_again"] = True
         self.calls[self.key(p2, x)] = d
         self.path.parent.mkdir(parents=True, exist_ok=True)
         with self.path.open("a") as fh:
@@ -765,6 +768,7 @@ class Scanner:
         # (the coarse scan's 8 decades); the integrals are clipped to it.
         self.box = box(task.model, max(R3_WIDTHS)) if task.model != "NG" else None
         self.coarse_restarts: list[float] = []  # amendment 3, fourth addendum
+        self.retried_again: list[dict] = []  # amendment 3, fifth addendum
 
     def call(self, p2: float, x: float, kind: str, warm=None) -> dict:
         got = self.points.get(p2, x)
@@ -975,6 +979,34 @@ class Scanner:
                     break
         return lo_n, hi_n
 
+    def _no_contact_keys(self, p2: float) -> list[tuple[float, float]]:
+        k2 = Points.key(p2, 0)[0]
+        return [k for k, d in self.points.calls.items() if k[0] == k2 and d["no_contact"]]
+
+    def retry_again(self, p2: float, keys: list[tuple[float, float]]) -> None:
+        """Amendment 3, fifth addendum: at a value that fell back to the coarse scan, the calls
+        with no contact made before it had a converged call with contacts are called again
+        under rule B, from the nearest such call now there; a call that then has contacts
+        replaces the first, one that has none is recorded again with one retry more."""
+        k2 = Points.key(p2, 0)[0]
+        near = [d for d in self.points.calls.values()
+                if Points.key(d["p2"], 0)[0] == k2
+                and d["converged"] and not d["no_contact"]]  # fmt: skip
+        found = 0
+        for k in keys:
+            d = self.points.calls[k]
+            if not near or not d["no_contact"] or d.get("retried_again"):
+                continue
+            nb = min(near, key=lambda q: (abs(q["x"] - d["x"]), q["x"]))
+            th, jac = self._warm_of(nb)
+            c = self.data.call(self.task.model, self.task.extra(d["x"], p2), th, jac)
+            if not c.no_contact:
+                self.jacs[k] = c.jac
+                found += 1
+            self.points.add(p2, d["x"], c, d["kind"], d["retries"] + 1, retried_again=True)
+        if keys:
+            self.retried_again.append({"p2": p2, "calls": len(keys), "found_contacts": found})
+
     def _from_coarse(self, p2: float):
         """The coarse scan, and the start of the fine points from it; None when no coarse call
         converged with contacts (no contact anywhere in the box at this p2)."""
@@ -1014,14 +1046,22 @@ class Scanner:
                 # Amendment 3, fourth addendum: the fine points placed from the previous
                 # value's best have no knot; this value is scanned as the first one is.
                 self.coarse_restarts.append(p2)
+                early = self._no_contact_keys(p2)
                 got = self._from_coarse(p2)
                 if got is None:
+                    self.retry_again(p2, early)
                     return self._no_knot_row(p2, NO_CONTACT)
                 x0, w, warm = got
                 try:
                     fine, x0, w, h, n = self.fine(p2, x0, w, warm)
                 except NoKnots:
+                    self.retry_again(p2, early)
                     return self._no_knot_row(p2, NO_KNOT)
+                # fifth addendum: the early calls again, with this value's converged calls
+                self.retry_again(p2, early)
+                k2 = Points.key(p2, 0)[0]
+                fine = [p for p in self.points.calls.values()
+                        if p["kind"] == "fine" and Points.key(p["p2"], 0)[0] == k2]  # fmt: skip
         xb, wb = self._best(fine)
         best = min(knots(fine), key=lambda p: p["chi2"])
         widened = []
@@ -1268,6 +1308,7 @@ def run_task(task: Task) -> dict:
             # the likelihood is integrated at those values (linear ln L, no spline)
             "no_contact_in_box": [r["p2"] for r in rows if r.get("flag") == NO_CONTACT],
             "no_knot_linear": [r["p2"] for r in rows if r.get("flag") == NO_KNOT],
+            "retried_again": sc.retried_again,
         }
     calls = list(Points(task.dir / "points.jsonl").calls.values())
     out["calls_summary"] = {
@@ -1582,6 +1623,29 @@ def _noise_free_r1(f: dict, truth: str) -> dict:
             "grade": IDS.grade(abs(lead))}  # fmt: skip
 
 
+FLAT_DCHI2 = 0.1  # amendment 3, fifth addendum: a flat valley for smoke condition 6
+
+
+def spline_minimum_check(row: dict, pts: list[dict]) -> dict:
+    """Smoke condition 6 for one scan value, with the fifth addendum's waiver: the spline's
+    minimum within Δχ² 1.0 below the lowest knot (always), and its position within one fine
+    spacing of that knot, the position test waived when every knot between the two lies within
+    Δχ² FLAT_DCHI2 of the lowest knot (a flat valley)."""
+    if row.get("flag"):
+        return {"p2": row["p2"], "flag": row["flag"], "pass": True, "waived": False}
+    kn = knots(pts)
+    low = min(kn, key=lambda p: p["chi2"])
+    dchi = low["chi2"] - row["chi2_spline_min"]
+    dx = abs(row["x_best"] - low["x"])
+    a, b = sorted((row["x_best"], low["x"]))
+    between = [p["chi2"] - low["chi2"] for p in kn if a <= p["x"] <= b]
+    position = dx <= row["h"] + 1e-12
+    flat = all(d <= FLAT_DCHI2 for d in between)
+    return {"p2": row["p2"], "dchi2": dchi, "dx": dx, "h": row["h"], "position_ok": position,
+            "waived": (not position) and flat,
+            "pass": dchi <= 1.0 and (position or flat)}  # fmt: skip
+
+
 def drop_no_knot(results: dict[str, dict]) -> tuple[dict[str, dict], list[str]]:
     """The results without the values integrated linearly for want of a knot (fourth addendum):
     those rows dropped from their tasks; a task whose every value is such keeps them, listed."""
@@ -1651,6 +1715,25 @@ def readings(results: dict, seeds: tuple[int, ...]) -> dict:
 
 
 @ledger.recorded
+def _condition6(tasks: list[Task], results: dict[str, dict]) -> dict:
+    """Smoke condition 6 on every Stage 1 scan value, with every waived case listed (fifth
+    addendum)."""
+    fails, waived = [], []
+    for t in tasks:
+        r = results.get(t.id, {})
+        if "scans" not in r:
+            continue
+        allp = list(Points(t.dir / "points.jsonl").calls.values())
+        for row in r["scans"]:
+            k2 = Points.key(row["p2"], 0)[0]
+            c = spline_minimum_check(row, [p for p in allp if Points.key(p["p2"], 0)[0] == k2])
+            if c["waived"]:
+                waived.append({"task": t.id, **c})
+            if not c["pass"]:
+                fails.append({"task": t.id, **c})
+    return {"failures": fails, "waived_flat_valley": waived}
+
+
 def stage1(n_workers: int) -> dict:
     prep = prepare()
     tasks = stage1_tasks()
@@ -1667,8 +1750,9 @@ def stage1(n_workers: int) -> dict:
         "gates": gates,
         "fourth_addendum": {
             k: {tid: r[k] for tid, r in results.items() if r.get(k)}
-            for k in ("coarse_restarts", "no_contact_in_box", "no_knot_linear")
+            for k in ("coarse_restarts", "no_contact_in_box", "no_knot_linear", "retried_again")
         },
+        "condition6": _condition6(tasks, results),
         "failed_tasks": failed_tasks(tasks),
     }
     if gates["pass"]:
