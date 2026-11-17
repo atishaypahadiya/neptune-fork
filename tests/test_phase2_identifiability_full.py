@@ -744,3 +744,38 @@ def test_a_task_given_up_is_reported(tmp_path, monkeypatch):
     (tasks[2].dir / "log.txt").write_text("Traceback\nValueError: x\n")
     F._gave_up(tasks[2], 1, 2)
     assert F.failed_tasks(tasks) == ["t2_s0_l0_J", "t3_s0_l0_P_d0_b0"]
+
+
+def test_no_knot_after_the_coarse_scan_is_integrated_linearly_and_counted_apart(
+    tmp_path, monkeypatch
+):
+    """Amendment 3, fourth addendum (clarification): contacts only at the coarse scan's
+    strengths, so the fine points from its best have no knot. The value is flagged, counted
+    apart from the coarse restarts (its integral is ln L linear between the coarse points, not
+    the spline), and finite."""
+    on_grid = lambda x: abs(x * 10.0 - round(x * 10.0)) < 1e-6  # noqa: E731
+    data = _StubP(lambda lam: -6.26 if lam == 0.0 else -7.53,
+                  lambda x, lam: lam > 0.0 and not on_grid(x))  # fmt: skip
+    sc, _ = _stub_scanner(tmp_path, monkeypatch, data)
+    monkeypatch.setattr(F.Task, "second_grid", lambda self: np.array([0.0, 0.1309]))
+    out = sc.run()
+    assert out[0].get("flag") is None and out[1]["flag"] == F.NO_KNOT
+    assert sc.coarse_restarts == [0.1309]
+    pts = [p for p in sc.points.calls.values() if F.Points.key(p["p2"], 0)[0] == 0.1309]
+    assert not F.knots(pts) and any(p["kind"] == "coarse" and not p["no_contact"] for p in pts)
+    assert math.isfinite(F.ln_z_strength(pts, 1.0, F.box("P"), out[1]["h"]))
+
+
+def test_the_sensitivity_drops_linear_values_only():
+    """The gate reading's line with and without the values integrated linearly: those rows are
+    dropped; a task whose only value is such is kept whole and listed; none, no change."""
+    rows = [{"p2": 0.0}, {"p2": 0.1309, "flag": F.NO_KNOT}, {"p2": 0.2618, "flag": F.NO_CONTACT}]
+    res = {
+        "P": {"scans": rows, "no_knot_linear": [0.1309]},
+        "J": {"scans": [{"p2": 0.0, "flag": F.NO_KNOT}], "no_knot_linear": [0.0]},
+        "R": {"scans": [{"p2": 0.1}], "no_knot_linear": []},
+    }
+    out, kept = F.drop_no_knot(res)
+    assert [s["p2"] for s in out["P"]["scans"]] == [0.0, 0.2618]
+    assert kept == ["J"] and out["J"] is res["J"] and out["R"] is res["R"]
+    assert F.no_knot_sensitivity({"R": res["R"]}, ())["n_values"] == 0

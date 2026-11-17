@@ -836,3 +836,18 @@ in the box: recorded, flagged, ln Z = −∞, the next longitude scanned. A task
 listed by the status check, from the driver's log and from its marker.
 
 **Unchanged.** Everything else in amendments 1 to 3 and the first three addenda.
+
+**Fourth addendum, clarification (16 November 2026, before any task ran with it).** The
+addendum above says it changes the search procedure only. That holds for item 1 and for the
+"no contact in box" case of item 2, which set nothing that was not already zero likelihood
+(item 3). It does not hold for the "no knot after the coarse scan" case of item 2: there the
+likelihood at that value is integrated by ln L linear between its finite points, not by the
+spline on knots (item 4 and the second addendum), so that case changes how the likelihood is
+integrated as well as the search. It is therefore counted apart: each task lists its coarse
+restarts (`coarse_restarts`, the search), its values with no contact in the box
+(`no_contact_in_box`) and its values integrated linearly (`no_knot_linear`) separately, and
+Stage 1's result collects the three. At the gate reading, if any value was integrated
+linearly, a sensitivity line gives every ln B against G of the readings with and without those
+values (the values dropped from their tasks; a task whose every value is such is kept whole and
+named); if none was, the line says so. Invariance (item 3) is checked with the code that
+carries this clarification, and the rerun of t3_s0_l0_P_d0_b0 uses it.

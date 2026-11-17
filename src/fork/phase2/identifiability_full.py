@@ -320,6 +320,9 @@ class OutsideDomain(Exception):
     """Elements outside a > 0, 0 ≤ e < 1, where ``elements_to_state`` gives no orbit."""
 
 
+NO_CONTACT, NO_KNOT = "no contact in box", "no knot after the coarse scan"
+
+
 class NoKnots(Exception):
     """A fine grid with no knot: no fine point converged with contacts (amendment 3, fourth
     addendum)."""
@@ -997,12 +1000,12 @@ class Scanner:
             # only adds the case of no call with contacts in it
             got = self._from_coarse(p2)
             if got is None:
-                return self._no_knot_row(p2, "no contact in box")
+                return self._no_knot_row(p2, NO_CONTACT)
             x0, w, warm = got
             try:
                 fine, x0, w, h, n = self.fine(p2, x0, w, warm)
             except NoKnots:
-                return self._no_knot_row(p2, "no knot after the coarse scan")
+                return self._no_knot_row(p2, NO_KNOT)
         else:
             x0, w = guess
             try:
@@ -1013,12 +1016,12 @@ class Scanner:
                 self.coarse_restarts.append(p2)
                 got = self._from_coarse(p2)
                 if got is None:
-                    return self._no_knot_row(p2, "no contact in box")
+                    return self._no_knot_row(p2, NO_CONTACT)
                 x0, w, warm = got
                 try:
                     fine, x0, w, h, n = self.fine(p2, x0, w, warm)
                 except NoKnots:
-                    return self._no_knot_row(p2, "no knot after the coarse scan")
+                    return self._no_knot_row(p2, NO_KNOT)
         xb, wb = self._best(fine)
         best = min(knots(fine), key=lambda p: p["chi2"])
         widened = []
@@ -1261,6 +1264,10 @@ def run_task(task: Task) -> dict:
             "scans": rows,
             "coarse_restarts": sc.coarse_restarts,
             "flagged": [{"p2": r["p2"], "flag": r["flag"]} for r in rows if "flag" in r],
+            # counted apart: the first changes the search only; the second also changes how
+            # the likelihood is integrated at those values (linear ln L, no spline)
+            "no_contact_in_box": [r["p2"] for r in rows if r.get("flag") == NO_CONTACT],
+            "no_knot_linear": [r["p2"] for r in rows if r.get("flag") == NO_KNOT],
         }
     calls = list(Points(task.dir / "points.jsonl").calls.values())
     out["calls_summary"] = {
@@ -1575,6 +1582,43 @@ def _noise_free_r1(f: dict, truth: str) -> dict:
             "grade": IDS.grade(abs(lead))}  # fmt: skip
 
 
+def drop_no_knot(results: dict[str, dict]) -> tuple[dict[str, dict], list[str]]:
+    """The results without the values integrated linearly for want of a knot (fourth addendum):
+    those rows dropped from their tasks; a task whose every value is such keeps them, listed."""
+    out, kept = {}, []
+    for tid, r in results.items():
+        if "scans" not in r or not r.get("no_knot_linear"):
+            out[tid] = r
+            continue
+        rows = [s for s in r["scans"] if s.get("flag") != NO_KNOT]
+        if rows:
+            out[tid] = {**r, "scans": rows}
+        else:
+            out[tid] = r
+            kept.append(tid)
+    return out, kept
+
+
+def no_knot_sensitivity(results: dict[str, dict], seeds: tuple[int, ...]) -> dict:
+    """The gate reading's sensitivity line (fourth addendum): every ln B against G of the
+    readings with and without the values integrated linearly for want of a knot."""
+    n = sum(len(r.get("no_knot_linear", [])) for r in results.values())
+    if n == 0:
+        return {"n_values": 0, "note": "no such value: the readings are unaffected"}
+    without, kept = drop_no_knot(results)
+    a, b = readings(results, seeds)["ln_b_vs_G"], readings(without, seeds)["ln_b_vs_G"]
+    diff = {k: {m: b[k][m] - a[k][m] for m in a[k]} for k in a}
+    worst = max((abs(v), k, m) for k, d in diff.items() for m, v in d.items())
+    return {
+        "n_values": n,
+        "tasks_kept_whole": kept,
+        "ln_b_vs_G_with": a,
+        "ln_b_vs_G_without": b,
+        "change": diff,
+        "largest_change": {"abs": worst[0], "where": worst[1], "model": worst[2]},
+    }
+
+
 def readings(results: dict, seeds: tuple[int, ...]) -> dict:
     """The earlier plan's § 7: R1 at the calibrated level (noise-free only without seeds),
     R2, R3 on noise-free data, R4 on noise-free data at the three levels (its noisy part is
@@ -1621,9 +1665,15 @@ def stage1(n_workers: int) -> dict:
         "sigma1_s": prep["sigma1_s"],
         "n_kept": prep["n_kept"],
         "gates": gates,
+        "fourth_addendum": {
+            k: {tid: r[k] for tid, r in results.items() if r.get(k)}
+            for k in ("coarse_restarts", "no_contact_in_box", "no_knot_linear")
+        },
+        "failed_tasks": failed_tasks(tasks),
     }
     if gates["pass"]:
         out["readings"] = readings(results, ())
+        out["no_knot_sensitivity"] = no_knot_sensitivity(results, ())
         out["readings"]["note"] = (
             "R1 and R4 on noise-free data only, reported as such and "
             "not as R1 or R4; R2 on noise-free data; R3 complete"
