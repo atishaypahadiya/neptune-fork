@@ -1624,6 +1624,31 @@ def _noise_free_r1(f: dict, truth: str) -> dict:
 
 
 FLAT_DCHI2 = 0.1  # amendment 3, fifth addendum: a flat valley for smoke condition 6
+COND2_DCHI2 = 200.0  # fifth addendum, note: condition 2 is judged within this of the best
+
+
+def no_contact_check(row: dict, pts: list[dict]) -> dict:
+    """Smoke condition 2 for one scan value, as the fifth addendum's note restates it: a call
+    with no contact below the value's highest converged call with contacts is start-dependent;
+    it blocks if the lower χ² of its nearest converged neighbours with contacts (one on each
+    side, or the one there is) lies within COND2_DCHI2 of the value's best, and is counted and
+    reported, not blocking, otherwise."""
+    conv = sorted((p for p in pts if p["converged"] and not p["no_contact"]),
+                  key=lambda p: p["x"])  # fmt: skip
+    if not conv:
+        return {"p2": row["p2"], "inside": [], "outside": [], "pass": True}
+    best = min(p["chi2"] for p in conv) if row.get("chi2_min") is None else row["chi2_min"]
+    top = conv[-1]["x"]
+    inside, outside = [], []
+    for p in pts:
+        if not p["no_contact"] or p["x"] >= top:
+            continue
+        lo = [q for q in conv if q["x"] < p["x"]]
+        hi = [q for q in conv if q["x"] > p["x"]]
+        nb = [q["chi2"] for q in (lo[-1:] + hi[:1])]
+        d = min(nb) - best
+        (inside if d <= COND2_DCHI2 else outside).append({"x": p["x"], "dchi2_neighbours": d})
+    return {"p2": row["p2"], "inside": inside, "outside": outside, "pass": not inside}
 
 
 def spline_minimum_check(row: dict, pts: list[dict]) -> dict:
@@ -1714,10 +1739,10 @@ def readings(results: dict, seeds: tuple[int, ...]) -> dict:
     return out
 
 
-def _condition6(tasks: list[Task], results: dict[str, dict]) -> dict:
-    """Smoke condition 6 on every Stage 1 scan value, with every waived case listed (fifth
-    addendum)."""
-    fails, waived = [], []
+def _conditions_2_and_6(tasks: list[Task], results: dict[str, dict]) -> dict:
+    """Smoke conditions 2 and 6 on every Stage 1 scan value, as the fifth addendum and its note
+    restate them, with every waived case and every no-contact call outside Δχ² 200 listed."""
+    fails, waived, c2_in, c2_out = [], [], [], []
     for t in tasks:
         r = results.get(t.id, {})
         if "scans" not in r:
@@ -1725,12 +1750,17 @@ def _condition6(tasks: list[Task], results: dict[str, dict]) -> dict:
         allp = list(Points(t.dir / "points.jsonl").calls.values())
         for row in r["scans"]:
             k2 = Points.key(row["p2"], 0)[0]
-            c = spline_minimum_check(row, [p for p in allp if Points.key(p["p2"], 0)[0] == k2])
+            at = [p for p in allp if Points.key(p["p2"], 0)[0] == k2]
+            c2 = no_contact_check(row, at)
+            c2_in += [{"task": t.id, "p2": row["p2"], **d} for d in c2["inside"]]
+            c2_out += [{"task": t.id, "p2": row["p2"], **d} for d in c2["outside"]]
+            c = spline_minimum_check(row, at)
             if c["waived"]:
                 waived.append({"task": t.id, **c})
             if not c["pass"]:
                 fails.append({"task": t.id, **c})
-    return {"failures": fails, "waived_flat_valley": waived}
+    return {"failures": fails, "waived_flat_valley": waived,
+            "condition2_inside_200": c2_in, "condition2_outside_200": c2_out}  # fmt: skip
 
 
 @ledger.recorded
@@ -1752,7 +1782,7 @@ def stage1(n_workers: int) -> dict:
             k: {tid: r[k] for tid, r in results.items() if r.get(k)}
             for k in ("coarse_restarts", "no_contact_in_box", "no_knot_linear", "retried_again")
         },
-        "condition6": _condition6(tasks, results),
+        "conditions_2_and_6": _conditions_2_and_6(tasks, results),
         "failed_tasks": failed_tasks(tasks),
     }
     if gates["pass"]:

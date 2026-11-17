@@ -838,3 +838,23 @@ def test_condition_6_waives_the_position_in_a_flat_valley_only():
     near = {**row, "x_best": -10.98}
     c = F.spline_minimum_check(near, flat)
     assert c["pass"] and c["position_ok"] and not c["waived"]
+
+
+def _call(x, chi2, nc=False):
+    return {"x": x, "kind": "fine", "chi2": math.inf if nc else chi2, "ln_s": 0.0,
+            "converged": not nc, "no_contact": nc}  # fmt: skip
+
+
+def test_condition_2_blocks_only_within_200_of_the_best():
+    """The fifth addendum's note: a start-dependent no-contact call (below the highest converged
+    call with contacts) blocks only where its neighbours lie within Δχ² 200 of the best; the
+    λ = 7.5° case (neighbours at 3,435 and 3,655, best 485) is counted, not blocking."""
+    row = {"p2": 0.1309, "chi2_min": 485.0}
+    far = [_call(-11.0, 485.0), _call(-6.2076, 3435.1), _call(-6.2, 0, nc=True),
+           _call(-6.1904, 3654.7), _call(-6.0, 0, nc=True)]  # fmt: skip
+    c = F.no_contact_check(row, far)
+    assert c["pass"] and not c["inside"] and [d["x"] for d in c["outside"]] == [-6.2]
+    near = [_call(-7.5, 485.0), _call(-7.0, 600.0), _call(-6.9, 0, nc=True), _call(-6.8, 650.0)]
+    c = F.no_contact_check(row, near)
+    assert not c["pass"] and [d["x"] for d in c["inside"]] == [-6.9]
+    assert c["inside"][0]["dchi2_neighbours"] == pytest.approx(115.0)

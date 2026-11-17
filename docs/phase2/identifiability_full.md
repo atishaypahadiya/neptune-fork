@@ -892,3 +892,21 @@ a spline minimum 1.5 below the lowest knot fails; a minimum within h passes unwa
 and conditions 2 and 6; the task is relaunched as planned only if both hold.
 
 **Unchanged.** Everything else in amendments 1 to 3 and the first four addenda.
+
+**Fifth addendum, note: smoke condition 2 restated (16 November 2026, written after the λ = 7.5°
+rerun).** The rerun of t3_s0_l0_P_d0_b0's first three longitudes with the fifth addendum (commit
+c8ddc32) gave invariance bit-identical and condition 6 met (waived at 7.5° as a flat valley),
+but one call still failed condition 2: the coarse point at x = −6.2 at 7.5°, made by the
+fallback's own coarse scan and retried from the nearest converged call then there (x = −6.3),
+with no contact; the second retry later found contacts on either side of it (χ² 3,435 at −6.2076
+and 3,655 at −6.1904, against the best 485). Rule B retries once, from whatever converged
+neighbour exists when the call is made, so whether such a call has contacts can depend on the
+order of the calls. Rather than widen the retries again, condition 2 is restated, and applies
+from now on: a call with no contact below a value's highest converged call with contacts blocks
+only where its nearest converged neighbours with contacts (the lower χ² of the one on each side)
+lie within Δχ² = 200 of that value's best. There any point's weight could matter. Beyond it a
+point's weight relative to the best is below e⁻¹⁰⁰ at level 1 and e⁻²⁵ at the largest level, 2,
+far below the 0.05 in ln Z the integrals are held to, so such calls are counted and reported
+at the gate reading (Stage 1's result lists both kinds for every scan value) but do not block.
+The call at −6.2 is of the second kind. Test: that case counted and not blocking; a no-contact
+call between neighbours 115 above the best blocking.
