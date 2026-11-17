@@ -1101,3 +1101,129 @@ three unfinished tasks add about a fifth. In all about 3,600 fits, at 9 to 21 CP
 (21 s measured on a named row with other jobs running): 9 to 21 CPU-h, 1 to 2 h on 12 workers.
 The validation: about 4,000 fits, 10 to 23 CPU-h. The three unfinished scans: about 11,000
 calls, about 20 CPU-h, about 11 h (one process per task).
+
+## Deviation 1, 17 November 2026: outcome of the design review required by the seventh addendum: adaptive integration
+
+**Label.** The plan defines no kind of change made after results. Amendments 1 to 3 were all
+written before results: amendment 1 "after the runner's smoke test and before any scan in the
+study's cache", amendment 2 "after Stage 1's first launch was stopped and before it is launched
+again", amendment 3 "after amendment 2's smoke test and before Stage 1 is launched again". From
+the sixth addendum on, changes were written after Stage 1's per-row ln Z values were seen, and
+the seventh addendum closes further addenda. This change comes after those values were seen, so
+it is logged as a deviation, with the table in § 6, not as an amendment.
+
+The section above headed "Amendment 4" (commit ff9a51b, 17 November, 11:42) is this rule's first
+form. It was committed before this label was ruled and stands as committed; it is superseded by
+this section and is not in force on its own. Where the two differ, this section holds.
+
+### 1. Reported regardless of the outcome
+
+The seventh addendum's prior-box check failed in two filled rows; its stop rule paused Stage 1
+on 17 November at 01:01. The values (corrected ln Z minus the exponential-between-points rule,
+over the prior box; tolerance 0.05):
+
+| row | level 1 | level 0.5 | level 2 |
+|---|---|---|---|
+| t2_s0_l0_P_d0_b0, λ 6.0214 (345.0°) | −231.1537 − (−231.4837) = +0.3300 | −674.9857 − (−676.0386) = +1.0528 | −116.5174 − (−116.6108) = +0.0934 |
+| t4_s0_l0_P_d1_b0, λ 0.9163 (52.5°) | −452.0893 − (−452.1874) = +0.0981 | −1553.4040 − (−1553.8124) = +0.4085 | −172.7674 − (−172.8101) = +0.0427 (passes) |
+
+**At both longitudes the likelihood peaks below the prior box.** At every level ln L is largest at
+x = −11.0, the scan box's lower edge, two decades below the prior box's −9 (smallest χ² 289.97 in
+t2 and 709.13 in t4, both at the lowest strengths scanned; the calls stay within 20 of that
+minimum from x = −11 up to −8.53 in t2 and −9.07 in t4). Inside the prior box the integrand is then
+largest at its lower edge, and x = −9 is not a knot: the nearest knots are −9.068 and −8.527 in t2,
+−9.065 and −8.943 in t4. In t4 the result's `x_best` field reads −7.178 with `best_at_box_edge`
+"low"; the smallest χ² among its calls lies at −11.0. These facts are stated whatever the values
+after this rule are.
+
+### 2. The rule
+
+Applied to every row of every Stage 1 task (every value of the second parameter of every model
+with a strength scan), whether its checks passed or failed. The data, likelihood, models,
+priors, boxes, levels and estimand are unchanged. The integral is unchanged too: the plan's
+rule (`ln_z_strength`, the spline on the box's knots with amendment 3's addenda). The rule
+only adds real fits to a row's points; ln Z is then recomputed by that rule.
+
+1. **Pins at every integration boundary.** The boundaries are the edges of the prior box and of
+   the five R3 boxes (`r3_1`, `r3_2`, `r3_4`, `r3_6`, `r3_8`): for the planet and the ring −11,
+   −10, −9, −8, −7.5, −6.5, −6, −5, −4, −3 (ten; the prior box is `r3_4`); for J2 −7.5, −7,
+   −6.5, −5.5, −4.5, −4, −3, −2.5, −2, −1.5, −0.5, 0.5 (twelve). A real fit is made exactly
+   at each boundary unless a call within 10⁻⁹ decade of it converged with contacts, or a pin was
+   already tried there. It is a fine point stamped "edge pin" with its commit; one that
+   converges with contacts is a knot on the edge (the third addendum's edge rule then uses
+   it); one with no contact from every start is recorded and not tried again.
+2. **Refinement** as in amendment 4, B.2 to B.6 (the error estimate from every other knot, the
+   overshoot guard, midpoint fits until Σ e < τ_j in every box and the guard holds nowhere,
+   quarter points after a failed midpoint, a cap of 150 fits per row, the pins not counted),
+   on the box's knots as the plan defines them (fine points that converged with contacts, and
+   the box-edge calls). Refinement fits are fine points stamped "refine". The guard is the
+   sixth addendum's selection itself, so once it holds nowhere that addendum's rule selects
+   nothing and the integral is the plain spline.
+3. **The convergence criterion** is amendment 4's tolerance: τ_m = 0.005 in each model's ln Z
+   (from V3′), each row held to τ_j = clip(τ_m / (2 N π_j), τ_m / 2, 0.1).
+4. **The share floor** as stated under amendment 4: below 10⁻⁶ in every box and level, the pins
+   and the guard only; shares recomputed after that pass and after each refinement pass, and
+   any row then at or above 10⁻⁶ gets full refinement. The six named validation rows are
+   refined in full whatever their share.
+5. **Kept from amendment 4:** the gap check's fits join their rows (B.1); V4 (A); the
+   validation (D); the stop rule and the go file (E).
+6. **Not used from amendment 4:** its own integrator (B.7), its knots of any kind (B.1: coarse
+   and tail calls stay non-knots, as the plan has them), and the plateau (C).
+7. **Unresolved boxes.** A box whose estimate ends at or above its tolerance, or where the guard
+   still selects an interval, is listed per row and level with its values (`above_tolerance`,
+   `guard_left`); an R3 box so listed is "not determined" under the seventh addendum's
+   narrow-box rule. No value is changed by hand.
+
+### 3. The smoke test (its conditions fixed now, before it runs)
+
+From the committed code, into a fresh copy of the cache (the inputs only: `prepared.json`,
+`scans/`, `gapcheck/`). Rows: t2_s0_l0_P_d0_b0 at λ 6.1523 (the filled row that passed the
+seventh addendum's check), and the two that failed it (t2_s0_l0_P_d0_b0 at λ 6.0214,
+t4_s0_l0_P_d1_b0 at λ 0.9163). All three are named validation rows, so each gets the pins and
+the guard, then full refinement at its tolerance. The results are not rewritten.
+
+- **(a) Bit-identity.** A stub row with a knot on every boundary and no interval above its
+  estimate gets no pin and no fit, and its ln Z in all six boxes at every level is bit-identical
+  to the value from the same points before the rule.
+- **(b) The passing row.** After the rule it still passes the check in all six boxes at every
+  level: the spline within 0.05 of the exponential-between-points rule on the same points.
+- **(c) Corrections.** Any change in ln Z above 0.05 on a row that had not failed a check is
+  flagged as a correction and listed by row, box and level. Every change is reported with its
+  size. Flags are reported, not gated; the same holds in the full recompute.
+- **The two failing rows:** the check in every box and level after the rule, the pins and fits
+  used, and whether each ends below its tolerance within the cap.
+
+The smoke test is reported and nothing further runs until the go.
+
+### 4. Order after the smoke test, each step on the go
+
+The full recompute (every finished row, by § 2; every change and correction reported); the
+seventh addendum's check on every row in every box; resuming the three suspended scans
+(t3_s0_l0_P_d0_b0, t4_s0_l0_P_d0_b0, t2_s0_l0_R_half), whose rows then get this rule; the
+validation; and the gates, which `stage1` computes only when the go file exists.
+
+### 5. Cost
+
+On the 625 finished rows: 5,099 pins (counted on the cache); refinement about 3,000 fits (by
+the simulation on the existing knots, before the pins); together about 8,100 fits, at 9 to 21
+CPU-s each 20 to 47 CPU-h, 2 to 4 h on 12 workers. The smoke test: about 27 pins and up to 450 fits, under 3 h on 3 workers.
+
+### 6. Deviation table (the format of Willroth & Atherton, 2024, *Advances in Methods and Practices in Psychological Science*)
+
+| original plan | deviation | reason | timing | effect on the estimate |
+|---|---|---|---|---|
+| Item 6 and amendment 3 with its addenda: fine points placed from the previous value's best at a spacing from the width estimate; a box edge is a knot only where a call lies on it; the sixth addendum's straight-line rule and the seventh's gap fill where the spline overshoots. | Real fits pinned at every integration boundary of every row (ten for the planet and the ring, twelve for J2), then midpoint fits until a share-weighted error estimate lies below τ_j (τ_m = 0.005) and the overshoot guard selects nothing; rows below a share of 10⁻⁶ get the pins and the guard only. The integral itself is unchanged. | The seventh addendum's prior-box check failed in two rows, and its stop rule calls for a design review of the fine-grid placement. In both rows the likelihood peaks below the prior box and the box's lower edge is not a knot. | Written on 17 November 2026, after Stage 1's per-row ln Z values had been seen (from the sixth addendum, 16 November), after the check's failures (17 November, 01:01), after a simulation of the refinement on the finished rows' knots and their shares, after a rehearsal of the code on a scratch copy of the cache (§ 7), and after amendment 4's text was committed (ff9a51b). Before any integral by the committed rule on the study's cache, and before any gate, reading or Bayes factor. | Not known before the run. Every row's ln Z in every box may change; every change is reported with its size beside the value before, and changes above 0.05 on rows that had passed are flagged as corrections. Readings use only the values after. |
+| The plan's change log: amendments 1 to 3, each written before results; then addenda to amendment 3, the seventh closing further addenda. | This change is recorded as Deviation 1, the outcome of the design review the seventh addendum requires; the section headed "Amendment 4" above is its superseded first form. | The plan defines no kind of change made after results. | As above; the label was ruled after ff9a51b was committed. | None on the estimate; a matter of labelling, recorded. |
+
+### 7. What was run and seen before this was written
+
+- The refinement simulation on the 625 finished rows' existing knots (no fits): fit counts by
+  row and the rows' shares of their models' sums; 178 rows at or above 10⁻⁶ in some box and level.
+  Model sums were formed only to compute shares; no model's ln Z was printed or compared with
+  another's.
+- A rehearsal on code not yet committed, on a scratch copy of the cache, 17 November 11:34 to
+  11:38. A rehearsal, not validation; its outputs are kept, labelled as such, and were seen:
+  the J row t1_s0_l0_J refined in full needed no fit and its ln Z moved by at most 10⁻⁴; on
+  t4_s0_l0_P_d1_b0 at λ 0.9163, with the cap set to 8, 8 real fits were made (21 CPU-s each, one
+  not converged, followed by its quarter points).
+- No gate, reading or Bayes factor has been computed.

@@ -1905,7 +1905,7 @@ def gates_stage1(prep: dict, results: dict, n_workers: int) -> dict:
             ids = [k for k in results if k.startswith(f"t{t}_s0_l0_{own}") and "half" not in k]
             # sixth addendum, item 1: the corrected interpolant's minimum, never a spline value
             # from an interval the rule integrates by the exponential-between-points rule
-            # (amendment 4, A: the smallest call where the result was refined)
+            # (deviation 1: the smallest call where the result was refined)
             v4[TRUTHS[t - 1]] = min(_v4_chi2(s) for k in ids for s in results[k]["scans"]
                                     if s["chi2_min"] is not None)  # fmt: skip
     v6 = v6_check(results)
@@ -2108,8 +2108,8 @@ def _conditions_2_and_6(tasks: list[Task], results: dict[str, dict]) -> dict:
 
 @ledger.recorded
 def stage1(n_workers: int) -> dict:
-    if not (CACHE / A4_GO).exists():  # amendment 4, E: the gates run only on the go file
-        raise SystemExit(f"Stage 1: no gate is computed without {CACHE / A4_GO} (amendment 4, E)")
+    if not (CACHE / D1_GO).exists():  # deviation 1: the gates run only on the go file
+        raise SystemExit(f"Stage 1: no gate is computed without {CACHE / D1_GO} (deviation 1)")
     prep = prepare()
     tasks = stage1_tasks()
     if not schedule(tasks, n_workers):
@@ -2329,55 +2329,249 @@ def spot_sample(tasks: list[Task]) -> list[tuple[str, int, str]]:
     return [(k[0], k[1], why) for k, why in sorted(picked.items())]
 
 
-# ---------------------------------------------------------------------------- amendment 4
+# ---------------------------------------------------------------------------- deviation 1
 
-# Amendment 4: the strength integral by adaptive refinement (replaces the sixth and seventh
-# addenda's integration rules; their records are kept).
-A4_TAU_M = 0.005  # each model's ln Z (from V3′'s 0.05: 2 τ_m ≤ 0.05 / 5)
-A4_TAU_MAX = 0.1  # the loosest row tolerance
-A4_CAP = 150  # refinement fits per row
-A4_FLOOR = 1e-6  # rows below this share in every box and level get the guard only
-A4_STOP_SHARE = 1e-3  # a row at least this large at the cap, above tolerance, stops the run
-A4_PLATEAU = 0.01  # plateau flatness in ln L, at most the row's tolerance
-A4_NSUB = 64  # sub-steps per knot interval, exponential integrated exactly on each
-A4_ROUNDS = 5  # share recomputations after the refinement, at most
-A4_V4_DCHI2 = 0.05  # V4: a call where the spline's minimum lies this far below the calls
-A4_KIND = "refine"
-A4_GO = "go_stage1_gates"
-# Amendment 4, D: the six named validation rows (task, approximate value); refined in full
-# whatever their share, so that the validation tests the refinement itself
-A4_NAMED = (("t2_s0_l0_P_d0_b0", 6.0214), ("t4_s0_l0_P_d1_b0", 0.9163),
+# Deviation 1, the outcome of the design review the seventh addendum requires (the plan, below
+# its line): real fits pinned at every integration boundary of every row, then refinement until
+# a share-weighted tolerance holds. The integral stays the plan's own (``ln_z_strength``,
+# "spline", with amendment 3's addenda); the rule only adds real fits to a row's points.
+D1_TAU_M = 0.005  # each model's ln Z (from V3′'s 0.05: 2 τ_m ≤ 0.05 / 5)
+D1_TAU_MAX = 0.1  # the loosest row tolerance
+D1_CAP = 150  # refinement fits per row (the pins not counted)
+D1_FLOOR = 1e-6  # rows below this share in every box and level: pins and the guard only
+D1_STOP_SHARE = 1e-3  # a row this large ending above its tolerance stops the run
+D1_ROUNDS = 5  # share recomputations after the refinement, at most
+D1_V4_DCHI2 = 0.05  # V4: a call where the χ² spline's minimum lies this far below the calls
+D1_CORRECTION = 0.05  # condition (c): a change this large on a passing row is a correction
+D1_CHECK = 0.05  # the seventh addendum's check: spline within this of the exponential rule
+D1_NSUB = 64  # steps per knot interval in the error estimate
+PIN, REFINE, V4CALL = "edge pin", "refine", "v4 call"
+D1_STAMPS = (PIN, REFINE, V4CALL)
+D1_GO = "go_stage1_gates"
+# the validation's six named rows (task, value), refined in full whatever their share
+D1_NAMED = (("t2_s0_l0_P_d0_b0", 6.0214), ("t4_s0_l0_P_d1_b0", 0.9163),
             ("t2_s0_l0_P_d0_b0", 5.6287), ("t2_s0_l0_P_d0_b0", 6.1523),
             ("t1_s0_l0_R", 0.14), ("t1_s0_l0_P_d2_b0", 1.7017))  # fmt: skip
+# the smoke test's rows: the filled row that passed the seventh addendum's check, then the two
+# that failed it
+D1_SMOKE = (("t2_s0_l0_P_d0_b0", 6.1523), ("t2_s0_l0_P_d0_b0", 6.0214),
+            ("t4_s0_l0_P_d1_b0", 0.9163))  # fmt: skip
+D1_FAILED_BEFORE = D1_SMOKE[1:]
+
+
+def boundaries(model: str) -> list[float]:
+    """Every integration boundary of a model's rows: the edges of the prior box and the five
+    R3 boxes (ten for the planet and the ring, whose prior box is r3_4; twelve for J2)."""
+    return sorted({e for _, b in _boxes(model) for e in b})
+
+
+def _needs_pin(pts: list[dict], e: float) -> bool:
+    """No call within EDGE_EPS of the boundary converged with contacts, and none was pinned."""
+    near = [p for p in pts if abs(p["x"] - e) <= EDGE_EPS]
+    return not any(p.get("placed_by") == PIN or (p["converged"] and not p["no_contact"]
+                   and math.isfinite(p["chi2"])) for p in near)  # fmt: skip
 
 
 def refine_mode(shares: dict[str, float], validation: bool = False) -> str:
-    """Amendment 4, the share floor: "guard" (the overshoot guard only) for a row below
-    A4_FLOOR in every box and level, else "full"; a named validation row is always "full"."""
-    return "full" if validation or max(shares.values()) >= A4_FLOOR else "guard"
+    """The share floor: "guard" (pins and the overshoot guard only) for a row below D1_FLOOR in
+    every box and level, else "full"; a named validation row is always "full"."""
+    return "full" if validation or max(shares.values()) >= D1_FLOOR else "guard"
+
+
+def row_tolerance(share: float, n_rows: int) -> float:
+    """τ_j = clip(τ_m / (2 N π_j), τ_m / 2, 0.1)."""
+    if share <= 0.0:
+        return D1_TAU_MAX
+    return min(max(D1_TAU_M / (2.0 * n_rows * share), D1_TAU_M / 2.0), D1_TAU_MAX)
 
 
 def _v4_chi2(s: dict) -> float:
-    """V4's χ² minimum of a row: after amendment 4 the smallest call (A); before it, the
-    sixth addendum's corrected minimum or the smallest knot, whichever is smaller."""
-    if "a4" in s:
+    """V4's χ² minimum of a row: after deviation 1 the smallest call; before it, the sixth
+    addendum's corrected minimum or the smallest knot, whichever is smaller."""
+    if "d1" in s:
         return s["chi2_min_calls"]
     return min(s["chi2_min_corrected"], s["chi2_min"])
 
 
-def knots_all(pts: list[dict]) -> list[dict]:
-    """Amendment 4, B.1: every call that converged with contacts is a knot, of any kind, in
-    increasing x; of two closer than KNOT_TOL the one with the lower χ² (the first on a tie)."""
-    ok = sorted((p for p in pts if p["converged"] and not p["no_contact"]
-                 and math.isfinite(p["chi2"])), key=lambda p: p["x"])  # fmt: skip
-    out: list[dict] = []
-    for p in ok:
-        if out and p["x"] - out[-1]["x"] < KNOT_TOL:
-            if p["chi2"] < out[-1]["chi2"]:
-                out[-1] = p
+def _exp_int(va: np.ndarray, vb: np.ndarray, w: np.ndarray) -> np.ndarray:
+    """ln ∫ of exp(linear) over steps of width w with end values va, vb (exact)."""
+    with np.errstate(invalid="ignore", divide="ignore", over="ignore"):
+        d = np.abs(vb - va)
+        f = np.where(d > 1e-12, np.log(-np.expm1(-d)) - np.log(np.where(d > 0, d, 1.0)), 0.0)
+        out = np.maximum(va, vb) + np.log(w) + f
+    return np.where(np.isfinite(va) & np.isfinite(vb), out, -np.inf)
+
+
+def _seg_ln_int(cs, a: np.ndarray, b: np.ndarray) -> np.ndarray:
+    """ln ∫_a^b exp(cs(x)) dx for arrays of intervals, in D1_NSUB exact exponential steps."""
+    if a.size == 0:
+        return np.zeros(0)
+    t = np.linspace(0.0, 1.0, D1_NSUB + 1)
+    v = cs(a[:, None] + (b - a)[:, None] * t[None, :])
+    w = ((b - a) / D1_NSUB)[:, None] * np.ones((1, D1_NSUB))
+    return logsumexp(_exp_int(v[:, :-1], v[:, 1:], w), axis=1)
+
+
+def _every_other(n: int) -> np.ndarray:
+    return np.unique(np.r_[np.arange(0, n, 2), n - 1])
+
+
+def row_estimates(pts: list[dict], levels, bx: tuple[float, float],
+                  h: float) -> tuple[np.ndarray, np.ndarray, np.ndarray]:  # fmt: skip
+    """Per knot interval of the box's knots (``_box_knots``) meeting the box, the largest over
+    levels of |∫ spline(all knots) − ∫ spline(every other knot)| over the interval (clipped to
+    the box) / ∫ over the box. Fewer than 3 knots: every interval counts 1. Returns the knot
+    intervals' ends and the estimates."""
+    lo, hi = bx
+    allp = sorted(pts, key=lambda p: p["x"])
+    kn = _box_knots(allp, bx)
+    if len(kn) < 2:
+        return np.zeros(0), np.zeros(0), np.zeros(0)
+    xk = np.array([p["x"] for p in kn])
+    k = np.nonzero((xk[1:] > lo) & (xk[:-1] < hi))[0]
+    a, b = np.maximum(xk[k], lo), np.minimum(xk[k + 1], hi)
+    if len(kn) < 3 or k.size == 0:
+        return xk[k], xk[k + 1], np.ones(k.size)
+    j = _every_other(len(xk))
+    e = np.zeros(k.size)
+    for lv in levels:
+        lk = np.array([_ln_l(p, lv) for p in kn])
+        z = ln_z_strength(allp, lv, bx, h) + math.log(hi - lo)
+        if not math.isfinite(z):
             continue
-        out.append(p)
+        i_all = _seg_ln_int(CubicSpline(xk, lk), a, b)
+        i_half = _seg_ln_int(CubicSpline(xk[j], lk[j]), a, b)
+        with np.errstate(over="ignore", invalid="ignore"):
+            d = np.abs(np.exp(np.minimum(i_all - z, 50.0)) - np.exp(np.minimum(i_half - z, 50.0)))
+        e = np.maximum(e, np.nan_to_num(d, nan=1.0, posinf=1.0))
+    return xk[k], xk[k + 1], e
+
+
+def guard_intervals(pts: list[dict], levels, bx: tuple[float, float]) -> list[tuple[float, float]]:
+    """The overshoot guard: the knot intervals meeting the box that the sixth addendum's rule
+    selects at any level (the spline more than 0.05 above a flank knot lying more than 2 below
+    the best, or more than 0.5 above the best knot)."""
+    lo, hi = bx
+    out = set()
+    for lv in levels:
+        out |= {(a, b) for a, b in fallback_intervals(pts, lv, bx) if a < hi and b > lo}
+    return sorted(out)
+
+
+def refine_row(pts: list[dict], levels, boxes: list[tuple[str, tuple[float, float]]], fit,
+               mode: str, h: float, tol: dict[str, float] | None = None,
+               cap: int = D1_CAP) -> dict:  # fmt: skip
+    """Deviation 1 on one row. ``fit(x, pts, stamp)`` makes a real call at strength x
+    (warm-started from ``pts``) and returns its record. First a pin at every boundary of the
+    boxes that needs one; then, "guard": a fit at the midpoint of every interval the guard
+    selects, until it selects none; "full": also at the midpoint of every interval whose
+    estimate exceeds ε, until Σ e < τ in each box (``tol``). A midpoint that fails is followed
+    by the interval's quarter points, once. New calls are appended to ``pts``."""
+    pts = list(pts)
+    pins, new = [], []
+    for e in sorted({e for _, b in boxes for e in b}):
+        if _needs_pin(pts, e):
+            d = fit(float(e), pts, PIN)
+            pts.append(d)
+            pins.append(d)
+    tol = tol or {}
+    eps = {name: tol.get(name, D1_TAU_MAX) / 4.0 for name, _ in boxes}
+    failed: set[tuple[float, float]] = set()
+    status = "converged"
+    while True:
+        g = set()
+        for _, bx in boxes:
+            g |= set(guard_intervals(pts, levels, bx))
+        targets = {(a, b) for a, b in g if (a, b) not in failed}
+        open_boxes = []
+        if mode == "full":
+            for name, bx in boxes:
+                a, b, e = row_estimates(pts, levels, bx, h)
+                if e.sum() < tol[name]:
+                    continue
+                open_boxes.append(name)
+                targets |= {(float(x0), float(x1)) for x0, x1, v in zip(a, b, e, strict=True)
+                            if v > eps[name] and (float(x0), float(x1)) not in failed}  # fmt: skip
+        if not g - failed and not open_boxes:
+            status = "converged" if not failed else "intervals failed"
+            break
+        if not targets:
+            if not open_boxes:
+                status = "guard unresolved"
+                break
+            for name in open_boxes:
+                eps[name] /= 2.0
+            if all(eps[n] < 1e-12 for n in open_boxes):
+                status = "stalled"
+                break
+            continue
+        for a, b in sorted(targets):
+            if len(new) >= cap:
+                break
+            d = fit(0.5 * (a + b), pts, REFINE)
+            pts.append(d)
+            new.append(d)
+            if d["converged"] and not d["no_contact"]:
+                continue
+            ok = False
+            for q in (a + 0.25 * (b - a), a + 0.75 * (b - a)):
+                if len(new) >= cap:
+                    break
+                dq = fit(q, pts, REFINE)
+                pts.append(dq)
+                new.append(dq)
+                ok |= dq["converged"] and not dq["no_contact"]
+            if not ok:
+                failed.add((a, b))
+        if len(new) >= cap:
+            status = "cap"
+            break
+    return {"pins": pins, "new": new, "status": status, "fits": len(new),
+            "failed_intervals": sorted(failed)}  # fmt: skip
+
+
+def check_rows(pts: list[dict], levels, boxes, h: float) -> list[dict]:
+    """The seventh addendum's check, in every box: the spline (with the sixth addendum's rule)
+    within D1_CHECK of the exponential-between-points rule on the same points, every level."""
+    out = []
+    for name, bx in boxes:
+        for lv in levels:
+            s, x = ln_z_strength(pts, lv, bx, h), ln_z_strength(pts, lv, bx, h, "pexp")
+            same = s == x == -math.inf
+            out.append({"box": name, "level": lv, "spline": s, "pexp": x,
+                        "pass": bool(same or abs(s - x) < D1_CHECK)})  # fmt: skip
     return out
+
+
+def d1_stub_row() -> tuple[list[dict], float]:
+    """Condition (a)'s stub: a smooth planet row with a knot every 0.02 decade over the
+    widest box, so on every boundary, and its fine spacing."""
+    xs = np.round(np.arange(-11.0, -3.0 + 1e-9, 0.02), 10)
+    pts = [{"p2": 0.0, "x": float(x), "kind": "fine", "converged": True, "no_contact": False,
+            "chi2": 40.0 * (math.sqrt(1.0 + ((x + 7.0) / 0.5) ** 2) - 1.0), "ln_s": 0.0}
+           for x in xs]  # fmt: skip
+    return pts, 0.02
+
+
+def condition_a() -> dict:
+    """Condition (a): the stub gets no fit, and its ln Z in every box and level is bit-identical
+    to the value from the same points before the rule."""
+    pts, h = d1_stub_row()
+    boxes, levels = _boxes("P"), LEVELS
+    before = {(n, lv): ln_z_strength(pts, lv, b, h) for n, b in boxes for lv in levels}
+
+    def no_fit(x, _pts, stamp):
+        raise AssertionError(f"condition (a): a fit was asked for at {x} ({stamp})")
+
+    tol = dict.fromkeys((n for n, _ in boxes), D1_TAU_M / 2)
+    r = refine_row(pts, levels, boxes, no_fit, "full", h, tol)
+    after = {(n, lv): ln_z_strength(pts + r["new"], lv, b, h) for n, b in boxes for lv in levels}
+    same = all(after[k] == before[k] for k in before)  # bit-identity is the point here
+    return {"fits": r["fits"] + len(r["pins"]), "bit_identical": same,
+            "pass": same and not r["new"] and not r["pins"]}  # fmt: skip
+
+
+# ---- the run over Stage 1's rows
 
 
 def _refine_path(task: Task, p2: float) -> Path:
@@ -2385,8 +2579,8 @@ def _refine_path(task: Task, p2: float) -> Path:
 
 
 def row_points(task: Task, p2: float) -> list[dict]:
-    """A row's calls for amendment 4: the scan's, the gap check's (sixth addendum, item 2) and
-    the refinement's, one per (value, strength), the scan's first."""
+    """A row's calls: the scan's, the gap check's (sixth addendum, item 2) and deviation 1's,
+    one per (value, strength), the scan's first."""
     out = {Points.key(p["p2"], p["x"]): p for p in _scan_points(task, p2)}
     k2 = Points.key(p2, 0)[0]
     for f in sorted((CACHE / "gapcheck").glob(f"{task.id}__*.json")):
@@ -2405,248 +2599,21 @@ def row_points(task: Task, p2: float) -> list[dict]:
     return list(out.values())
 
 
-def _exp_int(va: np.ndarray, vb: np.ndarray, w: np.ndarray) -> np.ndarray:
-    """ln ∫ of exp(linear) over steps of width w with end values va, vb (exact)."""
-    with np.errstate(invalid="ignore", divide="ignore", over="ignore"):
-        d = np.abs(vb - va)
-        f = np.where(d > 1e-12, np.log(-np.expm1(-d)) - np.log(np.where(d > 0, d, 1.0)), 0.0)
-        out = np.maximum(va, vb) + np.log(w) + f
-    return np.where(np.isfinite(va) & np.isfinite(vb), out, -np.inf)
-
-
-def _seg_ln_int(cs, a: np.ndarray, b: np.ndarray) -> np.ndarray:
-    """ln ∫_a^b exp(cs(x)) dx for arrays of intervals: A4_NSUB steps, each exact for the
-    exponential of the chord."""
-    if a.size == 0:
-        return np.zeros(0)
-    t = np.linspace(0.0, 1.0, A4_NSUB + 1)
-    xs = a[:, None] + (b - a)[:, None] * t[None, :]
-    v = cs(xs)
-    w = ((b - a) / A4_NSUB)[:, None] * np.ones((1, A4_NSUB))
-    return logsumexp(_exp_int(v[:, :-1], v[:, 1:], w), axis=1)
-
-
-def _every_other(n: int) -> np.ndarray:
-    return np.unique(np.r_[np.arange(0, n, 2), n - 1])
-
-
-def _plateau_end(xk: np.ndarray, lmin: np.ndarray, lo: float, p: float) -> float | None:
-    """Amendment 4, C: where a knot lies on the box's lower edge, the end of the longest run of
-    consecutive knots from it whose ln L at the smallest level is within p of the first's, if
-    the run has at least 3 knots; else None."""
-    i0 = np.nonzero(np.abs(xk - lo) <= KNOT_TOL)[0]
-    if i0.size == 0:
-        return None
-    i = j = int(i0[0])
-    while j + 1 < len(xk) and abs(lmin[j + 1] - lmin[i]) < p:
-        j += 1
-    return float(xk[j]) if j - i >= 2 else None
-
-
-def _clip(xk: np.ndarray, lo: float, hi: float) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """The knot intervals meeting [lo, hi], clipped to it: indices, starts, ends."""
-    k = np.nonzero((xk[1:] > lo) & (xk[:-1] < hi))[0]
-    return k, np.maximum(xk[k], lo), np.minimum(xk[k + 1], hi)
-
-
-def row_ln_z(pts: list[dict], level: float, bx: tuple[float, float],
-             plateau: float | None = None) -> float:  # fmt: skip
-    """Amendment 4: ln of (1/width) ∫ L over the box, the spline on all knots (``knots_all``),
-    each knot interval in A4_NSUB steps; a plateau from the lower edge (C) as L₀ × width, L₀
-    the mean of L over its knots; outside the knots, ln L linear between the other finite
-    calls (as before), zero beyond them."""
-    lo, hi = bx
-    kn = knots_all(pts)
-    allp = sorted((p for p in pts if math.isfinite(p["chi2"]) and not p["no_contact"]),
-                  key=lambda p: p["x"])  # fmt: skip
-    parts = []
-    if len(kn) >= 2:
-        xk = np.array([p["x"] for p in kn])
-        lk = np.array([_ln_l(p, level) for p in kn])
-        cs = CubicSpline(xk, lk)
-        start = lo
-        if plateau is not None and lo <= plateau <= hi:
-            m = (xk >= lo - KNOT_TOL) & (xk <= plateau + KNOT_TOL)
-            parts.append(float(logsumexp(lk[m]) - math.log(m.sum())) + math.log(plateau - lo))
-            start = plateau
-        _, a, b = _clip(xk, start, hi)
-        keep = b > a
-        parts += list(_seg_ln_int(cs, a[keep], b[keep]))
-        inner = (xk[0], xk[-1])
-    elif len(kn) == 1:
-        inner = (kn[0]["x"], kn[0]["x"])
-    else:
-        inner = (math.inf, -math.inf)
-    # outside the knots: the old linear rule on the other finite calls
-    xo = np.array([p["x"] for p in allp])
-    lo_ = np.array([_ln_l(p, level) for p in allp])
-    for a, b in ((lo, min(hi, inner[0])), (max(lo, inner[1]), hi)):
-        if b <= a or xo.size < 2:
-            continue
-        g = np.unique(np.concatenate([[a, b], xo[(xo > a) & (xo < b)]]))
-        v = np.interp(g, xo, lo_, left=-np.inf, right=-np.inf)
-        parts += list(_exp_int(v[:-1], v[1:], np.diff(g)))
-    parts = [q for q in parts if math.isfinite(q)]
-    return float(logsumexp(parts) - math.log(hi - lo)) if parts else -math.inf
-
-
-def row_estimates(
-    pts: list[dict], levels, bx: tuple[float, float], plateau: float | None = None
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Amendment 4, B.2: per knot interval meeting the box (beyond the plateau), the largest
-    over levels of |∫ spline(all knots) − ∫ spline(every other knot)| / ∫ over the box. Fewer
-    than 3 knots: every interval counts 1. Returns the intervals' ends (a, b) and estimates."""
-    lo, hi = bx
-    kn = knots_all(pts)
-    if len(kn) < 2:
-        return np.zeros(0), np.zeros(0), np.zeros(0)
-    xk = np.array([p["x"] for p in kn])
-    start = plateau if plateau is not None and lo <= plateau <= hi else lo
-    k, a, b = _clip(xk, start, hi)
-    ka, kb = xk[k], xk[k + 1]
-    if len(kn) < 3 or k.size == 0:
-        return ka, kb, np.ones(k.size)
-    j = _every_other(len(xk))
-    e = np.zeros(k.size)
-    for lv in levels:
-        lk = np.array([_ln_l(p, lv) for p in kn])
-        i_all = _seg_ln_int(CubicSpline(xk, lk), a, b)
-        i_half = _seg_ln_int(CubicSpline(xk[j], lk[j]), a, b)
-        z = row_ln_z(pts, lv, bx, plateau) + math.log(hi - lo)
-        if not math.isfinite(z):
-            continue
-        with np.errstate(over="ignore", invalid="ignore"):
-            d = np.abs(np.exp(np.minimum(i_all - z, 50.0)) - np.exp(np.minimum(i_half - z, 50.0)))
-        e = np.maximum(e, np.nan_to_num(d, nan=1.0, posinf=1.0))
-    return ka, kb, e
-
-
-def guard_intervals(pts: list[dict], levels, bx: tuple[float, float]) -> list[tuple[float, float]]:
-    """Amendment 4, B.3: knot intervals meeting the box where the spline on all knots rises more
-    than 0.05 above its higher knot while that knot is more than 2 below the row's best knot in
-    ln L, or more than 0.5 above the best knot, at any level."""
-    kn = knots_all(pts)
-    if len(kn) < 3:
-        return []
-    xk = np.array([p["x"] for p in kn])
-    k, _, _ = _clip(xk, *bx)
-    out = set()
-    t = np.linspace(0.0, 1.0, A4_NSUB + 1)
-    for lv in levels:
-        lk = np.array([_ln_l(p, lv) for p in kn])
-        cs = CubicSpline(xk, lk)
-        best = float(lk.max())
-        top = cs(xk[k][:, None] + (xk[k + 1] - xk[k])[:, None] * t[None, :]).max(axis=1)
-        r = cs.derivative().roots(extrapolate=False)
-        r = r[np.isfinite(r)]
-        for n, i in enumerate(k):
-            rr = r[(r > xk[i]) & (r < xk[i + 1])]
-            if rr.size:
-                top[n] = max(top[n], float(cs(rr).max()))
-        high = np.maximum(lk[k], lk[k + 1])
-        bad = ((high < best - FLANK_DLN) & (top > high + FLANK_RISE)) | (top > best + OVER_BEST)
-        out |= {(float(xk[i]), float(xk[i + 1])) for i in k[bad]}
-    return sorted(out)
-
-
-def row_tolerance(share: float, n_rows: int) -> float:
-    """Amendment 4, A: τ_j = clip(τ_m / (2 N π_j), τ_m / 2, 0.1)."""
-    if share <= 0.0:
-        return A4_TAU_MAX
-    return min(max(A4_TAU_M / (2.0 * n_rows * share), A4_TAU_M / 2.0), A4_TAU_MAX)
-
-
-def refine_row(pts: list[dict], levels, boxes: list[tuple[str, tuple[float, float]]],
-               fit, mode: str, tol: dict[str, float] | None = None,
-               cap: int = A4_CAP) -> dict:  # fmt: skip
-    """Amendment 4, B.3 to B.6, on one row. ``fit(x, pts)`` makes a real call at strength x
-    (warm-started from ``pts``) and returns its record. ``mode`` "guard": only the guard's
-    intervals; "full": also every interval whose estimate exceeds ε until Σ e < τ in each box
-    (``tol``: τ per box). New calls are appended to ``pts`` and returned in ``new``."""
-    pts = list(pts)
-    new: list[dict] = []
-    eps = {name: (tol or {}).get(name, A4_TAU_MAX) / 4.0 for name, _ in boxes}
-    failed: set[tuple[float, float]] = set()
-    status = "converged"
-    lmin = min(levels)
-    while True:
-        targets: set[float] = set()
-        g = set()
-        for _, bx in boxes:
-            g |= set(guard_intervals(pts, levels, bx))
-        targets |= {0.5 * (a + b) for a, b in g if (a, b) not in failed}
-        open_boxes = []
-        if mode == "full":
-            kn = knots_all(pts)
-            xk = np.array([p["x"] for p in kn])
-            lm = np.array([_ln_l(p, lmin) for p in kn])
-            for name, bx in boxes:
-                p_end = _plateau_end(xk, lm, bx[0], min(A4_PLATEAU, tol[name])) if len(kn) else None
-                a, b, e = row_estimates(pts, levels, bx, p_end)
-                if e.sum() < tol[name]:
-                    continue
-                open_boxes.append(name)
-                big = [(x0, x1) for x0, x1, v in zip(a, b, e, strict=True)
-                       if v > eps[name] and (float(x0), float(x1)) not in failed]  # fmt: skip
-                targets |= {0.5 * (float(x0) + float(x1)) for x0, x1 in big}
-        if not g - failed and not open_boxes:
-            break
-        if not targets:
-            if not open_boxes:
-                status = "guard unresolved"
-                break
-            for name in open_boxes:
-                eps[name] /= 2.0
-            if all(eps[n] < 1e-12 for n in open_boxes):
-                status = "stalled"
-                break
-            continue
-        for x in sorted(targets):
-            if len(new) >= cap:
-                break
-            kn = knots_all(pts)
-            xk = np.array([p["x"] for p in kn])
-            i = int(np.searchsorted(xk, x)) - 1
-            a, b = float(xk[max(i, 0)]), float(xk[min(i + 1, len(xk) - 1)])
-            d = fit(x, pts)
-            pts.append(d)
-            new.append(d)
-            if d["converged"] and not d["no_contact"]:
-                continue
-            ok = False
-            for q in (a + 0.25 * (b - a), a + 0.75 * (b - a)):  # B.5: the quarter points, once
-                if len(new) >= cap:
-                    break
-                dq = fit(q, pts)
-                pts.append(dq)
-                new.append(dq)
-                ok |= dq["converged"] and not dq["no_contact"]
-            if not ok:
-                failed.add((a, b))
-        if len(new) >= cap:
-            status = "cap"
-            break
-    return {"new": new, "status": status, "fits": len(new), "failed_intervals": sorted(failed)}
-
-
-# ---- the run over Stage 1's rows
-
-
 _DATA: dict = {}
 
 
 def _row_fit(task: Task, p2: float, record: bool = True, mode: str = ""):
     """A fit function for ``refine_row``: a real call at strength x, warm-started from the
-    nearest knot, then (no contact) from the nearest knot on the other side, then the base;
-    appended to the row's refine file if ``record``."""
+    nearer knot, then (no contact) from the other side's, then from the base elements; a fine
+    point stamped with what placed it, appended to the row's refine file if ``record``."""
     key = (task.truth, task.seed, task.level)
     if key not in _DATA:
         _DATA[key] = dataset(prepare(), task.truth, task.seed, LEVELS[task.level])
     data = _DATA[key]
     base, _ = base_problem()
 
-    def fit(x: float, pts: list[dict]) -> dict:
-        kn = knots_all(pts)
+    def fit(x: float, pts: list[dict], stamp: str) -> dict:
+        kn = knots(pts)
         lo = [p for p in kn if p["x"] < x][-1:]
         hi = [p for p in kn if p["x"] > x][:1]
         order = sorted(lo + hi, key=lambda p: abs(p["x"] - x))
@@ -2657,8 +2624,8 @@ def _row_fit(task: Task, p2: float, record: bool = True, mode: str = ""):
             tried += 1
             if not c.no_contact:
                 break
-        d = {"p2": float(p2), "x": float(x), "kind": A4_KIND, **c.row(), "retries": tried - 1,
-             "a4_mode": mode, "commit": _commit()}  # fmt: skip
+        d = {"p2": float(p2), "x": float(x), "kind": "fine", **c.row(), "retries": tried - 1,
+             "placed_by": stamp, "d1_mode": mode, "commit": _commit()}  # fmt: skip
         if record:
             rp = _refine_path(task, p2)
             rp.parent.mkdir(parents=True, exist_ok=True)
@@ -2669,13 +2636,21 @@ def _row_fit(task: Task, p2: float, record: bool = True, mode: str = ""):
     return fit
 
 
-def _a4_job(args) -> dict:
+def _row_h(task: Task, p2: float) -> float:
+    k2 = Points.key(p2, 0)[0]
+    return next(s["h"] for s in json.loads(task.done_path.read_text())["scans"]
+                if Points.key(s["p2"], 0)[0] == k2)  # fmt: skip
+
+
+def _d1_job(args) -> dict:
     tid, p2, mode, tol = args
     task = Task.from_id(tid)
     pts = row_points(task, p2)
-    r = refine_row(pts, task.levels(), _boxes(task.model), _row_fit(task, p2, mode=mode), mode, tol,
-                   A4_CAP - sum(p.get("kind") == A4_KIND for p in pts))  # fmt: skip
+    done = sum(p.get("placed_by") == REFINE for p in pts)
+    r = refine_row(pts, task.levels(), _boxes(task.model), _row_fit(task, p2, mode=mode), mode,
+                   _row_h(task, p2), tol, D1_CAP - done)  # fmt: skip
     return {"task": tid, "p2": p2, "mode": mode, "status": r["status"], "fits": r["fits"],
+            "pins": len(r["pins"]), "pins_no_contact": sum(p["no_contact"] for p in r["pins"]),
             "failed_intervals": r["failed_intervals"]}  # fmt: skip
 
 
@@ -2683,24 +2658,20 @@ def _group_key(task: Task) -> tuple:
     return (task.truth, task.seed, task.level, task.model, task.half)
 
 
-def a4_values(tasks: list[Task]) -> dict:
-    """Every row's ln Z by amendment 4 (box, level), with the plateau at each row's tolerance
-    where one is given (``_A4_TOL``), and each row's share of its model's sum, the largest
-    over boxes and levels, from the larger of its spline and exponential values (A)."""
+def d1_values(tasks: list[Task], tol: dict | None = None) -> dict:
+    """Every row's ln Z (box, level) from its points by the plan's rule, and its share of its
+    model's sum: the largest over boxes and levels, from the larger of its spline and
+    exponential values (an upper bound)."""
     rows, z, zu = [], {}, {}
     for t in tasks:
         for s in json.loads(t.done_path.read_text())["scans"]:
             pts = row_points(t, s["p2"])
-            kn = knots_all(pts)
-            xk = np.array([p["x"] for p in kn])
-            lm = np.array([_ln_l(p, min(t.levels())) for p in kn])
+            k2 = Points.key(s["p2"], 0)[0]
             for name, bx in _boxes(t.model):
-                tol = _A4_TOL.get((t.id, Points.key(s["p2"], 0)[0], name), A4_TAU_MAX)
-                pe = _plateau_end(xk, lm, bx[0], min(A4_PLATEAU, tol)) if len(kn) else None
                 for lv in t.levels():
-                    k = (t.id, Points.key(s["p2"], 0)[0], name, lv)
-                    z[k] = row_ln_z(pts, lv, bx, pe)
-                    zx = ln_z_strength(pts, lv, bx, 0.01, "pexp")
+                    k = (t.id, k2, name, lv)
+                    z[k] = ln_z_strength(pts, lv, bx, s["h"])
+                    zx = ln_z_strength(pts, lv, bx, s["h"], "pexp")
                     zu[k] = max(z[k], zx) if math.isfinite(zx) else z[k]
             rows.append((t, s["p2"]))
     share: dict = {}
@@ -2710,11 +2681,11 @@ def a4_values(tasks: list[Task]) -> dict:
     n_of: dict = {}
     for members in groups.values():
         t0 = members[0][0]
-        if t0.model == "R":
+        if t0.model == "R" and len(members) > 1:
             x = np.array([p2 for _, p2 in members])
             o = np.argsort(x)
             w = np.empty(len(x))
-            w[o] = IDS._trap(x[o]) if len(x) > 1 else 1.0
+            w[o] = IDS._trap(x[o])
         else:
             w = np.ones(len(members))
         for name, _ in _boxes(t0.model):
@@ -2723,95 +2694,120 @@ def a4_values(tasks: list[Task]) -> dict:
                 lz = logsumexp(v, b=w) if np.isfinite(v).any() else -np.inf
                 for (t, p2), vi, wi in zip(members, v, w, strict=True):
                     k = (t.id, Points.key(p2, 0)[0], name)
-                    sh = float(wi * np.exp(vi - lz)) if np.isfinite(vi) and np.isfinite(lz) else 0.0
-                    share[k] = max(share.get(k, 0.0), sh)
+                    ok = np.isfinite(vi) and np.isfinite(lz)
+                    share[k] = max(share.get(k, 0.0), float(wi * np.exp(vi - lz)) if ok else 0.0)
         for t, p2 in members:
             n_of[(t.id, Points.key(p2, 0)[0])] = len(members)
     return {"z": z, "share": share, "n": n_of, "rows": rows}
 
 
-_A4_TOL: dict = {}
-
-
-def _a4_log(msg: str) -> None:
+def _d1_log(msg: str) -> None:
     line = f"{time.strftime('%F %T')} {msg}"
-    with (CACHE / "amendment4.log").open("a") as fh:
+    with (CACHE / "deviation1.log").open("a") as fh:
         fh.write(line + "\n")
     print(line, flush=True)
 
 
-def amendment4(n_workers: int, task_ids: list[str] | None = None) -> dict:
-    """Amendment 4 over the finished Stage 1 rows: the guard pass on every row; shares; full
-    refinement where a row's share reaches A4_FLOOR in some box and level; shares again, and
-    refinement again where a tolerance tightened or a row crossed the floor, at most A4_ROUNDS
-    times; V4's call at a spline minimum below the calls; then every result rewritten with the
-    new ln Z (the previous kept beside it) and the report written to amendment4.json."""
+def _nearest_rows(spec) -> list[tuple[str, float]]:
+    out = []
+    for tid, approx in spec:
+        t = Task.from_id(tid)
+        if t.done_path.exists():
+            s = min(json.loads(t.done_path.read_text())["scans"],
+                    key=lambda q: abs(q["p2"] - approx))  # fmt: skip
+            out.append((tid, s["p2"]))
+    return out
+
+
+def _tolerances(v: dict, t: Task, k2: float) -> tuple[dict, dict]:
+    sh = {name: v["share"][(t.id, k2, name)] for name, _ in _boxes(t.model)}
+    return sh, {name: row_tolerance(sh[name], v["n"][(t.id, k2)]) for name in sh}
+
+
+def changes(t: Task, row: dict, z_new: dict, failed_before: bool) -> list[dict]:
+    """Every box and level whose ln Z changed from the value before deviation 1, with its size;
+    a change above D1_CORRECTION on a row that had not failed a check is a correction (c)."""
+    out = []
+    before = row.get("ln_z_before_d1", row["ln_z"])
+    for name, _ in _boxes(t.model):
+        for lv in t.levels():
+            a, b = before[str(lv)][name], z_new[(name, lv)]
+            d = b - a if math.isfinite(a) and math.isfinite(b) else (0.0 if a == b else math.inf)
+            corr = abs(d) > D1_CORRECTION and not failed_before
+            if d != 0.0:
+                out.append({"task": t.id, "p2": row["p2"], "box": name, "level": lv,
+                            "before": a, "after": b, "change": d,
+                            "correction": bool(corr)})  # fmt: skip
+    return out
+
+
+def deviation1(n_workers: int) -> dict:
+    """Deviation 1 over every finished Stage 1 row (on the go): pins and the guard on every
+    row; shares; full refinement where a row reaches D1_FLOOR in some box and level, or is a
+    named validation row; shares again and refinement again where a tolerance tightened, at
+    most D1_ROUNDS times; V4's calls; every result rewritten (the values before kept as
+    ``ln_z_before_d1``); the report, with every change and every correction, written to
+    deviation1.json."""
     from concurrent.futures import ProcessPoolExecutor
 
     tasks = [t for t in stage1_tasks() if t.done_path.exists() and t.model != "NG"]
-    if task_ids is not None:
-        tasks = [t for t in tasks if t.id in task_ids]
-    every = [t for t in stage1_tasks() if t.done_path.exists() and t.model != "NG"]
-    named = {(tid, Points.key(p2, 0)[0]) for tid, p2 in a4_named_rows()}
+    named = {(tid, Points.key(p2, 0)[0]) for tid, p2 in _nearest_rows(D1_NAMED)}
     report: dict = {"commit": _commit(), "jobs": [], "rounds": []}
-    _a4_log(f"amendment 4: {len(tasks)} tasks, guard pass")
+    _d1_log(f"deviation 1: {len(tasks)} tasks, pins and guard")
     jobs = [(t.id, s["p2"], "guard", None) for t in tasks
             for s in json.loads(t.done_path.read_text())["scans"]]  # fmt: skip
     with ProcessPoolExecutor(n_workers) as ex:
-        report["jobs"] += list(ex.map(_a4_job, jobs))
+        report["jobs"] += list(ex.map(_d1_job, jobs))
     used: dict = {}
-    for rnd in range(A4_ROUNDS):
-        v = a4_values(every)
+    for rnd in range(D1_ROUNDS):
+        v = d1_values(tasks)
         todo = []
-        for t in tasks:
-            for s in json.loads(t.done_path.read_text())["scans"]:
-                k2 = Points.key(s["p2"], 0)[0]
-                sh = {name: v["share"][(t.id, k2, name)] for name, _ in _boxes(t.model)}
-                if refine_mode(sh, (t.id, k2) in named) == "guard":
-                    continue
-                tol = {name: row_tolerance(sh[name], v["n"][(t.id, k2)]) for name in sh}
-                prev = used.get((t.id, k2))
-                if prev is not None and all(tol[n] >= prev[n] - 1e-15 for n in tol):
-                    continue
-                used[(t.id, k2)] = tol
-                for name in tol:
-                    _A4_TOL[(t.id, k2, name)] = tol[name]
-                todo.append((t.id, s["p2"], "full", tol))
+        for t, p2 in v["rows"]:
+            k2 = Points.key(p2, 0)[0]
+            sh, tol = _tolerances(v, t, k2)
+            if refine_mode(sh, (t.id, k2) in named) == "guard":
+                continue
+            prev = used.get((t.id, k2))
+            if prev is not None and all(tol[n] >= prev[n] - 1e-15 for n in tol):
+                continue
+            used[(t.id, k2)] = tol
+            todo.append((t.id, p2, "full", tol))
         report["rounds"].append({"round": rnd, "rows_refined": len(todo)})
-        _a4_log(f"amendment 4: round {rnd}, {len(todo)} rows to refine")
+        _d1_log(f"deviation 1: round {rnd}, {len(todo)} rows to refine")
         if not todo:
             break
         with ProcessPoolExecutor(n_workers) as ex:
-            report["jobs"] += list(ex.map(_a4_job, todo))
-    v = a4_values(every)
-    report["v4_calls"] = a4_v4_calls([t for t in tasks if not t.half])
-    v = a4_values(every)
-    stop = []
+            report["jobs"] += list(ex.map(_d1_job, todo))
+    report["v4_calls"] = d1_v4_calls([t for t in tasks if not t.half])
+    v = d1_values(tasks)
+    report["stop"] = []
     for j in report["jobs"]:
+        t = Task.from_id(j["task"])
         k2 = Points.key(j["p2"], 0)[0]
-        names = [name for name, _ in _boxes(Task.from_id(j["task"]).model)]
-        sh = max(v["share"][(j["task"], k2, name)] for name in names)
-        j["share"] = sh
-        if j["mode"] == "full" and j["status"] != "converged" and sh >= A4_STOP_SHARE:
-            stop.append(j)
-    report["stop"] = stop
-    report["tolerances"] = {f"{a}|{b:.10f}|{c}": tv for (a, b, c), tv in _A4_TOL.items()}
+        j["share"] = max(v["share"][(t.id, k2, n)] for n, _ in _boxes(t.model))
+        if j["mode"] == "full" and j["status"] != "converged" and j["share"] >= D1_STOP_SHARE:
+            report["stop"].append(j)
+    report["tolerances"] = {f"{tid}|{k2:.10f}": tol for (tid, k2), tol in used.items()}
+    failed = {(tid, Points.key(p2, 0)[0]) for tid, p2 in _nearest_rows(D1_FAILED_BEFORE)}
+    report["changes"] = []
     for t in tasks:
-        a4_write_result(t, v)
-    (CACHE / "amendment4.json").write_text(json.dumps(report, default=float))
-    _a4_log(f"amendment 4: done; stop-rule events {len(stop)}")
+        report["changes"] += d1_write_result(t, v, used, failed)
+    report["corrections"] = [c for c in report["changes"] if c["correction"]]
+    (CACHE / "deviation1.json").write_text(json.dumps(report, default=float))
+    _d1_log(f"deviation 1: done; stop-rule events {len(report['stop'])}, "
+            f"corrections {len(report['corrections'])}")  # fmt: skip
     return report
 
 
-def a4_v4_calls(tasks: list[Task]) -> list[dict]:
-    """Amendment 4, A (V4): in each row of the truths' own models, a call where the χ² spline
-    on the knots has its minimum more than A4_V4_DCHI2 below the smallest call."""
+def d1_v4_calls(tasks: list[Task]) -> list[dict]:
+    """V4: in each row of the truths' own models, a call where the χ² spline on the knots has
+    its minimum more than D1_V4_DCHI2 below the smallest call."""
     out = []
-    own = {t for t in tasks if t.model == FIT_OF_TRUTH[TRUTHS[t.truth - 1]]}
+    own = [t for t in tasks if t.model == FIT_OF_TRUTH[TRUTHS[t.truth - 1]]]
     for t in own:
         for s in json.loads(t.done_path.read_text())["scans"]:
             pts = row_points(t, s["p2"])
-            kn = knots_all(pts)
+            kn = knots(pts)
             if len(kn) < 3:
                 continue
             xk = np.array([p["x"] for p in kn])
@@ -2819,44 +2815,106 @@ def a4_v4_calls(tasks: list[Task]) -> list[dict]:
             sub = np.linspace(xk[0], xk[-1], (len(xk) - 1) * SUB + 1)
             cv = CubicSpline(xk, ck)(sub)
             i = int(np.argmin(cv))
-            if cv[i] < ck.min() - A4_V4_DCHI2:
-                d = _row_fit(t, s["p2"], mode="v4")(float(sub[i]), pts)
+            if cv[i] < ck.min() - D1_V4_DCHI2:
+                d = _row_fit(t, s["p2"], mode="v4")(float(sub[i]), pts, V4CALL)
                 out.append({"task": t.id, "p2": s["p2"], "x": float(sub[i]),
                             "spline_min": float(cv[i]), "call": d["chi2"]})  # fmt: skip
     return out
 
 
-def a4_write_result(task: Task, v: dict) -> None:
-    """A task's result with amendment 4's ln Z in ``ln_z`` (the values before kept once as
-    ``ln_z_before_a4``), V4's minimum over the calls, the narrow boxes with no knot inside."""
+def d1_write_result(task: Task, v: dict, used: dict, failed: set) -> list[dict]:
+    """A task's result with deviation 1's ln Z in ``ln_z`` (the values before kept once as
+    ``ln_z_before_d1``), V4's minimum over the calls, each box's remaining estimate against
+    its tolerance; returns every change (``changes``)."""
     path = task.done_path
     res = json.loads(path.read_text())
+    out = []
     for row in res["scans"]:
         k2 = Points.key(row["p2"], 0)[0]
         pts = row_points(task, row["p2"])
-        row.setdefault("ln_z_before_a4", row["ln_z"])
-        row["ln_z"] = {str(lv): {name: v["z"][(task.id, k2, name, lv)] for name, _ in
-                                 _boxes(task.model)} for lv in task.levels()}  # fmt: skip
-        kn = knots_all(pts)
-        kx = [p["x"] for p in kn]
-        row["chi2_min_calls"] = min((p["chi2"] for p in kn), default=None)
-        row["not_determined"] = [name for name, (lo, hi) in _boxes(task.model)[1:]
-                                 if not any(lo < x < hi for x in kx)]  # fmt: skip
-        row["a4"] = {"fits": sum(p.get("kind") == A4_KIND for p in pts),
-                     "share": max(v["share"][(task.id, k2, n)] for n, _ in _boxes(task.model)),
-                     "tolerance": {name: _A4_TOL.get((task.id, k2, name)) for name, _ in
-                                   _boxes(task.model)}}  # fmt: skip
-    res["amendment4"] = {"commit": _commit()}
+        z_new = {(n, lv): v["z"][(task.id, k2, n, lv)] for n, _ in _boxes(task.model)
+                 for lv in task.levels()}  # fmt: skip
+        out += changes(task, row, z_new, (task.id, k2) in failed)
+        row.setdefault("ln_z_before_d1", row["ln_z"])
+        row["ln_z"] = {str(lv): {n: z_new[(n, lv)] for n, _ in _boxes(task.model)}
+                       for lv in task.levels()}  # fmt: skip
+        ok = [p["chi2"] for p in pts if p["converged"] and not p["no_contact"]
+              and math.isfinite(p["chi2"])]  # fmt: skip
+        row["chi2_min_calls"] = min(ok, default=None)
+        tol = used.get((task.id, k2))
+        est = {n: float(row_estimates(pts, task.levels(), b, row["h"])[2].sum())
+               for n, b in _boxes(task.model)}  # fmt: skip
+        row["d1"] = {
+            "fits": sum(p.get("placed_by") == REFINE for p in pts),
+            "pins": sum(p.get("placed_by") == PIN for p in pts),
+            "share": max(v["share"][(task.id, k2, n)] for n, _ in _boxes(task.model)),
+            "tolerance": tol,
+            "estimate": est,
+            "above_tolerance": [n for n in est if tol is not None and est[n] >= tol[n]],
+            "guard_left": [n for n, b in _boxes(task.model)
+                           if guard_intervals(pts, task.levels(), b)],
+        }  # fmt: skip
+    res["deviation1"] = {"commit": _commit()}
     path.write_text(json.dumps(res, default=float))
+    return out
 
 
-def a4_validate(task: Task, p2: float) -> dict:
-    """Amendment 4, D: ground truth by dense real fits (every 0.01 decade where ln L at the
+def d1_smoke(n_workers: int = 3) -> dict:
+    """The smoke test, on a copy of the cache: condition (a) on the stub; the rule on the three
+    smoke rows (named validation rows, so refined in full); for each, the seventh addendum's
+    check in every box and level, the fits and pins used, the status, and every change from
+    the values before; (b) the passing row passes in all boxes; (c) every correction listed.
+    Results are not rewritten. Written to d1_smoke.json."""
+    from concurrent.futures import ProcessPoolExecutor
+
+    tasks = [t for t in stage1_tasks() if t.done_path.exists() and t.model != "NG"]
+    out: dict = {"commit": _commit(), "a": condition_a(), "rows": []}
+    _d1_log(f"deviation 1 smoke: condition (a) {'pass' if out['a']['pass'] else 'FAIL'}")
+    v = d1_values(tasks)
+    rows = _nearest_rows(D1_SMOKE)
+    jobs = [(tid, p2, "guard", None) for tid, p2 in rows]
+    with ProcessPoolExecutor(n_workers) as ex:
+        guard_jobs = list(ex.map(_d1_job, jobs))
+    jobs = [(tid, p2, "full", _tolerances(v, Task.from_id(tid), Points.key(p2, 0)[0])[1])
+            for tid, p2 in rows]  # fmt: skip
+    with ProcessPoolExecutor(n_workers) as ex:
+        full_jobs = list(ex.map(_d1_job, jobs))
+    for (tid, p2), gj, fj in zip(rows, guard_jobs, full_jobs, strict=True):
+        t = Task.from_id(tid)
+        k2 = Points.key(p2, 0)[0]
+        row = next(s for s in json.loads(t.done_path.read_text())["scans"]
+                   if Points.key(s["p2"], 0)[0] == k2)  # fmt: skip
+        pts = row_points(t, p2)
+        z_new = {(n, lv): ln_z_strength(pts, lv, b, row["h"]) for n, b in _boxes(t.model)
+                 for lv in t.levels()}  # fmt: skip
+        failed_before = (tid, p2) in rows[1:]
+        chk = check_rows(pts, t.levels(), _boxes(t.model), row["h"])
+        sh, tol = _tolerances(v, t, k2)
+        est = {n: float(row_estimates(pts, t.levels(), b, row["h"])[2].sum())
+               for n, b in _boxes(t.model)}  # fmt: skip
+        out["rows"].append({
+            "task": tid, "p2": p2, "failed_before": failed_before, "share": max(sh.values()),
+            "tolerance": tol, "estimate": est, "guard_job": gj, "full_job": fj,
+            "check": chk, "check_pass": all(c["pass"] for c in chk),
+            "check_prior_pass": all(c["pass"] for c in chk if c["box"] == "prior"),
+            "changes": changes(t, row, z_new, failed_before)})  # fmt: skip
+        _d1_log(f"deviation 1 smoke: {tid} p2 {p2:.4f}: pins {gj['pins']}, fits "
+                f"{gj['fits']}+{fj['fits']}, {fj['status']}, check "
+                f"{'pass' if out['rows'][-1]['check_pass'] else 'FAIL'}")  # fmt: skip
+    out["b"] = {"pass": out["rows"][0]["check_pass"]}
+    out["c"] = [c for r in out["rows"] for c in r["changes"] if c["correction"]]
+    (CACHE / "d1_smoke.json").write_text(json.dumps(out, default=float))
+    _d1_log(f"deviation 1 smoke: (a) {out['a']['pass']}, (b) {out['b']['pass']}, "
+            f"(c) {len(out['c'])} corrections; stopped, nothing further runs")  # fmt: skip
+    return out
+
+
+def d1_validate(task: Task, p2: float) -> dict:
+    """Validation: ground truth by dense real fits (every 0.01 decade where ln L at the
     smallest level lies within 25 of the row's best knot, every 0.05 decade elsewhere in the
-    widest box) with the row's calls from before amendment 4; written to the cache's
-    a4_validation directory. Compared with the result by ``a4_compare``."""
-    pts0 = [p for p in row_points(task, p2) if p.get("kind") != A4_KIND]
-    kn = knots_all(pts0)
+    widest box) with the row's calls from before deviation 1; written to d1_validation/."""
+    pts0 = [p for p in row_points(task, p2) if p.get("placed_by") not in D1_STAMPS]
+    kn = knots(pts0)
     lmin = min(task.levels())
     lk = np.array([_ln_l(p, lmin) for p in kn])
     xk = np.array([p["x"] for p in kn])
@@ -2867,79 +2925,65 @@ def a4_validate(task: Task, p2: float) -> dict:
     xs = set(coarse) | set(np.round(np.arange(a, b + 1e-9, 0.01), 6))
     have = {round(p["x"], 6) for p in pts0}
     xs = sorted(x for x in xs if lo <= x <= hi and x not in have)
-    fit0 = _row_fit(task, p2, record=False)
+    fit0 = _row_fit(task, p2, record=False, mode="validation")
     dense = list(pts0)
     extra = []
     for x in xs:  # in increasing x, each warm-started from its neighbours
-        d = {**fit0(float(x), dense), "kind": "a4 validation"}
+        d = fit0(float(x), dense, "validation")
         dense.append(d)
         extra.append(d)
     out = {"task": task.id, "p2": p2, "dense_fits": len(extra),
            "converged_with_contacts": sum(e["converged"] and not e["no_contact"] for e in extra),
            "commit": _commit(), "extra": extra}  # fmt: skip
-    d = CACHE / "a4_validation"
+    d = CACHE / "d1_validation"
     d.mkdir(parents=True, exist_ok=True)
     (d / f"{task.id}__{Points.key(p2, 0)[0]:.10f}.json").write_text(json.dumps(out, default=float))
     return out
 
 
-def a4_compare(task: Task, p2: float) -> dict:
-    """Amendment 4, D: the refined ln Z (the result's) against the ground truth, every box
-    and level: the truth valid where its spline and exponential values agree within τ/2; a
-    pass where the refined value lies within τ of it (prior box at every level; each R3 box
-    where both are determined). Reported beside it, not tested: the value from the guard
-    pass's fits alone (``guard_only``), the measured error of a row under the share floor."""
+def d1_compare(task: Task, p2: float) -> dict:
+    """Validation: the refined ln Z (the result's) against the ground truth in every box and
+    level: the truth valid where its spline and exponential values agree within τ/2; a pass
+    where the refined value lies within τ of it (in the prior box at every level, where the
+    truth must be valid; in each R3 box where both are determined). Reported beside it, not
+    tested: the value from the pins and guard fits alone (``guard_only``)."""
     k2 = Points.key(p2, 0)[0]
-    g = json.loads((CACHE / "a4_validation" / f"{task.id}__{k2:.10f}.json").read_text())
+    g = json.loads((CACHE / "d1_validation" / f"{task.id}__{k2:.10f}.json").read_text())
     allp = row_points(task, p2)
-    pts0 = [p for p in allp if p.get("kind") != A4_KIND]
-    guarded = pts0 + [p for p in allp if p.get("kind") == A4_KIND and p.get("a4_mode") == "guard"]
+    pts0 = [p for p in allp if p.get("placed_by") not in D1_STAMPS]
+    guarded = pts0 + [p for p in allp if p.get("d1_mode") == "guard"]
     dense = pts0 + g["extra"]
     row = next(s for s in json.loads(task.done_path.read_text())["scans"]
                if Points.key(s["p2"], 0)[0] == k2)  # fmt: skip
     rows = []
     for name, bx in _boxes(task.model):
-        tol = (row.get("a4", {}).get("tolerance") or {}).get(name) or A4_TAU_MAX
+        tol = ((row.get("d1", {}).get("tolerance") or {}).get(name)) or D1_TAU_MAX
         for lv in task.levels():
-            truth = row_ln_z(dense, lv, bx)
-            truth_exp = ln_z_strength(dense, lv, bx, 0.01, "pexp")
+            truth = ln_z_strength(dense, lv, bx, row["h"])
+            truth_exp = ln_z_strength(dense, lv, bx, row["h"], "pexp")
+            g_only = ln_z_strength(guarded, lv, bx, row["h"])
             ref = row["ln_z"][str(lv)][name]
-            valid = abs(truth - truth_exp) < tol / 2 or (truth == truth_exp == -math.inf)
-            nd = name in row.get("not_determined", [])
-            ok = (not valid and name != "prior") or nd or abs(ref - truth) <= tol
-            if name == "prior":
-                ok = valid and abs(ref - truth) <= tol
+            valid = (truth == truth_exp == -math.inf) or abs(truth - truth_exp) < tol / 2
+            close = (ref == truth == -math.inf) or abs(ref - truth) <= tol
+            ok = (valid and close) if name == "prior" else (not valid or close)
             rows.append({"box": name, "level": lv, "tolerance": tol, "refined": ref,
                          "truth": truth, "truth_exp": truth_exp, "valid": valid,
-                         "not_determined": nd, "pass": bool(ok),
-                         "guard_only": row_ln_z(guarded, lv, bx)})  # fmt: skip
-    return {"task": task.id, "p2": p2, "share": row.get("a4", {}).get("share"),
+                         "pass": bool(ok), "guard_only": g_only})  # fmt: skip
+    return {"task": task.id, "p2": p2, "share": row.get("d1", {}).get("share"),
             "pass": all(r["pass"] for r in rows), "rows": rows}  # fmt: skip
 
 
-def a4_named_rows() -> list[tuple[str, float]]:
-    """Amendment 4, D: the six named rows, each the task's scan nearest the value named."""
-    out = []
-    for tid, approx in A4_NAMED:
-        t = Task.from_id(tid)
-        if t.done_path.exists():
-            s = min(json.loads(t.done_path.read_text())["scans"],
-                    key=lambda q: abs(q["p2"] - approx))  # fmt: skip
-            out.append((tid, s["p2"]))
-    return out
-
-
-def a4_validation_rows(tasks: list[Task]) -> list[tuple[str, float]]:
-    """Amendment 4, D: the six named rows and 5 drawn by the seed 20261117 from the rows with
-    a share of at least 10⁻³ in some box and level (sorted by task and value, the named rows
-    left out)."""
-    out = a4_named_rows()
+def d1_validation_rows(tasks: list[Task]) -> list[tuple[str, float]]:
+    """The six named rows and 5 drawn by the seed 20261117 from the rows with a share of at
+    least 10⁻³ in some box and level after the refinement (sorted by task and value, the named
+    rows left out)."""
+    out = _nearest_rows(D1_NAMED)
     keys = {(tid, Points.key(p2, 0)[0]) for tid, p2 in out}
     pool = []
     for t in tasks:
         for s in json.loads(t.done_path.read_text())["scans"]:
             k2 = Points.key(s["p2"], 0)[0]
-            if (t.id, k2) not in keys and s.get("a4", {}).get("share", 0.0) >= A4_STOP_SHARE:
+            if (t.id, k2) not in keys and s.get("d1", {}).get("share", 0.0) >= D1_STOP_SHARE:
                 pool.append((t.id, s["p2"]))
     pool.sort(key=lambda r: (r[0], r[1]))
     pick = np.random.default_rng(20261117).choice(len(pool), size=min(5, len(pool)), replace=False)
@@ -2963,6 +3007,7 @@ def main(argv: list[str] | None = None) -> None:
             "gapcheck",
             "fill",
             "refine",
+            "smoke",
             "validate",
         ),
     )
@@ -2997,21 +3042,23 @@ def main(argv: list[str] | None = None) -> None:
                     print(t.id, f"p2 {r['p2']:.4f}", "pass" if r["pass"] else "FAIL",
                           [round(c["corrected"] - c["pexp"], 4) for c in r["prior"]])  # fmt: skip
     elif a.cmd == "refine":
-        r = amendment4(a.n_workers, [a.task] if a.task else None)
-        print(json.dumps({k: r[k] for k in ("rounds", "stop")}, default=float))
+        r = deviation1(a.n_workers)
+        print(json.dumps({k: r[k] for k in ("rounds", "stop", "corrections")}, default=float))
+    elif a.cmd == "smoke":
+        d1_smoke(a.n_workers)
     elif a.cmd == "validate":
         tasks = [t for t in stage1_tasks() if t.done_path.exists() and t.model != "NG"]
         out = []
-        for tid, p2 in a4_validation_rows(tasks):
+        for tid, p2 in d1_validation_rows(tasks):
             t = Task.from_id(tid)
             k2 = Points.key(p2, 0)[0]
-            if not (CACHE / "a4_validation" / f"{tid}__{k2:.10f}.json").exists():
-                a4_validate(t, p2)
-            c = a4_compare(t, p2)
+            if not (CACHE / "d1_validation" / f"{tid}__{k2:.10f}.json").exists():
+                d1_validate(t, p2)
+            c = d1_compare(t, p2)
             out.append(c)
             print(tid, f"p2 {p2:.4f}", f"share {c['share']:.2e}", "pass" if c["pass"] else "FAIL",
                   flush=True)  # fmt: skip
-        (CACHE / "a4_validation.json").write_text(
+        (CACHE / "d1_validation.json").write_text(
             json.dumps(
                 {"commit": _commit(), "pass": all(c["pass"] for c in out), "rows": out},
                 default=float,

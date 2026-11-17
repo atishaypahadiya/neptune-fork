@@ -942,7 +942,7 @@ def test_a_narrow_box_in_a_selected_interval_compares_the_spline_alone():
     assert any(o["box"] == "r3_2" for o in f["not_determined_overlap"])
 
 
-# ---- amendment 4: the strength integral by adaptive refinement
+# ---- deviation 1: pins at every boundary, then refinement to a share-weighted tolerance
 
 
 def _chi2(x, x0=-6.7, w=0.1):
@@ -961,9 +961,9 @@ def _exact_ln_z(x0=-6.7, w=0.1, ln_s=3.0, bx=(-9.0, -5.0)):
 def _exact_fit(x0=-6.7, w=0.1, ln_s=3.0):
     calls = []
 
-    def fit(x, pts):
-        calls.append(x)
-        return _knot(float(x), _chi2(x, x0, w)) | {"ln_s": ln_s, "kind": F.A4_KIND}
+    def fit(x, pts, stamp):
+        calls.append((x, stamp))
+        return _knot(float(x), _chi2(x, x0, w)) | {"ln_s": ln_s, "placed_by": stamp}
 
     return fit, calls
 
@@ -973,105 +973,119 @@ def _sparse(x0=-6.7, w=0.1, ln_s=3.0, xs=None):
     return [_knot(float(x), _chi2(float(x), x0, w)) | {"ln_s": ln_s} for x in xs]
 
 
-def test_the_refined_integral_of_a_gaussian_is_exact():
-    """Amendment 4, B.7: the spline on many knots, each interval in A4_NSUB exponential steps.
-    The steps' chord error is about h² / (12 w²) = 3 × 10⁻⁶ here (h the step, w the width), far
-    below the smallest row tolerance (τ_m / 2 = 0.0025)."""
-    w, ln_s = 0.013, 3.0
-    pts = [_knot(float(x), ((x + 6.7) / w) ** 2) | {"ln_s": ln_s}
-           for x in np.linspace(-9.0, -5.0, 801)]  # fmt: skip
-    want = math.log(math.sqrt(2 * math.pi) * w) - ln_s - math.log(4.0)
-    assert F.row_ln_z(pts, 1.0, (-9.0, -5.0)) == pytest.approx(want, abs=1e-5)
+def test_every_boundary_is_counted():
+    """Ten boundaries for the planet and the ring (their prior box is r3_4), twelve for J2."""
+    assert F.boundaries("P") == [-11.0, -10.0, -9.0, -8.0, -7.5, -6.5, -6.0, -5.0, -4.0, -3.0]
+    assert F.boundaries("R") == F.boundaries("P")
+    assert len(F.boundaries("J")) == 12 and {-7.0, -2.0} <= set(F.boundaries("J"))
+
+
+def test_a_boundary_without_a_knot_is_pinned_once():
+    fit, calls = _exact_fit()
+    pts = _sparse(xs=np.array([-9.3, -8.6, -7.9, -7.2, -6.7, -6.2, -5.5, -4.8]))
+    bx = [("prior", (-9.0, -5.0))]
+    r = F.refine_row(pts, (1.0,), bx, fit, "guard", 0.1)
+    assert sorted(x for x, st in calls if st == F.PIN) == [-9.0, -5.0]
+    assert len(r["pins"]) == 2
+    fit2, calls2 = _exact_fit()
+    F.refine_row(pts + r["pins"], (1.0,), bx, fit2, "guard", 0.1)
+    assert not [c for c in calls2 if c[1] == F.PIN]
+
+
+def test_a_pin_with_no_contact_is_not_tried_again():
+    pts = [*_sparse(), _knot(-9.0, 1.0) | {"no_contact": True, "placed_by": F.PIN}]
+    assert not F._needs_pin(pts, -9.0)
+    assert F._needs_pin(_sparse(xs=np.array([-8.5, -7.0])), -9.0)
 
 
 def test_refinement_reaches_the_tolerance_on_sparse_knots():
-    """Amendment 4, B.2 to B.4: from 9 knots 0.5 decade apart the estimate drives midpoint fits
-    until it is below the tolerance, and the integral then lies within it of the exact one."""
+    """From 9 knots 0.5 decade apart the estimate drives midpoint fits until it is below the
+    tolerance, and the plan's integral then lies within it of the exact one."""
     fit, _ = _exact_fit()
     bx = [("prior", (-9.0, -5.0))]
-    r = F.refine_row(_sparse(), (1.0,), bx, fit, "full", {"prior": 0.0025})
-    assert r["status"] == "converged" and 0 < r["fits"] < F.A4_CAP
+    r = F.refine_row(_sparse(), (1.0,), bx, fit, "full", 0.05, {"prior": 0.0025})
+    assert r["status"] == "converged" and 0 < r["fits"] < F.D1_CAP
     pts = _sparse() + r["new"]
-    assert abs(F.row_ln_z(pts, 1.0, (-9.0, -5.0)) - _exact_ln_z()) < 0.0025
-    _, _, e = F.row_estimates(pts, (1.0,), (-9.0, -5.0))
+    assert abs(F.ln_z_strength(pts, 1.0, (-9.0, -5.0), 0.05) - _exact_ln_z()) < 0.0025
+    _, _, e = F.row_estimates(pts, (1.0,), (-9.0, -5.0), 0.05)
     assert e.sum() < 0.0025
 
 
 def test_the_guard_finds_the_lambda_563_overshoot_and_fits_remove_it():
-    """Amendment 4, B.3: in the stored row the gap from x −7.68 to −6.26 holds one coarse call
-    (−7.0), a knot under amendment 4; the guard selects the interval from it to −6.26. With
-    fits from a smooth stand-in for the row the guard holds nowhere at the end."""
-    pts, _, _ = _overshoot_row()
+    """The gap from x −7.68 to −6.26 in the stored row is selected; with fits from a smooth
+    stand-in for the row the guard holds nowhere at the end, and the integral then lies below
+    the best knot."""
+    pts, h, _ = _overshoot_row()
     b = F.box("P")
     g = F.guard_intervals(pts, (1.0,), b)
-    assert any(a == pytest.approx(-7.0, abs=1e-6) and c == pytest.approx(-6.259, abs=1e-3)
+    assert any(a == pytest.approx(-7.676, abs=1e-3) and c == pytest.approx(-6.259, abs=1e-3)
                for a, c in g)  # fmt: skip
-    kn = F.knots_all(pts)
+    kn = F.knots(pts)
     xk = np.array([p["x"] for p in kn])
     ck = np.array([p["chi2"] for p in kn])
     sk = np.array([p["ln_s"] for p in kn])
 
-    def fit(x, _):  # χ² and ln s linear between the knots: no overshoot can come from them
+    def fit(x, _, stamp):  # χ² and ln s linear between the knots: no overshoot can come from them
         return _knot(float(x), float(np.interp(x, xk, ck))) | {
             "ln_s": float(np.interp(x, xk, sk)),
             "p2": pts[0]["p2"],
-            "kind": F.A4_KIND,
+            "placed_by": stamp,
         }
 
-    r = F.refine_row(pts, (1.0,), [("prior", b)], fit, "guard")
+    r = F.refine_row(pts, (1.0,), [("prior", b)], fit, "guard", h)
     assert r["fits"] > 0
-    assert F.guard_intervals(pts + r["new"], (1.0,), b) == []
-    best = max(F._ln_l(p, 1.0) for p in F.knots_all(pts))
-    assert F.row_ln_z(pts + r["new"], 1.0, b) < best
-
-
-def test_guard_mode_makes_no_fit_where_the_guard_holds_nowhere():
-    fit, calls = _exact_fit()
-    pts = _sparse(xs=np.linspace(-9.0, -5.0, 401))
-    r = F.refine_row(pts, (1.0,), [("prior", (-9.0, -5.0))], fit, "guard")
-    assert r["fits"] == 0 and calls == [] and r["status"] == "converged"
+    after = pts + r["pins"] + r["new"]
+    assert F.guard_intervals(after, (1.0,), b) == []
+    best = max(F._ln_l(p, 1.0) for p in F.knots(after))
+    assert F.ln_z_strength(after, 1.0, b, h) < best
 
 
 def test_the_cap_stops_a_row():
     fit, _ = _exact_fit()
-    r = F.refine_row(_sparse(), (1.0,), [("prior", (-9.0, -5.0))], fit, "full",
+    r = F.refine_row(_sparse(), (1.0,), [("prior", (-9.0, -5.0))], fit, "full", 0.05,
                      {"prior": 1e-12}, cap=20)  # fmt: skip
     assert r["status"] == "cap" and r["fits"] == 20
 
 
+def test_condition_a_a_row_with_knots_on_every_boundary_is_bit_identical():
+    """Smoke condition (a): the stub gets no pin and no fit, and its ln Z in all six boxes at
+    every level is bit-identical to the value from the same points before the rule."""
+    a = F.condition_a()
+    assert a == {"fits": 0, "bit_identical": True, "pass": True}
+
+
+def test_a_change_above_the_check_on_a_passing_row_is_a_correction():
+    t = F.Task.from_id("t1_s0_l0_J")
+    before = {str(lv): {n: -10.0 for n, _ in F._boxes("J")} for lv in t.levels()}
+    row = {"p2": 0.0, "ln_z": before}
+    z = {(n, lv): -10.0 for n, _ in F._boxes("J") for lv in t.levels()}
+    z[("prior", 1.0)] = -10.06
+    z[("r3_1", 0.5)] = -10.01
+    ch = F.changes(t, row, z, failed_before=False)
+    assert [(c["box"], c["level"], c["correction"]) for c in ch] == [
+        ("prior", 1.0, True), ("r3_1", 0.5, False)]  # fmt: skip
+    assert not any(c["correction"] for c in F.changes(t, row, z, failed_before=True))
+
+
 def test_row_tolerance_is_share_weighted_and_clipped():
-    m = F.A4_TAU_M
+    m = F.D1_TAU_M
     assert F.row_tolerance(1.0, 144) == m / 2
-    assert F.row_tolerance(0.0, 144) == F.A4_TAU_MAX
+    assert F.row_tolerance(0.0, 144) == F.D1_TAU_MAX
     assert F.row_tolerance(1e-3, 144) == pytest.approx(m / (2 * 144 * 1e-3))
-    assert F.row_tolerance(1e-9, 144) == F.A4_TAU_MAX
+    assert F.row_tolerance(1e-9, 144) == F.D1_TAU_MAX
 
 
 def test_the_share_floor_decides_guard_or_full_refinement():
-    """Amendment 4 with the floor: a row below 10⁻⁶ in every box and level gets the guard only;
-    at or above it in any box, full refinement; a named validation row always in full."""
+    """A row below 10⁻⁶ in every box and level gets the pins and the guard only; at or above
+    it in any box, full refinement; a named validation row always in full."""
     assert F.refine_mode({"prior": 1e-7, "r3_1": 9e-7}) == "guard"
     assert F.refine_mode({"prior": 1e-7, "r3_1": 1e-6}) == "full"
     assert F.refine_mode({"prior": 0.0}, validation=True) == "full"
 
 
-def test_a_plateau_from_the_lower_edge_needs_three_flat_knots():
-    xk = np.array([-9.0, -8.5, -8.0, -7.5, -7.0])
-    assert F._plateau_end(xk, np.array([0.0, 0.004, -0.003, 0.002, -5.0]), -9.0, 0.01) == -7.5
-    assert F._plateau_end(xk, np.array([0.0, 0.004, -0.5, 0.0, 0.0]), -9.0, 0.01) is None
-    assert F._plateau_end(xk + 0.1, np.zeros(5), -9.0, 0.01) is None  # no knot on the edge
-
-
-def test_a_plateau_is_integrated_as_its_mean_times_its_width():
-    xs = np.r_[np.linspace(-9.0, -7.0, 5), np.linspace(-6.9, -5.0, 40)]
-    pts = [_knot(float(x), 0.0 if x <= -7.0 else 1e4) for x in xs]
-    z = F.row_ln_z(pts, 1.0, (-9.0, -5.0), plateau=-7.0)
-    assert z == pytest.approx(math.log(2.0 / 4.0), abs=0.02)
-
-
 def test_stage1_computes_no_gate_without_the_go_file(tmp_path, monkeypatch):
-    """Amendment 4, E: no driver or queue can start the gates; stage1 stops before it
-    schedules or reads anything unless the go file is in the study's cache."""
+    """No driver or queue can start the gates: stage1 stops before it schedules or reads
+    anything unless the go file is in the study's cache."""
     monkeypatch.setattr(F, "CACHE", tmp_path)
     monkeypatch.setattr(F, "prepare", lambda: pytest.fail("prepare was called"))
     monkeypatch.setattr(F, "schedule", lambda *a: pytest.fail("schedule was called"))
@@ -1079,7 +1093,7 @@ def test_stage1_computes_no_gate_without_the_go_file(tmp_path, monkeypatch):
         F.stage1(1)
 
 
-def test_v4_reads_the_calls_after_amendment_4():
-    s = {"chi2_min": 10.0, "chi2_min_corrected": 9.0, "chi2_min_calls": 9.6, "a4": {}}
+def test_v4_reads_the_calls_after_deviation_1():
+    s = {"chi2_min": 10.0, "chi2_min_corrected": 9.0, "chi2_min_calls": 9.6, "d1": {}}
     assert F._v4_chi2(s) == 9.6
     assert F._v4_chi2({"chi2_min": 10.0, "chi2_min_corrected": 9.0}) == 9.0
