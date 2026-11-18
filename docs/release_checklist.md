@@ -284,8 +284,14 @@ page's type and hyphenation.
 - [x] Metadata: version 1.5.0 in `pyproject.toml`, `uv.lock` and `CITATION.cff` (its `doi:`
   removed until Zenodo mints the version DOI); `site/data/release.json`; the companion page's
   status; CHANGELOG dated 2026-11-18 (UTC, the release day).
-- [ ] Checks, merge into `main`, CI and the site build, tag `v1.5.0`, GitHub release, Zenodo
-  version DOI, follow-up commit with that DOI.
+- [x] Checks: hook suite on every commit (710 fast), prerender, number audit on both pages,
+  layout in Chromium and WebKit.
+- [x] Merged into `main` (614b02d); one follow-up naming fix on `main` (4425af2). CI test and
+  pages green on both.
+- [x] Tag `v1.5.0` on 4425af2, GitHub release published 2026-11-18 05:09:19 UTC, not a draft;
+  Zenodo minted version DOI 10.5281/zenodo.24330988 (https://zenodo.org/records/24330988),
+  its description identical to `.zenodo.json`.
+- [x] Follow-up commit: that DOI in `CITATION.cff`, `README.md` and `site/data/release.json`.
 
 ## v1.5 list (opened 2026-11-15; closed at v1.5.0, kept as history; open items carried to v1.6)
 
