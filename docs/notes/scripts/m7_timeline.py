@@ -283,11 +283,14 @@ def main() -> None:
             "free, and held at his values in § 4.5)",
             "m6c_fits": [
                 {"key": "bouvard", "name": "Bouvard", "kind": "variant"},
-                {"key": "adams", "name": "Adams", "kind": "variant"},
+                {
+                    "key": "adams",
+                    "name": "fit without Flamsteed's observation of 1690 (527 of 529 measurements)",
+                    "kind": "fit",
+                },
                 {"key": "track_1846", "name": "1846 reduction track", "kind": "track"},
             ],
-            "status": "the Adams variant (all of Table 77 but Flamsteed's observation of 1690; "
-            "not Adams's own data) was run and is not repeatable at the registered tolerance, so "
+            "status": "that fit was run and is not repeatable at the registered tolerance, so "
             "it is not read; the Bouvard variant stopped at its synthetic gate; the "
             "1846 reduction track is not built",
             "opens": {},

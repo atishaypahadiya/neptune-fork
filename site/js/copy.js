@@ -533,10 +533,9 @@ export function shapeText(D) {
       `${fmt(100 * v["shape38.p_free"], 0)} % of ${n} posterior draws land as close; with it held ` +
       `at either value, none of ${n} does. From those counts, a prediction as close as his is at ` +
       `least about ${factor} times less probable with the distance held than with it free ` +
-      `(one-sided, 95 %). The threshold is his actual miss, chosen after the event. A refit ` +
-      `with the distance free on all of Table 77 except Flamsteed's observation of 1690 (both ` +
-      `its coordinates) was also run; it is not repeatable at the registered tolerance, and I ` +
-      `do not read it.`,
+      `(one-sided, 95 %). The threshold is his actual miss, chosen after the event. The fit ` +
+      `without Flamsteed's observation of 1690 (527 of 529 measurements), with the distance ` +
+      `free, was also run; it is not repeatable at the registered tolerance, and I do not read it.`,
   };
 }
 
@@ -744,7 +743,8 @@ function deferredFits(d) {
   const rest = d.m6c_fits.filter((f) => f.kind !== "variant").map((f) => `the ${f.name}`);
   const opens = Object.entries(d.opens).map(([key, what]) =>
     `the ${d.m6c_fits.find((f) => f.key === key).name} variant opens ${what}`);
-  return `Only ${d.fitted} is fitted: ${andList([`the ${andList(variants)} variants`, ...rest])} ` +
+  const vs = variants.length ? [`the ${andList(variants)} variant${variants.length > 1 ? "s" : ""}`] : [];
+  return `Only ${d.fitted} is fitted: ${andList([...vs, ...rest])} ` +
     `are deferred to v${d.to_version} (${[d.status, ...opens].join("; ")}).`;
 }
 

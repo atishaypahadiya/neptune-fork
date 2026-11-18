@@ -736,7 +736,7 @@ pattern and kept whole too, which does no harm.
   threshold is stated as chosen after the event. Each held value carries its source in the
   plan's words (`held` in the data file; a test checks both phrases against the plan's § 3).
   One sentence says the free-distance refit on all of Table 77 but Flamsteed's 1690 observation
-  (the plan's `adams` choice) was run and is not read, with no numbers.
+  (527 of 529 measurements) was run and is not read, with no numbers.
 - **Data:** `site/data/m6d.json`, written by `fork.export.m6d_site`. Each value is a copy of a
   named field of `docs/notes/M6d.json` (`tests/test_m6d_site.py`). The window (0.87°, 52′) is
   a constant of the plan, carried with its citation (`window`), and a test checks it against
@@ -744,6 +744,7 @@ pattern and kept whole too, which does no harm.
   one-sided 95 % bound on a zero count, rounded down to the hundred. The text refuses to render
   if either fit is not read or has a draw within the window.
 - Limitations: the deferred fits' sentence (`m7_timeline.json`, `deferred`) no longer lists the
-  shape model, and it says the Adams variant was run and not read.
+  shape model; it names the fit without Flamsteed's observation of 1690 descriptively, says it
+  was run and not read, and the variant count in its wording follows the list.
 - UI-rule audit: no new pattern; text and data only. The section number and h3 are the existing
   convention.

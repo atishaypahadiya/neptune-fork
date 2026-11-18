@@ -247,8 +247,8 @@
    },
    {
     "key": "adams",
-    "name": "Adams",
-    "kind": "variant"
+    "name": "fit without Flamsteed's observation of 1690 (527 of 529 measurements)",
+    "kind": "fit"
    },
    {
     "key": "track_1846",
@@ -256,7 +256,7 @@
     "kind": "track"
    }
   ],
-  "status": "the Adams variant (all of Table 77 but Flamsteed's observation of 1690; not Adams's own data) was run and is not repeatable at the registered tolerance, so it is not read; the Bouvard variant stopped at its synthetic gate; the 1846 reduction track is not built",
+  "status": "that fit was run and is not repeatable at the registered tolerance, so it is not read; the Bouvard variant stopped at its synthetic gate; the 1846 reduction track is not built",
   "opens": {}
  },
  "sensitivity_reading_rules": {

@@ -25,8 +25,8 @@ the README say which fits are now read.
   times less probable with the distance held than with it free. The 0.87° threshold was
   chosen after the event. On the main page as § 4.5 (`docs/notes/M6d.md`,
   `site/data/m6d.json`).
-- The free-distance fit on all of Table 77 but Flamsteed's observation of 1690 (527 of the
-  529 measurements; the `adams` variant, not Adams's own data), run on 15 and 16 November.
+- The free-distance fit without Flamsteed's observation of 1690 (527 of 529 measurements),
+  run on 15 and 16 November.
   Its gates pass. The four single-seed medians span 0.353°, against the registered 0.35°,
   so the fit fails its repeatability test by 0.003°. It is not repeatable
   at the registered tolerance and is not read; its numbers are recorded in its note only
@@ -53,7 +53,8 @@ the README say which fits are now read.
   hyphenated by column width on narrow screens, with names and addresses kept whole.
 - The compute ledger includes the runs of v1.4: 1,319 CPU-hours in 329 rows (was 1,193 in
   299), with the rerun of the eccentricity test's nearest cell at 126.0. The runs that wrote no
-  row (the synthetic gates of the two data choices, the stopped fit on Adams's rows, the
+  row (the synthetic gates of the two data choices, the stopped first run of the fit without
+  Flamsteed's observation of 1690, the
   Mercury study) are listed with estimates, about 40 CPU-hours, outside the sum
   (`site/data/ledger.json`, `README.md`, `docs/reproduce.md`).
 - Every run now writes a ledger row with its CPU time and its outcome: done, gate passed,
@@ -99,9 +100,10 @@ paragraph in § 3.5 and a sentence in its abstract.
   Uranus prior box sits off-centre; `docs/notes/M6c_variants.md`), and the synthetic
   identifiability study for Mercury (the linear treatment of the elements fails its
   linearity gate; `docs/phase2/identifiability_study.md`). Both move to v1.5.
-- Pre-registered plans for the fit on Adams's rows and for Le Verrier's shape model against
-  free distance (`docs/notes/M6c_variants.md`, `docs/notes/M6d.md`), with their runner. The
-  fit on Adams's rows passed its synthetic gate; neither is fitted to the real data here.
+- Pre-registered plans for the fit without Flamsteed's observation of 1690 (527 of 529
+  measurements) and for Le Verrier's shape model against free distance
+  (`docs/notes/M6c_variants.md`, `docs/notes/M6d.md`), with their runner. The fit without
+  Flamsteed's observation of 1690 passed its synthetic gate; neither is fitted to the real data here.
 - The second data set for the study of Mercury: Le Verrier's meridian places of Mercury
   observed at Paris, 1801 to 1842 (*Annales de l'Observatoire impérial de Paris*, tome V,
   1859, pp. 51–61), 397 rows in two entries that agree in all 7,146 cells, with a log of two
@@ -281,8 +283,8 @@ probably".
   `spotcheck_results.json` and the documentation; no table value or check result changes.
 - Compute ledger: 1193 CPU-hours (the main study: 1090; the companion study: 103).
 - Deferred from v1.2 to v1.3: the Peirce shape-model comparison, the held-out
-  precoveries, the remaining variants of the headline fit (the Bouvard and Adams data variants,
-  the 1846 reduction track, the Le Verrier shape model), and the resolution of the eccentricity
+  precoveries, the remaining variants of the headline fit (the Bouvard data variant, the fit
+  without Flamsteed's observation of 1690, the 1846 reduction track, the Le Verrier shape model), and the resolution of the eccentricity
   test's low-distance cell.
 
 ## 1.1.0 (2026-11-10)
@@ -313,7 +315,8 @@ unchanged.
 - Compute ledger: 1090 CPU-hours (the profile under Student-t errors: 3.1).
 - Code DOI 10.5281/zenodo.24122940 (concept 10.5281/zenodo.24121059).
 - Deferred from v1.1 to v1.2: the Peirce shape-model comparison, the held-out
-  precoveries, the Bouvard and Adams data variants, the 1846 reduction track, the
+  precoveries, the Bouvard data variant, the fit without Flamsteed's observation of 1690, the
+  1846 reduction track, the
   Le Verrier shape model, and the resolution of the eccentricity test's low-distance cell.
 
 ## 1.0.0 (2026-11-10)
