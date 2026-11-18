@@ -236,9 +236,9 @@
   }
  ],
  "deferred": {
-  "source": "docs/release_checklist.md, Deferred to v1.1 (2026-11-09); carried to v1.2 at v1.1.0, to v1.3 at v1.2.0, to v1.4 at v1.3.0 and to v1.5 at v1.4.0",
-  "to_version": "1.5",
-  "fitted": "Le Verrier's data choice on the modern reduction track",
+  "source": "docs/release_checklist.md, Deferred to v1.1 (2026-11-09); carried to v1.2 at v1.1.0, to v1.3 at v1.2.0, to v1.4 at v1.3.0, to v1.5 at v1.4.0 and to v1.6 at v1.5.0",
+  "to_version": "1.6",
+  "fitted": "Le Verrier's data choice on the modern reduction track (with the distance free, and held at his values in § 4.5)",
   "m6c_fits": [
    {
     "key": "bouvard",
@@ -247,21 +247,16 @@
    },
    {
     "key": "adams",
-    "name": "Adams",
-    "kind": "variant"
+    "name": "fit without Flamsteed's observation of 1690 (527 of 529 measurements)",
+    "kind": "fit"
    },
    {
     "key": "track_1846",
     "name": "1846 reduction track",
     "kind": "track"
-   },
-   {
-    "key": "lv_shape",
-    "name": "Le Verrier shape model",
-    "kind": "model"
    }
   ],
-  "status": "the variants and the shape model are pre-registered and not yet fitted to the real data; the 1846 reduction track is not built",
+  "status": "that fit was run and is not repeatable at the registered tolerance, so it is not read; the Bouvard variant stopped at its synthetic gate; the 1846 reduction track is not built",
   "opens": {}
  },
  "sensitivity_reading_rules": {

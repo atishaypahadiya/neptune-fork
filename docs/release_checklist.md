@@ -271,7 +271,23 @@ checks, the heading spacing and the page-range guard.
   Zenodo minted version DOI 10.5281/zenodo.24237250 (https://zenodo.org/records/24237250).
 - [x] Follow-up commit: that DOI in `CITATION.cff`, `README.md` and `site/data/release.json`.
 
-## v1.5 list (opened 2026-11-15; no release without the explicit word)
+## v1.5.0 (released on the author's word, 2026-11-18 UTC)
+
+A minor release. Contents in `CHANGELOG.md`: Le Verrier's shape model against free distance
+(§ 4.5; the probability of landing within his 0.87° miss), the fit without Flamsteed's
+observation of 1690 (run, not repeatable at the registered tolerance, not read), the eight-seed
+95 % range (still provisional), the Bouvard-tables wording, Mercury Stage 1 in progress, and the
+page's type and hyphenation.
+
+- [x] Before the metadata: branch `v15-release` reviewed (§ 4.5, release notes, abstract,
+  README, the descriptive name of the fit without Flamsteed 1690 in all public text).
+- [x] Metadata: version 1.5.0 in `pyproject.toml`, `uv.lock` and `CITATION.cff` (its `doi:`
+  removed until Zenodo mints the version DOI); `site/data/release.json`; the companion page's
+  status; CHANGELOG dated 2026-11-18 (UTC, the release day).
+- [ ] Checks, merge into `main`, CI and the site build, tag `v1.5.0`, GitHub release, Zenodo
+  version DOI, follow-up commit with that DOI.
+
+## v1.5 list (opened 2026-11-15; closed at v1.5.0, kept as history; open items carried to v1.6)
 
 | item | state | next step |
 |---|---|---|
