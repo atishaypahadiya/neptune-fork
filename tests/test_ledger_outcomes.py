@@ -255,6 +255,7 @@ NOT_RUNNERS = {
     "export/to_json.py": "site data from saved results",
     "export/s1_site.py": "site data from saved results",
     "export/m6e_site.py": "site data from saved results",
+    "export/m6d_site.py": "site data from saved results",
     "export/p1b_site.py": "site data from saved results",
     "export/ledger.py": "totals of the ledger itself",
 }

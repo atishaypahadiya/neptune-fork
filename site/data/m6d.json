@@ -1,0 +1,275 @@
+{
+ "description": "Le Verrier's shape model, the distance held at his values, against free distance (main page, § 4.5): copies of fields of docs/notes/M6d.json.",
+ "plan": "docs/notes/M6d.md",
+ "window": {
+  "deg": 0.87,
+  "arcmin": 52,
+  "citation": "docs/notes/M6d.md, § 1: Le Verrier's actual miss of 52′"
+ },
+ "sources": {
+  "shape38.held_a_au": [
+   "docs/notes/M6d.json",
+   "fits",
+   "shape38",
+   "summary",
+   "held_a_au"
+  ],
+  "shape38.read": [
+   "docs/notes/M6d.json",
+   "fits",
+   "shape38",
+   "summary",
+   "read"
+  ],
+  "shape38.n_draws": [
+   "docs/notes/M6d.json",
+   "fits",
+   "shape38",
+   "summary",
+   "settings",
+   "n_draws"
+  ],
+  "shape38.median": [
+   "docs/notes/M6d.json",
+   "fits",
+   "shape38",
+   "summary",
+   "fits",
+   "merged",
+   "galle_lon_ecl_of_date_deg",
+   "median"
+  ],
+  "shape38.lo68": [
+   "docs/notes/M6d.json",
+   "fits",
+   "shape38",
+   "summary",
+   "fits",
+   "merged",
+   "galle_lon_ecl_of_date_deg",
+   "lo68"
+  ],
+  "shape38.hi68": [
+   "docs/notes/M6d.json",
+   "fits",
+   "shape38",
+   "summary",
+   "fits",
+   "merged",
+   "galle_lon_ecl_of_date_deg",
+   "hi68"
+  ],
+  "shape38.median_minus_neptune_deg": [
+   "docs/notes/M6d.json",
+   "fits",
+   "shape38",
+   "summary",
+   "fits",
+   "merged",
+   "galle_lon_ecl_of_date_deg",
+   "vs",
+   "jpl",
+   "median_minus_target_deg"
+  ],
+  "shape38.ln_b": [
+   "docs/notes/M6d.json",
+   "fits",
+   "shape38",
+   "summary",
+   "reading",
+   "bayes_factor",
+   "ln_b"
+  ],
+  "shape38.ln_b_err": [
+   "docs/notes/M6d.json",
+   "fits",
+   "shape38",
+   "summary",
+   "reading",
+   "bayes_factor",
+   "err"
+  ],
+  "shape38.ln_b_wording": [
+   "docs/notes/M6d.json",
+   "fits",
+   "shape38",
+   "summary",
+   "reading",
+   "bayes_factor",
+   "wording"
+  ],
+  "shape38.p_shape": [
+   "docs/notes/M6d.json",
+   "fits",
+   "shape38",
+   "summary",
+   "reading",
+   "ratio",
+   "p_shape"
+  ],
+  "shape38.p_free": [
+   "docs/notes/M6d.json",
+   "fits",
+   "shape38",
+   "summary",
+   "reading",
+   "ratio",
+   "p_free"
+  ],
+  "shape38.ratio_wording": [
+   "docs/notes/M6d.json",
+   "fits",
+   "shape38",
+   "summary",
+   "reading",
+   "ratio",
+   "wording"
+  ],
+  "shape36.held_a_au": [
+   "docs/notes/M6d.json",
+   "fits",
+   "shape36",
+   "summary",
+   "held_a_au"
+  ],
+  "shape36.read": [
+   "docs/notes/M6d.json",
+   "fits",
+   "shape36",
+   "summary",
+   "read"
+  ],
+  "shape36.n_draws": [
+   "docs/notes/M6d.json",
+   "fits",
+   "shape36",
+   "summary",
+   "settings",
+   "n_draws"
+  ],
+  "shape36.median": [
+   "docs/notes/M6d.json",
+   "fits",
+   "shape36",
+   "summary",
+   "fits",
+   "merged",
+   "galle_lon_ecl_of_date_deg",
+   "median"
+  ],
+  "shape36.lo68": [
+   "docs/notes/M6d.json",
+   "fits",
+   "shape36",
+   "summary",
+   "fits",
+   "merged",
+   "galle_lon_ecl_of_date_deg",
+   "lo68"
+  ],
+  "shape36.hi68": [
+   "docs/notes/M6d.json",
+   "fits",
+   "shape36",
+   "summary",
+   "fits",
+   "merged",
+   "galle_lon_ecl_of_date_deg",
+   "hi68"
+  ],
+  "shape36.median_minus_neptune_deg": [
+   "docs/notes/M6d.json",
+   "fits",
+   "shape36",
+   "summary",
+   "fits",
+   "merged",
+   "galle_lon_ecl_of_date_deg",
+   "vs",
+   "jpl",
+   "median_minus_target_deg"
+  ],
+  "shape36.ln_b": [
+   "docs/notes/M6d.json",
+   "fits",
+   "shape36",
+   "summary",
+   "reading",
+   "bayes_factor",
+   "ln_b"
+  ],
+  "shape36.ln_b_err": [
+   "docs/notes/M6d.json",
+   "fits",
+   "shape36",
+   "summary",
+   "reading",
+   "bayes_factor",
+   "err"
+  ],
+  "shape36.ln_b_wording": [
+   "docs/notes/M6d.json",
+   "fits",
+   "shape36",
+   "summary",
+   "reading",
+   "bayes_factor",
+   "wording"
+  ],
+  "shape36.p_shape": [
+   "docs/notes/M6d.json",
+   "fits",
+   "shape36",
+   "summary",
+   "reading",
+   "ratio",
+   "p_shape"
+  ],
+  "shape36.p_free": [
+   "docs/notes/M6d.json",
+   "fits",
+   "shape36",
+   "summary",
+   "reading",
+   "ratio",
+   "p_free"
+  ],
+  "shape36.ratio_wording": [
+   "docs/notes/M6d.json",
+   "fits",
+   "shape36",
+   "summary",
+   "reading",
+   "ratio",
+   "wording"
+  ]
+ },
+ "values": {
+  "shape38.held_a_au": 38.4,
+  "shape38.read": true,
+  "shape38.n_draws": 6000,
+  "shape38.median": 315.25,
+  "shape38.lo68": 314.133,
+  "shape38.hi68": 316.38,
+  "shape38.median_minus_neptune_deg": -10.623,
+  "shape38.ln_b": -3.4842258935527752,
+  "shape38.ln_b_err": 0.11347603630740158,
+  "shape38.ln_b_wording": "a strong preference for free distance",
+  "shape38.p_shape": 0.0,
+  "shape38.p_free": 0.35,
+  "shape38.ratio_wording": "made it less probable (P_shape is 0)",
+  "shape36.held_a_au": 36.154,
+  "shape36.read": true,
+  "shape36.n_draws": 6000,
+  "shape36.median": 316.831,
+  "shape36.lo68": 315.766,
+  "shape36.hi68": 317.914,
+  "shape36.median_minus_neptune_deg": -9.042,
+  "shape36.ln_b": -2.3183304006406615,
+  "shape36.ln_b_err": 0.11317684463265658,
+  "shape36.ln_b_wording": "a weak preference for free distance",
+  "shape36.p_shape": 0.0,
+  "shape36.p_free": 0.35,
+  "shape36.ratio_wording": "made it less probable (P_shape is 0)"
+ }
+}

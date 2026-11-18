@@ -727,3 +727,21 @@ pattern and kept whole too, which does no harm.
   abstract's clause gives the one remaining reason. Data: `site/data/s1_mode.json`, written by
   `fork.export.s1_site`, each value a copy of a named field of `docs/notes/S1_mode.json`; it
   never carries P(a < 25 AU). UI-rule audit: no new pattern; text and data only.
+
+## § 4.5, the distance held at Le Verrier's values (2026-11-17)
+
+- Main page, § 4.5 after § 4.4: one paragraph (`shape_p1`), no figure. It gives the two shape
+  fits' places on Galle's night, the Bayes factors with the plan's registered wordings, and the
+  chance of landing within Le Verrier's miss, with the distance held and with it free. The
+  threshold is stated as chosen after the event. One sentence says the refit without Flamsteed's
+  1690 observation was run and is not read, with no numbers.
+- **Data:** `site/data/m6d.json`, written by `fork.export.m6d_site`. Each value is a copy of a
+  named field of `docs/notes/M6d.json` (`tests/test_m6d_site.py`). The window (0.87°, 52′) is
+  a constant of the plan, carried with its citation (`window`), and a test checks it against
+  the plan's § 1. The factor "at least about 700" is a derived value: P_free over the exact
+  one-sided 95 % bound on a zero count, rounded down to the hundred. The text refuses to render
+  if either fit is not read or has a draw within the window.
+- Limitations: the deferred fits' sentence (`m7_timeline.json`, `deferred`) no longer lists the
+  shape model, and it says the Adams variant was run and not read.
+- UI-rule audit: no new pattern; text and data only. The section number and h3 are the existing
+  convention.

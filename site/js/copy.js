@@ -503,6 +503,42 @@ export function lalandeText(D) {
   };
 }
 
+/* ---------------- § 4.5: the distance held at Le Verrier's values (m6d.json) ---------------- */
+
+export function shapeText(D) {
+  const v = D.m6d.values, n = v["shape38.n_draws"];
+  for (const f of ["shape38", "shape36"]) {
+    if (v[`${f}.read`] !== true || v[`${f}.n_draws`] !== n) throw new Error(`shape fit ${f}: not read`);
+    if (v[`${f}.p_shape`] !== 0) throw new Error(`shape fit ${f}: draws within the window`);
+  }
+  const a = (f) => `${v[`${f}.held_a_au`]} AU`;
+  const place = (f) => `${deg(v[`${f}.median`])} (68 %: ${deg(v[`${f}.lo68`])}–${deg(v[`${f}.hi68`])}), ` +
+    `${deg(Math.abs(v[`${f}.median_minus_neptune_deg`]))} short of Neptune`;
+  const lnb = (f) => `${neg(v[`${f}.ln_b`], 2)} ± ${fmt(v[`${f}.ln_b_err`], 2)}`;
+  // None of n draws: the exact one-sided 95 % upper bound on P is 1 − 0.05^(1/n) (Clopper–Pearson).
+  const ub = 1 - Math.pow(0.05, 1 / n);
+  const factor = drv(Math.floor(v["shape38.p_free"] / ub / 100) * 100,
+    "P_free over the one-sided 95 % bound on P_shape, rounded down to the hundred");
+  const w = D.m6d.window;
+  return {
+    shape_p1: `Le Verrier's solution held the planet's distance at ${a("shape38")}, and his later ` +
+      `one at ${a("shape36")}. I refitted all the observations with the distance held at each ` +
+      `value and everything else free, and compared each fit with the same fit with the distance ` +
+      `free; the test and its reading were fixed before either was computed. Held at ` +
+      `${a("shape38")}, the planet on Galle's night lies at ${place("shape38")}; held at ` +
+      `${a("shape36")}, at ${place("shape36")}. The evidence gives ${v["shape38.ln_b_wording"]} at ` +
+      `${a("shape38")} (ln B = ${lnb("shape38")}) and ${v["shape36.ln_b_wording"]} at ` +
+      `${a("shape36")} (ln B = ${lnb("shape36")}). His prediction missed Neptune by ` +
+      `${deg(w.deg, 2)} (${w.arcmin}′). With the distance free, ` +
+      `${fmt(100 * v["shape38.p_free"], 0)} % of ${n} posterior draws land as close; with it held ` +
+      `at either value, none of ${n} does. From those counts, a prediction as close as his is at ` +
+      `least about ${factor} times less probable with the distance held than with it free ` +
+      `(one-sided, 95 %). The threshold is his actual miss, chosen after the event. A refit ` +
+      `leaving out Flamsteed's observation of 1690 was also run; it is not repeatable at the ` +
+      `registered tolerance, and I do not read it.`,
+  };
+}
+
 export const SENS = (fits) => ({
   s1_e05: `Eccentricity up to ${fits.s1_e05.config.e_max}`,
   s2_sigma_data: "Error levels from the data alone",

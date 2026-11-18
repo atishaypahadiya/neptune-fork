@@ -273,20 +273,22 @@ def main() -> None:
         "entries": entries,
         # The spec's M6c fits not run in v1.0.0 (docs/release_checklist.md, "Deferred to v1.1",
         # moved there 2026-11-09), in v1.1.0, in v1.2.0, in v1.3.0 or in v1.4.0, which carried them
-        # to v1.5. The variants and the shape model are pre-registered (docs/notes/M6c_variants.md,
-        # docs/notes/M6d.md) and not fitted to the real data; the 1846 track is not built.
+        # to v1.5. In v1.5.0 the shape model is fitted and read (docs/notes/M6d.md); the Adams
+        # variant was run and not read, the Bouvard variant stopped at its synthetic gate
+        # (docs/notes/M6c_variants.md), and the 1846 track is not built: carried to v1.6.
         "deferred": {
-            "source": "docs/release_checklist.md, Deferred to v1.1 (2026-11-09); carried to v1.2 at v1.1.0, to v1.3 at v1.2.0, to v1.4 at v1.3.0 and to v1.5 at v1.4.0",
-            "to_version": "1.5",
-            "fitted": "Le Verrier's data choice on the modern reduction track",
+            "source": "docs/release_checklist.md, Deferred to v1.1 (2026-11-09); carried to v1.2 at v1.1.0, to v1.3 at v1.2.0, to v1.4 at v1.3.0, to v1.5 at v1.4.0 and to v1.6 at v1.5.0",
+            "to_version": "1.6",
+            "fitted": "Le Verrier's data choice on the modern reduction track (with the distance "
+            "free, and held at his values in § 4.5)",
             "m6c_fits": [
                 {"key": "bouvard", "name": "Bouvard", "kind": "variant"},
                 {"key": "adams", "name": "Adams", "kind": "variant"},
                 {"key": "track_1846", "name": "1846 reduction track", "kind": "track"},
-                {"key": "lv_shape", "name": "Le Verrier shape model", "kind": "model"},
             ],
-            "status": "the variants and the shape model are pre-registered and not yet fitted to "
-            "the real data; the 1846 reduction track is not built",
+            "status": "the Adams variant was run and is not repeatable at the registered "
+            "tolerance, so it is not read; the Bouvard variant stopped at its synthetic gate; the "
+            "1846 reduction track is not built",
             "opens": {},
         },
         # The pre-registered reading rules of the M6c sensitivity runs, as written in

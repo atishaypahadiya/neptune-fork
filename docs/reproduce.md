@@ -368,6 +368,7 @@ uv run python -m fork.export.m6e checks   # the transit and frame tests
 uv run python -m fork.export.m6e run      # docs/notes/M6e.{json,png}; about 1 CPU-minute
 uv run python -m fork.export.m6e_site     # site/data/m6e.json (§ 4.4 and Fig. 10 of the main page)
 uv run python -m fork.export.s1_site      # site/data/s1_cell0.json and s1_mode.json (the 95 % range and its status)
+uv run python -m fork.export.m6d_site     # site/data/m6d.json (§ 4.5 of the main page: the distance held at his values)
 uv run python docs/notes/scripts/s1_mode_cell1.py   # post hoc: docs/notes/S1_mode_cell1.{json,png}, from stored draws
 ```
 
