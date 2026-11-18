@@ -27,7 +27,7 @@ planet-years.
 
 | step | CPU-hours | wall | ledger rows |
 |---|---|---|---|
-| step 3, the Adams-variant fit | 70.8 | 7 h 53 min on 12 workers | `p1b_adams/*` (20, the smoke runs included) |
+| step 3, the fit at Adams's distances | 70.8 | 7 h 53 min on 12 workers | `p1b_adams/*` (20, the smoke runs included) |
 | step 3b, the reproduction | 7.1 | 6 min for the cheap stages, 44 min for D3(iii) | `p1b_adams_repro/*` (3) |
 | step 3c, the full run | 24.5 | 2 h 06 min on 12 workers | `p1b_adams_noise/draws` |
 | step 3c, three chunks recomputed | 0.3 | 6.6 min on 3 workers | `p1b_adams_noise/draws` |
@@ -88,7 +88,7 @@ the commands below use these identifiers.
 | the leak check (the fit never reads Neptune) | A6d | `docs/notes/A6.md` |
 | the coverage test on synthetic data | A3b (M5b) | `docs/notes/M5.md` |
 | the companion study: Adams's solutions and Challis's search log from the printed record | steps 1 and 2 | `docs/notes/P1B_sources.md` |
-| the companion study: the Adams-variant fit on data set D | step 3 (`fork.export.p1b_adams`; ledger `p1b_adams/<variant>/c<k>`) | `docs/notes/P1B_adams_fit.md` |
+| the companion study: the fit at Adams's distances on data set D | step 3 (`fork.export.p1b_adams`; ledger `p1b_adams/<variant>/c<k>`) | `docs/notes/P1B_adams_fit.md` |
 | the companion study: the memoir transcription | step 3b stage A | `docs/notes/P1B_adams_reproduction.md` |
 | the companion study: the reproduction of Adams's own solution | step 3b stages B–D (`fork.export.p1b_adams_repro`; ledger `p1b_adams_repro/cheap`, `p1b_adams_repro/d3iii/c<k>`) | `docs/notes/P1B_adams_reproduction.md` |
 | the companion study: noise against systematic | step 3c (`fork.export.p1b_adams_noise`; ledger `p1b_adams_noise/draws`) | `docs/notes/P1B_adams_noise.md` |
@@ -407,7 +407,7 @@ screenshots of every plate and figure at each width. Without Google Chrome, run
 uv run python docs/notes/scripts/p1b_neptune_on_challis_dates.py   # data/historical/adams_challis/neptune_*.csv (cache only, seconds)
 ```
 
-### Step 3: the Adams-variant fit (pre-registered in `docs/notes/P1B_adams_fit.md`)
+### Step 3: the fit at Adams's distances (pre-registered in `docs/notes/P1B_adams_fit.md`)
 
 ```sh
 uv run python -m fork.data.horizons --fetch          # once, online: Earth and Neptune at the report epochs (pre-run change (a))

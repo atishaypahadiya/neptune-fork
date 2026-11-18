@@ -63,8 +63,8 @@ the README say which fits are now read.
   command-line runners that wrote no row are included; a resumed run counts only its own
   segment's calls. Earlier rows are unchanged and count as done. A test fails if a runner
   writes no row (`fork.ledger`, `tests/test_ledger_outcomes.py`). Two files whose hashes a
-  frozen plan records are left as they are: the Adams-variant fit's runner, which writes its
-  rows on success as before, and a comparison that runs in seconds.
+  frozen plan records are left as they are: the runner of the companion study's fit at Adams's
+  distances, which writes its rows on success as before, and a comparison that runs in seconds.
 
 ## 1.4.0 (2026-11-15)
 
