@@ -1344,3 +1344,8 @@ touches 3 rows: t2_s0_l0_J, whose r3_1 estimate falls from 0.0098 to 0.0015 agai
 tolerance of 0.0025 (its refinement rerun needed no fit; its ln Z is unchanged to 10⁻⁵);
 t4_s0_l0_R at r 0.12 (share 2 × 10⁻³²) and t2_s0_l0_P_d1_b0 at λ 5.6287 (share 6 × 10⁻¹⁵), whose
 ln Z move by up to 2.36 and 0.39 in some box. The study's cache has not been recomputed.
+
+**Deviation 5, note (17 November 2026, after its run).** The band's "at some level" (any of the
+three noise levels, not only the smallest as in amendment 4, D) was in force during the run as
+written above; it was confirmed by the author afterward. Result on the scratch copy (efc70f4,
+1,990 fits): all five rows valid and passing; outside share at most 2.1 × 10⁻¹²; no band widened.
