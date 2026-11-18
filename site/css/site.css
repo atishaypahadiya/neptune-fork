@@ -338,7 +338,7 @@ input[type="range"] { flex: 1; min-width: 0; margin: 0; accent-color: var(--prus
 
 /* Hyphenation where a text column is narrow (CRF-22): there the rag opens holes and hyphens close
    them. Screen only; print keeps its own setting. Words of six letters or more, three on each side
-   of the break, and (in WebKit) no more than two hyphens in a row. Two columns, each measured on
+   of the break, and (in WebKit) no more than two hyphens in a row. Three columns, each measured on
    its own width:
      the main column, and Plate I's caption on the same measure above it, while the body
        measure is under 34em: 578 px of the 17 px phone body, at
@@ -346,7 +346,10 @@ input[type="range"] { flex: 1; min-width: 0; margin: 0; accent-color: var(--prus
        column is a track of main's grid, not a box, so this is a media query; an inline-size
        container on main (or any ancestor of the companion's tables) changes WebKit's automatic
        table column widths at every width;
-     Plates II and III's text columns (.side, a container), under 26em: 900 to about 1110 px.
+     Plates II and III's text columns (.side, a container), under 26em: 900 to about 1110 px;
+     the captions of a pair of figures side by side (.pair, from 900 px), each half the
+       measure less the gap: 396 px at 900, where Fig. 9's caption left a hole of a quarter
+       line without hyphens.
    Kept whole at any width: headings, links, tables (hyphenation would narrow their columns;
    a caption, set under the table, hyphenates with the main column; the companion's Table 1
    hyphenates its text cells, p1b.css),
@@ -360,6 +363,9 @@ input[type="range"] { flex: 1; min-width: 0; margin: 0; accent-color: var(--prus
   @container column (width < 26em) {
     :where(.split > .side > *) { -webkit-hyphens: auto; hyphens: auto; hyphenate-limit-chars: 6 3 3; hyphenate-limit-lines: 2; }
   }
+}
+@media screen and (min-width: 900px) {
+  :where(.pair > figure > figcaption) { -webkit-hyphens: auto; hyphens: auto; hyphenate-limit-chars: 6 3 3; hyphenate-limit-lines: 2; }
 }
 main :is(h2, h3, a, table, .whole, [data-v="pull_text"]) { -webkit-hyphens: manual; hyphens: manual; }
 
