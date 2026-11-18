@@ -1228,3 +1228,32 @@ def test_validation_ground_truth_runs_each_row_once_in_a_pool(monkeypatch, tmp_p
     (tmp_path / "d1_validation" / f"t1_s0_l0_R__{k:.10f}.json").write_text("{}")
     F.d1_ground_truth(rows, n_workers=0)
     assert seen == [("t2_s0_l0_P_d0_b0", 6.0214)]
+
+
+def test_read_back_keeps_a_refinement_knot_where_a_coarse_call_sits(tmp_path, monkeypatch):
+    """t2_s0_l0_J, r3_1: the refinement fitted −3.4, where a converged coarse call sat; in the
+    job the fine record was a knot, but the read-back kept the coarse one (never a knot), so
+    the row's estimate and guard read other knots than the job did. At one point with two
+    records that converged with contacts, the later is read back."""
+    monkeypatch.setattr(F, "CACHE", tmp_path)
+    t = F.Task.from_id("t1_s0_l0_J")
+    t.dir.mkdir(parents=True)
+    chi = {-4.2: 380.0, -4.1: 395.0, -4.0: 411.8, -3.9: 463.3, -3.8: 539.7, -3.6: 828.1,
+           -3.4: 1499.8, -3.0: 6989.2}  # fmt: skip
+    ok = {"converged": True, "no_contact": False, "ln_s": 0.0}
+    scan = [{"p2": 0.0, "x": x, "kind": "fine" if -4.2 <= x <= -3.8 else "coarse", "chi2": c}
+            | ok for x, c in chi.items()]  # fmt: skip
+    (t.dir / "points.jsonl").write_text("".join(json.dumps(d) + "\n" for d in scan))
+    job = [{"p2": 0.0, "x": x, "kind": "fine", "chi2": chi[x], "placed_by": F.REFINE} | ok
+           for x in (-3.6, -3.4)]  # fmt: skip
+    rp = F._refine_path(t, 0.0)
+    rp.parent.mkdir(parents=True)
+    rp.write_text("".join(json.dumps(d) + "\n" for d in job))
+    back = F.row_points(t, 0.0)
+    in_job = scan + job
+    assert [p["x"] for p in F.knots(back)] == [p["x"] for p in F.knots(in_job)]
+    assert {p["x"] for p in F.knots(back)} >= {-3.6, -3.4}
+    bx = F.box("J", 1)
+    e_back = F.row_estimates(back, F.LEVELS, bx, 0.1)[2]
+    np.testing.assert_allclose(e_back, F.row_estimates(in_job, F.LEVELS, bx, 0.1)[2], rtol=1e-12)
+    assert F.guard_intervals(back, F.LEVELS, bx) == F.guard_intervals(in_job, F.LEVELS, bx)

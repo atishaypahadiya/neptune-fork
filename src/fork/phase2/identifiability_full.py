@@ -2650,9 +2650,9 @@ def row_points(task: Task, p2: float) -> list[dict]:
 
     def add(d: dict) -> None:
         # the note to deviation 1: at one point, the record that converged with contacts;
-        # where none did, the later one
+        # where both or neither did, the later one (deviation 5's note: as the job held it)
         k = Points.key(d["p2"], d["x"])
-        if k not in out or (not _ok(out[k]) and (_ok(d) or not _ok(out[k]))):
+        if k not in out or _ok(d) or not _ok(out[k]):
             out[k] = d
 
     for f in sorted((CACHE / "gapcheck").glob(f"{task.id}__*.json")):
