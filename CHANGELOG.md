@@ -26,8 +26,9 @@ the README say which fits are now read.
   chosen after the event. On the main page as § 4.5 (`docs/notes/M6d.md`,
   `site/data/m6d.json`).
 - The free-distance fit on all of Table 77 but Flamsteed's observation of 1690 (527 of the
-  529 measurements; the `adams` variant, not Adams's own data), run on 15 and 16 November. Its gates pass. The four single-seed medians span 0.353°, against the
-  registered 0.35°, so the fit fails its repeatability test by 0.003°. It is not repeatable
+  529 measurements; the `adams` variant, not Adams's own data), run on 15 and 16 November.
+  Its gates pass. The four single-seed medians span 0.353°, against the registered 0.35°,
+  so the fit fails its repeatability test by 0.003°. It is not repeatable
   at the registered tolerance and is not read; its numbers are recorded in its note only
   (`docs/notes/M6c_variants.md`).
 
