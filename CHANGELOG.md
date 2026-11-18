@@ -2,9 +2,9 @@
 
 Versions follow semver. Dates are the release dates; the DOIs are in `CITATION.cff`.
 
-## Unreleased
+## 1.5.0 (2026-11-18)
 
-Draft for 1.5.0. The headline longitude, mass and semi-major axis are unchanged. The 95 %
+The headline longitude, mass and semi-major axis are unchanged. The 95 %
 range changes and stays provisional. The main page gains § 4.5, and its Limitations and
 the README say which fits are now read.
 
