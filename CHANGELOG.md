@@ -4,8 +4,51 @@ Versions follow semver. Dates are the release dates; the DOIs are in `CITATION.c
 
 ## Unreleased
 
+Draft for 1.5.0. The headline longitude, mass and semi-major axis are unchanged. The 95 %
+range changes and stays provisional. The main page gains § 4.5, and its Limitations and
+the README say which fits are now read.
+
+### Added
+
+- Le Verrier's shape model against free distance, pre-registered: all the observations
+  refitted with the planet's distance held at his values and everything else free. Held at
+  38.4 AU, the evidence gives a strong preference for free distance (ln B = −3.48 ± 0.11);
+  held at 36.154 AU, his later value, stated beside it, a weak one (−2.32 ± 0.11). How strong
+  the preference is depends on the value held. On Galle's night the planet lies at 315.3°
+  (68 %: 314.1° to 316.4°) and 316.8° (315.8° to 317.9°), 10.6° and 9.0° short of Neptune.
+- With it, the question Peirce raised, whether the prediction's closeness was a happy
+  accident, put as a probability: the chance of landing within Le Verrier's actual miss of
+  0.87° on Galle's night. With the distance free it is 0.35 (2,100 of 6,000 draws). With the
+  distance held at either value it is 0 (none of 6,000 draws). The exact one-sided 95 % upper
+  bound on that zero is 5.0 × 10⁻⁴, so a prediction as close as his is at least about 700
+  times less probable with the distance held than with it free. The 0.87° threshold was
+  chosen after the event. On the main page as § 4.5 (`docs/notes/M6d.md`,
+  `site/data/m6d.json`).
+- The data choice without Flamsteed's observation of 1690 (the `adams` variant), run on
+  15 and 16 November. Its gates pass. The four single-seed medians span 0.353°, against the
+  registered 0.35°, so the fit fails its repeatability test by 0.003°. It is not repeatable
+  at the registered tolerance and is not read; its numbers are recorded in its note only
+  (`docs/notes/M6c_variants.md`).
+
 ### Changed
 
+- The 95 % range on Galle's night is now 319.6° to 330.1° (319.61° to 330.15°, sampler error
+  0.10° and 0.15° on the bounds). It replaces 320.2° to 330.4°. It comes from the
+  higher-resolution reruns with eight seeds in place of four, a stability rule revised after
+  the four-seed rule failed, and labelled so. It stays provisional, for one reason: the
+  low-distance solution, which carries a weight of 0.001 to about 0.2 and is not resolved
+  (`docs/notes/S1_mode.md`). On the main page (abstract, § 4.1, Fig. 4, Fig. 6, Limitations)
+  and in the README.
+- The second analysis of Bouvard's tables is now described as registered before it was run,
+  with the attribution turning on how the 1780 place is treated. The treatment taken as
+  primary was chosen after the first analysis's results had been seen, as its note states.
+  This wording replaces "a second pre-registered analysis … shows that the attribution turns
+  on one interpolated place" in `CITATION.cff`, `.zenodo.json`, the README and the companion
+  page.
+- Mercury: Stage 1 of the synthetic identifiability study by full integration is in
+  progress. It has no results.
+- The page's type and spacing are set in rem, so they follow the reader's text size; text is
+  hyphenated by column width on narrow screens, with names and addresses kept whole.
 - The compute ledger includes the runs of v1.4: 1,319 CPU-hours in 329 rows (was 1,193 in
   299), with the rerun of the eccentricity test's nearest cell at 126.0. The runs that wrote no
   row (the synthetic gates of the two data choices, the stopped fit on Adams's rows, the
