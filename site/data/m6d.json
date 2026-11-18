@@ -6,6 +6,11 @@
   "arcmin": 52,
   "citation": "docs/notes/M6d.md, § 1: Le Verrier's actual miss of 52′"
  },
+ "held": {
+  "shape38": "Bode's law, his first paper",
+  "shape36": "from his elements of 31 August 1846",
+  "citation": "docs/notes/M6d.md, § 3, Held value, two runs"
+ },
  "sources": {
   "shape38.held_a_au": [
    "docs/notes/M6d.json",

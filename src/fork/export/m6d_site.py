@@ -24,6 +24,12 @@ FITS = ("shape38", "shape36")
 WINDOW_DEG = 0.87
 WINDOW_ARCMIN = 52
 WINDOW_CITATION = "docs/notes/M6d.md, § 1: Le Verrier's actual miss of 52′"
+# Where each held value comes from, in the plan's words (§ 3, "Held value, two runs").
+HELD = {
+    "shape38": "Bode's law, his first paper",
+    "shape36": "from his elements of 31 August 1846",
+    "citation": "docs/notes/M6d.md, § 3, Held value, two runs",
+}
 
 
 def sources() -> dict[str, list]:
@@ -60,6 +66,7 @@ def build() -> dict:
         "plan": "docs/notes/M6d.md",
         # The window is a constant of the plan, not a computed field: Le Verrier's actual miss.
         "window": {"deg": WINDOW_DEG, "arcmin": WINDOW_ARCMIN, "citation": WINDOW_CITATION},
+        "held": HELD,
         "sources": src,
         "values": {k: resolve(v, cache) for k, v in src.items()},
     }

@@ -79,8 +79,9 @@ and everything else free, is fitted and read, pre-registered (§ 4.5 of the page
 None of 6,000 draws under either held value lands within his miss of 0.87° of Neptune on
 Galle's night, against 35 % with the distance free, so a prediction as close as his is at least
 about 700 times less probable with the distance held (one-sided 95 % bound from the draw
-counts; the threshold was chosen after the event). The `adams` data variant was run and is not
-repeatable at the registered tolerance, so it is not read
+counts; the threshold was chosen after the event). The `adams` data variant (all of Table 77
+but Flamsteed's observation of 1690, 527 of the 529 measurements; not Adams's own data) was run
+and is not repeatable at the registered tolerance, so it is not read
 ([variants](docs/notes/M6c_variants.md)). The `bouvard` variant stopped at its synthetic gate, as its
 plan requires: without the pre-1781 observations the Uranus prior box sits off-centre
 ([results](docs/notes/M6c_variants.md#results-so-far-14-november-2026-the-synthetic-gate)). The
@@ -246,7 +247,7 @@ The write-up, with each claim's JSON path and deviation, is
 - The reduction check against JPL: comparison against per-group precision not made: no precision figure was fixed before the data were seen. Medians reported. Details in the [acceptance-test report](docs/notes/A6.md).
 - The transcription check: 0 of 28 rows in error; 95 % upper bound on the per-row error rate 10.1 % (exact one-sided Clopper–Pearson, 0 of 28); the remaining 251 rows are unchecked.
 - The observation model does not include diurnal parallax (up to 0.5″ for Uranus over 1781–1845).
-- Only Le Verrier's data choice on the modern reduction track is fitted, with the distance free and held at his values. The `bouvard` variant stopped at its synthetic gate; the `adams` variant was run and is not repeatable at the registered tolerance, so it is not read; the 1846 reduction track is not built. All are deferred to v1.6.
+- Only Le Verrier's data choice on the modern reduction track is fitted, with the distance free and held at his values. The `bouvard` variant stopped at its synthetic gate; the `adams` variant (all of Table 77 but Flamsteed's observation of 1690; not Adams's own data) was run and is not repeatable at the registered tolerance, so it is not read; the 1846 reduction track is not built. All are deferred to v1.6.
 - Error model: the evidence favours Student-t errors (ln B = +13.7); the Gaussian error model
   was fixed by the pre-registration and is kept. Student-t errors move the median 0.37 headline
   half-widths.

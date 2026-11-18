@@ -733,8 +733,10 @@ pattern and kept whole too, which does no harm.
 - Main page, § 4.5 after § 4.4: one paragraph (`shape_p1`), no figure. It gives the two shape
   fits' places on Galle's night, the Bayes factors with the plan's registered wordings, and the
   chance of landing within Le Verrier's miss, with the distance held and with it free. The
-  threshold is stated as chosen after the event. One sentence says the refit without Flamsteed's
-  1690 observation was run and is not read, with no numbers.
+  threshold is stated as chosen after the event. Each held value carries its source in the
+  plan's words (`held` in the data file; a test checks both phrases against the plan's § 3).
+  One sentence says the free-distance refit on all of Table 77 but Flamsteed's 1690 observation
+  (the plan's `adams` choice) was run and is not read, with no numbers.
 - **Data:** `site/data/m6d.json`, written by `fork.export.m6d_site`. Each value is a copy of a
   named field of `docs/notes/M6d.json` (`tests/test_m6d_site.py`). The window (0.87°, 52′) is
   a constant of the plan, carried with its citation (`window`), and a test checks it against

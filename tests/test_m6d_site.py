@@ -44,3 +44,12 @@ def test_the_window_is_the_one_the_plan_fixed():
     assert f"P(|λ − 325.873°| ≤ {w['deg']}°)" in question
     assert f"actual miss of {w['arcmin']}′" in question
     assert w["arcmin"] / 60 == pytest.approx(w["deg"], abs=0.005)
+
+
+def test_the_held_values_are_described_in_the_plans_words():
+    h = _site()["held"]
+    plan = (S.ROOT / "docs" / "notes" / "M6d.md").read_text(encoding="utf-8")
+    held = plan.split("- **Held value, two runs:**", 1)[1].split("- **Data,", 1)[0]
+    bullet = " ".join(held.split())
+    assert "a = 38.4 AU.** " in bullet and f"({h['shape38']})" in bullet
+    assert f"a = 36.154 AU,** {h['shape36']}." in bullet

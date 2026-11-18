@@ -286,8 +286,9 @@ def main() -> None:
                 {"key": "adams", "name": "Adams", "kind": "variant"},
                 {"key": "track_1846", "name": "1846 reduction track", "kind": "track"},
             ],
-            "status": "the Adams variant was run and is not repeatable at the registered "
-            "tolerance, so it is not read; the Bouvard variant stopped at its synthetic gate; the "
+            "status": "the Adams variant (all of Table 77 but Flamsteed's observation of 1690; "
+            "not Adams's own data) was run and is not repeatable at the registered tolerance, so "
+            "it is not read; the Bouvard variant stopped at its synthetic gate; the "
             "1846 reduction track is not built",
             "opens": {},
         },

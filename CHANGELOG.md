@@ -13,7 +13,8 @@ the README say which fits are now read.
 - Le Verrier's shape model against free distance, pre-registered: all the observations
   refitted with the planet's distance held at his values and everything else free. Held at
   38.4 AU, the evidence gives a strong preference for free distance (ln B = −3.48 ± 0.11);
-  held at 36.154 AU, his later value, stated beside it, a weak one (−2.32 ± 0.11). How strong
+  held at 36.154 AU, from his elements of 31 August 1846, stated beside it, a weak one
+  (−2.32 ± 0.11). 38.4 AU is the plan's primary value (Bode's law, his first paper). How strong
   the preference is depends on the value held. On Galle's night the planet lies at 315.3°
   (68 %: 314.1° to 316.4°) and 316.8° (315.8° to 317.9°), 10.6° and 9.0° short of Neptune.
 - With it, the question Peirce raised, whether the prediction's closeness was a happy
@@ -24,8 +25,8 @@ the README say which fits are now read.
   times less probable with the distance held than with it free. The 0.87° threshold was
   chosen after the event. On the main page as § 4.5 (`docs/notes/M6d.md`,
   `site/data/m6d.json`).
-- The data choice without Flamsteed's observation of 1690 (the `adams` variant), run on
-  15 and 16 November. Its gates pass. The four single-seed medians span 0.353°, against the
+- The free-distance fit on all of Table 77 but Flamsteed's observation of 1690 (527 of the
+  529 measurements; the `adams` variant, not Adams's own data), run on 15 and 16 November. Its gates pass. The four single-seed medians span 0.353°, against the
   registered 0.35°, so the fit fails its repeatability test by 0.003°. It is not repeatable
   at the registered tolerance and is not read; its numbers are recorded in its note only
   (`docs/notes/M6c_variants.md`).

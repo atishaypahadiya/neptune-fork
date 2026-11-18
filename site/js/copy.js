@@ -519,12 +519,12 @@ export function shapeText(D) {
   const ub = 1 - Math.pow(0.05, 1 / n);
   const factor = drv(Math.floor(v["shape38.p_free"] / ub / 100) * 100,
     "P_free over the one-sided 95 % bound on P_shape, rounded down to the hundred");
-  const w = D.m6d.window;
+  const w = D.m6d.window, h = D.m6d.held;
   return {
-    shape_p1: `Le Verrier's solution held the planet's distance at ${a("shape38")}, and his later ` +
-      `one at ${a("shape36")}. I refitted all the observations with the distance held at each ` +
-      `value and everything else free, and compared each fit with the same fit with the distance ` +
-      `free; the test and its reading were fixed before either was computed. Held at ` +
+    shape_p1: `I held the planet's distance at two of Le Verrier's values, ${a("shape38")} ` +
+      `(${h.shape38}) and ${a("shape36")} (${h.shape36}), refitted all the observations with ` +
+      `everything else free, and compared each fit with the same fit with the distance free; ` +
+      `the test and its reading were fixed before either was computed. Held at ` +
       `${a("shape38")}, the planet on Galle's night lies at ${place("shape38")}; held at ` +
       `${a("shape36")}, at ${place("shape36")}. The evidence gives ${v["shape38.ln_b_wording"]} at ` +
       `${a("shape38")} (ln B = ${lnb("shape38")}) and ${v["shape36.ln_b_wording"]} at ` +
@@ -534,8 +534,9 @@ export function shapeText(D) {
       `at either value, none of ${n} does. From those counts, a prediction as close as his is at ` +
       `least about ${factor} times less probable with the distance held than with it free ` +
       `(one-sided, 95 %). The threshold is his actual miss, chosen after the event. A refit ` +
-      `leaving out Flamsteed's observation of 1690 was also run; it is not repeatable at the ` +
-      `registered tolerance, and I do not read it.`,
+      `with the distance free on all of Table 77 except Flamsteed's observation of 1690 (both ` +
+      `its coordinates) was also run; it is not repeatable at the registered tolerance, and I ` +
+      `do not read it.`,
   };
 }
 
