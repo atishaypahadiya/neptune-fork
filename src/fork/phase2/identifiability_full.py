@@ -3043,6 +3043,170 @@ def d1_ground_truth(rows: list[tuple[str, float]], n_workers: int) -> None:
         list(ex.map(_d1_validate_job, todo))
 
 
+# Deviation 5: the validation's ground truth for the five failing drawn rows, on a grid tied
+# to each row's posterior width inside the likelihood band, the registered grid outside it.
+D5_BAND, D5_BAND_WIDE = 25.0, 35.0  # ln L below the row's maximum, at some level
+D5_OUTSIDE = 1e-6  # the outside region's largest share of the prior-box integral
+D5_COARSE = 0.05  # decades, outside the band (amendment 4, D)
+D5_STAMP = "d5 truth"
+D5_ROWS = (("t1_s0_l0_P_d1_b0", 3.9270), ("t1_s0_l0_P_d1_b0", 4.9742),
+           ("t1_s0_l0_P_d1_b0", 5.4978), ("t3_s0_l0_R", 0.2800),
+           ("t4_s0_l0_P_d1_b0", 5.2360))  # fmt: skip
+
+
+def d5_band(pts: list[dict], levels, bx: tuple[float, float], dl: float) -> list[tuple]:
+    """The band: every run of calls in the box (converged with contacts) whose ln L lies within
+    ``dl`` of the row's maximum at some level, each run widened to the nearest call outside it
+    on either side (or the box edge); runs that meet are merged."""
+    lo, hi = bx
+    ok = sorted((p for p in pts if _ok(p) and lo - EDGE_EPS <= p["x"] <= hi + EDGE_EPS),
+                key=lambda p: p["x"])  # fmt: skip
+    top = {lv: max(_ln_l(p, lv) for p in ok) for lv in levels}
+    q = [any(_ln_l(p, lv) >= top[lv] - dl for lv in levels) for p in ok]
+    out: list[list[float]] = []
+    i = 0
+    while i < len(ok):
+        if not q[i]:
+            i += 1
+            continue
+        j = i
+        while j + 1 < len(ok) and q[j + 1]:
+            j += 1
+        a = ok[i - 1]["x"] if i > 0 else lo
+        b = ok[j + 1]["x"] if j + 1 < len(ok) else hi
+        if out and a <= out[-1][1]:
+            out[-1][1] = max(out[-1][1], b)
+        else:
+            out.append([a, b])
+        i = j + 1
+    return [(float(a), float(b)) for a, b in out]
+
+
+def d5_truth_row(pts0: list[dict], levels, bx: tuple[float, float], w: float, h: float, fit,
+                 dl: float, made: dict) -> dict:  # fmt: skip
+    """Deviation 5 for one row: real fits on the registered 0.05-decade grid over the prior box,
+    then at spacing w/10 (anchored at the box's lower edge) inside the band, the band
+    recomputed from every call until it no longer grows. ``made`` holds the fits by strength
+    and is reused. The truths: ln Z (spline and exponential rule) on the w/10 grid and on its
+    every other point (w/5) inside the band, with the 0.05-decade fits and the row's calls
+    before deviation 1 outside it; and the outside region's share of the integral."""
+    lo, hi = bx
+    step = w / 10.0
+    work = list(pts0)
+
+    def get(x: float) -> dict:
+        k = round(float(x), 10)
+        if k not in made:
+            made[k] = fit(float(x), work, D5_STAMP)
+            work.append(made[k])
+        return made[k]
+
+    for x in np.round(np.arange(lo, hi + 1e-9, D5_COARSE), 10):
+        get(x)
+    while True:
+        band = d5_band(pts0 + list(made.values()), levels, bx, dl)
+        n10 = sorted({n for a, b in band
+                      for n in range(math.ceil((a - lo) / step - 1e-9),
+                                     math.floor((b - lo) / step + 1e-9) + 1)})  # fmt: skip
+        todo = [n for n in n10 if round(lo + n * step, 10) not in made]
+        if not todo:
+            break
+        for n in todo:
+            get(lo + n * step)
+
+    def inside(x: float) -> bool:
+        return any(a < x < b for a, b in band)
+
+    coarse = [made[round(float(x), 10)] for x in np.round(np.arange(lo, hi + 1e-9, D5_COARSE), 10)]
+    outside = [p for p in pts0 + coarse if not inside(p["x"])]
+    g10 = [made[round(lo + n * step, 10)] for n in n10]
+    g5 = [made[round(lo + n * step, 10)] for n in n10 if n % 2 == 0]
+    sets = {"w10": g10 + outside, "w5": g5 + outside}
+    z: dict = {}
+    share: dict = {}
+    gaps, prev = [], lo
+    for a, b in band:
+        gaps.append((prev, a))
+        prev = b
+    gaps.append((prev, hi))
+    gaps = [(a, b) for a, b in gaps if b - a > EDGE_EPS]
+    for lv in levels:
+        z[str(lv)] = {}
+        for name, ps in sets.items():
+            z[str(lv)][name] = ln_z_strength(ps, lv, bx, h)
+            z[str(lv)][name + "_exp"] = ln_z_strength(ps, lv, bx, h, "pexp")
+        tot = z[str(lv)]["w10"] + math.log(hi - lo)
+        rel = 0.0
+        for a, b in gaps:
+            for m in ("spline", "pexp"):
+                v = ln_z_strength(sets["w10"], lv, (a, b), h, m) + math.log(b - a)
+                rel = max(rel, math.exp(min(v - tot, 50.0)) if math.isfinite(v) else 0.0)
+        share[str(lv)] = rel
+    return {"band": band, "band_dl": dl, "w": w, "grid10": [round(lo + n * step, 10) for n in n10],
+            "grid5": [round(lo + n * step, 10) for n in n10 if n % 2 == 0],
+            "fits": len(made), "z": z, "outside": share}  # fmt: skip
+
+
+def d5_row(pts0: list[dict], levels, bx: tuple[float, float], w: float, h: float, fit) -> dict:
+    """Deviation 5's truth for one row: the band at ln L 25; if the outside region carries a
+    share of D5_OUTSIDE or more at some level, the band at ln L 35, rerun on the same fits."""
+    made: dict = {}
+    r = d5_truth_row(pts0, levels, bx, w, h, fit, D5_BAND, made)
+    first = {"band": r["band"], "outside": r["outside"], "fits": r["fits"]}
+    widened = max(r["outside"].values()) >= D5_OUTSIDE
+    if widened:
+        r = d5_truth_row(pts0, levels, bx, w, h, fit, D5_BAND_WIDE, made)
+    return r | {"widened": widened, "at_25": first, "made": list(made.values())}
+
+
+def d5_judge(truth: dict, refined: dict, tol: float, levels=None) -> dict:
+    """Valid: at every level the w/5 and w/10 splines agree within τ/4 and the exponential
+    rule lies nearer the spline on the w/10 grid than on the w/5 grid. Pass: valid, and the
+    refined ln Z within τ of the w/10 spline at every level."""
+    levels = levels or tuple(float(k) for k in truth["z"])
+    valid, close = True, True
+    for lv in levels:
+        z = truth["z"][str(lv)]
+        valid &= abs(z["w5"] - z["w10"]) < tol / 4.0
+        valid &= abs(z["w10"] - z["w10_exp"]) < abs(z["w5"] - z["w5_exp"])
+        close &= abs(refined[lv] - z["w10"]) <= tol
+    return {"valid": bool(valid), "pass": bool(valid and close)}
+
+
+def _d5_job(args) -> dict:
+    tid, p2 = args
+    t = Task.from_id(tid)
+    k2 = Points.key(p2, 0)[0]
+    row = next(s for s in json.loads(t.done_path.read_text())["scans"]
+               if Points.key(s["p2"], 0)[0] == k2)  # fmt: skip
+    pts0 = [p for p in row_points(t, p2) if p.get("placed_by") not in D1_STAMPS]
+    fit = _row_fit(t, p2, record=False, mode="d5")
+    r = d5_row(pts0, t.levels(), box(t.model), row["width"], row["h"], fit)
+    tol = row["d1"]["tolerance"]["prior"]
+    refined = {lv: row["ln_z"][str(lv)]["prior"] for lv in t.levels()}
+    j = d5_judge(r, refined, tol, tuple(t.levels()))
+    out = {"task": tid, "p2": p2, "commit": _commit(), "tolerance": tol,
+           "refined": {str(k): v for k, v in refined.items()}, "share": row["d1"]["share"],
+           **j, **r}  # fmt: skip
+    d = CACHE / "d5_validation"
+    d.mkdir(parents=True, exist_ok=True)
+    (d / f"{tid}__{k2:.10f}.json").write_text(json.dumps(out, default=float))
+    return {k: v for k, v in out.items() if k not in ("made",)}
+
+
+def deviation5(n_workers: int = 5) -> dict:
+    """Deviation 5 on the five failing drawn rows, one row to a worker; written to
+    d5_validation.json."""
+    from concurrent.futures import ProcessPoolExecutor
+
+    rows = _nearest_rows(D5_ROWS)
+    with ProcessPoolExecutor(max(1, min(n_workers, len(rows)))) as ex:
+        res = list(ex.map(_d5_job, rows))
+    out = {"commit": _commit(), "pass": all(r["pass"] for r in res), "rows": res}
+    (CACHE / "d5_validation.json").write_text(json.dumps(out, default=float))
+    return out
+
+
 def d1_compare(task: Task, p2: float) -> dict:
     """Validation: the refined ln Z (the result's) against the ground truth in every box and
     level: the truth valid where its spline and exponential values agree within τ/2; a pass
@@ -3111,6 +3275,7 @@ def main(argv: list[str] | None = None) -> None:
             "refine",
             "smoke",
             "validate",
+            "validate5",
         ),
     )
     ap.add_argument("task", nargs="?")
@@ -3148,6 +3313,13 @@ def main(argv: list[str] | None = None) -> None:
         print(json.dumps({k: r[k] for k in ("rounds", "stop", "corrections")}, default=float))
     elif a.cmd == "smoke":
         d1_smoke(a.n_workers)
+    elif a.cmd == "validate5":
+        r = deviation5(a.n_workers)
+        for x in r["rows"]:
+            print(x["task"], f"p2 {x['p2']:.4f}", "valid" if x["valid"] else "NOT valid",
+                  "pass" if x["pass"] else "FAIL", f"band {x['band']}",
+                  f"outside {max(x['outside'].values()):.2e}", f"fits {x['fits']}",
+                  flush=True)  # fmt: skip
     elif a.cmd == "validate":
         tasks = [t for t in stage1_tasks() if t.done_path.exists() and t.model != "NG"]
         out = []

@@ -1257,3 +1257,82 @@ def test_read_back_keeps_a_refinement_knot_where_a_coarse_call_sits(tmp_path, mo
     e_back = F.row_estimates(back, F.LEVELS, bx, 0.1)[2]
     np.testing.assert_allclose(e_back, F.row_estimates(in_job, F.LEVELS, bx, 0.1)[2], rtol=1e-12)
     assert F.guard_intervals(back, F.LEVELS, bx) == F.guard_intervals(in_job, F.LEVELS, bx)
+
+
+def _two_peaks(x):
+    """A narrow peak at −7 and a lower secondary one at −5.5 (Δχ² 30), steep walls."""
+    return min(((x + 7.0) / 0.02) ** 2, 30.0 + ((x + 5.5) / 0.02) ** 2, 4.0e4)
+
+
+def _analytic_fit(chi):
+    def fit(x, _pts, stamp):
+        return {"p2": 0.0, "x": float(x), "kind": "fine", "chi2": chi(x), "converged": True,
+                "no_contact": False, "ln_s": 0.0, "placed_by": stamp}  # fmt: skip
+
+    return fit
+
+
+def _d5_base(chi):
+    return [
+        _analytic_fit(chi)(float(x), [], "scan") for x in np.round(np.arange(-9, -5.01, 0.1), 10)
+    ]
+
+
+def test_deviation5_band_holds_every_region_within_25_including_a_secondary_one():
+    pts = _d5_base(_two_peaks)
+    made: dict = {}
+    r = F.d5_truth_row(pts, F.LEVELS, (-9.0, -5.0), 0.02, 0.01, _analytic_fit(_two_peaks), 25.0,
+                       made)  # fmt: skip
+    bands = r["band"]
+    assert any(a < -7.0 < b for a, b in bands) and any(a < -5.5 < b for a, b in bands)
+    assert not any(a < -6.3 < b for a, b in bands)  # the walls between them are far below
+    lv_max = max(F.LEVELS)
+    allp = pts + list(made.values())
+    top = max(F._ln_l(p, lv_max) for p in allp)
+    for p in allp:  # every call at ln L ≥ max − 25 at some level lies in the band
+        if any(F._ln_l(p, lv) >= max(F._ln_l(q, lv) for q in allp) - 25 for lv in F.LEVELS):
+            assert any(a <= p["x"] <= b for a, b in bands), (p["x"], top)
+    s10, s5 = set(r["grid10"]), set(r["grid5"])
+    assert s5 < s10 and len(s10) == pytest.approx(2 * len(s5), abs=len(bands) + 1)
+    assert np.diff(sorted(s10)).min() == pytest.approx(0.002, rel=1e-6)
+    assert max(r["outside"].values()) < F.D5_OUTSIDE
+
+
+def test_deviation5_truth_valid_and_judged_against_the_w10_spline():
+    pts = _d5_base(_two_peaks)
+    r = F.d5_truth_row(pts, F.LEVELS, (-9.0, -5.0), 0.02, 0.01, _analytic_fit(_two_peaks), 25.0,
+                       {})  # fmt: skip
+    z = r["z"]
+    refined = {lv: z[str(lv)]["w10"] for lv in F.LEVELS}
+    j = F.d5_judge(r, refined, 0.0025)
+    assert j["valid"] and j["pass"]
+    j = F.d5_judge(r, {lv: v + 0.003 for lv, v in refined.items()}, 0.0025)
+    assert j["valid"] and not j["pass"]
+
+
+def test_deviation5_judge_rules():
+    def truth(w5, w10, e5, e10):
+        return {"z": {"1.0": {"w5": w5, "w10": w10, "w5_exp": e5, "w10_exp": e10}}}
+
+    tol = 0.004
+    ok = truth(-10.0005, -10.0, -10.01, -10.003)
+    assert F.d5_judge(ok, {1.0: -10.002}, tol, (1.0,)) == {"valid": True, "pass": True}
+    apart = truth(-10.0015, -10.0, -10.01, -10.003)  # the grids differ by more than τ/4
+    assert F.d5_judge(apart, {1.0: -10.0}, tol, (1.0,))["valid"] is False
+    worse = truth(-10.0005, -10.0, -10.002, -10.003)  # the exponential rule moves away
+    assert F.d5_judge(worse, {1.0: -10.0}, tol, (1.0,))["valid"] is False
+
+
+def test_deviation5_band_widens_to_35_when_the_outside_carries_too_much(monkeypatch):
+    monkeypatch.setattr(F, "D5_OUTSIDE", 0.0)  # force the outside test to fail
+    calls = []
+    real = F.d5_truth_row
+
+    def spy(*a, **k):
+        calls.append(a[6])
+        return real(*a, **k)
+
+    monkeypatch.setattr(F, "d5_truth_row", spy)
+    out = F.d5_row(_d5_base(_two_peaks), F.LEVELS, (-9.0, -5.0), 0.02, 0.01,
+                   _analytic_fit(_two_peaks))  # fmt: skip
+    assert calls == [25.0, 35.0] and out["band_dl"] == 35.0 and out["widened"]

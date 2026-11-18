@@ -1314,3 +1314,33 @@ its results. The five rows of the second note, before and after:
 | t2_s0_l0_P_d0_b0 | λ 5.6287 | −6.865 | −11.000 | ≤ −11.0 | edge | 0.0073 |
 | t2_s0_l0_P_d0_b0 | λ 6.1523 | −7.690 | −10.999 | ≤ −11.0 | edge | 0.9274 |
 | t4_s0_l0_P_d1_b0 | λ 0.9163 | −7.178 | −11.000 | ≤ −11.0 | edge | 1.1215 |
+
+## Deviation 5, 17 November 2026: the validation's ground truth for peaked rows
+
+Written after the 11-row validation of deviation 1 failed on a scratch copy of the study's cache
+(commit 4b03c4a), and before any new ground truth is computed.
+
+**What failed.** The six named rows passed. The five rows drawn by the seed 20261117 from the
+rows with a share of at least 10⁻³ failed in the prior box at every level, for one reason:
+their ground truth was not valid by its own test (its spline and exponential-rule values within
+τ/2). Its spline − exponential differences were +0.003 to +0.062, against limits of 0.00125
+(0.0027 for t4_s0_l0_P_d1_b0 at λ 5.2360). In all five the refined ln Z lay within 0.0004 of
+the dense fits' spline value. These rows' posterior widths are 0.013 to 0.020 decade, close to
+the truth's 0.01-decade spacing, and the exponential rule, linear in ln L between points,
+under-integrates a peak at that spacing.
+
+| No. | Type | Reason | Timing | Original wording | Deviation description | Reader impact |
+|---|---|---|---|---|---|---|
+| 5 | Analytic approach | Preregistered plan not possible or inappropriate because of data | After results of the preregistered approach were known: the validation's failure on the scratch copy, its per-row values and the rows' widths; before any new ground truth is computed, and before any gate, reading or Bayes factor | "Ground truth by dense real fits, independent of the refinement: a fit every 0.01 decade where ln L at the smallest level lies within 25 of the row's best knot, every 0.05 decade elsewhere in the widest box … It is valid where its spline and exponential values agree within τ_j / 2; a row passes where the refined ln Z lies within τ_j of it at every level in the prior box" (amendment 4, D, kept by deviation 1) | For the five failing drawn rows only, a new ground truth across the prior box. The band is every x in the prior box where ln L ≥ (the row's maximum − 25) at some level, wherever it falls, a secondary region included: each run of calls that qualify, widened to the nearest call outside it on either side, and recomputed from every call until it no longer grows. Inside the band, real fits at spacing w/10 (w the row's posterior width estimate, the grid anchored at the box's lower edge); the w/5 grid is its every other point. Outside it, real fits on the registered 0.05-decade grid, with the row's calls before deviation 1. Two truths: ln Z on the w/10 grid and on the w/5 grid, each with the same points outside the band. The outside region's share of the w/10 truth's integral is measured per row and level (the larger of the spline and the exponential rule); it must be below 10⁻⁶, or the band is widened to ln L 35 and the truth recomputed. Valid where, at every level, the w/5 and w/10 spline values agree within τ_j/4 and the exponential rule lies nearer the spline on the w/10 grid than on the w/5 grid. A row passes where its refined ln Z lies within τ_j of the w/10 spline value at every level. The six named rows keep their result. If any of the five fails against a valid truth, Stage 1 stays paused and is reported, and nothing further is changed. | The validation's instrument is changed after it failed, so a pass under it is weaker evidence than a pass under the registered instrument would have been; the registered results are reported beside the new ones. The refined values are not changed by this deviation. |
+
+Estimated on the rows' calls before the run: bands of 0.40 to 0.68 decade, about 2,000 fits in
+all (about 400 a row), one row to a worker. The fits are not added to the rows.
+
+**Code defect fixed before this deviation (ffbb963).** On read-back, of two records at one point
+that both converged with contacts the earlier was kept, so a refinement fit landing on a
+converged coarse call was dropped and the row's knots, estimate and guard differed from those
+the refinement job had used. Now the later is kept, as the job held it. On the scratch copy this
+touches 3 rows: t2_s0_l0_J, whose r3_1 estimate falls from 0.0098 to 0.0015 against its
+tolerance of 0.0025 (its refinement rerun needed no fit; its ln Z is unchanged to 10⁻⁵);
+t4_s0_l0_R at r 0.12 (share 2 × 10⁻³²) and t2_s0_l0_P_d1_b0 at λ 5.6287 (share 6 × 10⁻¹⁵), whose
+ln Z move by up to 2.36 and 0.39 in some box. The study's cache has not been recomputed.
