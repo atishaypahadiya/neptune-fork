@@ -4,7 +4,7 @@
  "window": {
   "deg": 0.87,
   "arcmin": 52,
-  "citation": "docs/notes/M6d.md, § 1: Le Verrier's actual miss of 52′"
+  "citation": "docs/notes/M6d.md, § 1, and its note of 19 November 2026: Le Verrier's own 52′, a heliocentric difference at 1847 January 1 (Recherches, 1846, p. 253)"
  },
  "held": {
   "shape38": "Bode's law, his first paper",
@@ -247,6 +247,51 @@
    "reading",
    "ratio",
    "wording"
+  ],
+  "window.geocentric_miss_deg": [
+   "docs/notes/M6d_window.json",
+   "geocentric_miss_deg"
+  ],
+  "window.reproduces_registered": [
+   "docs/notes/M6d_window.json",
+   "reproduces_registered"
+  ],
+  "window.post_hoc": [
+   "docs/notes/M6d_window.json",
+   "post_hoc"
+  ],
+  "window90.half_width_deg": [
+   "docs/notes/M6d_window.json",
+   "windows",
+   "sensitivity",
+   "half_width_deg"
+  ],
+  "window90.p_free": [
+   "docs/notes/M6d_window.json",
+   "windows",
+   "sensitivity",
+   "p_free"
+  ],
+  "window90.n_draws": [
+   "docs/notes/M6d_window.json",
+   "windows",
+   "sensitivity",
+   "shape38",
+   "n_draws"
+  ],
+  "window90.shape38.p_shape": [
+   "docs/notes/M6d_window.json",
+   "windows",
+   "sensitivity",
+   "shape38",
+   "p_shape"
+  ],
+  "window90.shape36.p_shape": [
+   "docs/notes/M6d_window.json",
+   "windows",
+   "sensitivity",
+   "shape36",
+   "p_shape"
   ]
  },
  "values": {
@@ -275,6 +320,14 @@
   "shape36.ln_b_wording": "a weak preference for free distance",
   "shape36.p_shape": 0.0,
   "shape36.p_free": 0.35,
-  "shape36.ratio_wording": "made it less probable (P_shape is 0)"
+  "shape36.ratio_wording": "made it less probable (P_shape is 0)",
+  "window.geocentric_miss_deg": 0.8999,
+  "window.reproduces_registered": true,
+  "window.post_hoc": true,
+  "window90.half_width_deg": 0.9,
+  "window90.p_free": 0.36233333333333334,
+  "window90.n_draws": 6000,
+  "window90.shape38.p_shape": 0.0,
+  "window90.shape36.p_shape": 0.0
  }
 }

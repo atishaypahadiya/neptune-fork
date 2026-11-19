@@ -121,8 +121,9 @@ export function abstract(D) {
       `good were Adams's solutions? And could Challis's sweeps at Cambridge have recognised ` +
       `the planet before Galle found it on ${galle(K)} ${K.galle_night.year}?`,
     abstract_p2: `Adams's two final solutions place the planet ${abs(printed("S5"))}° and ` +
-      `${abs(printed("S6"))}° from Neptune on that night. I reproduce both from his memoir to ` +
-      `within ${fmt(Math.max(A.H1_c0_theta_delta, A.H2_c0_theta_delta), 2)}°. The main paper's ` +
+      `${abs(printed("S6"))}° from Neptune on that night. From the normal equations printed in ` +
+      `his memoir I reproduce both, to ${fmt(Math.abs(A.H1_c0_theta_delta), 3)}° and ` +
+      `${fmt(Math.abs(A.H2_c0_theta_delta), 3)}°. The main paper's ` +
       `model, fitted to comparable data at his assumed distance, puts the planet ` +
       `${abs(fit("H1").med)}° short of Neptune, and every method I tried on a noise-free ` +
       `Neptune at that distance is ${fmt(drv(cleanMin, "smallest clean shortfall"))}° to ` +

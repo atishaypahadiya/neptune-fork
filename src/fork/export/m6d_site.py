@@ -1,7 +1,8 @@
 """The main page's data on Le Verrier's shape model against free distance (site/data/m6d.json,
 a subset of docs/notes/M6d.json: the two shape fits' place on Galle's night, the Bayes factor
 against free distance and the probability of landing as close as Le Verrier did, with their
-registered wordings).
+registered wordings), and the post hoc sensitivity of that probability to the window
+(docs/notes/M6d_window.json, the note of 19 November 2026 in docs/notes/M6d.md).
 
 Every entry of ``values`` is copied from one field of the committed note JSON, named in
 ``sources`` as ``[file, key, key, ...]``; nothing is computed here (docs/DESIGN.md, the one
@@ -19,11 +20,15 @@ from fork.export.m6e_site import resolve
 
 ROOT = Path(__file__).resolve().parents[3]
 NOTE = "docs/notes/M6d.json"
+WINDOW_NOTE = "docs/notes/M6d_window.json"
 SITE_DATA = ROOT / "site" / "data"
 FITS = ("shape38", "shape36")
 WINDOW_DEG = 0.87
 WINDOW_ARCMIN = 52
-WINDOW_CITATION = "docs/notes/M6d.md, § 1: Le Verrier's actual miss of 52′"
+WINDOW_CITATION = (
+    "docs/notes/M6d.md, § 1, and its note of 19 November 2026: Le Verrier's own 52′, a "
+    "heliocentric difference at 1847 January 1 (Recherches, 1846, p. 253)"
+)
 # Where each held value comes from, in the plan's words (§ 3, "Held value, two runs").
 HELD = {
     "shape38": "Bode's law, his first paper",
@@ -53,6 +58,17 @@ def sources() -> dict[str, list]:
             f"{f}.p_free": [*r, "ratio", "p_free"],
             f"{f}.ratio_wording": [*r, "ratio", "wording"],
         }
+    w = [WINDOW_NOTE, "windows", "sensitivity"]
+    out |= {
+        "window.geocentric_miss_deg": [WINDOW_NOTE, "geocentric_miss_deg"],
+        "window.reproduces_registered": [WINDOW_NOTE, "reproduces_registered"],
+        "window.post_hoc": [WINDOW_NOTE, "post_hoc"],
+        "window90.half_width_deg": [*w, "half_width_deg"],
+        "window90.p_free": [*w, "p_free"],
+        "window90.n_draws": [*w, "shape38", "n_draws"],
+        "window90.shape38.p_shape": [*w, "shape38", "p_shape"],
+        "window90.shape36.p_shape": [*w, "shape36", "p_shape"],
+    }
     return out
 
 
@@ -64,7 +80,7 @@ def build() -> dict:
             "(main page, § 4.5): copies of fields of docs/notes/M6d.json."
         ),
         "plan": "docs/notes/M6d.md",
-        # The window is a constant of the plan, not a computed field: Le Verrier's actual miss.
+        # The window is a constant of the plan, not a computed field: Le Verrier's own 52′.
         "window": {"deg": WINDOW_DEG, "arcmin": WINDOW_ARCMIN, "citation": WINDOW_CITATION},
         "held": HELD,
         "sources": src,

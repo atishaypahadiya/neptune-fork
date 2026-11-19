@@ -738,9 +738,11 @@ pattern and kept whole too, which does no harm.
   One sentence says the free-distance refit on all of Table 77 but Flamsteed's 1690 observation
   (527 of 529 measurements) was run and is not read, with no numbers.
 - **Data:** `site/data/m6d.json`, written by `fork.export.m6d_site`. Each value is a copy of a
-  named field of `docs/notes/M6d.json` (`tests/test_m6d_site.py`). The window (0.87°, 52′) is
-  a constant of the plan, carried with its citation (`window`), and a test checks it against
-  the plan's § 1. The factor "at least about 700" is a derived value: P_free over the exact
+  named field of `docs/notes/M6d.json`, or, for the window's post hoc sensitivity at 0.90°, of
+  `docs/notes/M6d_window.json` (`tests/test_m6d_site.py`). The window (0.87°, 52′) is a constant
+  of the plan, carried with its citation (`window`), and a test checks it against the plan's
+  § 1. The text describes it as Le Verrier's own 52′, a heliocentric difference at 1 January
+  1847, beside his geocentric miss of 0.90° (the plan's note of 19 November 2026). The factor "at least about 700" is a derived value: P_free over the exact
   one-sided 95 % bound on a zero count, rounded down to the hundred. The text refuses to render
   if either fit is not read or has a draw within the window.
 - Limitations: the deferred fits' sentence (`m7_timeline.json`, `deferred`) no longer lists the

@@ -276,3 +276,37 @@ shape model is less probable by a factor of at least about 700.
 data alone, with no assumption about the distance, give a prediction as good as Le Verrier's;
 P_shape = 0 (none of 6,000 draws) is the same chance with the distance held at 36.154 AU, his
 value of 31 August 1846; R = 0 compares them.
+
+## Note, 19 November 2026: what the 0.87° window measures, and a sensitivity at 0.90° (post hoc)
+
+Nothing above the line is changed, and 0.87° stays the registered threshold.
+
+**Correction.** § 1 calls 0.87° "Le Verrier's actual miss of 52′", which reads as his miss on
+Galle's night. The 52′ is his own figure, and it is a heliocentric difference at 1847 January 1
+(*Recherches sur les mouvements de la planète Herschel*, 1846, p. 253). He reduced Galle's
+observed place to heliocentric longitude (326° 52′ on 23 September) and carried it forward 0.275
+years to 1847 January 1 (327° 24′). Against the heliocentric longitude he had published on
+31 August 1846 for that date (326° 32′), the difference is 0° 52′. His geocentric miss on Galle's
+night is a different quantity: from his published elements, as propagated here, it is 0.90°
+(325.873° − 324.973°, `site/data/m6_fits.json`, `comparison_targets`). So the registered window,
+P(|λ − 325.873°| ≤ 0.87°), is a geocentric window the size of his heliocentric miss. The results
+above are unaffected; only the description of the window changes. The site and the README now
+describe it this way.
+
+**Sensitivity at 0.90°, chosen after the results.** `docs/notes/scripts/m6d_window.py` (output
+`docs/notes/M6d_window.json`) recomputes the probabilities from the cached draws, by the code that
+made `docs/notes/M6d.json`. No fit is rerun. The script first rebuilds the free-distance fit,
+which must reproduce its published median (325.735°) and ln Z, and then checks that it
+reproduces the registered values at 0.87°.
+
+| half-width | P_free (of 6,000 draws) | P_shape, 38.4 AU | P_shape, 36.154 AU | one-sided 95 % bound on P_shape | factor, at least about |
+|---|---|---|---|---|---|
+| 0.87° (registered) | 0.350 (2,100) | 0 | 0 | 5.0 × 10⁻⁴ | 700 |
+| 0.90° (post hoc) | 0.362 (2,174) | 0 | 0 | 5.0 × 10⁻⁴ | 700 |
+
+The four single-seed values of P_shape are 0, 0, 0, 0 at both half-widths and both held values.
+The held fits' nearest draws lie 6.54° (38.4 AU) and 5.32° (36.154 AU) from 325.873°, so P_shape
+is 0 for any half-width below 5.3°. The factor (P_free over the bound, rounded down to the
+hundred) is 701 at 0.87° and 726 at 0.90°, about 700 either way. The Bayes factors do not use
+the window. The registered readings are made at 0.87° and stand; the 0.90° row is a sensitivity
+and is not read.

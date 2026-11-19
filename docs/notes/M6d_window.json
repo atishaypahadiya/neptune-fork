@@ -1,0 +1,74 @@
+{
+ "description": "Post hoc sensitivity of the M6d window: the registered 0.87° (Le Verrier's 52′, a heliocentric difference at 1847 January 1, Recherches p. 253) and 0.90° (his geocentric miss on Galle's night from his published elements). Built by docs/notes/scripts/m6d_window.py from the cached draws; no fit rerun.",
+ "post_hoc": true,
+ "date": "2026-11-19",
+ "target_deg": 325.873,
+ "window_52_arcmin": {
+  "deg": 0.87,
+  "measures": "heliocentric longitude at 1847 January 1, Galle's planet against the longitude Le Verrier published on 31 August 1846",
+  "source": "Le Verrier, Recherches sur les mouvements de la planète Herschel (1846), p. 253: 327° 24′ against 326° 32′, difference 0° 52′"
+ },
+ "geocentric_miss_deg": 0.8999,
+ "geocentric_miss_source": "site/data/m6_fits.json comparison_targets: jpl minus le_verrier.galle_lon_ecl_of_date_deg_derived",
+ "n_free": 6000,
+ "free_median_deg": 325.735,
+ "reproduces_registered": true,
+ "windows": {
+  "registered": {
+   "half_width_deg": 0.87,
+   "p_free": 0.35,
+   "shape38": {
+    "n_draws": 6000,
+    "p_shape": 0.0,
+    "p_shape_single_seed": [
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "nearest_draw_deg": 6.542
+   },
+   "shape36": {
+    "n_draws": 6000,
+    "p_shape": 0.0,
+    "p_shape_single_seed": [
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "nearest_draw_deg": 5.317
+   },
+   "cp_upper_95": 0.0004991640883919013,
+   "factor_at_least": 700
+  },
+  "sensitivity": {
+   "half_width_deg": 0.9,
+   "p_free": 0.36233333333333334,
+   "shape38": {
+    "n_draws": 6000,
+    "p_shape": 0.0,
+    "p_shape_single_seed": [
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "nearest_draw_deg": 6.542
+   },
+   "shape36": {
+    "n_draws": 6000,
+    "p_shape": 0.0,
+    "p_shape_single_seed": [
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "nearest_draw_deg": 5.317
+   },
+   "cp_upper_95": 0.0004991640883919013,
+   "factor_at_least": 700
+  }
+ }
+}
