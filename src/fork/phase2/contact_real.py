@@ -30,13 +30,13 @@ import math
 import numpy as np
 
 from fork.model.bodies import G
+from fork.phase2 import contact_root as CROOT
 
 C_AU_PER_DAY = 173.1446326846693  # IAU 2012: c × 86400 s / au
 ARCSEC = math.pi / (180.0 * 3600.0)
 R_SUN = 959.63 * ARCSEC  # at 1 AU, as the frozen plan
 R_MERCURY = 3.36 * ARCSEC
 MU_SUN = G  # Keplerian carry about the Sun (the bodies' own masses change it by < 2 × 10⁻⁷)
-NEWTON_ITER = 60
 LIGHT_ITER = 4
 ROOT_TOL = 1e-12  # rad
 MAX_OFFSET_DAYS = 1.0
@@ -77,28 +77,16 @@ def gap(xm, vm, xo, vo, exterior, t, light_time=True, aberration=True) -> np.nda
     return sep - radius
 
 
-def contact_offsets(xm, vm, xo, vo, exterior, light_time=True,
+def contact_offsets(xm, vm, xo, vo, exterior, side, light_time=True,
                     aberration=True) -> tuple[np.ndarray, np.ndarray]:  # fmt: skip
-    """Offsets [s] of each contact from its reference epoch and the root's residual [rad];
-    NaN where Newton's method finds no contact within a day."""
+    """Offsets [s] of each contact (``side``: −1 ingress, contact I or II; +1 egress, III or IV)
+    from its reference epoch and the root's residual [rad]; NaN where that contact does not
+    exist within a day (``contact_root``)."""
     ext = np.asarray(exterior, dtype=bool)
     xm, vm, xo, vo = (np.atleast_2d(np.asarray(a, dtype=float)) for a in (xm, vm, xo, vo))
 
-    def f(t):
-        return gap(xm, vm, xo, vo, ext, t, light_time, aberration)
+    def f(i, t):
+        return gap(xm[i], vm[i], xo[i], vo[i], ext[i], t, light_time, aberration)
 
-    t = np.zeros(len(ext))
-    ok = np.ones(len(t), bool)
-    h = 1e-6
-    for _ in range(NEWTON_ITER):
-        ft = f(t)
-        d = (f(t + h) - ft) / h
-        step = np.where(ok & (d != 0.0), ft / np.where(d == 0.0, 1.0, d), 0.0)
-        t = t - step
-        ok &= np.isfinite(t) & (np.abs(t) <= MAX_OFFSET_DAYS)
-        t = np.where(ok, t, 0.0)
-        if np.all(np.abs(step[ok]) < 1e-10):
-            break
-    res = np.abs(f(t))
-    ok &= res < ROOT_TOL
-    return np.where(ok, t * 86400.0, np.nan), np.where(ok, res, np.nan)
+    t, res = CROOT.contact_roots(f, np.asarray(side), ROOT_TOL, MAX_OFFSET_DAYS)
+    return t * 86400.0, res

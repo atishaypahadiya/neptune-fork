@@ -115,7 +115,9 @@ def _offsets(horizons, **kw):
     published UT1 plus the IERS ΔT, so his ΔT shifts the model's UT1 by IERS − his)."""
     m, e = horizons["mercury"], horizons["earth"]
     k = np.array([int(s.split()[1]) for s in horizons["labels"]])
-    off, res = CR.contact_offsets(m[:, :3], m[:, 3:], e[:, :3], e[:, 3:], np.isin(k, (1, 4)), **kw)
+    side = np.where(np.isin(k, (1, 2)), -1, 1)  # I, II ingress; III, IV egress
+    off, res = CR.contact_offsets(m[:, :3], m[:, 3:], e[:, :3], e[:, 3:], np.isin(k, (1, 4)),
+                                  side, **kw)  # fmt: skip
     his = np.array([ESPENAK_DELTA_T_S[s.split()[0]] for s in horizons["labels"]])
     return off + (horizons["delta_t_iers_s"] - his), res
 
@@ -146,8 +148,10 @@ def test_light_time_delays_a_uniformly_moving_planet(monkeypatch):
     for exterior in (False, True):
         xm = np.array([[0.4, -0.003, 0.0005]])
         vm = np.array([[0.0, 0.02, 0.0]])
-        a, _ = CR.contact_offsets(xm, vm, xo, vo, [exterior], light_time=False, aberration=False)
-        b, _ = CR.contact_offsets(xm, vm, xo, vo, [exterior], aberration=False)
+        a, _ = CR.contact_offsets(
+            xm, vm, xo, vo, [exterior], [-1], light_time=False, aberration=False
+        )
+        b, _ = CR.contact_offsets(xm, vm, xo, vo, [exterior], [-1], aberration=False)
         tau = 0.6 / CR.C_AU_PER_DAY * 86400.0
         assert b[0] - a[0] == pytest.approx(tau, abs=0.05)
 

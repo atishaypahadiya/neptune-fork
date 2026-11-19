@@ -1,0 +1,59 @@
+table,row,printed_contact,contact,basis
+I,1,II,II,printed contact number
+I,2,III,III,printed contact number
+I,3,III,III,printed contact number
+I,4,II,II,printed contact number
+I,5,II,II,printed contact number
+I,6,III,III,printed contact number
+I,7,II,II,printed contact number
+I,8,III,III,printed contact number
+I,9,II,II,printed contact number
+I,10,III,III,printed contact number
+I,11,III,II,"misprints table, I 11: printed III; the first of the transit's two rows, so contact II"
+I,12,III,III,printed contact number
+I,13,II,II,printed contact number
+I,14,III,III,printed contact number
+I,15,III,III,printed contact number
+I,16,II,II,printed contact number
+I,17,III,III,printed contact number
+I,18,II,II,printed contact number
+I,19,III,III,printed contact number
+I,20,II,II,printed contact number
+I,21,III,III,printed contact number
+I,22,II,II,printed contact number
+I,23,III,III,printed contact number
+I,24,II,II,printed contact number
+I,25,III,III,printed contact number
+II,1,II,II,printed contact number
+II,2,III,III,printed contact number
+II,3,II,II,printed contact number
+II,4,III,III,printed contact number
+II,5,II,II,printed contact number
+II,6,III,III,printed contact number
+II,7,II,II,printed contact number
+II,8,III,III,printed contact number
+II,9,II,II,printed contact number
+II,10,III,III,printed contact number
+II,11,II,II,printed contact number
+II,12,III,III,printed contact number
+III,1,,IV,"exterior, after contact III of the same transit (I 2)"
+III,2,,IV,"Part I p. 385 (1690): Fontenay, 'Sortie certaine et entière', 19h 28m 52s"
+III,3,,IV,"exterior, after contact III of the same transit (I 3)"
+III,4,,IV,"exterior, after contact III of the same transit (I 6)"
+III,5,,IV,"exterior, after contact III of the same transit (I 8)"
+III,6,,IV,"Part I p. 390 (1756): 'Egressus totus', 'Sortie totale', 'Fin de la sortie', 18h 54m 22s-49s"
+III,7,,IV,"exterior, after contact III of the same transit (I 10)"
+III,8,,IV,"exterior, after contact III of the same transit (I 12)"
+III,9,,IV,"exterior, after contact III of the same transit (I 14)"
+III,10,,IV,"exterior, after contact III of the same transit (I 15)"
+III,11,,IV,"exterior, after contact III of the same transit (I 17)"
+III,12,,IV,"exterior, after contact III of the same transit (I 19)"
+III,13,,IV,"exterior, after contact III of the same transit (I 21)"
+III,14,,IV,"exterior, after contact III of the same transit (I 23)"
+III,15,,IV,"exterior, after contact III of the same transit (I 25)"
+IV,1,,IV,"exterior, after contact III of the same transit (II 2)"
+IV,2,,IV,"exterior, after contact III of the same transit (II 4)"
+IV,3,,IV,"exterior, after contact III of the same transit (II 6)"
+IV,4,,IV,"exterior, after contact III of the same transit (II 8)"
+IV,5,,IV,"exterior, after contact III of the same transit (II 10)"
+IV,6,,IV,"exterior, after contact III of the same transit (II 12)"
