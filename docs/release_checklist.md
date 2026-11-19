@@ -293,6 +293,15 @@ page's type and hyphenation.
   its description identical to `.zenodo.json`.
 - [x] Follow-up commit: that DOI in `CITATION.cff`, `README.md` and `site/data/release.json`.
 
+## v1.6 list (opened 2026-11-18; no release without the explicit word)
+
+The open items of the v1.5 list below carry over as listed there, except the Mercury row, which
+now reads:
+
+| item | state | next step |
+|---|---|---|
+| Mercury identifiability | Stage 1 failed V3′ (outer longitude/radius grids too coarse for noise-free posteriors) and V6 (near-best convergence); the failure is the result (`docs/phase2/identifiability_full.md`, Stage 1 result of 18 November 2026, on branch identifiability-full) | a successor would be a new pre-registered study |
+
 ## v1.5 list (opened 2026-11-15; closed at v1.5.0, kept as history; open items carried to v1.6)
 
 | item | state | next step |
