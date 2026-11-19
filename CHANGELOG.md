@@ -2,6 +2,22 @@
 
 Versions follow semver. Dates are the release dates; the DOIs are in `CITATION.cff`.
 
+## 1.5.1 (2026-11-19)
+
+A patch release. No number on either page changes.
+
+### Changed
+
+- Mercury: the identifiability study of Mercury's transit contacts stopped at two of its
+  pre-registered validation gates (grid resolution and fit convergence), so it makes no
+  reading, and the study on the real observations was not run
+  ([result](docs/phase2/identifiability_full.md#stage-1-result-18-november-2026-the-gates-fail-v3-and-v6)). This replaces 1.5.0's "Stage 1 … in progress" in the README.
+- The study's plan gains its fourth amendment and five recorded deviations (the strength
+  integral by adaptive refinement and its validation), with their code and tests, and the
+  dated result; the release checklist opens the v1.6 list.
+- A test compares a stored floating-point value within 10⁻¹² instead of exactly: on x86 it
+  differed from the ARM value in the 15th digit.
+
 ## 1.5.0 (2026-11-18)
 
 The headline longitude, mass and semi-major axis are unchanged. The 95 %

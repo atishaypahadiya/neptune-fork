@@ -218,8 +218,10 @@ observed at Paris from 1801 to 1842 ([transcription](docs/phase2/transcription.m
 [blinding record](docs/phase2/blinding.md)). A pre-registered synthetic identifiability study
 stopped at its linearity gate, as its plan requires: the linear treatment of Mercury's elements
 does not reproduce the full integration ([plan and results](docs/phase2/identifiability_study.md)).
-Its successor, a synthetic study by full integration
-([plan](docs/phase2/identifiability_full.md)), is in progress (Stage 1) and has no results yet.
+Its successor, the identifiability study of Mercury's transit contacts by full integration,
+stopped at two of its pre-registered validation gates (grid resolution and fit convergence), so
+it makes no reading, and the study on the real observations was not run
+([result](docs/phase2/identifiability_full.md#stage-1-result-18-november-2026-the-gates-fail-v3-and-v6)).
 
 The write-up, with each claim's JSON path and deviation, is
 [docs/notes/P1B_writeup.md](docs/notes/P1B_writeup.md).
