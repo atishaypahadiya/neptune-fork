@@ -43,6 +43,9 @@ identifiers:
     value: "10.5281/zenodo.24121059"
     description: "Concept DOI of the code archive on Zenodo: all versions."
   - type: doi
+    value: "10.5281/zenodo.24330988"
+    description: "Version DOI of v1.5.0 (released 2026-11-18)."
+  - type: doi
     value: "10.5281/zenodo.24237250"
     description: "Version DOI of v1.4.0 (released 2026-11-15)."
   - type: doi
