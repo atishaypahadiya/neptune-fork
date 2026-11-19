@@ -21,8 +21,29 @@ def test_every_value_is_its_source_field():
     assert set(d["sources"]) == set(d["values"])
     cache: dict = {}
     for key, source in d["sources"].items():
-        assert source[0] == S.NOTE, key
+        assert source[0] in (S.NOTE, S.WINDOW_NOTE), key
         assert d["values"][key] == S.resolve(source, cache), key
+
+
+def test_the_window_sensitivity_is_post_hoc_and_reproduces_the_registered_values():
+    # docs/notes/M6d.md, note of 19 November 2026: 0.87° stays the registered window; 0.90°,
+    # his geocentric miss from his published elements, is a sensitivity only.
+    w = json.loads((S.ROOT / S.WINDOW_NOTE).read_text(encoding="utf-8"))
+    reg, sens = w["windows"]["registered"], w["windows"]["sensitivity"]
+    v = _site()["values"]
+    assert w["post_hoc"] is True and w["reproduces_registered"] is True
+    assert reg["half_width_deg"] == pytest.approx(_site()["window"]["deg"], abs=1e-12)
+    assert sens["half_width_deg"] == pytest.approx(0.90, abs=1e-12)
+    assert reg["p_free"] == pytest.approx(v["shape38.p_free"], abs=1e-12)
+    for f in S.FITS:
+        assert reg[f]["p_shape"] == v[f"{f}.p_shape"] == 0.0
+        assert reg[f]["n_draws"] == sens[f]["n_draws"] == v[f"{f}.n_draws"]
+    t = json.loads((S.ROOT / "site/data/m6_fits.json").read_text(encoding="utf-8"))
+    t = t["comparison_targets"]
+    geo = (
+        t["jpl"]["galle_lon_ecl_of_date_deg"] - t["le_verrier"]["galle_lon_ecl_of_date_deg_derived"]
+    )
+    assert w["geocentric_miss_deg"] == pytest.approx(geo, abs=1e-4)
 
 
 def test_the_page_states_what_the_readings_say():

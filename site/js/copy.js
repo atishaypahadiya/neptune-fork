@@ -510,6 +510,10 @@ export function shapeText(D) {
   for (const f of ["shape38", "shape36"]) {
     if (v[`${f}.read`] !== true || v[`${f}.n_draws`] !== n) throw new Error(`shape fit ${f}: not read`);
     if (v[`${f}.p_shape`] !== 0) throw new Error(`shape fit ${f}: draws within the window`);
+    if (v[`window90.${f}.p_shape`] !== 0) throw new Error(`shape fit ${f}: draws within 0.90°`);
+  }
+  if (v["window90.n_draws"] !== n || v["window.reproduces_registered"] !== true) {
+    throw new Error("window sensitivity: not on the registered draws");
   }
   const a = (f) => `${v[`${f}.held_a_au`]} AU`;
   const place = (f) => `${deg(v[`${f}.median`])} (68 %: ${deg(v[`${f}.lo68`])}–${deg(v[`${f}.hi68`])}), ` +
@@ -519,6 +523,8 @@ export function shapeText(D) {
   const ub = 1 - Math.pow(0.05, 1 / n);
   const factor = drv(Math.floor(v["shape38.p_free"] / ub / 100) * 100,
     "P_free over the one-sided 95 % bound on P_shape, rounded down to the hundred");
+  const factor90 = drv(Math.floor(v["window90.p_free"] / ub / 100) * 100,
+    "P_free at 0.90° over the one-sided 95 % bound on P_shape, rounded down to the hundred");
   const w = D.m6d.window, h = D.m6d.held;
   return {
     shape_p1: `I held the planet's distance at two of Le Verrier's values, ${a("shape38")} ` +
@@ -528,12 +534,19 @@ export function shapeText(D) {
       `${a("shape38")}, the planet on Galle's night lies at ${place("shape38")}; held at ` +
       `${a("shape36")}, at ${place("shape36")}. The evidence gives ${v["shape38.ln_b_wording"]} at ` +
       `${a("shape38")} (ln B = ${lnb("shape38")}) and ${v["shape36.ln_b_wording"]} at ` +
-      `${a("shape36")} (ln B = ${lnb("shape36")}). His prediction missed Neptune by ` +
-      `${deg(w.deg, 2)} (${w.arcmin}′). With the distance free, ` +
-      `${fmt(100 * v["shape38.p_free"], 0)} % of ${n} posterior draws land as close; with it held ` +
-      `at either value, none of ${n} does. From those counts, a prediction as close as his is at ` +
-      `least about ${factor} times less probable with the distance held than with it free ` +
-      `(one-sided, 95 %). The threshold is his actual miss, chosen after the event. The fit ` +
+      `${a("shape36")} (ln B = ${lnb("shape36")}). The test counts posterior draws within ` +
+      `${deg(w.deg, 2)} of Neptune on Galle's night. That is Le Verrier's own figure for his miss, ` +
+      `${w.arcmin}′: the difference in heliocentric longitude at 1 January 1847 between Galle's ` +
+      `planet and the longitude he had published. It is not his geocentric miss on Galle's ` +
+      `night, which from his published elements is ${deg(v["window.geocentric_miss_deg"], 2)}. ` +
+      `With the distance free, ${fmt(100 * v["shape38.p_free"], 0)} % of ${n} posterior draws ` +
+      `land that close; with it held at either value, none of ${n} does. From those counts, a ` +
+      `prediction as close as his is at least about ${factor} times less probable with the ` +
+      `distance held than with it free (one-sided, 95 %). The window was chosen after the event. ` +
+      `Recomputed after the results with a window of ${deg(v["window90.half_width_deg"], 2)}, his ` +
+      `geocentric miss, ${fmt(100 * v["window90.p_free"], 0)} % of the free draws land that close ` +
+      `and none of the held ones do, so the factor is ` +
+      `${factor90 === factor ? "unchanged" : `at least about ${factor90}`}. The fit ` +
       `without Flamsteed's observation of 1690 (527 of 529 measurements), with the distance ` +
       `free, was also run; it is not repeatable at the registered tolerance, and I do not read it.`,
   };

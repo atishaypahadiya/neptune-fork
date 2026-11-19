@@ -177,3 +177,9 @@ LE_VERRIER_1846 = PublishedSolution(
     ),
 )
 LE_VERRIER_1846_MASS_ALT_MSUN = 1.0 / 9300.0
+# The mass as printed in the memoir: Le Verrier, Recherches sur les mouvements de la planète
+# Herschel (1846), § 137, p. 234, "la fraction 1/9322" of the Sun (35.7 M⊕). It is the value the
+# site and the README show. ``LE_VERRIER_1846.mass_msun`` (0.00011 M☉, Krajnović's two figures)
+# is left as it is: it is the held mass of the M5a diagnostic and of a pinned slow test, and in
+# the Kepler propagation of his ellipse the difference moves his derived longitude by < 1e-6°.
+LE_VERRIER_1846_MASS_MEMOIR_MSUN = 1.0 / 9322.0

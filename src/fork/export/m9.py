@@ -1034,6 +1034,20 @@ def _site_points(ds: dict) -> list[dict]:
     return [{k: p.get(k) for k in keys} for p in ds["points"]]
 
 
+# Le Verrier's planet in Fig. 8: the memoir's mass, 1/9322 of the Sun (§ 137, p. 234).
+LE_VERRIER_MASS_SOURCE = "Le Verrier, Recherches (1846), § 137, p. 234: 1/9322 of the Sun's mass"
+
+
+def _le_verrier_mass_earth() -> float:
+    from fork.model.bodies import M_EARTH_MSUN
+    from fork.model.hidden_mass import LE_VERRIER_1846_MASS_MEMOIR_MSUN
+
+    return round(LE_VERRIER_1846_MASS_MEMOIR_MSUN / M_EARTH_MSUN, 1)
+
+
+LE_VERRIER_MASS_EARTH = _le_verrier_mass_earth()
+
+
 def site_payload(out: dict, q: np.ndarray, w: np.ndarray) -> dict:
     """The compact site copy of the report: what the page's text and Figs. 7 and 8 read."""
     ridge = json.loads((NOTES / "M6c_r2_ridge.json").read_text())["le_verrier"]
@@ -1085,8 +1099,9 @@ def site_payload(out: dict, q: np.ndarray, w: np.ndarray) -> dict:
             "corner": corner_data(q, w) | {"marks": {
                 "neptune": {"a_au": REFERENCE_AU["neptune"], "mass_earth": NEPTUNE_MASS_EARTH,
                             "source": "JPL (docs/notes/M9.md)"},
-                "le_verrier": {"a_au": ridge["a_au"], "mass_earth": ridge["mass_earth"],
-                               "sources": ridge["sources"]}}},
+                "le_verrier": {"a_au": ridge["a_au"], "mass_earth": LE_VERRIER_MASS_EARTH,
+                               "sources": ridge["sources"],
+                               "mass_source": LE_VERRIER_MASS_SOURCE}}},
             "ledger": out["ledger"]}  # fmt: skip
 
 

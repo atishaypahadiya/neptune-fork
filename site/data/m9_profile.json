@@ -6357,11 +6357,12 @@
    },
    "le_verrier": {
     "a_au": 36.15,
-    "mass_earth": 36.6,
+    "mass_earth": 35.7,
     "sources": [
      "Krajnović 2016, A&G 57, 5.28 (arXiv:1610.06424), Table 2, after Grosser 1962",
      "Encyclopædia Britannica 1911, 'Neptune (planet)', table of elements"
-    ]
+    ],
+    "mass_source": "Le Verrier, Recherches (1846), § 137, p. 234: 1/9322 of the Sun's mass"
    }
   }
  },
