@@ -293,7 +293,7 @@ page's type and hyphenation.
   its description identical to `.zenodo.json`.
 - [x] Follow-up commit: that DOI in `CITATION.cff`, `README.md` and `site/data/release.json`.
 
-## v1.5.1 (prepared 2026-11-19; not tagged until the explicit word)
+## v1.5.1 (released on the author's word, 2026-11-19 UTC)
 
 A patch release. Contents in `CHANGELOG.md`: the Mercury study's Stage 1 result in the README
 (the gates fail; no reading), the study's plan, code and tests as merged, and one test made
@@ -305,8 +305,11 @@ tolerant of the last digits on x86.
 - [x] Metadata: version 1.5.1 in `pyproject.toml`, `uv.lock` and `CITATION.cff` (its `doi:`
   removed until Zenodo mints the version DOI); `site/data/release.json`; the companion page's
   status; CHANGELOG dated 2026-11-19 (UTC), to be moved to the release day if later.
-- [ ] On the word: merge, CI and the site build, tag `v1.5.1`, GitHub release, Zenodo version
-  DOI, follow-up commit with that DOI.
+- [x] Merged into `main` (7aa1f5d); CI test and pages green.
+- [x] Tag `v1.5.1` on 7aa1f5d, GitHub release published 2026-11-19 02:30:02 UTC, not a draft;
+  Zenodo minted version DOI 10.5281/zenodo.24357494 (https://zenodo.org/records/24357494), its
+  description identical to `.zenodo.json`.
+- [x] Follow-up commit: that DOI in `CITATION.cff`, `README.md` and `site/data/release.json`.
 
 ## v1.6 list (opened 2026-11-18; no release without the explicit word)
 
