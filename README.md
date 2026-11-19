@@ -28,6 +28,7 @@ On 23 September 1846, the night Johann Galle found Neptune:
 The only input is Le Verrier's own table of Uranus observations (Table 77: 279 observations, 529 measured coordinates, 1690–1845). The planet's mass, orbit and position are inferred from how Uranus drifts off course.
 
 ¹ Computed here from his published elements of 31 August 1846: 0.90° short of Neptune in geocentric longitude on Galle's night. Le Verrier's own figure for his miss, 52′ (0.87°), is a different quantity: a heliocentric difference at 1 January 1847. He reduced Galle's observed place to heliocentric longitude, carried it to 1 January 1847, and compared it with the heliocentric longitude he had published for that date (*Recherches sur les mouvements de la planète Herschel*, 1846, p. 253). The held-distance comparison below uses his 52′ as its window, which was fixed in advance; recomputed after the results with a 0.90° window, its counts are 36 % and none, and the bound is unchanged ([note](docs/notes/M6d.md)).
+
 ² *Recherches*, § 137, p. 234: the mass of the new planet is 1/9322 of the Sun's.
 
 ## What surprised me
