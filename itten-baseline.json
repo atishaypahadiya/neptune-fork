@@ -3,19 +3,69 @@
   "note": "Known findings per page. Written by inspect.js --write-baseline; compared by --baseline and the ITTEN action.",
   "pages": {
     "/": {
-      "date": "2026-11-16T03:58:31.162Z",
-      "version": "0.3.2",
+      "date": "2026-11-19T16:26:42.680Z",
+      "version": "0.3.5",
       "system": "itten.system.json",
-      "widths": "320, 768, 1440, 1920",
-      "findings": []
+      "widths": "320–1920",
+      "findings": [
+        {
+          "fingerprint": "hairline-subpixel|td",
+          "check": "hairline-subpixel",
+          "severity": "info",
+          "message": "A hairline off the device-pixel grid at 1×: top border at 3965.48 px, 1 px wide. As rendered: Chromium snaps it to whole pixels (42 of 42 samples crisp); WebKit snaps it to whole pixels (41 of 41 samples crisp).",
+          "elements": [
+            "#table-1 > table > tfoot > tr:nth-of-type(1) > td:nth-of-type(1)"
+          ]
+        },
+        {
+          "fingerprint": "hairline-subpixel|td.yrs",
+          "check": "hairline-subpixel",
+          "severity": "info",
+          "message": "A hairline off the device-pixel grid at 1×: top border at 3965.48 px, 1 px wide. As rendered: Chromium snaps it to whole pixels (42 of 42 samples crisp); WebKit snaps it to whole pixels (41 of 41 samples crisp).",
+          "elements": [
+            "#table-1 > table > tfoot > tr:nth-of-type(1) > td:nth-of-type(3)"
+          ]
+        },
+        {
+          "fingerprint": "hairline-subpixel|td.n",
+          "check": "hairline-subpixel",
+          "severity": "info",
+          "message": "4 hairlines on td.n elements off the device-pixel grid at 1×, for example: top border at 3965.48 px, 1 px wide. As rendered: Chromium snaps it to whole pixels (126 of 126 samples crisp); WebKit snaps it to whole pixels (123 of 123 samples crisp).",
+          "elements": [
+            "#table-1 > table > tfoot > tr:nth-of-type(1) > td:nth-of-type(4)",
+            "#table-1 > table > tfoot > tr:nth-of-type(1) > td:nth-of-type(5)",
+            "#table-1 > table > tfoot > tr:nth-of-type(1) > td:nth-of-type(6)",
+            "#table-1 > table > tfoot > tr:nth-of-type(1) > td:nth-of-type(7)"
+          ]
+        },
+        {
+          "fingerprint": "hairline-subpixel|td.obs",
+          "check": "hairline-subpixel",
+          "severity": "info",
+          "message": "A hairline off the device-pixel grid at 1×: top border at 3023.77 px, 1 px wide. As rendered: Chromium snaps it to whole pixels (31 of 31 samples crisp); WebKit snaps it to whole pixels (30 of 30 samples crisp).",
+          "elements": [
+            "#table-1 > table > tfoot > tr:nth-of-type(1) > td:nth-of-type(2)"
+          ]
+        }
+      ]
     },
     "/adams-challis/": {
-      "date": "2026-11-16T04:01:00.401Z",
-      "version": "0.3.2",
+      "date": "2026-11-19T16:32:12.149Z",
+      "version": "0.3.5",
       "system": "itten.system.json",
-      "widths": "320, 768, 1440, 1920",
-      "findings": []
+      "widths": "320–1920",
+      "findings": [
+        {
+          "fingerprint": "hairline-subpixel|td",
+          "check": "hairline-subpixel",
+          "severity": "info",
+          "message": "A hairline off the device-pixel grid at 1×: top border at 17810.5 px, 1 px wide. As rendered: Chromium snaps it to whole pixels (40 of 40 samples crisp); WebKit snaps it to whole pixels (41 of 41 samples crisp).",
+          "elements": [
+            "#table-1 > div > table > tfoot > tr > td"
+          ]
+        }
+      ]
     }
   },
-  "version": "0.3.2"
+  "version": "0.3.5"
 }
