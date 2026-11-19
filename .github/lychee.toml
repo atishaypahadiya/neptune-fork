@@ -30,6 +30,8 @@ exclude = [
   # Clemence 1947 in Reviews of Modern Physics: doi.org resolves, then the publisher answers
   # 403 with a browser check (13 Nov 2026). This one DOI only; other 10.1103 DOIs are checked.
   '^https?://doi\.org/10\.1103/RevModPhys\.19\.361$',
+  # SAGE (10.1177): doi.org resolves, then the publisher answers 403 to scripts (19 Nov 2026).
+  '^https?://doi\.org/10\.1177/',
   # French defence libraries: connections time out from outside a browser (12 Nov 2026).
   '^https?://bibliotheques-numeriques\.defense\.gouv\.fr/',
 ]
