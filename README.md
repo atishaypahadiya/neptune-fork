@@ -233,17 +233,18 @@ The write-up, with each claim's JSON path and deviation, is
   the current version; cite it for exact reproduction. v1.0.1 rewords descriptive strings in
   `spotcheck_results.json` and the documentation; no table value or check result changes.
   v1.0.0 is [10.5281/zenodo.24044792](https://doi.org/10.5281/zenodo.24044792).
-- Each release of the code is archived on Zenodo as well. v1.5.1: version DOI
-  [10.5281/zenodo.24357494](https://doi.org/10.5281/zenodo.24357494), concept DOI
-  [10.5281/zenodo.24121059](https://doi.org/10.5281/zenodo.24121059) for all versions
-  (v1.5.0: [10.5281/zenodo.24330988](https://doi.org/10.5281/zenodo.24330988);
+- Each release of the code is archived on Zenodo as well. Concept DOI
+  [10.5281/zenodo.24121059](https://doi.org/10.5281/zenodo.24121059) (the badge above): cite it
+  for the software (all versions). v1.5.1, the current version, is
+  [10.5281/zenodo.24357494](https://doi.org/10.5281/zenodo.24357494); earlier versions are
+  v1.5.0: [10.5281/zenodo.24330988](https://doi.org/10.5281/zenodo.24330988);
   v1.4.0: [10.5281/zenodo.24237250](https://doi.org/10.5281/zenodo.24237250);
   v1.3.0: [10.5281/zenodo.24195990](https://doi.org/10.5281/zenodo.24195990);
   v1.2.1: [10.5281/zenodo.24183833](https://doi.org/10.5281/zenodo.24183833);
   v1.2.0: [10.5281/zenodo.24159832](https://doi.org/10.5281/zenodo.24159832);
   v1.1.0: [10.5281/zenodo.24122940](https://doi.org/10.5281/zenodo.24122940);
-  v1.0.0: [10.5281/zenodo.24121060](https://doi.org/10.5281/zenodo.24121060);
-  `CITATION.cff` carries all seven).
+  v1.0.0: [10.5281/zenodo.24121060](https://doi.org/10.5281/zenodo.24121060).
+  `CITATION.cff` carries all of them.
 
 ## Limitations
 

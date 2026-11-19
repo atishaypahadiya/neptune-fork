@@ -535,7 +535,10 @@ export function availability(D) {
       `the notes' JSON files. The replay value quoted in § 4.2 is ` +
       `${D.challis.sources.replay_a0.slice(1).join(".")} in ${D.challis.sources.replay_a0[0]}.`,
     avail_p2: "The observations of Uranus and the code are those of the main paper, under " +
-      "its licences and DOIs.",
+      "its licences and DOIs. The code is archived on Zenodo; cite it for all versions by " +
+      "its concept DOI,",
+    concept_doi: `doi:${D.release.software_concept_doi}`,
+    concept_url: `https://doi.org/${D.release.software_concept_doi}`,
     repo_url: repo,
   };
 }
