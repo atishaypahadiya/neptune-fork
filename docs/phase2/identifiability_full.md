@@ -1349,3 +1349,97 @@ ln Z move by up to 2.36 and 0.39 in some box. The study's cache has not been rec
 three noise levels, not only the smallest as in amendment 4, D) was in force during the run as
 written above; it was confirmed by the author afterward. Result on the scratch copy (efc70f4,
 1,990 fits): all five rows valid and passing; outside share at most 2.1 × 10⁻¹²; no band widened.
+
+## Stage 1 result, 18 November 2026: the gates fail (V3′ and V6)
+
+Nothing above is changed. Deviation 1 ran on the study's cache at efc70f4 in three runs (17
+November 19:10 to 18 November 00:35; the third after the last suspended scan finished), with
+no stop-rule event. Its results agreed with the scratch copy's: 625 rows compared, the three
+read-back rows (ffbb963) the only differences, none missing. The conditions of the go held
+(all 30 tasks finished and recomputed at efc70f4, no stop event, the check passed), and the
+gates ran from 00:35 to 02:23 on 18 November (`stage1.json` in the study's cache).
+
+| gate | result |
+|---|---|
+| V0 contacts | passes: the row left out is III 12, as in § 3; largest kept offset 447.2 s; largest root residual 6.2 × 10⁻¹⁷ rad |
+| V1 rates | passes: a 42.9887″, b 42.9801″, c 42.9797″, d 42.9800″ a century |
+| V2′ Laplace | passes: 104 of 108 points (96.3 %) within 0.1; the four failures are t2_s0_l0_J's points 1, 3, 5 and 7, which have no position (x not defined) and no value |
+| V3′ grid | **fails** in six of nine rows (below) |
+| V4 closure | passes: minimum χ² a 0, b 3.6 × 10⁻⁵, c 1.3 × 10⁻⁴, d 2.6 × 10⁻⁶ |
+| V6 the fits converge | **fails** on both clauses (below) |
+
+**V3′.** |ln Z(full) − ln Z(half)| < 0.05 is required at each level.
+
+| truth | model | level | ln Z, full | ln Z, half spacing | difference |
+|---|---|---|---|---|---|
+| b | R | 1.0 | −88.5103 | −89.2034 | 0.6930 |
+| b | R | 0.5 | −93.3652 | −94.0583 | 0.6932 |
+| b | R | 2.0 | −83.6467 | −84.2477 | 0.6010 |
+| c | P, at its true distance | 1.0 | −90.2548 | −90.9481 | 0.6933 |
+| c | P, at its true distance | 0.5 | −95.1082 | −95.8020 | 0.6938 |
+| c | P, at its true distance | 2.0 | −85.3486 | −85.9173 | 0.5688 |
+| d | J | 1.0, 0.5, 2.0 | | | 0.0000, 0.0004, −0.0001 |
+
+**V6.** Calls 80,082; not converged 942 (1.18 %); no-contact calls 6,448. Within Δχ² = 200 of
+their scan's best point: 70,722 calls, 132 not converged, 0.187 % against at most 0.1 %; beyond
+it, 810 not converged (reported, not counted). Within Δχ² = 25 of a scan's best point: 89 calls
+not converged, against none allowed (truth a 47, truth d 29, truth c 13); 72 of them lie below
+the prior box (x < −9) and 17 inside it.
+
+**The failure is the result.** As § 5 requires, the study stops here: no reading is made, and
+Stage 2 is not run under this plan.
+
+**Post hoc diagnosis, not a registered reading.** At levels 1.0 and 0.5 the V3′ differences
+equal ln 2 = 0.6931 to within 7 × 10⁻⁴. In truth b's noise-free ring scan the true radius, 0.20,
+is a grid node; the row's ln Z there is −86.2, against −96.8 and −101.4 at ±0.01 (the half
+grid's nodes) and −139.5 and −116.5 at ±0.02 (the full grid's). The trapezoid over radii is
+then the peak node's value times its weight, which halving the spacing halves. The planet's
+longitude grid behaves the same way at truth c's true longitude. J has no second grid and passes.
+The code's normalisation (the trapezoid divided by the range for R, the mean over longitudes for
+P) was read and is as § 4 states. The radius and longitude grids do not resolve the noise-free
+posteriors in those coordinates.
+
+**Items of the reading's list (all from saved results, no new fit).**
+
+- *Context.* Eleven crashes before 38bde9f; four scans restarted from nothing and the rest
+  resumed from checkpoints (not bit-identical to an unbroken run); t3_s0_l0_P_d1_b3_half checked
+  bit-identical at 24 solutions. t3_s0_l0_P_d0_b0 was relaunched from nothing on 16 November
+  at ca8ea04. Three scans (t3_s0_l0_P_d0_b0, t4_s0_l0_P_d0_b0, t2_s0_l0_R_half) were suspended
+  and resumed on 17 November on their own code.
+- *Commits.* Scan points by 7f180cf (before stamping), 671f469, 88e52d7 and ca8ea04; three
+  tasks hold points from more than one commit (t1_s0_l0_R, t2_s0_l0_P_d0_b0, t4_s0_l0_P_d1_b0).
+  Deviation 1 and the gates: efc70f4. The driver gave up on no task.
+- *edge_steps > 0:* 38 points within Δχ² = 200 of their scan's best, 9 beyond. *Not converged:*
+  132 within, 810 beyond.
+- *No-contact neighbours of a best point, or χ² falling into a run of no-contact calls,
+  within Δχ² = 200:* none, so no physical check is needed.
+- *Isolated non-converged calls with χ² above 100 times their converged neighbours':* 43, in
+  17 scans.
+- *Tails not negligible:* 320 scan values in 20 tasks; the best value's nearer box edge is the
+  lower in 118, the upper in 18, and 184 are best values reported as a bound (deviation 4);
+  171 of the 320 have their best point on a box edge. *Best at a box edge,* all scans: 302.
+- *Best values at the scanned range's edge (deviation 4):* 317 of 742 rows. Truth b's J₂: the
+  best value lies below the scanned range, x_best ≤ −7.5, below the prior box (−7 to −2);
+  χ²_min 289.97.
+- *Retried calls (amendment 3, B):* 6,680, of which 232 then found contacts; per scan in
+  `stage1.json` (largest t3_s0_l0_P_d1_b0_half, 698 and 18).
+- *Fourth addendum and its clarification:* coarse restarts 1 (t3_s0_l0_P_d0_b0 at 0.1309); no
+  contact in box 0; integrated linearly 0. *Fifth addendum:* retried again at that value, 15
+  calls, all 15 found contacts. The sensitivity line (ln B against G with and without the
+  linearly integrated values) is not computed: no value was integrated linearly, and no ln B is
+  read.
+- *Condition 6:* 6 failures (t1_s0_l0_R at 0.14; t1_s0_l0_P_d2_b0 at 1.7017; t2_s0_l0_P_d0_b0
+  at 5.6287 and 6.1523; t3_s0_l0_P_d2_b0 at 2.0944; t4_s0_l0_P_d1_b0 at 0.9163) and 3 waived as
+  flat valleys (t1_s0_l0_P_d2_b0 at 0.6545; t3_s0_l0_P_d0_b0 at 0.1309; t3_s0_l0_P_d2_b0 at
+  1.4399). *Condition 2:* no blocking call within Δχ² = 200; 17 counted beyond it.
+- *The sixth and seventh addenda's listings* are superseded by deviation 1, which replaced
+  their rules. In their place, deviation 1's run on the study's cache: all 742 rows guarded and
+  212 refined, every job converged; 589 pins and 16 refinement fits; 9,004 values changed in 661 rows, of which 700 in 187 rows
+  are flagged as corrections (above 0.05 on rows that had passed): r3_1 505, r3_2 183, prior
+  6, r3_4 6. Three, in t2_s0_l0_P_d2_b0 at 4.8433 (r3_1), go from −∞ to a finite value. V4
+  from the corrected minimum: five calls placed.
+- *The ground-truth spot check (third addendum):* its sample, drawn from the saved results, is
+  394 scans (302 with the best point on a box edge, 89 with a box edge on a flank, 3 drawn
+  at random). The check itself needs new fits and is not run: the study stopped at the gates.
+- *The near-null direction* needs new Jacobians at the scans' best points and is not computed,
+  for the same reason.
