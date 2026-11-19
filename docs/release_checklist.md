@@ -311,6 +311,20 @@ tolerant of the last digits on x86.
   description identical to `.zenodo.json`.
 - [x] Follow-up commit: that DOI in `CITATION.cff`, `README.md` and `site/data/release.json`.
 
+## v1.5.2 (released on the author's word, 2026-11-19 UTC)
+
+A patch release. Contents in `CHANGELOG.md`: the README as a front page with every number
+traced, the § 4.5 window described as Le Verrier's heliocentric 52′ with a post hoc 0.90°
+sensitivity, his memoir's mass in Fig. 8, the Student-t width against the fit it was compared
+with, and the companion page's reproduction stated exactly.
+
+- [x] readme-front-door merged into `main` (9b2057b) after its review packet and approval.
+- [x] Metadata: version 1.5.2 in `pyproject.toml`, `uv.lock` and `CITATION.cff` (its `doi:`
+  removed until Zenodo mints the version DOI; v1.5.1's DOI moved to `identifiers`);
+  `site/data/release.json`; the companion page's status; CHANGELOG dated 2026-11-19 (UTC).
+- [ ] CI and the site build, tag `v1.5.2`, GitHub release, Zenodo version DOI, follow-up commit
+  with that DOI.
+
 ## v1.6 list (opened 2026-11-18; no release without the explicit word)
 
 The open items of the v1.5 list below carry over as listed there, except the Mercury row, which

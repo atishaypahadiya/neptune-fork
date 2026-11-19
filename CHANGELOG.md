@@ -2,6 +2,29 @@
 
 Versions follow semver. Dates are the release dates; the DOIs are in `CITATION.cff`.
 
+## 1.5.2 (2026-11-19)
+
+A patch release. Two figures on the main page change: Le Verrier's mass in Fig. 8, and the
+width the Student-t fit is compared with.
+
+### Changed
+
+- The README is rewritten as a short front page: the result, four findings, the method, the
+  British search, limitations and next steps, with every number checked against its JSON by a
+  test. The site is linked as the full results.
+- § 4.5: the 0.87° window is described as what it is, Le Verrier's own 52′, a heliocentric
+  difference at 1 January 1847 (*Recherches*, p. 253), not his geocentric miss on Galle's night
+  (0.90°). The registered window and results are unchanged. A post hoc sensitivity at 0.90°,
+  recomputed from the cached draws, gives P_free 0.362 and no held draw within it; the factor
+  is still at least about 700 ([note of 19 November 2026](docs/notes/M6d.md)).
+- Le Verrier's mass is given as in his memoir, 1/9322 of the Sun (§ 137, p. 234), 35.7 Earth
+  masses, in the README and Fig. 8 (was 36.6, from a secondary source).
+- § 5 and § 6: the Student-t fit's 68 % width (6.33°) is set against the Gaussian fit it was
+  compared with (3.48°), not against the later replacement headline (4.22°).
+- Companion page and metadata: Adams's solutions are reproduced from the normal equations
+  printed in his memoir, to 0.011° and 0.003° (was "within 0.01°").
+- The README gives Neptune's semi-major axis osculating at 1781 (30.22 AU), like the fit's.
+
 ## 1.5.1 (2026-11-19)
 
 A patch release. No number on either page changes.
