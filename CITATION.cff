@@ -37,6 +37,7 @@ license:
   - CC0-1.0
 version: "1.5.2"
 date-released: "2026-11-19"
+doi: "10.5281/zenodo.24373246"
 identifiers:
   - type: doi
     value: "10.5281/zenodo.24121059"

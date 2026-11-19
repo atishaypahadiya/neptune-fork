@@ -127,5 +127,5 @@ Start with [docs/method.md](docs/method.md), the whole method on one page.
 ## Cite and license
 
 - **Dataset:** [10.5281/zenodo.24044791](https://doi.org/10.5281/zenodo.24044791) (all versions) · [10.5281/zenodo.24158992](https://doi.org/10.5281/zenodo.24158992) (v1.0.1, for exact reproduction)
-- **Code:** [10.5281/zenodo.24121059](https://doi.org/10.5281/zenodo.24121059) (all versions) · [10.5281/zenodo.24357494](https://doi.org/10.5281/zenodo.24357494) (v1.5.1). [CITATION.cff](CITATION.cff) lists every release.
+- **Code:** [10.5281/zenodo.24121059](https://doi.org/10.5281/zenodo.24121059) (all versions) · [10.5281/zenodo.24373246](https://doi.org/10.5281/zenodo.24373246) (v1.5.2). [CITATION.cff](CITATION.cff) lists every release.
 - **Licenses:** code is MIT. Everything in `data/historical/` is CC0. Le Verrier's 1846 memoir is public domain, and its scans are listed with hashes in [MANIFEST.md](data/historical/sources/MANIFEST.md).

@@ -322,8 +322,11 @@ with, and the companion page's reproduction stated exactly.
 - [x] Metadata: version 1.5.2 in `pyproject.toml`, `uv.lock` and `CITATION.cff` (its `doi:`
   removed until Zenodo mints the version DOI; v1.5.1's DOI moved to `identifiers`);
   `site/data/release.json`; the companion page's status; CHANGELOG dated 2026-11-19 (UTC).
-- [ ] CI and the site build, tag `v1.5.2`, GitHub release, Zenodo version DOI, follow-up commit
-  with that DOI.
+- [x] CI test and pages green on 9b2057b and on the metadata commit 13e48e5.
+- [x] Tag `v1.5.2` on 13e48e5, GitHub release published 2026-11-19 15:33:13 UTC, not a draft;
+  Zenodo minted version DOI 10.5281/zenodo.24373246 (https://zenodo.org/records/24373246), its
+  description identical to `.zenodo.json`.
+- [x] Follow-up commit: that DOI in `CITATION.cff`, `README.md` and `site/data/release.json`.
 
 ## v1.6 list (opened 2026-11-18; no release without the explicit word)
 

@@ -240,8 +240,8 @@ NOT_RESULTS = {
     "10": "× 10⁻⁹ (docs/notes/M3.md); 8 of 10 (traced)",
     # DOIs and versions, as in CITATION.cff
     "10.5281": "Zenodo's DOI prefix", "24044791": "dataset, all versions",
-    "24158992": "dataset v1.0.1", "24121059": "code, all versions", "24357494": "code v1.5.1",
-    "1.0.1": "dataset version", "1.5.1": "code version",
+    "24158992": "dataset v1.0.1", "24121059": "code, all versions", "24373246": "code v1.5.2",
+    "1.0.1": "dataset version", "1.5.2": "code version",
 }  # fmt: skip
 
 
