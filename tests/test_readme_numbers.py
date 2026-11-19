@@ -7,6 +7,8 @@ import json
 import re
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 README = (ROOT / "README.md").read_text(encoding="utf-8")
 
@@ -38,6 +40,7 @@ def traced() -> list[tuple[str, str, str]]:
     g, mass, a = rep["galle_lon_ecl_of_date_deg"], rep["mass_earth"], rep["a_au"]
     fits = _j("site/data/m6_fits.json")
     tgt, s3 = fits["comparison_targets"], fits["fits"]["s3_t4"]
+    head = fits["fits"]["headline"]["galle_lon_ecl_of_date_deg"]
     m9 = _j("site/data/m9_profile.json")
     m10 = _j("site/data/m10_profile.json")
     g9, d10 = m9["datasets"]["all"], m10["datasets"]
@@ -82,7 +85,11 @@ def traced() -> list[tuple[str, str, str]]:
          "Sun)", "hidden_mass.LE_VERRIER_1846_MASS_MEMOIR_MSUN (Recherches § 137, p. 234)"),
         ("distance", f"**{a['median']:.1f} AU** ({a['lo68']:.1f}–{a['hi68']:.1f})",
          "m6c_replacement.a_au"),
-        ("Neptune a, mean", f"| {nep_a:.2f} AU |", "m10_profile.settings.reference_au.neptune"),
+        ("Neptune a, osculating 1781",
+         f"| {m9['neptune_osculating_a_1781_au']:.2f} AU (osculating, 1781)³ |",
+         "m9_profile.neptune_osculating_a_1781_au"),
+        ("Neptune a, mean", f"Its mean value is {nep_a:.2f} AU",
+         "m10_profile.settings.reference_au.neptune"),
         ("Le Verrier a", f"| {lv_a:.2f} AU |", "m10_profile.settings.reference_au.le_verrier"),
         ("observations", f"{n_obs} observations, {d10['all']['n_measurements']} measured "
          "coordinates", "m10_profile.datasets.all"),
@@ -154,11 +161,12 @@ def traced() -> list[tuple[str, str, str]]:
         # limitations
         ("Student-t shift",
          f"moves {abs(s3['vs_headline']['galle_median_shift_headline_half_widths']):.2f} "
-         "headline half-widths",
+         "half-widths of the Gaussian fit it was compared with",
          "m6_fits.fits.s3_t4.vs_headline.galle_median_shift_headline_half_widths"),
         ("68 % widths",
-         f"from {g['width68']:.2f}° to {s3['galle_lon_ecl_of_date_deg']['width68']:.2f}°",
-         "m6c_replacement.width68; m6_fits.fits.s3_t4.galle_lon_ecl_of_date_deg.width68"),
+         f"from that fit's {head['width68']:.2f}° to "
+         f"{s3['galle_lon_ecl_of_date_deg']['width68']:.2f}°",
+         "m6_fits.fits.headline and s3_t4 .galle_lon_ecl_of_date_deg.width68 (the compared pair)"),
         ("95 % interval", f"({s1['lo95']:.1f}°–{s1['hi95']:.1f}°)", "s1_mode.values.lo95, hi95"),
         ("low-distance solution", f"near {arb['median']:.0f}°", "m8_arbiter.merged.median"),
         ("its weight", "between 0.001 and about 0.2", "s1_mode.values.why"),
@@ -190,6 +198,18 @@ def test_readings_named_in_the_readme_match_the_json():
     assert s7["class"] == "extrapolation, not a solution"
 
 
+def test_the_width_ratio_is_the_compared_pair():
+    f = _j("site/data/m6_fits.json")["fits"]
+    w0 = f["headline"]["galle_lon_ecl_of_date_deg"]["width68"]
+    w3 = f["s3_t4"]["galle_lon_ecl_of_date_deg"]["width68"]
+    assert w3 / w0 == pytest.approx(f["s3_t4"]["vs_headline"]["width68_ratio"], abs=0.005)
+
+
+def test_the_plate_is_the_deployed_one():
+    assert "(https://atishaypahadiya.github.io/neptune-fork/plate-i.png)" in README
+    assert not (ROOT / "docs" / "img" / "plate-i.png").exists()
+
+
 def test_le_verrier_mass_on_the_site_is_the_readmes():
     from fork.model.bodies import M_EARTH_MSUN
     from fork.model.hidden_mass import LE_VERRIER_1846_MASS_MEMOIR_MSUN as LV_MASS
@@ -204,7 +224,9 @@ NOT_RESULTS = {
     # dates and spans of the record
     "1846": "the prediction and Galle's night", "1847": "1 January 1847, memoir p. 253",
     "1690": "Table 77's first year", "1845": "Table 77's last year",
-    "1781": "Uranus recognised (Herschel)", "23": "23 September 1846, Galle's night",
+    "1781": "Uranus recognised (Herschel); 13 March 1781, the fit's epoch",
+    "13": "13 March 1781, the fit's epoch (docs/method.md)",
+    "23": "23 September 1846, Galle's night",
     "31": "31 August 1846, Le Verrier's elements", "1": "1 January 1847",
     "2": "2 September 1846, Adams's place; 2 × 10⁻⁹″ (REBOUND, 1.65e-9″, docs/notes/M3.md)",
     "12": "12 August (Challis); the '12°' of Rawlins",

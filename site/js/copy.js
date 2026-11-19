@@ -561,11 +561,13 @@ export const SENS = (fits) => ({
 /** S3 against the headline: the median barely moves, the 68 % range widens (§ 5 and § 6). */
 function s3Effect(D, it) {
   const f = D.checks.fits.s3_t4, holds = D.checks.verdicts.s3_t4.holds;
-  const w0 = D.checks.reported.width68, w3 = f.galle_lon_ecl_of_date_deg.width68;
+  // Both widths from the pair the evidence compared (m6_fits: the headline fit and S3), not the
+  // replacement headline: the ratio is m6_fits' width68_ratio.
+  const w0 = D.checks.fits.headline.galle_lon_ecl_of_date_deg.width68, w3 = f.galle_lon_ecl_of_date_deg.width68;
   const moves = fmt(Math.abs(f.vs_headline.galle_median_shift_headline_half_widths), 2);
   return `Under Student-t errors the median ${holds ? `is insensitive to ${it}` : `depends on ${it}`} (it moves ` +
-    `${moves} headline half-widths), ${holds ? "but" : "and"} the 68 % range ` +
-    `${w3 > w0 ? "widens" : "narrows"} from ${deg(w0, 2)} to ${deg(w3, 2)}`;
+    `${moves} half-widths of the Gaussian fit it was compared with), ${holds ? "but" : "and"} the 68 % ` +
+    `range ${w3 > w0 ? "widens" : "narrows"} from that fit's ${deg(w0, 2)} to ${deg(w3, 2)}`;
 }
 
 export function robustText(D) {

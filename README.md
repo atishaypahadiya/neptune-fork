@@ -9,7 +9,7 @@
 [![DOI, dataset, all versions](https://zenodo.org/badge/DOI/10.5281/zenodo.24044791.svg)](https://doi.org/10.5281/zenodo.24044791)
 [![DOI, code, all versions](https://zenodo.org/badge/DOI/10.5281/zenodo.24121059.svg)](https://doi.org/10.5281/zenodo.24121059)
 
-[![Plate I of the write-up: the Sun, Uranus, and posterior samples of the planet on Galle's night, with Neptune and Le Verrier's planet marked](docs/img/plate-i.png)](https://atishaypahadiya.github.io/neptune-fork/)
+[![Plate I of the write-up: the Sun, Uranus, and posterior samples of the planet on Galle's night, with Neptune and Le Verrier's planet marked](https://atishaypahadiya.github.io/neptune-fork/plate-i.png)](https://atishaypahadiya.github.io/neptune-fork/)
 
 *Plate I of the write-up: the planet on Galle's night, 23 September 1846, in heliocentric positions projected on the ecliptic of date, to scale. S is the Sun and U is Uranus. The stipple is samples of the headline posterior. N is Neptune (JPL Horizons) and L is Le Verrier's planet from his published elements.*
 
@@ -23,13 +23,15 @@ On 23 September 1846, the night Johann Galle found Neptune:
 |---|---|---|---|
 | Where to point the telescope (geocentric longitude) | **325.8°** (68 %: 323.6°–327.8°) | 325.87° | 324.97°¹ |
 | Mass | **17.3 Earths** (16.3–18.4) | 17.15 | 35.7 Earths (1/9322 of the Sun)² |
-| Distance from the Sun (semi-major axis) | **30.2 AU** (29.6–30.9) | 30.07 AU | 36.15 AU |
+| Distance from the Sun (semi-major axis) | **30.2 AU** (29.6–30.9) | 30.22 AU (osculating, 1781)³ | 36.15 AU |
 
 The only input is Le Verrier's own table of Uranus observations (Table 77: 279 observations, 529 measured coordinates, 1690–1845). The planet's mass, orbit and position are inferred from how Uranus drifts off course.
 
 ¹ Computed here from his published elements of 31 August 1846: 0.90° short of Neptune in geocentric longitude on Galle's night. Le Verrier's own figure for his miss, 52′ (0.87°), is a different quantity: a heliocentric difference at 1 January 1847. He reduced Galle's observed place to heliocentric longitude, carried it to 1 January 1847, and compared it with the heliocentric longitude he had published for that date (*Recherches sur les mouvements de la planète Herschel*, 1846, p. 253). The held-distance comparison below uses his 52′ as its window, which was fixed in advance; recomputed after the results with a 0.90° window, its counts are 36 % and none, and the bound is unchanged ([note](docs/notes/M6d.md)).
 
 ² *Recherches*, § 137, p. 234: the mass of the new planet is 1/9322 of the Sun's.
+
+³ Neptune's osculating semi-major axis at 13 March 1781, the epoch at which the fit's orbit is given, from JPL Horizons states with the model's own masses (`neptune_osculating_a_1781_au` in [site/data/m9_profile.json](site/data/m9_profile.json)). Its mean value is 30.07 AU.
 
 ## What surprised me
 
@@ -93,7 +95,7 @@ Reconstructing Neptune from Uranus is well-trodden ground. The closest work:
 
 ## Limitations
 
-- **The Gaussian error model is the headline even though the data prefer Student-t,** because Gaussian was pre-registered. Under Student-t the median moves 0.37 headline half-widths, and the 68 % interval widens from 4.22° to 6.33°.
+- **The Gaussian error model is the headline even though the data prefer Student-t,** because Gaussian was pre-registered. Under Student-t the median moves 0.37 half-widths of the Gaussian fit it was compared with, and the 68 % interval widens from that fit's 3.48° to 6.33°.
 - **The 95 % interval (319.6°–330.1°) is provisional.** When eccentricity is allowed up to 0.5, a low-distance solution near 314° gets a weight between 0.001 and about 0.2, and repeated runs disagree on it.
 - **The transcription spot-check found 0 errors in 28 rows.** That bounds the row error rate below 10.1 % (95 %). The other 251 rows were not spot-checked.
 - **The observation model ignores diurnal parallax,** which is up to 0.5″ for Uranus over this period.
