@@ -877,7 +877,9 @@ def test_the_lambda_563_overshoot_is_integrated_by_the_exponential_rule():
     the scan's best knot, and it is near that rule's value on the whole box."""
     pts, h, stored = _overshoot_row()
     b = F.box("P")
-    assert F.ln_z_strength(pts, 1.0, b, h, "spline_only") == stored["1.0"]["prior"]
+    # Stored on ARM; x86 libm differs in the last bits, so no exact float equality here.
+    want = stored["1.0"]["prior"]
+    assert F.ln_z_strength(pts, 1.0, b, h, "spline_only") == pytest.approx(want, rel=1e-12)
     iv = F.fallback_intervals(pts, 1.0, b)
     assert any(a == pytest.approx(-7.676, abs=1e-3) and c == pytest.approx(-6.259, abs=1e-3)
                for a, c in iv)  # fmt: skip
